@@ -1,17 +1,9 @@
-﻿import type { NextConfig } from "next";
+import path from "node:path";
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'i.pravatar.cc',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-    ],
+  turbopack: {
+    root: path.resolve(process.cwd()),
   },
 };
 
