@@ -39,8 +39,8 @@ const groups: { title: string; items: Item[] }[] = [
     items: [
       { label: "Overview", href: "/dashboard", icon: LayoutDashboard, built: true },
       { label: "Live Activity", href: "/dashboard/activity", icon: Activity, built: true },
-      { label: "Agents", href: "/dashboard/agents", icon: Bot, built: false },
-      { label: "Policies", href: "/dashboard/policies", icon: ScrollText, built: false },
+      { label: "Agents", href: "/dashboard/agents", icon: Bot, built: true },
+      { label: "Policies", href: "/dashboard/policies", icon: ScrollText, built: true },
       { label: "Risk", href: "/dashboard/risk", icon: Gauge, built: true },
     ],
   },

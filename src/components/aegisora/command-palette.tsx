@@ -3,9 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
+import { demoAgents } from "@/lib/demo-agents";
 import { demoApprovals } from "@/lib/demo-approvals";
 import { demoDecisions } from "@/lib/demo-data";
 import { demoIncidents } from "@/lib/demo-incidents";
+import { demoPolicies } from "@/lib/demo-policies";
 import { demoTraces } from "@/lib/demo-traces";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +19,8 @@ const items: Item[] = [
   { label: "Approvals", href: "/dashboard/approvals", group: "Go to" },
   { label: "Evidence", href: "/dashboard/evidence", group: "Go to" },
   { label: "Audit", href: "/dashboard/audit", group: "Go to" },
+  { label: "Agents", href: "/dashboard/agents", group: "Go to" },
+  { label: "Policies", href: "/dashboard/policies", group: "Go to" },
   { label: "Risk", href: "/dashboard/risk", group: "Go to" },
   { label: "Incidents", href: "/dashboard/incidents", group: "Go to" },
   { label: "Traces", href: "/dashboard/traces", group: "Go to" },
@@ -34,6 +38,20 @@ const items: Item[] = [
     href: `/dashboard/approvals/${a.id}`,
     group: "Approvals",
     keywords: `${a.policy} ${a.status} ${a.environment}`,
+  })),
+  ...demoAgents.map((a) => ({
+    label: a.name,
+    hint: a.id,
+    href: `/dashboard/agents/${a.id}`,
+    group: "Agents",
+    keywords: `${a.environment} ${a.status} ${a.owner}`,
+  })),
+  ...demoPolicies.map((p) => ({
+    label: `${p.name}-${p.version}`,
+    hint: p.id,
+    href: `/dashboard/policies/${p.id}`,
+    group: "Policies",
+    keywords: `${p.agent} ${p.action} ${p.environment} ${p.decision}`,
   })),
   ...demoIncidents.map((i) => ({
     label: i.title,
