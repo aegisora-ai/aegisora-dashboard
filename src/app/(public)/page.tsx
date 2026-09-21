@@ -118,10 +118,10 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 export default function Home() {
   return (
     <>
-      <section className="aeg-grid-bg border-b border-border">
+      <section className="aeg-hero aeg-grid-bg border-b border-border">
         <div className="mx-auto max-w-6xl px-6 pb-14 pt-16 md:pt-24">
           <p className="font-mono text-xs tracking-[0.25em] text-cyan">AGENT EXECUTION CONTROL</p>
-          <h1 className="mt-6 max-w-4xl text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+          <h1 className="mt-6 max-w-4xl text-5xl leading-[1.04] md:text-7xl">
             Secure what your AI agents are allowed to do.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
@@ -130,7 +130,7 @@ export default function Home() {
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link href="/signup" className={btnPrimary}>Test Aegisora</Link>
-            <Link href="/#enterprise" className={btnOutline}>Talk to Enterprise</Link>
+            <Link href="/enterprise" className={btnOutline}>Talk to Enterprise</Link>
           </div>
           <div id="runtime" className="mt-14 scroll-mt-24">
             <RuntimeSimulator />
@@ -362,7 +362,7 @@ decision:    ESCALATE`}</code>
           </h2>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link href="/signup" className={btnPrimary}>Test Aegisora</Link>
-            <Link href="/#enterprise" className={btnOutline}>Talk to Enterprise</Link>
+            <Link href="/enterprise" className={btnOutline}>Talk to Enterprise</Link>
           </div>
         </div>
       </section>

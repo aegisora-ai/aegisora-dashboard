@@ -5,10 +5,10 @@ export default function PublicLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <>
+    <div className="aeg-public">
       <SiteHeader />
       <main>{children}</main>
       <SiteFooter />
-    </>
+    </div>
   );
 }
