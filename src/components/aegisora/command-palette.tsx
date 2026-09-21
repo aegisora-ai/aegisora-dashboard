@@ -36,15 +36,6 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
   const inputRef = useRef<HTMLInputElement>(null);
   const [q, setQ] = useState("");
   const [idx, setIdx] = useState(0);
-  const [prevOpen, setPrevOpen] = useState(open);
-
-  if (open !== prevOpen) {
-    setPrevOpen(open);
-    if (open) {
-      setQ("");
-      setIdx(0);
-    }
-  }
 
   const results = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -55,6 +46,8 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
 
   useEffect(() => {
     if (open) {
+      setQ("");
+      setIdx(0);
       const t = setTimeout(() => inputRef.current?.focus(), 0);
       return () => clearTimeout(t);
     }

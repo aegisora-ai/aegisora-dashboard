@@ -48,14 +48,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [palette, setPalette] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [notif, setNotif] = useState(false);
-  const [prevPathname, setPrevPathname] = useState(pathname);
   const pending = demoApprovals.filter((a) => a.status === "PENDING").length;
 
-  if (pathname !== prevPathname) {
-    setPrevPathname(pathname);
+  useEffect(() => {
     setDrawer(false);
     setNotif(false);
-  }
+  }, [pathname]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {

@@ -6,11 +6,10 @@ import { focusRing } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export function ThemeToggle({ className }: { className?: string }) {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(true);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- mount aninda gercek DOM durumu ile senkronizasyon (hydration-safe)
     setDark(document.documentElement.classList.contains("dark"));
     setReady(true);
   }, []);
