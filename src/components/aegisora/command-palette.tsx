@@ -5,6 +5,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { demoApprovals } from "@/lib/demo-approvals";
 import { demoDecisions } from "@/lib/demo-data";
+import { demoIncidents } from "@/lib/demo-incidents";
+import { demoTraces } from "@/lib/demo-traces";
 import { cn } from "@/lib/utils";
 
 type Item = { label: string; hint?: string; href: string; group: string; keywords?: string };
@@ -15,6 +17,10 @@ const items: Item[] = [
   { label: "Approvals", href: "/dashboard/approvals", group: "Go to" },
   { label: "Evidence", href: "/dashboard/evidence", group: "Go to" },
   { label: "Audit", href: "/dashboard/audit", group: "Go to" },
+  { label: "Risk", href: "/dashboard/risk", group: "Go to" },
+  { label: "Incidents", href: "/dashboard/incidents", group: "Go to" },
+  { label: "Traces", href: "/dashboard/traces", group: "Go to" },
+  { label: "Live Activity", href: "/dashboard/activity", group: "Go to" },
   ...demoDecisions.map((d) => ({
     label: `${d.action} by ${d.agent}`,
     hint: d.id,
@@ -29,6 +35,20 @@ const items: Item[] = [
     group: "Approvals",
     keywords: `${a.policy} ${a.status} ${a.environment}`,
   })),
+  ...demoIncidents.map((i) => ({
+    label: i.title,
+    hint: i.id,
+    href: `/dashboard/incidents/${i.id}`,
+    group: "Incidents",
+    keywords: `${i.agent} ${i.status} ${i.severity}`,
+  })),
+  ...demoTraces.map((t) => ({
+    label: `${t.agent} / ${t.action}`,
+    hint: t.id,
+    href: `/dashboard/traces/${t.id}`,
+    group: "Traces",
+    keywords: `${t.environment} ${t.outcome}`,
+  })),
 ];
 
 export function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -36,6 +56,15 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
   const inputRef = useRef<HTMLInputElement>(null);
   const [q, setQ] = useState("");
   const [idx, setIdx] = useState(0);
+  const [prevOpen, setPrevOpen] = useState(open);
+
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) {
+      setQ("");
+      setIdx(0);
+    }
+  }
 
   const results = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -46,8 +75,6 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
 
   useEffect(() => {
     if (open) {
-      setQ("");
-      setIdx(0);
       const t = setTimeout(() => inputRef.current?.focus(), 0);
       return () => clearTimeout(t);
     }

@@ -38,10 +38,10 @@ const groups: { title: string; items: Item[] }[] = [
     title: "Runtime",
     items: [
       { label: "Overview", href: "/dashboard", icon: LayoutDashboard, built: true },
-      { label: "Live Activity", href: "/dashboard/activity", icon: Activity, built: false },
+      { label: "Live Activity", href: "/dashboard/activity", icon: Activity, built: true },
       { label: "Agents", href: "/dashboard/agents", icon: Bot, built: false },
       { label: "Policies", href: "/dashboard/policies", icon: ScrollText, built: false },
-      { label: "Risk", href: "/dashboard/risk", icon: Gauge, built: false },
+      { label: "Risk", href: "/dashboard/risk", icon: Gauge, built: true },
     ],
   },
   {
@@ -49,7 +49,7 @@ const groups: { title: string; items: Item[] }[] = [
     items: [
       { label: "Decisions", href: "/dashboard/decisions", icon: Scale, built: true },
       { label: "Approvals", href: "/dashboard/approvals", icon: UserCheck, built: true },
-      { label: "Incidents", href: "/dashboard/incidents", icon: TriangleAlert, built: false },
+      { label: "Incidents", href: "/dashboard/incidents", icon: TriangleAlert, built: true },
     ],
   },
   {
@@ -57,7 +57,7 @@ const groups: { title: string; items: Item[] }[] = [
     items: [
       { label: "Evidence", href: "/dashboard/evidence", icon: FileSearch, built: true },
       { label: "Audit", href: "/dashboard/audit", icon: ClipboardList, built: true },
-      { label: "Traces", href: "/dashboard/traces", icon: Route, built: false },
+      { label: "Traces", href: "/dashboard/traces", icon: Route, built: true },
     ],
   },
   {
