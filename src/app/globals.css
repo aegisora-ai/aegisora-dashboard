@@ -1,63 +1,113 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
 @custom-variant dark (&:is(.dark *));
 
-@theme {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --background: #070B12;
+  --surface-1: #0A0F19;
+  --surface-2: #0D1420;
+  --surface-3: #121B28;
+  --surface-4: #1A2738;
+
+  /* Text */
+  --foreground: #F5F7FA;
+  --muted-foreground: #8993A5;
+
+  /* Brand */
+  --primary: #1677FF;
+  --primary-hover: #2188FF;
+  --primary-foreground: #FFFFFF;
+  --cyan: #00B8FF;
+
+  /* shadcn semantic mapping */
+  --card: #0D1420;
+  --card-foreground: #F5F7FA;
+  --popover: #121B28;
+  --popover-foreground: #F5F7FA;
+  --secondary: #121B28;
+  --secondary-foreground: #F5F7FA;
+  --muted: #0D1420;
+  --accent: #1A2738;
+  --accent-foreground: #F5F7FA;
+  --border: #1A2738;
+  --input: #1A2738;
+  --ring: #2188FF;
+  --destructive: #E5484D;
+  --destructive-foreground: #FFFFFF;
+
+  /* Execution states: use only where the state has meaning */
+  --allow: #34B37E;
+  --allow-muted: #0F2A22;
+  --block: #E5484D;
+  --block-muted: #2C1518;
+  --escalate: #E0A030;
+  --escalate-muted: #2B2210;
+
+  --radius: 0.375rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-4: var(--surface-4);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-cyan: var(--cyan);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-allow: var(--allow);
+  --color-allow-muted: var(--allow-muted);
+  --color-block: var(--block);
+  --color-block-muted: var(--block-muted);
+  --color-escalate: var(--escalate);
+  --color-escalate-muted: var(--escalate-muted);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 4px);
 }
 
 @layer base {
-  :root {
-    /* AEGISORA ENTERPRISE DEEP NAVY THEME */
-    --background: 218 44% 5%;
-    --foreground: 216 33% 97%;
-    --card: 220 43% 7%;
-    --card-foreground: 216 33% 97%;
-    --popover: 220 43% 7%;
-    --popover-foreground: 216 33% 97%;
-    --primary: 215 100% 54%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 214 36% 16%;
-    --secondary-foreground: 216 33% 97%;
-    --muted: 218 43% 9%;
-    --muted-foreground: 219 14% 59%;
-    --accent: 214 36% 16%;
-    --accent-foreground: 216 33% 97%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214 36% 16%;
-    --input: 218 43% 9%;
-    --ring: 215 100% 54%;
-    --radius: 0.5rem;
-  }
-}
-
-@layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground antialiased;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

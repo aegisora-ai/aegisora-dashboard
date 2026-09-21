@@ -1,39 +1,35 @@
-import type React from "react";
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Geist } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
-const inter = Inter({ 
-  subsets: ["latin"], 
-  variable: "--font-inter",
-  display: "swap" 
+const geistSans = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+  display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({ 
-  subsets: ["latin"], 
-  variable: "--font-mono",
-  display: "swap" 
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Aegisora",
-  description: "Aegisora UI",
+  title: {
+    default: "Aegisora | Runtime Security for AI Agents",
+    template: "%s | Aegisora",
+  },
+  description:
+    "Aegisora sits at the execution boundary of autonomous systems. Every sensitive action is evaluated against context, policy, risk and authorization before it executes.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans bg-white text-black min-h-screen flex flex-col`}>
-        <main className="flex-grow">
-          {children}
-        </main>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="min-h-screen bg-background font-sans text-foreground antialiased">
+        {children}
       </body>
     </html>
   );
