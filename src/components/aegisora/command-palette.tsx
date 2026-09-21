@@ -7,8 +7,12 @@ import { demoAgents } from "@/lib/demo-agents";
 import { demoApprovals } from "@/lib/demo-approvals";
 import { demoDecisions } from "@/lib/demo-data";
 import { demoIncidents } from "@/lib/demo-incidents";
+import { demoIntegrations } from "@/lib/demo-integrations";
+import { demoMembers } from "@/lib/demo-team";
 import { demoPolicies } from "@/lib/demo-policies";
+import { demoProviders } from "@/lib/demo-providers";
 import { demoTraces } from "@/lib/demo-traces";
+import { demoWebhooks } from "@/lib/demo-webhooks";
 import { cn } from "@/lib/utils";
 
 type Item = { label: string; hint?: string; href: string; group: string; keywords?: string };
@@ -25,6 +29,14 @@ const items: Item[] = [
   { label: "Incidents", href: "/dashboard/incidents", group: "Go to" },
   { label: "Traces", href: "/dashboard/traces", group: "Go to" },
   { label: "Live Activity", href: "/dashboard/activity", group: "Go to" },
+  { label: "Providers", href: "/dashboard/providers", group: "Go to" },
+  { label: "Integrations", href: "/dashboard/integrations", group: "Go to" },
+  { label: "Webhooks", href: "/dashboard/webhooks", group: "Go to" },
+  { label: "Team", href: "/dashboard/team", group: "Go to" },
+  { label: "Identity", href: "/dashboard/identity", group: "Go to" },
+  { label: "Billing", href: "/dashboard/billing", group: "Go to" },
+  { label: "Workspace", href: "/dashboard/workspace", group: "Go to" },
+  { label: "Settings", href: "/dashboard/settings", group: "Go to" },
   ...demoDecisions.map((d) => ({
     label: `${d.action} by ${d.agent}`,
     hint: d.id,
@@ -66,6 +78,34 @@ const items: Item[] = [
     href: `/dashboard/traces/${t.id}`,
     group: "Traces",
     keywords: `${t.environment} ${t.outcome}`,
+  })),
+  ...demoProviders.map((p) => ({
+    label: p.name,
+    hint: p.id,
+    href: `/dashboard/providers/${p.id}`,
+    group: "Providers",
+    keywords: `${p.kind} ${p.status} ${p.region}`,
+  })),
+  ...demoIntegrations.map((i) => ({
+    label: i.name,
+    hint: i.category,
+    href: "/dashboard/integrations",
+    group: "Integrations",
+    keywords: `${i.category} ${i.status}`,
+  })),
+  ...demoWebhooks.map((w) => ({
+    label: w.url,
+    hint: w.id,
+    href: `/dashboard/webhooks/${w.id}`,
+    group: "Webhooks",
+    keywords: `${w.status} ${w.events.join(" ")}`,
+  })),
+  ...demoMembers.map((m) => ({
+    label: m.name,
+    hint: m.role,
+    href: "/dashboard/team",
+    group: "Team",
+    keywords: `${m.email} ${m.status} ${m.role}`,
   })),
 ];
 

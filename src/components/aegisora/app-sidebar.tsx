@@ -63,19 +63,19 @@ const groups: { title: string; items: Item[] }[] = [
   {
     title: "Platform",
     items: [
-      { label: "Providers", href: "/dashboard/providers", icon: Server, built: false },
-      { label: "Integrations", href: "/dashboard/integrations", icon: Plug, built: false },
-      { label: "Webhooks", href: "/dashboard/webhooks", icon: Webhook, built: false },
+      { label: "Providers", href: "/dashboard/providers", icon: Server, built: true },
+      { label: "Integrations", href: "/dashboard/integrations", icon: Plug, built: true },
+      { label: "Webhooks", href: "/dashboard/webhooks", icon: Webhook, built: true },
     ],
   },
   {
     title: "Organization",
     items: [
-      { label: "Team", href: "/dashboard/team", icon: Users, built: false },
-      { label: "Identity", href: "/dashboard/identity", icon: Fingerprint, built: false },
-      { label: "Billing", href: "/dashboard/billing", icon: CreditCard, built: false },
-      { label: "Workspace", href: "/dashboard/workspace", icon: Building2, built: false },
-      { label: "Settings", href: "/dashboard/settings", icon: Settings, built: false },
+      { label: "Team", href: "/dashboard/team", icon: Users, built: true },
+      { label: "Identity", href: "/dashboard/identity", icon: Fingerprint, built: true },
+      { label: "Billing", href: "/dashboard/billing", icon: CreditCard, built: true },
+      { label: "Workspace", href: "/dashboard/workspace", icon: Building2, built: true },
+      { label: "Settings", href: "/dashboard/settings", icon: Settings, built: true },
     ],
   },
 ];
