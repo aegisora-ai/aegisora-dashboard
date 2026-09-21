@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { AgentStrip } from "@/components/aegisora/agent-strip";
+import { BentoCard } from "@/components/aegisora/bento-card";
 import { RuntimeSimulator } from "@/components/aegisora/runtime-simulator";
+import { StatBand } from "@/components/aegisora/stat-band";
 import { DecisionBadge } from "@/components/aegisora/state-badge";
 import { btnOutline, btnPrimary } from "@/lib/ui";
 
@@ -118,7 +121,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 export default function Home() {
   return (
     <>
-      <section className="aeg-hero aeg-grid-bg border-b border-border">
+      <section className="aeg-hero aeg-wave aeg-grid-bg border-b border-border">
         <div className="mx-auto max-w-6xl px-6 pb-14 pt-16 md:pt-24">
           <p className="font-mono text-xs tracking-[0.25em] text-cyan">AGENT EXECUTION CONTROL</p>
           <h1 className="mt-6 max-w-4xl text-5xl leading-[1.04] md:text-7xl">
@@ -137,6 +140,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <StatBand />
+      <AgentStrip />
 
       <section className="border-b border-border bg-surface-1">
         <div className="mx-auto grid max-w-6xl gap-10 px-6 py-20 md:grid-cols-2">
@@ -193,15 +199,10 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-6 py-24">
           <Eyebrow>THREE EXECUTION STATES</Eyebrow>
           <h2 className="mt-4 text-3xl font-semibold tracking-tight">Allow. Block. Escalate.</h2>
-          <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-3">
-            {outcomes.map((o) => (
-              <article key={o.state} className={`border-t-2 bg-surface-2 p-6 ${o.edge}`}>
-                <div className={`font-mono text-sm font-semibold tracking-[0.2em] ${o.text}`}>{o.state}</div>
-                <div className="mt-1 font-mono text-[11px] text-muted-foreground">{o.gate}</div>
-                <p className="mt-5 text-sm leading-relaxed">{o.body}</p>
-                <p className="mt-5 border-t border-border pt-4 font-mono text-[11px] text-muted-foreground">{o.result}</p>
-              </article>
-            ))}
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            <BentoCard tone="allow" title="ALLOW" body="Matches an allowed rule. The gate opens and the action executes." />
+            <BentoCard tone="block" title="BLOCK" body="Violates policy or a protected boundary. The gate stays closed." />
+            <BentoCard tone="escalate" title="ESCALATE" body="Cannot proceed automatically. Execution pauses for human approval." />
           </div>
         </div>
       </section>

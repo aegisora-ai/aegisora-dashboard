@@ -212,3 +212,27 @@
     scroll-behavior: auto !important;
   }
 }
+.aeg-wave {
+  position: relative;
+  overflow: hidden;
+}
+.aeg-wave::before {
+  content: "";
+  position: absolute;
+  inset: -20% -10%;
+  z-index: 0;
+  background:
+    radial-gradient(60% 50% at 85% 15%, var(--band-a), transparent 60%),
+    radial-gradient(45% 40% at 60% 40%, var(--band-b), transparent 65%),
+    conic-gradient(from 200deg at 80% 10%, transparent, var(--band-a) 20%, transparent 45%);
+  filter: blur(30px);
+  animation: aeg-wave-drift 22s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes aeg-wave-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(-2%, 2%, 0) scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aeg-wave::before { animation: none; }
+}
