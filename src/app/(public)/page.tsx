@@ -61,12 +61,12 @@ export default function Home() {
             >
               Test Aegisora
             </Link>
-            
+            <Link
               href="#enterprise"
               className="rounded-sm border border-border px-6 py-3 text-sm font-medium hover:bg-surface-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               Talk to Enterprise
-            </a>
+            </Link>
           </div>
         </section>
 
