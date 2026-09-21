@@ -74,6 +74,7 @@ export function RuntimeSimulator() {
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (mq.matches) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- mount aninda gercek bir external API (matchMedia) ile senkronizasyon
       setReduced(true);
       setStage(STAGES.length);
     }

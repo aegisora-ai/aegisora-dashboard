@@ -14,12 +14,14 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobile, setMobile] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
   const barRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
     setOpenMenu(null);
     setMobile(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
