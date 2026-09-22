@@ -1,0 +1,17 @@
+{
+    "timestamp":  "2026-09-22T21:27:49.9137803+02:00",
+    "project":  "C:\\AI\\AEGISORA\\website4",
+    "activeSource":  "C:\\AI\\AEGISORA\\website4\\src",
+    "foundationExcluded":  true,
+    "backupsExcluded":  true,
+    "legacyRootApp":  false,
+    "legacyRootComponents":  false,
+    "typecheckExitCode":  0,
+    "buildExitCode":  0,
+    "designSystem":  {
+                         "blue":  "#0081FB",
+                         "white":  "#FFFFFF",
+                         "black":  "#000000"
+                     },
+    "note":  "TypeScript is intentionally scoped to the active src application. Foundation and backup copies are retained but excluded from production typecheck."
+}

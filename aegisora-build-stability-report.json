@@ -1,0 +1,23 @@
+{
+    "timestamp":  "2026-09-22T22:14:07.3615402+02:00",
+    "project":  "C:\\AI\\AEGISORA\\website4",
+    "routeState":  "root routes active; duplicate public routes removed",
+    "designSystem":  {
+                         "blue":  "#0081FB",
+                         "white":  "#FFFFFF",
+                         "black":  "#000000",
+                         "font":  "Helvetica"
+                     },
+    "bundler":  {
+                    "default":  "Turbopack",
+                    "verification":  "Webpack",
+                    "command":  "next build --webpack"
+                },
+    "validation":  {
+                       "typecheck":  true,
+                       "webpackBuild":  true,
+                       "nextDirectory":  true,
+                       "buildManifestArtifacts":  1
+                   },
+    "note":  "Production verification uses the explicit Webpack fallback because the previous Turbopack build failed with Windows ENOENT filesystem/cache errors."
+}

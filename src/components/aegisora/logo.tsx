@@ -1,14 +1,89 @@
-import { cn } from "@/lib/utils";
+import Image from "next/image"
+import Link from "next/link"
 
-export function Logo({ className }: { className?: string }) {
-  return (
-    <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none">
-        <rect x="2" y="2" width="20" height="20" rx="3" className="stroke-foreground" strokeWidth="1.6" />
-        <path d="M5.5 12h4.2M14.3 12h4.2" className="stroke-foreground" strokeWidth="1.6" strokeLinecap="round" />
-        <path d="M12 5.5v13" className="stroke-primary" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-      <span className="text-[13px] font-semibold tracking-[0.22em]">AEGISORA</span>
+export type AegisoraLogoProps = {
+  compact?: boolean
+  href?: string
+  size?: number
+  className?: string
+  showWordmark?: boolean
+}
+
+export function AegisoraLogo({
+  compact = false,
+  href = "/",
+  size = 30,
+  className = "",
+  showWordmark = true,
+}: AegisoraLogoProps) {
+
+  const logoClassName = [
+    compact
+      ? "ae-logo ae-logo-compact"
+      : "ae-logo",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ")
+
+  const content = (
+    <span
+      className={logoClassName}
+      aria-label="Aegisora"
+    >
+
+      <span
+        className="ae-logo-image-wrap"
+        style={{
+          width: size,
+          height: size,
+        }}
+      >
+
+        <Image
+          src="/LOGO.png"
+          alt="Aegisora"
+          width={size}
+          height={size}
+          className="ae-logo-image"
+          priority
+        />
+
+      </span>
+
+      {!compact && showWordmark ? (
+        <span>
+
+          <span className="ae-logo-wordmark">
+            AEGISORA
+          </span>
+
+          <span className="ae-logo-subtitle">
+            RUNTIME SECURITY
+          </span>
+
+        </span>
+      ) : null}
+
     </span>
-  );
+  )
+
+  return (
+    <Link
+      href={href}
+      aria-label="Aegisora home"
+    >
+      {content}
+    </Link>
+  )
+}
+
+export function Logo(
+  props: AegisoraLogoProps = {},
+) {
+  return (
+    <AegisoraLogo
+      {...props}
+    />
+  )
 }

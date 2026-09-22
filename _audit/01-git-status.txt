@@ -1,0 +1,41 @@
+﻿ M src/app/(app)/dashboard/activity/page.tsx
+ M src/app/(app)/dashboard/agents/[agentId]/page.tsx
+ M src/app/(app)/dashboard/agents/page.tsx
+ M src/app/(app)/dashboard/approvals/[approvalId]/page.tsx
+ M src/app/(app)/dashboard/approvals/page.tsx
+ M src/app/(app)/dashboard/audit/page.tsx
+ M src/app/(app)/dashboard/decisions/[decisionId]/page.tsx
+ M src/app/(app)/dashboard/decisions/page.tsx
+ M src/app/(app)/dashboard/evidence/page.tsx
+ M src/app/(app)/dashboard/incidents/[incidentId]/page.tsx
+ M src/app/(app)/dashboard/incidents/page.tsx
+ M src/app/(app)/dashboard/integrations/page.tsx
+ M src/app/(app)/dashboard/page.tsx
+ M src/app/(app)/dashboard/policies/[policyId]/page.tsx
+ M src/app/(app)/dashboard/policies/page.tsx
+ M src/app/(app)/dashboard/providers/page.tsx
+ M src/app/(app)/dashboard/risk/page.tsx
+ M src/app/(app)/dashboard/team/page.tsx
+ M src/app/(app)/dashboard/traces/[traceId]/page.tsx
+ M src/app/(app)/dashboard/traces/page.tsx
+ M src/app/(app)/dashboard/webhooks/page.tsx
+ M src/app/(public)/page.tsx
+ M src/app/(public)/pricing/page.tsx
+ M src/app/globals.css
+ M src/app/layout.tsx
+ M src/app/onboarding/page.tsx
+ M src/components/aegisora/agent-strip.tsx
+ M src/components/aegisora/app-shell.tsx
+ M src/components/aegisora/bento-card.tsx
+ M src/components/aegisora/logo.tsx
+ M src/components/aegisora/page-kit.tsx
+ M src/components/aegisora/runtime-simulator.tsx
+ M src/components/aegisora/site-footer.tsx
+ M src/components/aegisora/site-header.tsx
+ M src/components/aegisora/stat-band.tsx
+ M src/components/ui/dropdown-menu.tsx
+?? _audit/
+?? src/app/(public)/blog/
+?? src/app/(public)/docs/
+?? src/components/aegisora/hero-canvas.tsx
+?? supabase/migrations/20260922133117_add_create_workspace_function.sql

@@ -1,0 +1,29 @@
+{
+    "timestamp":  "2026-09-22T21:55:28.6813637+02:00",
+    "project":  "C:\\AI\\AEGISORA\\website4",
+    "conflictingRoutes":  [
+                              "product",
+                              "security",
+                              "enterprise",
+                              "developers"
+                          ],
+    "removedParallelRoutes":  [
+
+                              ],
+    "missingParallelRoutes":  [
+                                  "product",
+                                  "security",
+                                  "enterprise",
+                                  "developers"
+                              ],
+    "routeVerification":  true,
+    "typecheck":  true,
+    "build":  true,
+    "preservedBackup":  "C:\\AI\\AEGISORA\\website4\\_backups\\route-conflict-20260922-215449",
+    "designSystem":  {
+                         "blue":  "#0081FB",
+                         "white":  "#FFFFFF",
+                         "black":  "#000000",
+                         "font":  "Helvetica"
+                     }
+}

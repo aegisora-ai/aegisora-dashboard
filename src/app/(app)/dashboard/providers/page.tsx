@@ -12,7 +12,7 @@ export default function ProvidersPage() {
   const connected = demoProviders.filter((p) => p.status !== "NOT_CONNECTED").length;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="mx-auto max-w-[80rem] space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-light tracking-tight">Providers</h1>

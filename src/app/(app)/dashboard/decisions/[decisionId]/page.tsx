@@ -97,7 +97,7 @@ export default async function DecisionInspectorPage({ params }: Props) {
   const stages = stagesFor(d);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="mx-auto max-w-[80rem] space-y-8">
       <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
         <Link href="/dashboard/decisions" className="hover:text-foreground">
           Decisions

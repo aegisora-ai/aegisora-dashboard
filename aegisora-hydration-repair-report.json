@@ -1,0 +1,14 @@
+{
+    "timestamp":  "2026-09-22T23:14:16.1625710+02:00",
+    "issue":  "Invalid nested anchor caused by SiteHeader Link wrapping Logo component Link.",
+    "file":  "C:\\AI\\AEGISORA\\website4\\src\\components\\aegisora\\site-header.tsx",
+    "matchesBefore":  1,
+    "matchesAfter":  0,
+    "repair":  "Removed outer Link wrapper around Logo, preserving Logo as the single navigation anchor.",
+    "backup":  "C:\\AI\\AEGISORA\\website4\\_backups\\hydration-logo-link-20260922-231253",
+    "validation":  {
+                       "typecheck":  true,
+                       "webpackBuild":  true,
+                       "nestedAnchorRemoved":  true
+                   }
+}

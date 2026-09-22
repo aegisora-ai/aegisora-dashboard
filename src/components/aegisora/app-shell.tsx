@@ -8,7 +8,7 @@ import { AccountSwitcher } from "@/components/aegisora/account-switcher";
 import { SidebarNav } from "@/components/aegisora/app-sidebar";
 import { CommandPalette } from "@/components/aegisora/command-palette";
 import { Logo } from "@/components/aegisora/logo";
-import { ThemeToggle } from "@/components/aegisora/theme-toggle";
+
 import { UserMenu } from "@/components/aegisora/user-menu";
 import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
 import { demoApprovals } from "@/lib/demo-approvals";
@@ -153,7 +153,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 )}
               </div>
 
-              <ThemeToggle />
               <UserMenu />
             </div>
             <div className="border-t border-border/60 px-4 py-2 md:px-6">

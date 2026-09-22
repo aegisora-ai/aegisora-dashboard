@@ -5,7 +5,7 @@ import { footerGroups } from "@/lib/site-nav";
 export function SiteFooter() {
   return (
     <footer className="border-t border-border bg-surface-1">
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-[1.4fr_repeat(3,1fr)]">
+      <div className="mx-auto grid max-w-[80rem] gap-10 px-6 py-14 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div>
           <Logo />
           <p className="mt-4 max-w-xs text-sm text-muted-foreground">
@@ -26,7 +26,7 @@ export function SiteFooter() {
         ))}
       </div>
       <div className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-6 py-5 text-xs text-muted-foreground">
+        <div className="mx-auto max-w-[80rem] px-6 py-5 text-xs text-muted-foreground">
           Aegisora 3.0. Examples on this site use illustrative sample data.
         </div>
       </div>

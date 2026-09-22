@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const appSans = IBM_Plex_Sans({
+const appSans = Archivo({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-app-sans",
   display: "swap",
 });
@@ -25,16 +25,11 @@ export const metadata: Metadata = {
     "Aegisora sits at the execution boundary of autonomous systems. Every sensitive action is evaluated against context, policy, risk and authorization before it executes.",
 };
 
-const themeScript = `(function(){try{var t=localStorage.getItem("aeg-theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
-
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${appSans.variable} ${appMono.variable}`}>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
+    <html lang="en" className={`dark ${appSans.variable} ${appMono.variable}`}>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         {children}
       </body>

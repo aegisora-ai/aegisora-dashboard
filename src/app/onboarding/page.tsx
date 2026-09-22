@@ -10,7 +10,7 @@ export default function OnboardingPage() {
   return (
     <>
       <header className="border-b border-border bg-surface-1">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <div className="mx-auto flex h-16 max-w-[80rem] items-center justify-between px-6">
           <Link href="/"><Logo /></Link>
           <div className="flex items-center gap-4">
             <Link href="/dashboard" className="text-xs text-muted-foreground hover:text-foreground">Skip to Control</Link>

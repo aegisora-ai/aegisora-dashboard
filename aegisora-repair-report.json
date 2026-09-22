@@ -1,0 +1,15 @@
+{
+    "timestamp":  "2026-09-22T21:24:35.2633093+02:00",
+    "project":  "C:\\AI\\AEGISORA\\website4",
+    "designSystem":  {
+                         "blue":  "#0081FB",
+                         "white":  "#FFFFFF",
+                         "black":  "#000000",
+                         "purple":  "disabled"
+                     },
+    "publicPages":  8,
+    "missingFiles":  [
+
+                     ],
+    "typecheck":  false
+}

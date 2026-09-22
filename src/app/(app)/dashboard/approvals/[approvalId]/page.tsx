@@ -27,7 +27,7 @@ export default async function ApprovalDetailPage({ params }: Props) {
   if (!a) notFound();
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="mx-auto max-w-[80rem] space-y-8">
       <header>
         <h1 className="text-3xl font-light tracking-tight">Approval request</h1>
         <p className="mt-1 font-mono text-xs text-muted-foreground">{a.id}</p>

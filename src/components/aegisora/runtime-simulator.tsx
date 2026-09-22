@@ -112,8 +112,8 @@ export function RuntimeSimulator() {
 
   return (
     <section aria-label="Runtime execution simulation" className="rounded-md border border-border bg-surface-1">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
-        <p className="font-mono text-[11px] tracking-wider text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-4">
+        <p className="font-mono text-sm tracking-wider text-muted-foreground">
           ILLUSTRATIVE SCENARIO. NOT LIVE DATA.
         </p>
         <div className="flex flex-wrap items-center gap-2">
@@ -124,7 +124,7 @@ export function RuntimeSimulator() {
               aria-pressed={i === scenario}
               onClick={() => pick(i)}
               className={cn(
-                "rounded-sm border px-3 py-1.5 font-mono text-[11px] tracking-wider transition-colors",
+                "rounded-sm border px-4 py-2 font-mono text-sm tracking-wider transition-colors",
                 i === scenario
                   ? cn("border-border bg-surface-4", tone[s.outcome].text)
                   : "border-border text-muted-foreground hover:bg-surface-3",
@@ -137,7 +137,7 @@ export function RuntimeSimulator() {
           <button
             type="button"
             onClick={replay}
-            className={cn("rounded-sm border border-border px-3 py-1.5 text-[11px] text-muted-foreground hover:bg-surface-3", focusRing)}
+            className={cn("rounded-sm border border-border px-3 py-1.5 text-sm text-muted-foreground hover:bg-surface-3", focusRing)}
           >
             Replay
           </button>
@@ -152,15 +152,15 @@ export function RuntimeSimulator() {
             <li
               key={label}
               className={cn(
-                "bg-surface-2 p-3 transition-colors duration-300",
+                "bg-surface-2 p-4 transition-colors duration-300",
                 state === "active" && "bg-surface-4",
                 isDecision && state === "done" && t.bg,
               )}
             >
-              <div className="font-mono text-[10px] text-muted-foreground">{String(i + 1).padStart(2, "0")}</div>
+              <div className="font-mono text-xs text-muted-foreground">{String(i + 1).padStart(2, "0")}</div>
               <div
                 className={cn(
-                  "mt-1 font-mono text-[11px] font-semibold tracking-wider",
+                  "mt-1 font-mono text-sm font-semibold tracking-wider",
                   state === "pending" ? "text-muted-foreground/50" : "text-foreground",
                   isDecision && state === "done" && t.text,
                 )}
@@ -180,14 +180,14 @@ export function RuntimeSimulator() {
         })}
       </ol>
 
-      <dl className="divide-y divide-border/60 px-4">
+      <dl className="divide-y divide-border/60 px-6">
         {STAGES.map((label, i) => {
           const revealed = stage > i;
           const colored = revealed && (i === 4 || i === 5);
           return (
-            <div key={label} className="grid grid-cols-[110px_1fr] gap-3 py-2.5 text-sm md:grid-cols-[140px_1fr]">
-              <dt className="font-mono text-[11px] tracking-wider text-muted-foreground">{label}</dt>
-              <dd className={cn("font-mono text-xs", revealed ? (colored ? t.text : "text-foreground") : "text-muted-foreground/40")}>
+            <div key={label} className="grid grid-cols-[130px_1fr] gap-4 py-3.5 text-sm md:grid-cols-[160px_1fr]">
+              <dt className="font-mono text-sm tracking-wider text-muted-foreground">{label}</dt>
+              <dd className={cn("font-mono text-sm", revealed ? (colored ? t.text : "text-foreground") : "text-muted-foreground/40")}>
                 {revealed ? current.values[i] : "pending"}
               </dd>
             </div>

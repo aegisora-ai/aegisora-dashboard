@@ -28,7 +28,7 @@ export default async function AgentDetailPage({ params }: Props) {
   const recent = demoDecisions.filter((d) => d.agent === a.id).slice(0, 8);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="mx-auto max-w-[80rem] space-y-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="font-mono text-xs text-muted-foreground">

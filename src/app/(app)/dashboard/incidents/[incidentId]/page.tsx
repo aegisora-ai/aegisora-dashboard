@@ -20,7 +20,7 @@ export default async function IncidentDetailPage({ params }: Props) {
   if (!i) notFound();
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="mx-auto max-w-[80rem] space-y-8">
       <header>
         <p className="font-mono text-xs text-muted-foreground">
           <Link href="/dashboard/incidents" className="hover:text-foreground">Incidents</Link> / {i.id}

@@ -20,7 +20,7 @@ export default async function PolicyDetailPage({ params }: Props) {
   const related = demoDecisions.filter((d) => d.policy === p.id).slice(0, 8);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="mx-auto max-w-[80rem] space-y-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="font-mono text-xs text-muted-foreground">

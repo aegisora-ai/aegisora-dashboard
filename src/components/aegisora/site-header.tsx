@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { Logo } from "@/components/aegisora/logo";
-import { ThemeToggle } from "@/components/aegisora/theme-toggle";
 import { nav } from "@/lib/site-nav";
 import { btnOutline, btnPrimary, focusRing } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -45,11 +44,9 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
-      <div ref={barRef} className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <div ref={barRef} className="mx-auto flex h-16 max-w-[80rem] items-center justify-between px-6">
         <div className="flex items-center gap-8">
-          <Link href="/" aria-label="Aegisora home" className={focusRing}>
-            <Logo />
-          </Link>
+          <Logo />
 
           <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
             {nav.map((g) =>
@@ -103,7 +100,6 @@ export function SiteHeader() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <ThemeToggle />
           <Link href="/login" className={cn("px-2 text-sm text-muted-foreground hover:text-foreground", focusRing)}>
             Log in
           </Link>
@@ -113,7 +109,6 @@ export function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <ThemeToggle />
           <button
             type="button"
             className={cn("inline-flex size-9 items-center justify-center rounded-sm border border-border", focusRing)}
@@ -129,7 +124,7 @@ export function SiteHeader() {
 
       {mobile && (
         <div id="mobile-menu" className="fixed inset-x-0 bottom-0 top-16 overflow-y-auto bg-background lg:hidden">
-          <nav aria-label="Mobile" className="mx-auto max-w-6xl px-6 py-4">
+          <nav aria-label="Mobile" className="mx-auto max-w-[80rem] px-6 py-4">
             {nav.map((g) => (
               <div key={g.label} className="border-b border-border py-3">
                 {g.items ? (

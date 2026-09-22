@@ -1,0 +1,29 @@
+﻿
+Mode   Length LastWriteTime         Name                
+----   ------ -------------         ----                
+d--h--        9/22/2026 8:28:32 PM  .git                
+d-----        9/22/2026 6:16:19 PM  .next               
+d-----        9/22/2026 1:23:32 AM  node_modules        
+d-----        9/22/2026 1:00:48 AM  public              
+d-----        9/21/2026 8:59:55 PM  src                 
+d-----        9/22/2026 3:29:52 AM  supabase            
+d-----        9/22/2026 8:28:20 PM  _audit              
+-a---- 304    9/22/2026 2:07:59 AM  .env.local          
+-a---- 112    9/22/2026 2:02:42 AM  .env.local.example  
+-a---- 493    9/22/2026 2:02:42 AM  .gitignore          
+-a---- 678    9/21/2026 5:33:23 PM  AGENTS.md           
+-a---- 11     9/21/2026 5:33:23 PM  CLAUDE.md           
+-a---- 520    9/21/2026 8:59:36 PM  components.json     
+-a---- 465    9/16/2026 10:19:41 PM eslint.config.mjs   
+-a---- 334    9/22/2026 2:02:42 AM  middleware.ts       
+-a---- 288    9/22/2026 5:46:12 PM  next-env.d.ts       
+-a---- 193    9/21/2026 11:11:41 PM next.config.ts      
+-a---- 364833 9/22/2026 2:02:42 AM  package-lock.json   
+-a---- 846    9/22/2026 1:23:41 AM  package.json        
+-a---- 94     9/16/2026 10:19:41 PM postcss.config.mjs  
+-a---- 1450   9/16/2026 10:19:41 PM README.md           
+-a---- 670    9/21/2026 5:32:06 PM  tsconfig.json       
+-a---- 250461 9/22/2026 6:16:01 PM  tsconfig.tsbuildinfo
+
+
+

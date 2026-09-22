@@ -1,71 +1,54 @@
 import Link from "next/link";
-import { CtaBand, PageHero, Section } from "@/components/aegisora/page-kit";
+import { CtaBand, PageHero, Section, Eyebrow } from "@/components/aegisora/page-kit";
 import { meta } from "@/lib/seo";
-import { btnOutline } from "@/lib/ui";
+import { btnOutline, btnPrimary } from "@/lib/ui";
+import { Check } from "lucide-react";
 
-export const metadata = meta(
-  "Pricing",
-  "Aegisora plans: Developer (open source), Team and Enterprise. Pricing details are not yet published.",
-);
+export const metadata = meta("Pricing", "Aegisora enterprise pricing plans.");
 
-const tiers = [
+const plans = [
   {
-    name: "Developer",
-    tag: "Open source",
-    body: "Run and integrate the open-source runtime in your own environment.",
-    points: ["Runtime and policy evaluation", "Local development and testing"],
-    cta: "Test Aegisora",
-    href: "/signup",
+    name: "Developer", price: "Free", target: "For individuals",
+    features: ["Open-source runtime", "Local policy evaluation", "Community support"],
+    cta: "Start Free", href: "/signup", highlight: false
   },
   {
-    name: "Team",
-    tag: "Growth",
-    body: "For teams operating agents in a shared workspace.",
-    points: ["Shared workspace", "Agents, policies and decisions", "Evidence and audit records"],
-    cta: "Test Aegisora",
-    href: "/signup",
+    name: "Team", price: "$499", target: "Per workspace / month",
+    features: ["Cloud runtime hosting", "Human approval workflows", "30-day audit retention", "Email support"],
+    cta: "Start Trial", href: "/signup", highlight: true
   },
   {
-    name: "Enterprise",
-    tag: "Custom",
-    body: "For organizations that need governance across teams and environments.",
-    points: ["Workspaces and role-based access", "Advanced policy governance", "Approvals, audit and evidence", "Integrations and support"],
-    cta: "Talk to Enterprise",
-    href: "/enterprise",
-  },
+    name: "Enterprise", price: "Custom", target: "For large organizations",
+    features: ["Role-based access control", "Unlimited audit retention", "Custom Identity mapping", "24/7 SLA support"],
+    cta: "Contact Sales", href: "/enterprise", highlight: false
+  }
 ];
 
 export default function PricingPage() {
   return (
     <>
-      <PageHero
-        eyebrow="PRICING"
-        title="Start free. Scale into governance."
-        lead="Every plan shares the same decision model: ALLOW, BLOCK and ESCALATE. Plans differ in how much governance surrounds it."
-      />
-
+      <PageHero eyebrow="PRICING" title="Scale securely." lead="Start building for free. Scale to enterprise governance when your agents are ready for production." />
       <Section>
-        <div className="aeg-panel grid gap-px overflow-hidden bg-border md:grid-cols-3">
-          {tiers.map((t) => (
-            <article key={t.name} className="flex flex-col bg-surface-2 p-6">
-              <div className="font-mono text-[11px] tracking-wider text-muted-foreground">{t.tag.toUpperCase()}</div>
-              <h2 className="mt-1 text-2xl">{t.name}</h2>
-              <p className="mt-3 text-sm text-muted-foreground">{t.body}</p>
-              <ul className="mt-5 flex-1 space-y-2 border-t border-border pt-5 text-sm">
-                {t.points.map((p) => (
-                  <li key={p}>{p}</li>
+        <div className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto">
+          {plans.map((p) => (
+            <div key={p.name} className={`aeg-panel flex flex-col p-8 rounded-2xl ${p.highlight ? 'border-primary ring-1 ring-primary shadow-2xl relative scale-105' : ''}`}>
+              {p.highlight && <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Most Popular</div>}
+              <Eyebrow>{p.name.toUpperCase()}</Eyebrow>
+              <div className="mt-4 text-5xl font-bold">{p.price}</div>
+              <p className="mt-2 text-sm text-muted-foreground">{p.target}</p>
+              <ul className="mt-8 space-y-4 flex-1">
+                {p.features.map(f => (
+                  <li key={f} className="flex items-center gap-3 text-sm">
+                    <Check className="size-5 text-cyan shrink-0" /> <span>{f}</span>
+                  </li>
                 ))}
               </ul>
-              <Link href={t.href} className={`${btnOutline} mt-6`}>{t.cta}</Link>
-            </article>
+              <Link href={p.href} className={`mt-10 w-full text-center ${p.highlight ? btnPrimary : btnOutline}`}>{p.cta}</Link>
+            </div>
           ))}
         </div>
-        <p className="mt-4 text-xs text-muted-foreground">
-          Prices and final plan contents are not yet published.
-        </p>
       </Section>
-
-      <CtaBand title="Decide before the action executes." />
+      <CtaBand title="Ready to secure your agents?" />
     </>
   );
 }

@@ -1,0 +1,70 @@
+﻿
+> website4@0.1.0 lint
+> eslint
+
+
+C:\AI\AEGISORA\website4\src\app\(public)\docs\page.tsx
+  10:64  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\AI\AEGISORA\website4\src\components\aegisora\app-shell.tsx
+  57:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\AI\AEGISORA\website4\src\components\aegisora\app-shell.tsx:57:5
+  55 |
+  56 |   useEffect(() => {
+> 57 |     setDrawer(false);
+     |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  58 |     setNotif(false);
+  59 |   }, [pathname]);
+  60 |  react-hooks/set-state-in-effect
+
+C:\AI\AEGISORA\website4\src\components\aegisora\hero-canvas.tsx
+  15:9  error  'mouse' is never reassigned. Use 'const' instead  prefer-const
+
+C:\AI\AEGISORA\website4\src\components\aegisora\site-header.tsx
+  19:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\AI\AEGISORA\website4\src\components\aegisora\site-header.tsx:19:5
+  17 |
+  18 |   useEffect(() => {
+> 19 |     setOpenMenu(null);
+     |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  20 |     setMobile(false);
+  21 |   }, [pathname]);
+  22 |  react-hooks/set-state-in-effect
+
+C:\AI\AEGISORA\website4\src\components\aegisora\workspace-provider.tsx
+  57:19  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  58:16  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  75:5   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\AI\AEGISORA\website4\src\components\aegisora\workspace-provider.tsx:75:5
+  73 |
+  74 |   useEffect(() => {
+> 75 |     load();
+     |     ^^^^ Avoid calling setState() directly within an effect
+  76 |   }, [load]);
+  77 |
+  78 |   function setCurrentWorkspaceId(id: string) {  react-hooks/set-state-in-effect
+
+Ô£û 7 problems (7 errors, 0 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

@@ -1,0 +1,17 @@
+{
+    "timestamp":  "2026-09-22T21:47:44.6509553+02:00",
+    "project":  "C:\\AI\\AEGISORA\\website4",
+    "design":  {
+                   "blue":  "#0081FB",
+                   "white":  "#FFFFFF",
+                   "black":  "#000000",
+                   "font":  "Helvetica"
+               },
+    "exactLogo":  true,
+    "publicPages":  5,
+    "missingPages":  [
+
+                     ],
+    "typecheck":  false,
+    "build":  false
+}

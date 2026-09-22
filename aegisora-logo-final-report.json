@@ -1,0 +1,18 @@
+{
+    "timestamp":  "2026-09-22T21:53:16.1927617+02:00",
+    "exactLogo":  true,
+    "exports":  {
+                    "AegisoraLogo":  true,
+                    "Logo":  true
+                },
+    "design":  {
+                   "blue":  "#0081FB",
+                   "white":  "#FFFFFF",
+                   "black":  "#000000",
+                   "font":  "Helvetica"
+               },
+    "validation":  {
+                       "typecheck":  true,
+                       "build":  false
+                   }
+}

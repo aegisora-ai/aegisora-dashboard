@@ -1,0 +1,2107 @@
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.
+
+  To migrate automatically, run:
+  npx @next/codemod@canary middleware-to-proxy .
+
+  Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+⨯ ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+  [90m 9 |[0m   [33mWorkflow[0m,
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+  [90m 9 |[0m   [33mWorkflow[0m,
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+  [90m15 |[0m   [36mreturn[0m (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+  [90m15 |[0m   [36mreturn[0m (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+  [90m 9 |[0m   [33mWorkflow[0m,
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+  [90m 9 |[0m   [33mWorkflow[0m,
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+  [90m15 |[0m   [36mreturn[0m (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+  [90m15 |[0m   [36mreturn[0m (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+  [90m 9 |[0m   [33mWorkflow[0m,
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+  [90m 9 |[0m   [33mWorkflow[0m,
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+  [90m15 |[0m   [36mreturn[0m (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+  [90m15 |[0m   [36mreturn[0m (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+  [90m 9 |[0m   [33mWorkflow[0m,
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+
+./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+  [90m15 |[0m   [36mreturn[0m (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+  [90m 9 |[0m   [33mWorkflow[0m,
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+
+./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+  [90m15 |[0m   [36mreturn[0m (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+  [90m 9 |[0m   [33mWorkflow[0m,
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+
+./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+  [90m15 |[0m   [36mreturn[0m (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+  [90m 9 |[0m   [33mWorkflow[0m,
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+
+./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+  [90m15 |[0m   [36mreturn[0m (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+  [90m 9 |[0m   [33mWorkflow[0m,
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+
+./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+  [90m15 |[0m   [36mreturn[0m (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[browser] Uncaught Error: ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+   9 |   Workflow,
+  10 | } from "lucide-react";
+> 11 | import { RuntimeCanvas } from "@/components/runtime-canvas";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { SiteHeader } from "@/components/site-header";
+  13 |
+  14 | export default function HomePage() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (Error: ./app/page.tsx:11:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (Error: (./app/page.tsx:11:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+
+thread '<unnamed>' (25944) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:721:25:
+Failed to restore data for task TaskId 33: Failed to restore Data for TaskId 33
+
+Caused by:
+    0: Looking up task storage for TaskId 33 from database failed
+    1: Unable to open static sorted file referenced from 00000029.meta
+    2: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000020.sst`: The system cannot find the path specified. (os error 3)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+⨯ The directory at "C:\AI\AEGISORA\website4\.next\dev" was deleted.
+
+Deleting this directory while Next.js is running can lead to undefined behavior. Restarting the server to recover...
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.
+
+  To migrate automatically, run:
+  npx @next/codemod@canary middleware-to-proxy .
+
+  Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[browser] ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+   9 |   Workflow,
+  10 | } from "lucide-react";
+> 11 | import { RuntimeCanvas } from "@/components/runtime-canvas";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { SiteHeader } from "@/components/site-header";
+  13 |
+  14 | export default function HomePage() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found 
+    at handleErrors (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+    at processMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:708:28)
+    at <unknown> (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:553:13)
+    at WebSocket.handleMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:991:17) (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+[browser] ./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  10 | } from "lucide-react";
+  11 | import { RuntimeCanvas } from "@/components/runtime-canvas";
+> 12 | import { SiteHeader } from "@/components/site-header";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 |
+  14 | export default function HomePage() {
+  15 |   return (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found 
+    at handleErrors (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+    at processMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:708:28)
+    at <unknown> (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:553:13)
+    at WebSocket.handleMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:991:17) (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+[browser] ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+   9 |   Workflow,
+  10 | } from "lucide-react";
+> 11 | import { RuntimeCanvas } from "@/components/runtime-canvas";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { SiteHeader } from "@/components/site-header";
+  13 |
+  14 | export default function HomePage() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found 
+    at handleErrors (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+    at processMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:708:28)
+    at <unknown> (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:553:13)
+    at WebSocket.handleMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:991:17) (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+[browser] ./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  10 | } from "lucide-react";
+  11 | import { RuntimeCanvas } from "@/components/runtime-canvas";
+> 12 | import { SiteHeader } from "@/components/site-header";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 |
+  14 | export default function HomePage() {
+  15 |   return (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found 
+    at handleErrors (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+    at processMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:708:28)
+    at <unknown> (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:553:13)
+    at WebSocket.handleMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:991:17) (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+⨯ ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+  [90m 9 |[0m   [33mWorkflow[0m,
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+
+./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  [90m10 |[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m11 |[0m [36mimport[0m { [33mRuntimeCanvas[0m } [36mfrom[0m [32m"@/components/runtime-canvas"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mSiteHeader[0m } [36mfrom[0m [32m"@/components/site-header"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m
+  [90m14 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mHomePage[0m() {
+  [90m15 |[0m   [36mreturn[0m (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[browser] Uncaught Error: ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+   9 |   Workflow,
+  10 | } from "lucide-react";
+> 11 | import { RuntimeCanvas } from "@/components/runtime-canvas";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { SiteHeader } from "@/components/site-header";
+  13 |
+  14 | export default function HomePage() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (Error: ./app/page.tsx:11:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (Error: (./app/page.tsx:11:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+[browser] ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+   9 |   Workflow,
+  10 | } from "lucide-react";
+> 11 | import { RuntimeCanvas } from "@/components/runtime-canvas";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { SiteHeader } from "@/components/site-header";
+  13 |
+  14 | export default function HomePage() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found 
+    at handleErrors (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+    at processMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:708:28)
+    at <unknown> (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:553:13)
+    at WebSocket.handleMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:991:17) (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+[browser] ./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  10 | } from "lucide-react";
+  11 | import { RuntimeCanvas } from "@/components/runtime-canvas";
+> 12 | import { SiteHeader } from "@/components/site-header";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 |
+  14 | export default function HomePage() {
+  15 |   return (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found 
+    at handleErrors (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+    at processMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:708:28)
+    at <unknown> (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:553:13)
+    at WebSocket.handleMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:991:17) (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+[browser] ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+   9 |   Workflow,
+  10 | } from "lucide-react";
+> 11 | import { RuntimeCanvas } from "@/components/runtime-canvas";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { SiteHeader } from "@/components/site-header";
+  13 |
+  14 | export default function HomePage() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found 
+    at handleErrors (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+    at processMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:708:28)
+    at <unknown> (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:553:13)
+    at WebSocket.handleMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:991:17) (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+[browser] ./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  10 | } from "lucide-react";
+  11 | import { RuntimeCanvas } from "@/components/runtime-canvas";
+> 12 | import { SiteHeader } from "@/components/site-header";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 |
+  14 | export default function HomePage() {
+  15 |   return (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found 
+    at handleErrors (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+    at processMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:708:28)
+    at <unknown> (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:553:13)
+    at WebSocket.handleMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:991:17) (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+[browser] ./app/page.tsx:11:1
+Error: Module not found: Can't resolve '@/components/runtime-canvas'
+   9 |   Workflow,
+  10 | } from "lucide-react";
+> 11 | import { RuntimeCanvas } from "@/components/runtime-canvas";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { SiteHeader } from "@/components/site-header";
+  13 |
+  14 | export default function HomePage() {
+
+Import map: aliased to relative './src/components/runtime-canvas' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found 
+    at handleErrors (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+    at processMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:708:28)
+    at <unknown> (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:553:13)
+    at WebSocket.handleMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:991:17) (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+[browser] ./app/page.tsx:12:1
+Error: Module not found: Can't resolve '@/components/site-header'
+  10 | } from "lucide-react";
+  11 | import { RuntimeCanvas } from "@/components/runtime-canvas";
+> 12 | import { SiteHeader } from "@/components/site-header";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 |
+  14 | export default function HomePage() {
+  15 |   return (
+
+Import map: aliased to relative './src/components/site-header' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found 
+    at handleErrors (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+    at processMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:708:28)
+    at <unknown> (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:553:13)
+    at WebSocket.handleMessage (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:991:17) (file://C:/AI/AEGISORA/website4/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:647:21)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] Uncaught ReferenceError: Workflow is not defined
+    at DashboardView (components/dashboard-view.tsx:1058:14)
+    at DashboardCatchAll (app\dashboard\[[...section]]\page.tsx:4:10)
+  1056 |     },
+  1057 |     providers: {
+> 1058 |       icon: <Workflow size={18} color="#65d6ff" />,
+       |              ^
+  1059 |       title: "Providers",
+  1060 |       description:
+  1061 |         "Connect model providers without bypassing the runtime enforcement boundary.",
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] Uncaught ReferenceError: Workflow is not defined
+    at DashboardView (components/dashboard-view.tsx:1058:14)
+    at DashboardCatchAll (app\dashboard\[[...section]]\page.tsx:4:10)
+  1056 |     },
+  1057 |     providers: {
+> 1058 |       icon: <Workflow size={18} color="#65d6ff" />,
+       |              ^
+  1059 |       title: "Providers",
+  1060 |       description:
+  1061 |         "Connect model providers without bypassing the runtime enforcement boundary.",
+⨯ unhandledRejection: Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+Error: ENOENT: no such file or directory, scandir 'C:\AI\AEGISORA\website4\app'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: 'C:\\AI\\AEGISORA\\website4\\app'
+}
+⨯ The directory at "C:\AI\AEGISORA\website4\.next" was deleted.
+
+Deleting this directory while Next.js is running can lead to undefined behavior. Restarting the server to recover...
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+⨯ ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+
+./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise.
+
+
+./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product.
+
+
+./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security.
+
+⨯ ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+
+./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise.
+
+
+./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product.
+
+
+./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security.
+
+⨯ ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+
+./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise.
+
+
+./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product.
+
+
+./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security.
+
+⨯ ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+
+./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise.
+
+
+./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product.
+
+
+./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security.
+
+[browser] Uncaught Error: ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+⨯ ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+
+./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise.
+
+
+./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product.
+
+
+./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security.
+
+[browser] Uncaught Error: ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+
+thread 'tokio-rt-worker' (26852) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "parse", global_name: "turbopack_ecmascript::parse::parse", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000088.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000084.sst`: The system cannot find the file specified. (os error 2)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'tokio-rt-worker' (17168) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<EsmAssetReference as ModuleReference>::resolve_reference", global_name: "<turbopack_ecmascript::references::esm::base::EsmAssetReference as dyn turbopack_core::reference::ModuleReference>::resolve_reference", .. }(this=Some(RawVc::TaskCell(59321, "turbopack_ecmascript::references::esm::base::EsmAssetReference#5"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28292) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<EsmAssetReference as ModuleReference>::resolve_reference", global_name: "<turbopack_ecmascript::references::esm::base::EsmAssetReference as dyn turbopack_core::reference::ModuleReference>::resolve_reference", .. }(this=Some(RawVc::TaskCell(59321, "turbopack_ecmascript::references::esm::base::EsmAssetReference#5"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28292) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<EsmAssetReference as ModuleReference>::resolve_reference", global_name: "<turbopack_ecmascript::references::esm::base::EsmAssetReference as dyn turbopack_core::reference::ModuleReference>::resolve_reference", .. }(this=Some(RawVc::TaskCell(59321, "turbopack_ecmascript::references::esm::base::EsmAssetReference#5"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28420) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<EcmascriptModuleChunkItem as ChunkItem>::asset_ident", global_name: "<turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem as dyn turbopack_core::chunk::ChunkItem>::asset_ident", .. }(this=Some(RawVc::TaskCell(414235, "turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000088.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000084.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17168) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<EcmascriptModuleChunkItem as ChunkItem>::asset_ident", global_name: "<turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem as dyn turbopack_core::chunk::ChunkItem>::asset_ident", .. }(this=Some(RawVc::TaskCell(383066, "turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000088.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000084.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28380) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<EcmascriptModuleChunkItem as ChunkItem>::asset_ident", global_name: "<turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem as dyn turbopack_core::chunk::ChunkItem>::asset_ident", .. }(this=Some(RawVc::TaskCell(482820, "turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17712) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<EcmascriptModuleChunkItem as ChunkItem>::asset_ident", global_name: "<turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem as dyn turbopack_core::chunk::ChunkItem>::asset_ident", .. }(this=Some(RawVc::TaskCell(445141, "turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000088.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000084.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17168) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<EcmascriptModuleChunkItem as ChunkItem>::asset_ident", global_name: "<turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem as dyn turbopack_core::chunk::ChunkItem>::asset_ident", .. }(this=Some(RawVc::TaskCell(493219, "turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28420) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<EcmascriptModuleChunkItem as ChunkItem>::asset_ident", global_name: "<turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem as dyn turbopack_core::chunk::ChunkItem>::asset_ident", .. }(this=Some(RawVc::TaskCell(398625, "turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000088.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000084.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28380) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<EcmascriptModuleChunkItem as ChunkItem>::asset_ident", global_name: "<turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem as dyn turbopack_core::chunk::ChunkItem>::asset_ident", .. }(this=Some(RawVc::TaskCell(429732, "turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000088.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000084.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17712) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<EcmascriptModuleChunkItem as ChunkItem>::asset_ident", global_name: "<turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem as dyn turbopack_core::chunk::ChunkItem>::asset_ident", .. }(this=Some(RawVc::TaskCell(101555, "turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000028.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000024.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17168) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "item_code_module_ids_and_paths", global_name: "turbopack_ecmascript::chunk::code_module_ids_and_paths::item_code_module_ids_and_paths", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28380) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "item_code_module_ids_and_paths", global_name: "turbopack_ecmascript::chunk::code_module_ids_and_paths::item_code_module_ids_and_paths", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000028.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000024.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (23756) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "item_code_module_ids_and_paths", global_name: "turbopack_ecmascript::chunk::code_module_ids_and_paths::item_code_module_ids_and_paths", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28420) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "EcmascriptBrowserChunkContent::code", global_name: "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent::code", .. }(this=Some(RawVc::TaskCell(499443, "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17712) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "EcmascriptBrowserChunkContent::code", global_name: "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent::code", .. }(this=Some(RawVc::TaskCell(107988, "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000028.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000024.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17168) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "EcmascriptBrowserChunkContent::code", global_name: "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent::code", .. }(this=Some(RawVc::TaskCell(499443, "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28380) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "EcmascriptBrowserChunkContent::code", global_name: "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent::code", .. }(this=Some(RawVc::TaskCell(107988, "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000028.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000024.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28420) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "EcmascriptBrowserChunkContent::code", global_name: "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent::code", .. }(this=Some(RawVc::TaskCell(489330, "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17712) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "EcmascriptBrowserChunkContent::code", global_name: "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent::code", .. }(this=Some(RawVc::TaskCell(489330, "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17168) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "chunk_items_with_info_with_type", global_name: "turbopack_core::chunk::chunking::chunk_items_with_info_with_type", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000028.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000024.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (23928) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<EcmascriptModuleChunkItem as ChunkItem>::asset_ident", global_name: "<turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem as dyn turbopack_core::chunk::ChunkItem>::asset_ident", .. }(this=Some(RawVc::TaskCell(460000, "turbopack_ecmascript::chunk::item::EcmascriptModuleChunkItem#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (23928) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "item_code_module_ids_and_paths", global_name: "turbopack_ecmascript::chunk::code_module_ids_and_paths::item_code_module_ids_and_paths", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (23928) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "EcmascriptBrowserChunkContent::code", global_name: "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent::code", .. }(this=Some(RawVc::TaskCell(466829, "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17168) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "EcmascriptBrowserChunkContent::code", global_name: "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent::code", .. }(this=Some(RawVc::TaskCell(466829, "turbopack_browser::ecmascript::content::EcmascriptBrowserChunkContent#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28224) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "chunk_items_with_info_with_type", global_name: "turbopack_core::chunk::chunking::chunk_items_with_info_with_type", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28292) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<SourceMapAsset as Asset>::content", global_name: "<turbopack_core::source_map::source_map_asset::SourceMapAsset as dyn turbopack_core::asset::Asset>::content", .. }(this=Some(RawVc::TaskCell(104923, "turbopack_core::source_map::source_map_asset::SourceMapAsset#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000028.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000024.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28380) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<SourceMapAsset as Asset>::content", global_name: "<turbopack_core::source_map::source_map_asset::SourceMapAsset as dyn turbopack_core::asset::Asset>::content", .. }(this=Some(RawVc::TaskCell(496441, "turbopack_core::source_map::source_map_asset::SourceMapAsset#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17712) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "chunk_items_with_info_with_type", global_name: "turbopack_core::chunk::chunking::chunk_items_with_info_with_type", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17168) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<SourceMapAsset as Asset>::content", global_name: "<turbopack_core::source_map::source_map_asset::SourceMapAsset as dyn turbopack_core::asset::Asset>::content", .. }(this=Some(RawVc::TaskCell(462641, "turbopack_core::source_map::source_map_asset::SourceMapAsset#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28220) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "<SourceMapAsset as Asset>::content", global_name: "<turbopack_core::source_map::source_map_asset::SourceMapAsset as dyn turbopack_core::asset::Asset>::content", .. }(this=Some(RawVc::TaskCell(486170, "turbopack_core::source_map::source_map_asset::SourceMapAsset#0"))) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28224) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "chunk_items_with_info_with_type", global_name: "turbopack_core::chunk::chunking::chunk_items_with_info_with_type", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000100.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000096.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28032) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "chunk_items_with_info_with_type", global_name: "turbopack_core::chunk::chunking::chunk_items_with_info_with_type", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000088.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000084.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (⨯ The directory at "C:\AI\AEGISORA\website4\.next\dev" was deleted.
+
+Deleting this directory while Next.js is running can lead to undefined behavior. Restarting the server to recover...
+2188) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "chunk_items_with_info_with_type", global_name: "turbopack_core::chunk::chunking::chunk_items_with_info_with_type", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000088.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000084.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (17712) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "item_code_module_ids_and_paths", global_name: "turbopack_ecmascript::chunk::code_module_ids_and_paths::item_code_module_ids_and_paths", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000088.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000084.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (23928) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "item_code_module_ids_and_paths", global_name: "turbopack_ecmascript::chunk::code_module_ids_and_paths::item_code_module_ids_and_paths", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000088.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000084.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (28380) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "item_code_module_ids_and_paths", global_name: "turbopack_ecmascript::chunk::code_module_ids_and_paths::item_code_module_ids_and_paths", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000088.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000084.sst`: The system cannot find the path specified. (os error 3)
+
+thread 'tokio-rt-worker' (26852) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:987:14:
+Failed to lookup task ids: Looking up task id for NativeFunction { name: "item_code_module_ids_and_paths", global_name: "turbopack_ecmascript::chunk::code_module_ids_and_paths::item_code_module_ids_and_paths", .. }(this=None) from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000088.meta
+    1: failed to open file `\\?\C:\AI\AEGISORA\website4\.next\dev\cache\turbopack\v16.3.5-ca2c75eb\00000084.sst`: The system cannot find the path specified. (os error 3)
+⨯ ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+
+./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise.
+
+
+./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product.
+
+
+./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security.
+
+
+./src/components/aegisora/app-shell.tsx:10:1
+Error: Export Logo doesn't exist in target module
+  [90m 8 |[0m [36mimport[0m { [33mSidebarNav[0m } [36mfrom[0m [32m"@/components/aegisora/app-sidebar"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/aegisora/command-palette"[0m;
+[31m[1m>[0m [90m10 |[0m [36mimport[0m { [33mLogo[0m } [36mfrom[0m [32m"@/components/aegisora/logo"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mimport[0m { [33mUserMenu[0m } [36mfrom[0m [32m"@/components/aegisora/user-menu"[0m;
+  [90m13 |[0m [36mimport[0m { [33mWorkspaceProvider[0m } [36mfrom[0m [32m"@/components/aegisora/workspace-provider"[0m;
+
+The export Logo was not found in module [project]/src/components/aegisora/logo.tsx [app-client] (ecmascript).
+Did you mean to import AegisoraLogo?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/aegisora/app-shell.tsx
+    ./src/app/(app)/layout.tsx
+
+
+
+./src/components/aegisora/app-shell.tsx:10:1
+Error: Export Logo doesn't exist in target module
+  [90m 8 |[0m [36mimport[0m { [33mSidebarNav[0m } [36mfrom[0m [32m"@/components/aegisora/app-sidebar"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/aegisora/command-palette"[0m;
+[31m[1m>[0m [90m10 |[0m [36mimport[0m { [33mLogo[0m } [36mfrom[0m [32m"@/components/aegisora/logo"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mimport[0m { [33mUserMenu[0m } [36mfrom[0m [32m"@/components/aegisora/user-menu"[0m;
+  [90m13 |[0m [36mimport[0m { [33mWorkspaceProvider[0m } [36mfrom[0m [32m"@/components/aegisora/workspace-provider"[0m;
+
+The export Logo was not found in module [project]/src/components/aegisora/logo.tsx [app-ssr] (ecmascript).
+Did you mean to import AegisoraLogo?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/aegisora/app-shell.tsx
+    ./src/app/(app)/layout.tsx
+
+
+[browser] Uncaught Error: ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/components/aegisora/app-shell.tsx:10:1
+Error: Export Logo doesn't exist in target module
+   8 | import { SidebarNav } from "@/components/aegisora/app-sidebar";
+   9 | import { CommandPalette } from "@/components/aegisora/command-palette";
+> 10 | import { Logo } from "@/components/aegisora/logo";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  11 |
+  12 | import { UserMenu } from "@/components/aegisora/user-menu";
+  13 | import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
+
+The export Logo was not found in module [project]/src/components/aegisora/logo.tsx [app-client] (ecmascript).
+Did you mean to import AegisoraLogo?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/aegisora/app-shell.tsx
+    ./src/app/(app)/layout.tsx 
+[browser] ./src/components/aegisora/app-shell.tsx:10:1
+Error: Export Logo doesn't exist in target module
+   8 | import { SidebarNav } from "@/components/aegisora/app-sidebar";
+   9 | import { CommandPalette } from "@/components/aegisora/command-palette";
+> 10 | import { Logo } from "@/components/aegisora/logo";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  11 |
+  12 | import { UserMenu } from "@/components/aegisora/user-menu";
+  13 | import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
+
+The export Logo was not found in module [project]/src/components/aegisora/logo.tsx [app-ssr] (ecmascript).
+Did you mean to import AegisoraLogo?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/aegisora/app-shell.tsx
+    ./src/app/(app)/layout.tsx 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/components/aegisora/app-shell.tsx:10:1
+Error: Export Logo doesn't exist in target module
+   8 | import { SidebarNav } from "@/components/aegisora/app-sidebar";
+   9 | import { CommandPalette } from "@/components/aegisora/command-palette";
+> 10 | import { Logo } from "@/components/aegisora/logo";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  11 |
+  12 | import { UserMenu } from "@/components/aegisora/user-menu";
+  13 | import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
+
+The export Logo was not found in module [project]/src/components/aegisora/logo.tsx [app-client] (ecmascript).
+Did you mean to import AegisoraLogo?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/aegisora/app-shell.tsx
+    ./src/app/(app)/layout.tsx 
+[browser] ./src/components/aegisora/app-shell.tsx:10:1
+Error: Export Logo doesn't exist in target module
+   8 | import { SidebarNav } from "@/components/aegisora/app-sidebar";
+   9 | import { CommandPalette } from "@/components/aegisora/command-palette";
+> 10 | import { Logo } from "@/components/aegisora/logo";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  11 |
+  12 | import { UserMenu } from "@/components/aegisora/user-menu";
+  13 | import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
+
+The export Logo was not found in module [project]/src/components/aegisora/logo.tsx [app-ssr] (ecmascript).
+Did you mean to import AegisoraLogo?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/aegisora/app-shell.tsx
+    ./src/app/(app)/layout.tsx 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/components/aegisora/app-shell.tsx:10:1
+Error: Export Logo doesn't exist in target module
+   8 | import { SidebarNav } from "@/components/aegisora/app-sidebar";
+   9 | import { CommandPalette } from "@/components/aegisora/command-palette";
+> 10 | import { Logo } from "@/components/aegisora/logo";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  11 |
+  12 | import { UserMenu } from "@/components/aegisora/user-menu";
+  13 | import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
+
+The export Logo was not found in module [project]/src/components/aegisora/logo.tsx [app-client] (ecmascript).
+Did you mean to import AegisoraLogo?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/aegisora/app-shell.tsx
+    ./src/app/(app)/layout.tsx 
+[browser] ./src/components/aegisora/app-shell.tsx:10:1
+Error: Export Logo doesn't exist in target module
+   8 | import { SidebarNav } from "@/components/aegisora/app-sidebar";
+   9 | import { CommandPalette } from "@/components/aegisora/command-palette";
+> 10 | import { Logo } from "@/components/aegisora/logo";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  11 |
+  12 | import { UserMenu } from "@/components/aegisora/user-menu";
+  13 | import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
+
+The export Logo was not found in module [project]/src/components/aegisora/logo.tsx [app-ssr] (ecmascript).
+Did you mean to import AegisoraLogo?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/aegisora/app-shell.tsx
+    ./src/app/(app)/layout.tsx 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/components/aegisora/app-shell.tsx:10:1
+Error: Export Logo doesn't exist in target module
+   8 | import { SidebarNav } from "@/components/aegisora/app-sidebar";
+   9 | import { CommandPalette } from "@/components/aegisora/command-palette";
+> 10 | import { Logo } from "@/components/aegisora/logo";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  11 |
+  12 | import { UserMenu } from "@/components/aegisora/user-menu";
+  13 | import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
+
+The export Logo was not found in module [project]/src/components/aegisora/logo.tsx [app-client] (ecmascript).
+Did you mean to import AegisoraLogo?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/aegisora/app-shell.tsx
+    ./src/app/(app)/layout.tsx 
+[browser] ./src/components/aegisora/app-shell.tsx:10:1
+Error: Export Logo doesn't exist in target module
+   8 | import { SidebarNav } from "@/components/aegisora/app-sidebar";
+   9 | import { CommandPalette } from "@/components/aegisora/command-palette";
+> 10 | import { Logo } from "@/components/aegisora/logo";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  11 |
+  12 | import { UserMenu } from "@/components/aegisora/user-menu";
+  13 | import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
+
+The export Logo was not found in module [project]/src/components/aegisora/logo.tsx [app-ssr] (ecmascript).
+Did you mean to import AegisoraLogo?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/aegisora/app-shell.tsx
+    ./src/app/(app)/layout.tsx 
+⨯ The directory at "C:\AI\AEGISORA\website4\.next" was deleted.
+
+Deleting this directory while Next.js is running can lead to undefined behavior. Restarting the server to recover...
+⨯ ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+
+./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise.
+
+
+./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product.
+
+
+./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security.
+
+[browser] Uncaught Error: ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+⨯ ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+
+./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise.
+
+
+./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product.
+
+
+./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security.
+
+[browser] Uncaught Error: ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers.
+
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+[browser] ./src/app/developers
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/developers and /developers. 
+[browser] ./src/app/enterprise
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/enterprise and /enterprise. 
+[browser] ./src/app/product
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/product and /product. 
+[browser] ./src/app/security
+Error: You cannot have two parallel pages that resolve to the same path. Please check /(public)/security and /security. 
+⨯ Error: ENOENT: no such file or directory, open 'C:\AI\AEGISORA\website4\.next\dev\server\app\(app)\dashboard\audit\page\build-manifest.json'
+    at ignore-listed frames {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\AI\\AEGISORA\\website4\\.next\\dev\\server\\app\\(app)\\dashboard\\audit\\page\\build-manifest.json'
+}
+⨯ The directory at "C:\AI\AEGISORA\website4\.next\dev" was deleted.
+
+Deleting this directory while Next.js is running can lead to undefined behavior. Restarting the server to recover...
+⨯ The directory at "C:\AI\AEGISORA\website4\.next\dev" was deleted.
+
+Deleting this directory while Next.js is running can lead to undefined behavior. Restarting the server to recover...

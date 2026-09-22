@@ -1,0 +1,53 @@
+{
+    "timestamp":  "2026-09-22T20:47:51.4395084+02:00",
+    "paths":  {
+                  "website":  "C:\\AI\\AEGISORA\\website4",
+                  "core":  "C:\\AI\\AEGISORA\\core"
+              },
+    "runtime":  {
+                    "online":  true,
+                    "service":  "aegisora-3.0-website-proof",
+                    "live":  true
+                },
+    "decisions":  {
+                      "allow":  {
+                                    "verified":  true,
+                                    "decision":  "ALLOW",
+                                    "traceId":  "9d39e84a-91aa-4308-92f0-967203d181fa",
+                                    "decisionId":  "56e1f7d8-b578-4321-84f3-e05a1a6d1aec",
+                                    "executionId":  "87c688ad-8a4e-4cc2-a2c4-482a9fa69e06",
+                                    "evidenceId":  "ac6a1790-8742-48a1-8f9f-038ace29d64c"
+                                },
+                      "block":  {
+                                    "verified":  true,
+                                    "decision":  "BLOCK",
+                                    "traceId":  "129af697-f5f6-4e35-90d8-983e87f7b778",
+                                    "decisionId":  "c97ea207-fa7c-42fd-9806-3b6de42f59da",
+                                    "executionId":  "8f264b65-02ff-48c3-8ae3-f5fd8bac0306",
+                                    "evidenceId":  "567fabee-154c-4df4-b26c-1bd037c2d33c"
+                                },
+                      "escalate":  {
+                                       "verified":  true,
+                                       "decision":  "ESCALATE",
+                                       "traceId":  "64fa0803-0d0d-46fd-8e54-06288b337f42",
+                                       "decisionId":  "a8c036fa-597b-4509-bf61-75965a4947ee",
+                                       "executionId":  "613b9f3c-05b2-4f8d-a53c-27ab5de92ae3",
+                                       "evidenceId":  "305ce37d-27b8-4bed-a813-18adbee3e887"
+                                   }
+                  },
+    "verification":  {
+                         "allow":  true,
+                         "block":  true,
+                         "escalate":  true,
+                         "typecheck":  true,
+                         "productionBuild":  true,
+                         "homepage":  true,
+                         "proofPage":  true,
+                         "runtimeApi":  true
+                     },
+    "localWebsite":  {
+                         "ready":  true,
+                         "homepageUrl":  "http://localhost:3000",
+                         "proofUrl":  "http://localhost:3000/proof"
+                     }
+}

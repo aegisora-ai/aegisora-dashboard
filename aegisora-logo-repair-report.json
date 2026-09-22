@@ -1,0 +1,23 @@
+{
+    "timestamp":  "2026-09-22T21:51:58.3740091+02:00",
+    "logo":  {
+                 "source":  "/LOGO.png",
+                 "exactFileExists":  true,
+                 "componentExport":  true,
+                 "exactReference":  true
+             },
+    "publicPages":  5,
+    "brokenImports":  [
+
+                      ],
+    "validation":  {
+                       "typecheck":  false,
+                       "build":  false
+                   },
+    "designSystem":  {
+                         "blue":  "#0081FB",
+                         "white":  "#FFFFFF",
+                         "black":  "#000000",
+                         "font":  "Helvetica"
+                     }
+}

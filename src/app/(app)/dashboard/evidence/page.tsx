@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Evidence" };
 
 export default function EvidencePage() {
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="mx-auto max-w-[80rem] space-y-6">
       <header>
         <h1 className="text-3xl font-light tracking-tight">Evidence ledger</h1>
         <p className="mt-1 text-sm text-muted-foreground">
