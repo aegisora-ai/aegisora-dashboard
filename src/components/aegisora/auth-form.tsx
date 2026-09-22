@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { btnPrimary } from "@/lib/ui";
 
 type Field = { name: string; label: string; type: string; autoComplete?: string };
-type Mode = "login" | "signup" | "reset";
+type Mode = "login" | "signup" | "reset" | "invite";
 
 type Props = {
   mode: Mode;
@@ -71,6 +71,17 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
         });
         if (err) throw err;
         setNotice("If an account exists for that email, a reset link is on its way.");
+        return;
+      }
+
+      if (mode === "invite") {
+        const { error: err } = await supabase.auth.updateUser({
+          password,
+          data: { full_name: fullName },
+        });
+        if (err) throw err;
+        router.push(redirectTo);
+        router.refresh();
         return;
       }
     } catch (err) {

@@ -31,29 +31,33 @@ export function UserMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          aria-label="Account menu"
-          className={cn(
-            "inline-flex size-9 items-center justify-center rounded-sm border border-border bg-surface-1 font-mono text-xs text-muted-foreground hover:bg-surface-3 hover:text-foreground",
-            focusRing,
-          )}
-        >
-          {initial}
-        </button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            aria-label="Account menu"
+            className={cn(
+              "inline-flex size-9 items-center justify-center rounded-sm border border-border bg-surface-1 font-mono text-xs text-muted-foreground hover:bg-surface-3 hover:text-foreground",
+              focusRing,
+            )}
+          >
+            {initial}
+          </button>
+        }
+      />
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuLabel>
           <span className="block text-sm font-medium">{userName || "Account"}</span>
           <span className="block truncate font-mono text-[11px] text-muted-foreground">{userEmail}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/settings" className="flex items-center gap-2">
-            <User className="size-4" /> Account settings
-          </Link>
-        </DropdownMenuItem>
+        <DropdownMenuItem
+          render={
+            <Link href="/dashboard/settings" className="flex items-center gap-2">
+              <User className="size-4" /> Account settings
+            </Link>
+          }
+        />
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={signOut} className="flex items-center gap-2 text-block focus:text-block">
           <LogOut className="size-4" /> Sign out

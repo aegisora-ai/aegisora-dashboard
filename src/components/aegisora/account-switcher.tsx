@@ -31,18 +31,20 @@ export function AccountSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          className={cn(
-            "hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground hover:bg-surface-3 hover:text-foreground sm:flex",
-            focusRing,
-          )}
-        >
-          workspace / <span className="text-foreground">{currentWorkspace.slug}</span>
-          <ChevronsUpDown className="size-3.5" />
-        </button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            className={cn(
+              "hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground hover:bg-surface-3 hover:text-foreground sm:flex",
+              focusRing,
+            )}
+          >
+            workspace / <span className="text-foreground">{currentWorkspace.slug}</span>
+            <ChevronsUpDown className="size-3.5" />
+          </button>
+        }
+      />
       <DropdownMenuContent align="start" className="w-64">
         <DropdownMenuLabel className="font-mono text-[10px] tracking-wider text-muted-foreground">
           WORKSPACES
@@ -57,11 +59,13 @@ export function AccountSwitcher() {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/onboarding" className="flex items-center gap-2">
-            <Plus className="size-4" /> Create workspace
-          </Link>
-        </DropdownMenuItem>
+        <DropdownMenuItem
+          render={
+            <Link href="/onboarding" className="flex items-center gap-2">
+              <Plus className="size-4" /> Create workspace
+            </Link>
+          }
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );

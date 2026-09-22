@@ -12,6 +12,7 @@ export default function AcceptInvitePage() {
         <div className="flex justify-between py-1"><dt className="text-muted-foreground">Invitation</dt><dd className="font-mono text-xs">sample</dd></div>
       </dl>
       <AuthForm
+        mode="invite"
         title="Accept your invitation"
         description="Create your account to join the workspace."
         fields={[
