@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { DecisionBadge, type DecisionState } from "@/components/aegisora/state-badge";
+import { WORKSPACE_STORAGE_KEY } from "@/components/aegisora/workspace-provider";
+import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { btnOutline, btnPrimary } from "@/lib/ui";
@@ -15,6 +17,12 @@ const rules: { value: DecisionState; title: string; text: string; gate: string; 
   { value: "BLOCK", title: "Block", text: "Stop the action from executing.", gate: "Gate closed", execution: "Not executed" },
   { value: "ALLOW", title: "Allow", text: "Let the action proceed.", gate: "Gate open", execution: "Executed" },
 ];
+
+function slugify(name: string) {
+  const base = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const suffix = Math.random().toString(36).slice(2, 6);
+  return `${base || "workspace"}-${suffix}`;
+}
 
 function Row({ k, children }: { k: string; children: React.ReactNode }) {
   return (
@@ -31,10 +39,35 @@ export function OnboardingFlow() {
   const [agent, setAgent] = useState("finance-operator");
   const [rule, setRule] = useState<DecisionState>("ESCALATE");
   const [ran, setRan] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const chosen = rules.find((r) => r.value === rule) ?? rules[0];
   const canNext =
     step === 0 ? workspace.trim().length > 0 : step === 1 ? agent.trim().length > 0 : step === 3 ? ran : true;
+
+  async function handleContinue() {
+    if (step === 0) {
+      setCreateError(null);
+      setCreating(true);
+      const supabase = createClient();
+      const { data, error } = await supabase.rpc("create_workspace", {
+        workspace_name: workspace,
+        workspace_slug: slugify(workspace),
+      });
+      setCreating(false);
+      if (error) {
+        setCreateError(error.message);
+        return;
+      }
+      if (data && typeof window !== "undefined") {
+        window.localStorage.setItem(WORKSPACE_STORAGE_KEY, data as string);
+      }
+      setStep(step + 1);
+      return;
+    }
+    setStep(step + 1);
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-12">
@@ -51,7 +84,7 @@ export function OnboardingFlow() {
       </ol>
 
       <p className="mb-6 rounded-sm border border-escalate/30 bg-escalate-muted px-3 py-2 text-xs text-escalate">
-        Prototype: this guided run simulates a decision. Nothing is saved or executed.
+        Your workspace is created for real. Agent, policy and execution steps below are a guided simulation.
       </p>
 
       <section aria-labelledby="step-title" className="rounded-md border border-border bg-surface-2 p-6">
@@ -63,6 +96,11 @@ export function OnboardingFlow() {
               <Label htmlFor="workspace">Workspace name</Label>
               <Input id="workspace" value={workspace} onChange={(e) => setWorkspace(e.target.value)} />
             </div>
+            {createError && (
+              <p role="alert" className="mt-4 rounded-sm border border-block/30 bg-block-muted px-3 py-2 text-xs text-block">
+                {createError}
+              </p>
+            )}
           </>
         )}
 
@@ -178,11 +216,11 @@ export function OnboardingFlow() {
         {step < steps.length - 1 ? (
           <button
             type="button"
-            onClick={() => setStep(step + 1)}
-            disabled={!canNext}
+            onClick={handleContinue}
+            disabled={!canNext || creating}
             className={`${btnPrimary} disabled:opacity-40`}
           >
-            Continue
+            {creating ? "Creating..." : "Continue"}
           </button>
         ) : (
           <Link href="/dashboard" className={btnPrimary}>Open Aegisora Control</Link>

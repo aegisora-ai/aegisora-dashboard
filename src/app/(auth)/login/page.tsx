@@ -6,6 +6,7 @@ export const metadata: Metadata = { title: "Log in" };
 export default function LoginPage() {
   return (
     <AuthForm
+      mode="login"
       title="Log in to Aegisora"
       description="Continue to Aegisora Control."
       fields={[

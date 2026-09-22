@@ -6,6 +6,7 @@ export const metadata: Metadata = { title: "Test Aegisora" };
 export default function SignupPage() {
   return (
     <AuthForm
+      mode="signup"
       title="Test Aegisora"
       description="Create a workspace, connect an agent and see ALLOW, BLOCK and ESCALATE decisions."
       fields={[
