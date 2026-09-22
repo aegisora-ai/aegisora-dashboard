@@ -147,7 +147,7 @@ export default function Home() {
       <section className="border-b border-border bg-surface-1">
         <div className="mx-auto grid max-w-6xl gap-10 px-6 py-20 md:grid-cols-2">
           <div>
-            <Eyebrow>THE EXECUTION PROBLEM</Eyebrow>
+            
             <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-tight">
               Model output is not execution authority.
             </h2>
@@ -197,7 +197,7 @@ export default function Home() {
 
       <section id="outcomes" className="scroll-mt-20 border-y border-border bg-surface-1">
         <div className="mx-auto max-w-6xl px-6 py-24">
-          <Eyebrow>THREE EXECUTION STATES</Eyebrow>
+          
           <h2 className="mt-4 text-3xl font-semibold tracking-tight">Allow. Block. Escalate.</h2>
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             <BentoCard tone="allow" title="ALLOW" body="Matches an allowed rule. The gate opens and the action executes." />
@@ -209,7 +209,7 @@ export default function Home() {
 
       <section id="policy" className="mx-auto grid max-w-6xl scroll-mt-20 gap-10 px-6 py-24 md:grid-cols-2">
         <div>
-          <Eyebrow>POLICY CONTROL</Eyebrow>
+          
           <h2 className="mt-4 text-3xl font-semibold tracking-tight">Policies are executable controls.</h2>
           <p className="mt-4 text-muted-foreground">
             A policy states which agent may perform which action, in which environment, and what should
@@ -225,7 +225,7 @@ decision:    ESCALATE`}</code>
           <p className="mt-2 font-mono text-[11px] text-muted-foreground">Illustrative policy expression.</p>
         </div>
         <div>
-          <Eyebrow>HOW IT RESOLVES</Eyebrow>
+          
           <ol className="mt-4 divide-y divide-border rounded-md border border-border bg-surface-2">
             {[
               "The request matches action external_transfer by finance-operator.",
@@ -251,7 +251,7 @@ decision:    ESCALATE`}</code>
       <section className="border-y border-border bg-surface-1">
         <div className="mx-auto grid max-w-6xl gap-10 px-6 py-24 md:grid-cols-2">
           <div>
-            <Eyebrow>HUMAN APPROVAL</Eyebrow>
+            
             <h2 className="mt-4 text-3xl font-semibold tracking-tight">A control boundary, not a notification.</h2>
             <p className="mt-4 text-muted-foreground">
               An escalated action pauses execution. The approver sees the requesting agent, the proposed
@@ -272,13 +272,13 @@ decision:    ESCALATE`}</code>
       </section>
 
       <section id="evidence" className="mx-auto max-w-6xl scroll-mt-20 px-6 py-24">
-        <Eyebrow>EVIDENCE AND AUDIT</Eyebrow>
+        
         <h2 className="mt-4 text-3xl font-semibold tracking-tight">Every important decision leaves a record.</h2>
-        <ol className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-5">
+        <ol className="mt-10 flex flex-wrap gap-x-10 gap-y-8 border-t border-border pt-6">
           {evidenceChain.map(([label, value]) => (
-            <li key={label} className="bg-surface-2 p-4">
-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
-              <div className="mt-2 break-all font-mono text-xs">{value}</div>
+            <li key={label} className="min-w-[140px]">
+              <div className="text-sm text-muted-foreground">{label}</div>
+              <div className="mt-1 break-all font-mono text-xs">{value}</div>
             </li>
           ))}
         </ol>
@@ -287,11 +287,11 @@ decision:    ESCALATE`}</code>
 
       <section id="enterprise" className="scroll-mt-20 border-y border-border bg-surface-1">
         <div className="mx-auto max-w-6xl px-6 py-24">
-          <Eyebrow>ENTERPRISE CONTROLS</Eyebrow>
+          
           <h2 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight">Built around the boundary.</h2>
-          <ul className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2">
+          <ul className="mt-10 grid gap-x-12 gap-y-8 sm:grid-cols-2">
             {enterprise.map(([title, body]) => (
-              <li key={title} className="bg-surface-2 p-5">
+              <li key={title} className="border-t border-border pt-4">
                 <div className="text-sm font-medium">{title}</div>
                 <p className="mt-1 text-sm text-muted-foreground">{body}</p>
               </li>
@@ -305,7 +305,7 @@ decision:    ESCALATE`}</code>
       </section>
 
       <section id="developers" className="mx-auto max-w-6xl scroll-mt-20 px-6 py-24">
-        <Eyebrow>FOR DEVELOPERS</Eyebrow>
+        
         <h2 className="mt-4 text-3xl font-semibold tracking-tight">Integrate at the execution boundary.</h2>
         <ol className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-5">
           {developerSteps.map(([title, body], i) => (
@@ -320,7 +320,7 @@ decision:    ESCALATE`}</code>
 
       <section id="pricing" className="scroll-mt-20 border-y border-border bg-surface-1">
         <div className="mx-auto max-w-6xl px-6 py-24">
-          <Eyebrow>PRICING</Eyebrow>
+          
           <h2 className="mt-4 text-3xl font-semibold tracking-tight">Start free. Scale into governance.</h2>
           <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-3">
             {tiers.map((t) => (
@@ -342,7 +342,7 @@ decision:    ESCALATE`}</code>
       </section>
 
       <section id="faq" className="mx-auto max-w-3xl scroll-mt-20 px-6 py-24">
-        <Eyebrow>FAQ</Eyebrow>
+        
         <h2 className="mt-4 text-3xl font-semibold tracking-tight">Questions about the execution boundary.</h2>
         <div className="mt-8 divide-y divide-border rounded-md border border-border bg-surface-2">
           {faqs.map(([q, a]) => (

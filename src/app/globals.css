@@ -128,8 +128,8 @@
   --color-escalate: var(--escalate);
   --color-escalate-muted: var(--escalate-muted);
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-sans: var(--font-app-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-app-mono), ui-monospace, SFMono-Regular, monospace;
 
   --radius-sm: calc(var(--radius) - 1px);
   --radius-md: var(--radius);

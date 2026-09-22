@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
+const appSans = IBM_Plex_Sans({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-app-sans",
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const appMono = IBM_Plex_Mono({
   subsets: ["latin"],
-  variable: "--font-geist-mono",
+  weight: ["400", "500"],
+  variable: "--font-app-mono",
   display: "swap",
 });
 
@@ -29,7 +31,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${appSans.variable} ${appMono.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
