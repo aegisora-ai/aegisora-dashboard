@@ -1,89 +1,56 @@
-import { AegisoraHeader } from "@/components/aegisora/header"
-import { AegisoraFooter } from "@/components/aegisora/footer"
+﻿import Link from "next/link";
+import type { Metadata } from "next";
+import { ArrowRight } from "lucide-react";
+import { PublicShell } from "@/components/aegisora/public-shell";
+import { btnPrimary, btnOutline } from "@/lib/ui";
+import { cn } from "@/lib/utils";
 
-type Section = {
-  title: string
-  copy: string
-}
+export const metadata: Metadata = { title: "Developers" };
 
-const sections = [
-    {
-        "copy":  "The runtime boundary can sit beneath the orchestration layer.",
-        "title":  "Framework independent"
-    },
-    {
-        "copy":  "Provider execution can pass through the same enforcement lifecycle.",
-        "title":  "Provider aware"
-    },
-    {
-        "copy":  "Expose explicit decision states rather than implicit authorization.",
-        "title":  "Deterministic decisions"
-    },
-    {
-        "copy":  "Carry runtime identifiers into downstream operational systems.",
-        "title":  "Operational evidence"
-    }
-] as Section[]
+const cards = [
+  { title: "Framework independent", copy: "The boundary sits beneath your agent stack.", index: "01" },
+  { title: "Provider aware", copy: "Provider execution can pass through the same enforcement path.", index: "02" },
+  { title: "Deterministic results", copy: "Use explicit ALLOW, BLOCK and ESCALATE states.", index: "03" },
+  { title: "Runtime evidence", copy: "Carry decision and evidence identity downstream.", index: "04" },
+];
 
-export default function AegisoraPage() {
+export default function DevelopersPage() {
   return (
-    <div className="ae-page">
-      <AegisoraHeader />
-
-      <main>
-
-        <section className="ae-section">
-          <div className="ae-wrap">
-
-            <div className="ae-eyebrow">
-              Developers
-            </div>
-
-            <h1 className="ae-section-title">
-              Build agents around a real enforcement boundary.
-            </h1>
-
-            <p className="ae-section-copy">
-              Integrate Aegisora where agent intent becomes an executable action.
-            </p>
-
+    <PublicShell>
+      <section className="aeg-grid-bg border-b border-border bg-surface-1 px-6 py-20">
+        <div className="mx-auto max-w-[80rem]">
+          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">
+            DEVELOPERS
+          </span>
+          <h1 className="mt-4 max-w-2xl text-4xl font-light tracking-tight md:text-5xl">
+            Build agents around a real enforcement boundary.
+          </h1>
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
+            Aegisora is designed to sit underneath the agent orchestration layer, where requests become executable actions.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/signup" className={cn(btnPrimary)}>
+              Test Aegisora
+              <ArrowRight className="ml-2 size-4" />
+            </Link>
+            <Link href="/proof" className={cn(btnOutline)}>
+              Run live runtime proof
+            </Link>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="ae-section ae-section-white">
-          <div className="ae-wrap">
-
-            <div className="ae-grid-2">
-
-              {sections.map(
-                (section) => (
-                  <article
-                    className="ae-card"
-                    key={section.title}
-                  >
-                    <div className="ae-card-index">
-                      {section.title}
-                    </div>
-
-                    <h2 className="ae-card-title">
-                      {section.title}
-                    </h2>
-
-                    <p className="ae-card-copy">
-                      {section.copy}
-                    </p>
-                  </article>
-                ),
-              )}
-
-            </div>
-
-          </div>
-        </section>
-
-      </main>
-
-      <AegisoraFooter />
-    </div>
-  )
+      <section className="px-6 py-16">
+        <div className="mx-auto grid max-w-[80rem] gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+          {cards.map((card) => (
+            <article key={card.title} className="bg-surface-2 p-6">
+              <span className="font-mono text-xs text-muted-foreground">{card.index}</span>
+              <h3 className="mt-3 text-base font-medium">{card.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{card.copy}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    </PublicShell>
+  );
 }

@@ -159,3 +159,38 @@
   border-radius: 6px;
   box-shadow: var(--panel-shadow);
 }
+/* === AEGISORA PRODUCTION DARK THEME === */
+:root {
+  color-scheme: dark !important;
+  --background: #020611 !important;
+  --surface-1: #061022 !important;
+  --surface-2: #09162e !important;
+  --surface-3: #0c1c3a !important;
+  --surface-4: #102347 !important;
+  --foreground: #ffffff !important;
+  --muted-foreground: #8a9fc2 !important;
+  --card: #061022 !important;
+  --card-foreground: #ffffff !important;
+  --popover: #061022 !important;
+  --popover-foreground: #ffffff !important;
+  --secondary: #0c1c3a !important;
+  --secondary-foreground: #ffffff !important;
+  --muted: #09162e !important;
+  --accent: #102347 !important;
+}
+
+body {
+  background-color: var(--background) !important;
+  background-image: 
+    radial-gradient(circle at 0% 0%, rgba(22, 119, 255, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(11, 111, 181, 0.12) 0%, transparent 45%) !important;
+  background-attachment: fixed !important;
+}
+
+/* Glassmorphism Header (Cam Efekti) */
+header, [class*="site-header"] {
+  background: rgba(2, 6, 17, 0.65) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(22, 119, 255, 0.15) !important;
+}

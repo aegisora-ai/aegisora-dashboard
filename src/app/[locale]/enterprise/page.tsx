@@ -1,97 +1,56 @@
-import { AegisoraHeader } from "@/components/aegisora/header"
-import { AegisoraFooter } from "@/components/aegisora/footer"
+﻿import Link from "next/link";
+import type { Metadata } from "next";
+import { ArrowRight } from "lucide-react";
+import { PublicShell } from "@/components/aegisora/public-shell";
+import { btnPrimary, btnOutline } from "@/lib/ui";
+import { cn } from "@/lib/utils";
 
-type Section = {
-  title: string
-  copy: string
-}
+export const metadata: Metadata = { title: "Enterprise" };
 
-const sections = [
-    {
-        "copy":  "Centralize runtime control and operational visibility.",
-        "title":  "Workspace"
-    },
-    {
-        "copy":  "Manage canonical identities connected to execution.",
-        "title":  "Agents"
-    },
-    {
-        "copy":  "Define rules governing agent capabilities.",
-        "title":  "Policies"
-    },
-    {
-        "copy":  "Route escalated actions into human review.",
-        "title":  "Approvals"
-    },
-    {
-        "copy":  "Expose structured runtime records for enterprise workflows.",
-        "title":  "Audit"
-    },
-    {
-        "copy":  "Retain linked decision, execution and evidence identifiers.",
-        "title":  "Evidence"
-    }
-] as Section[]
+const cards = [
+  { title: "Workspace isolation", copy: "Separate policy, identity and evidence per workspace or team.", index: "01" },
+  { title: "Role-based access", copy: "Scope who can change policy versus who can only review it.", index: "02" },
+  { title: "Centralized audit", copy: "Every decision across every workspace rolls up to one ledger.", index: "03" },
+  { title: "SSO & provisioning", copy: "Bring your existing identity provider and access model.", index: "04" },
+];
 
-export default function AegisoraPage() {
+export default function EnterprisePage() {
   return (
-    <div className="ae-page">
-      <AegisoraHeader />
-
-      <main>
-
-        <section className="ae-section">
-          <div className="ae-wrap">
-
-            <div className="ae-eyebrow">
-              Enterprise
-            </div>
-
-            <h1 className="ae-section-title">
-              A control plane for governed agent execution.
-            </h1>
-
-            <p className="ae-section-copy">
-              Build a tenant-scoped operational layer around agents, policies, approvals, decisions, evidence and audit workflows.
-            </p>
-
+    <PublicShell>
+      <section className="aeg-grid-bg border-b border-border bg-surface-1 px-6 py-20">
+        <div className="mx-auto max-w-[80rem]">
+          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">
+            ENTERPRISE
+          </span>
+          <h1 className="mt-4 max-w-2xl text-4xl font-light tracking-tight md:text-5xl">
+            Governance that scales with every agent you deploy.
+          </h1>
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
+            Enterprise controls for multi-workspace policy, access and audit -- so agent autonomy grows without losing oversight.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/signup" className={cn(btnPrimary)}>
+              Test Aegisora
+              <ArrowRight className="ml-2 size-4" />
+            </Link>
+            <Link href="/proof" className={cn(btnOutline)}>
+              Run live runtime proof
+            </Link>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="ae-section ae-section-white">
-          <div className="ae-wrap">
-
-            <div className="ae-grid-2">
-
-              {sections.map(
-                (section) => (
-                  <article
-                    className="ae-card"
-                    key={section.title}
-                  >
-                    <div className="ae-card-index">
-                      {section.title}
-                    </div>
-
-                    <h2 className="ae-card-title">
-                      {section.title}
-                    </h2>
-
-                    <p className="ae-card-copy">
-                      {section.copy}
-                    </p>
-                  </article>
-                ),
-              )}
-
-            </div>
-
-          </div>
-        </section>
-
-      </main>
-
-      <AegisoraFooter />
-    </div>
-  )
+      <section className="px-6 py-16">
+        <div className="mx-auto grid max-w-[80rem] gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+          {cards.map((card) => (
+            <article key={card.title} className="bg-surface-2 p-6">
+              <span className="font-mono text-xs text-muted-foreground">{card.index}</span>
+              <h3 className="mt-3 text-base font-medium">{card.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{card.copy}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    </PublicShell>
+  );
 }

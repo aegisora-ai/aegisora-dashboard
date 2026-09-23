@@ -1,89 +1,18 @@
-import Image from "next/image"
-import Link from "next/link"
+﻿import React from 'react';
+import Link from 'next/link';
 
-export type AegisoraLogoProps = {
-  compact?: boolean
-  href?: string
-  size?: number
-  className?: string
-  showWordmark?: boolean
-}
-
-export function AegisoraLogo({
-  compact = false,
-  href = "/",
-  size = 30,
-  className = "",
-  showWordmark = true,
-}: AegisoraLogoProps) {
-
-  const logoClassName = [
-    compact
-      ? "ae-logo ae-logo-compact"
-      : "ae-logo",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ")
-
-  const content = (
-    <span
-      className={logoClassName}
-      aria-label="Aegisora"
-    >
-
-      <span
-        className="ae-logo-image-wrap"
-        style={{
-          width: size,
-          height: size,
-        }}
-      >
-
-        <Image
-          src="/LOGO.png"
-          alt="Aegisora"
-          width={size}
-          height={size}
-          className="ae-logo-image"
-          priority
-        />
-
-      </span>
-
-      {!compact && showWordmark ? (
-        <span>
-
-          <span className="ae-logo-wordmark">
-            AEGISORA
-          </span>
-
-          <span className="ae-logo-subtitle">
-            RUNTIME SECURITY
-          </span>
-
-        </span>
-      ) : null}
-
-    </span>
-  )
-
+export function Logo({ className = '' }: { className?: string }) {
   return (
-    <Link
-      href={href}
-      aria-label="Aegisora home"
+    <Link 
+      href="/" 
+      className={"flex items-center shrink-0 cursor-pointer transition-opacity hover:opacity-85 " + className}
+      title="Ana Sayfaya Dön"
     >
-      {content}
+      <img 
+        src="/LOGO-icon.png" 
+        alt="Aegisora Logo" 
+        className="h-16 md:h-20 lg:h-24 w-auto object-contain drop-shadow-md"
+      />
     </Link>
-  )
-}
-
-export function Logo(
-  props: AegisoraLogoProps = {},
-) {
-  return (
-    <AegisoraLogo
-      {...props}
-    />
-  )
+  );
 }
