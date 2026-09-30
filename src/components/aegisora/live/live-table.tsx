@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Fragment, useCallback, useEffect, useState, type ReactNode } from "react";
 import { RefreshCw } from "lucide-react";
@@ -35,6 +35,7 @@ function Inner({ ws, table, title, description, columns, empty, select = "*", or
   const [rows, setRows] = useState<Row[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [open, setOpen] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
     const supabase = createClient();
@@ -65,7 +66,7 @@ function Inner({ ws, table, title, description, columns, empty, select = "*", or
     return () => { void supabase.removeChannel(ch); };
   }, [realtime, table, ws.id, load]);
 
-  const reload = () => { void load(); };
+  const reload = () => { setRefreshing(true); void load().finally(() => setRefreshing(false)); };
 
   return (
     <div className="space-y-6">
@@ -75,7 +76,7 @@ function Inner({ ws, table, title, description, columns, empty, select = "*", or
         actions={
           <>
             {headerActions?.(ws, reload)}
-            <button type="button" onClick={reload} className={btnGhost} aria-label="Refresh"><RefreshCw className="mr-1.5 size-3.5" />Refresh</button>
+            <button type="button" onClick={reload} disabled={refreshing} className={btnGhost} aria-label="Refresh"><RefreshCw className={refreshing ? "mr-1.5 size-3.5 animate-spin" : "mr-1.5 size-3.5"} />Refresh</button>
           </>
         }
       />
