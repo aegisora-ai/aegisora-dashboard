@@ -1,7 +1,6 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -21,11 +20,19 @@ type Props = {
   links?: { text: string; label: string; href: string }[];
 };
 
+const companyField: Field = { name: "company", label: "Company", type: "text", autoComplete: "organization" };
+
+function withCompany(mode: Mode, fields: Field[]): Field[] {
+  if (mode !== "signup" || fields.some((f) => f.name === "company")) return fields;
+  const i = fields.findIndex((f) => f.name === "password");
+  return i === -1 ? [...fields, companyField] : [...fields.slice(0, i), companyField, ...fields.slice(i)];
+}
+
 export function AuthForm({ mode, title, description, fields, submitLabel, redirectTo, links }: Props) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const allFields = withCompany(mode, fields);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -37,6 +44,7 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
     const email = String(form.get("email") ?? "").trim();
     const password = String(form.get("password") ?? "");
     const fullName = String(form.get("name") ?? "").trim();
+    const company = String(form.get("company") ?? "").trim();
 
     const supabase = createClient();
 
@@ -44,21 +52,21 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
       if (mode === "login") {
         const { error: err } = await supabase.auth.signInWithPassword({ email, password });
         if (err) throw err;
-        router.push(redirectTo);
-        router.refresh();
+        window.location.href = redirectTo;
         return;
       }
 
       if (mode === "signup") {
+        // Workspace, veritabanindaki handle_new_user tetikleyicisi tarafindan
+        // company bilgisinden olusturulur (e-posta onayi olsa da calisir).
         const { data, error: err } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { full_name: fullName } },
+          options: { data: { full_name: fullName, ...(company ? { company } : {}) } },
         });
         if (err) throw err;
         if (data.session) {
-          router.push(redirectTo);
-          router.refresh();
+          window.location.href = redirectTo;
         } else {
           setNotice("Check your inbox to confirm your email, then log in.");
         }
@@ -80,8 +88,7 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
           data: { full_name: fullName },
         });
         if (err) throw err;
-        router.push(redirectTo);
-        router.refresh();
+        window.location.href = redirectTo;
         return;
       }
     } catch (err) {
@@ -108,7 +115,7 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
       )}
 
       <form className="mt-6 space-y-4" onSubmit={onSubmit}>
-        {fields.map((f) => (
+        {allFields.map((f) => (
           <div key={f.name} className="space-y-1.5">
             <Label htmlFor={f.name}>{f.label}</Label>
             <Input id={f.name} name={f.name} type={f.type} autoComplete={f.autoComplete} required />
@@ -134,3 +141,6 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
     </div>
   );
 }
+
+
+

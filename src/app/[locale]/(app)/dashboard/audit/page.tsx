@@ -1,54 +1,22 @@
-import Link from "next/link";
-import type { Metadata } from "next";
-import { DecisionBadge } from "@/components/aegisora/state-badge";
-import { demoDecisions } from "@/lib/demo-data";
+"use client";
 
-export const metadata: Metadata = { title: "Audit" };
-
-const eventFor = { ALLOW: "execution.allowed", BLOCK: "execution.blocked", ESCALATE: "approval.requested" } as const;
+import { LiveTable } from "@/components/aegisora/live/live-table";
+import { fmt } from "@/components/aegisora/live/ui";
 
 export default function AuditPage() {
   return (
-    <div className="mx-auto max-w-[80rem] space-y-6">
-      <header>
-        <h1 className="text-3xl font-light tracking-tight">Audit ledger</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Who did what, through which agent, in which workspace, under which policy.
-        </p>
-      </header>
-
-      <div className="aeg-panel overflow-x-auto">
-        <table className="w-full min-w-[960px] text-left text-sm">
-          <thead>
-            <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-              <th className="px-4 py-3 font-medium">Audit ID</th>
-              <th className="px-4 py-3 font-medium">Time (UTC)</th>
-              <th className="px-4 py-3 font-medium">Event</th>
-              <th className="px-4 py-3 font-medium">Agent</th>
-              <th className="px-4 py-3 font-medium">Workspace</th>
-              <th className="px-4 py-3 font-medium">Policy</th>
-              <th className="px-4 py-3 font-medium">Decision</th>
-              <th className="px-4 py-3 font-medium">Record</th>
-            </tr>
-          </thead>
-          <tbody>
-            {demoDecisions.map((d) => (
-              <tr key={d.auditId} className="border-b border-border/60 last:border-0 hover:bg-surface-3">
-                <td className="px-4 py-3 font-mono text-xs">{d.auditId}</td>
-                <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-muted-foreground">{d.timestamp}</td>
-                <td className="px-4 py-3 font-mono text-xs">{eventFor[d.state]}</td>
-                <td className="px-4 py-3 font-mono text-xs">{d.agent}</td>
-                <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{d.workspace}</td>
-                <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{d.policy}-{d.policyVersion}</td>
-                <td className="px-4 py-3"><DecisionBadge state={d.state} /></td>
-                <td className="px-4 py-3">
-                  <Link href={`/dashboard/decisions/${d.id}`} className="font-mono text-xs text-cyan underline-offset-4 hover:underline">{d.id}</Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <LiveTable
+      table="audit_events"
+      title="Audit"
+      description="Who or what changed the system, and every runtime decision."
+      limit={200}
+      columns={[
+        { label: "Time", render: (r) => fmt(r.created_at) },
+        { label: "Actor", render: (r) => <span className="font-mono text-xs">{String(r.actor).slice(0, 24)}</span> },
+        { label: "Action", render: (r) => r.action },
+        { label: "Target", render: (r) => <span className="text-muted-foreground">{r.target_type}</span> },
+      ]}
+      empty={{ title: "No audit events yet", body: "Changes to agents, policies, keys and approvals, plus every decision, are recorded here automatically." }}
+    />
   );
 }

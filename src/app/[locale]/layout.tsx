@@ -1,7 +1,8 @@
-﻿import { notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { CookieConsent } from "@/components/aegisora/cookie-consent";
 
 export default async function LocaleLayout({
   children,
@@ -18,5 +19,10 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
 
-  return <NextIntlClientProvider>{children}</NextIntlClientProvider>;
+  return (
+    <NextIntlClientProvider>
+      {children}
+      <CookieConsent />
+    </NextIntlClientProvider>
+  );
 }

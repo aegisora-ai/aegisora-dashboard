@@ -1,0 +1,53 @@
+﻿\src\app\api\v1\agents\import\route.ts:29: const { error } = await admin().from("agents").upsert([...map.values()], { onConflict: "workspace_id,name" });
+\src\app\api\v1\decisions\[id]\route.ts:14: .from("decisions")
+\src\app\api\v1\decisions\[id]\route.ts:23: const { data: a } = await db.from("approvals").select("id,status,expires_at,resolved_at,note").eq("decision_id", id).maybeSingle();
+\src\app\api\v1\decisions\[id]\route.ts:26: await db.from("approvals").update({ status: "expired" }).eq("id", a.id);
+\src\app\api\v1\evaluate\route.ts:27: const { data: s } = await db.from("workspace_settings").select("*").eq("workspace_id", ws).maybeSingle();
+\src\app\api\v1\evaluate\route.ts:36: let { data: agent } = await db.from("agents").select("id,status").eq("workspace_id", ws).eq("name", agentName).maybeSingle();
+\src\app\api\v1\evaluate\route.ts:39: const ins = await db.from("agents").insert({ workspace_id: ws, name: agentName, source: "auto" }).select("id,status").single();
+\src\app\api\v1\evaluate\route.ts:41: const again = await db.from("agents").select("id,status").eq("workspace_id", ws).eq("name", agentName).maybeSingle();
+\src\app\api\v1\evaluate\route.ts:51: .from("policies")
+\src\app\api\v1\evaluate\route.ts:85: .from("decisions")
+\src\app\api\v1\evaluate\route.ts:93: .from("evidence")
+\src\app\api\v1\evaluate\route.ts:107: await db.from("traces").insert({
+\src\app\api\v1\evaluate\route.ts:116: .from("approvals")
+\src\app\api\v1\evaluate\route.ts:123: await db.from("incidents").insert({ workspace_id: ws, decision_id: decisionId, severity: risk >= 70 ? "high" : "medium", title: `Blocked: ${agentName} -> ${action}` });
+\src\app\api\v1\evaluate\route.ts:125: await db.from("audit_events").insert({
+\src\app\api\v1\evaluate\route.ts:129: if (agent) await db.from("agents").update({ last_seen_at: new Date().toISOString() }).eq("id", agent.id);
+\src\app\api\v1\traces\route.ts:17: const { data: agent } = await db.from("agents").select("id").eq("workspace_id", auth.workspaceId).eq("name", agentName).maybeSingle();
+\src\app\api\v1\traces\route.ts:18: const { error } = await db.from("traces").insert({
+\src\app\[locale]\(app)\dashboard\agents\page.tsx:49: const { error } = await createClient().from("agents").insert({ workspace_id: ws.id, name: name.trim(), framework: framework.trim() || null, description: description.trim() || null, source: "manual" });
+\src\app\[locale]\(app)\dashboard\agents\page.tsx:61: const { error } = await createClient().from("agents").upsert([...map.values()], { onConflict: "workspace_id,name" });
+\src\app\[locale]\(app)\dashboard\agents\page.tsx:135: const { error } = await createClient().from("agents").update({ status: r.status === "active" ? "suspended" : "active" }).eq("id", r.id);
+\src\app\[locale]\(app)\dashboard\agents\page.tsx:146: const { error } = await createClient().from("agents").delete().eq("id", r.id);
+\src\app\[locale]\(app)\dashboard\api-keys\page.tsx:21: const { data, error } = await createClient().rpc("create_api_key", { ws: ws.id, key_name: name.trim() });
+\src\app\[locale]\(app)\dashboard\api-keys\page.tsx:66: <button className={btnGhost} onClick={async () => { if (!confirm(`Revoke "${r.name}"? Agents using it stop working immediately.`)) return; const { error } = await createClient().from("api_keys").update({ revoked_at: new Date().toISOString() }).eq("id", r.id); if (error) alert(error.message); reload(); }}>
+\src\app\[locale]\(app)\dashboard\approvals\page.tsx:8: const { data, error } = await createClient().from("approvals").update({ status }).eq("id", id).eq("status", "pending").select("id");
+\src\app\[locale]\(app)\dashboard\evidence\page.tsx:15: const { data, error } = await createClient().rpc("verify_evidence_chain", { ws: wsId });
+\src\app\[locale]\(app)\dashboard\incidents\page.tsx:25: const { error } = await createClient().from("incidents").update({ status: "resolved", resolved_at: new Date().toISOString() }).eq("id", r.id);
+\src\app\[locale]\(app)\dashboard\policies\page.tsx:26: const { data } = await createClient().from("agents").select("id,name").eq("workspace_id", ws.id).order("name");
+\src\app\[locale]\(app)\dashboard\policies\page.tsx:33: const { error } = await createClient().from("policies").insert({
+\src\app\[locale]\(app)\dashboard\policies\page.tsx:44: const { error } = await createClient().from("policies").insert(STARTERS.map((s) => ({ ...s, workspace_id: ws.id })));
+\src\app\[locale]\(app)\dashboard\policies\page.tsx:105: <button className={btnGhost} onClick={async () => { const { error } = await createClient().from("policies").update({ enabled: !r.enabled }).eq("id", r.id); if (error) alert(error.message); reload(); }}>
+\src\app\[locale]\(app)\dashboard\policies\page.tsx:108: <button className={btnGhost} onClick={async () => { if (!confirm(`Delete policy "${r.name}"?`)) return; const { error } = await createClient().from("policies").delete().eq("id", r.id); if (error) alert(error.message); reload(); }}>
+\src\app\[locale]\(app)\dashboard\settings\page.tsx:23: supabase.from("workspace_settings").select("*").eq("workspace_id", ws.id).maybeSingle(),
+\src\app\[locale]\(app)\dashboard\settings\page.tsx:28: const { data: p } = await supabase.from("profiles").select("full_name").eq("id", auth.user.id).maybeSingle();
+\src\app\[locale]\(app)\dashboard\settings\page.tsx:37: const r1 = await supabase.from("workspaces").update({ name: name.trim() }).eq("id", ws.id).select("id");
+\src\app\[locale]\(app)\dashboard\settings\page.tsx:39: const r2 = await supabase.from("workspace_settings").upsert({ workspace_id: ws.id, ...s, approval_expiry_hours: Math.max(1, Math.min(720, Number(s.approval_expiry_hours) || 24)), updated_at: new Date().toISOString() }, { onConflict: "workspace_id" });
+\src\app\[locale]\(app)\dashboard\settings\page.tsx:48: const { error } = await supabase.from("profiles").update({ full_name: fullName.trim() }).eq("id", auth.user.id);
+\src\app\[locale]\(app)\dashboard\webhooks\page.tsx:24: const { error } = await createClient().from("webhooks").insert({ workspace_id: ws.id, url: url.trim(), events, secret });
+\src\app\[locale]\(app)\dashboard\webhooks\page.tsx:70: <button className={btnGhost} onClick={async () => { const { error } = await createClient().from("webhooks").update({ enabled: !r.enabled }).eq("id", r.id); if (error) alert(error.message); reload(); }}>
+\src\app\[locale]\(app)\dashboard\webhooks\page.tsx:73: <button className={btnGhost} onClick={async () => { if (!confirm("Delete this webhook?")) return; const { error } = await createClient().from("webhooks").delete().eq("id", r.id); if (error) alert(error.message); reload(); }}>
+\src\app\[locale]\(app)\dashboard\page.tsx:32: supabase.from("decisions").select("id,created_at,agent_name,action,effect").eq("workspace_id", ws.id).order("created_at", { ascending: false }).limit(8),
+\src\components\aegisora\live\ui.tsx:77: const { error } = await createClient().rpc("create_workspace", { workspace_name: name.trim(), workspace_slug: slug });
+\src\components\aegisora\cookie-consent.tsx:45: .from('profiles')
+\src\components\aegisora\onboarding-flow.tsx:54: const { data, error } = await supabase.rpc("create_workspace", {
+\src\components\aegisora\welcome-tour.tsx:35: .from("profiles").select("onboarded_at").eq("id", auth.user.id).maybeSingle();
+\src\components\aegisora\welcome-tour.tsx:63: await supabase.from("profiles").update({ onboarded_at: new Date().toISOString() }).eq("id", auth.user.id);
+\src\components\aegisora\workspace-provider.tsx:45: .from("workspace_members")
+\src\lib\aegisora\server.ts:40: const { data, error } = await db.from("api_keys").select("id, workspace_id").eq("key_hash", sha256(m[1])).is("revoked_at", null).maybeSingle();
+\src\lib\aegisora\server.ts:43: await db.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", data.id);
+\src\lib\aegisora\server.ts:91: const { data: hooks } = await db.from("webhooks").select("id,url,secret,events").eq("workspace_id", workspaceId).eq("enabled", true);
+\src\lib\aegisora\server.ts:113: await db.from("webhooks").update({ last_status: status, last_delivery_at: new Date().toISOString() }).eq("id", w.id);
+\src\lib\aegisora\use-pending-approvals.ts:17: .from("approvals")
+\src\lib\aegisora\use-workspace.tsx:18: .from("workspace_members")

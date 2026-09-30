@@ -2,25 +2,53 @@
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { Logo } from "@/components/aegisora/logo";
+import { DocsMegaMenu } from "@/components/aegisora/docs-mega-menu";
+import { NavDropdown, type DropdownItem } from "@/components/aegisora/nav-dropdown";
+
+const PRODUCT_ITEMS: DropdownItem[] = [
+  { title: "Overview", href: "/product", desc: "How Aegisora governs agent actions" },
+  { title: "Runtime", href: "/product/runtime", desc: "The execution boundary" },
+  { title: "Policies", href: "/product/policies" },
+  { title: "Decisions", href: "/product/decisions" },
+  { title: "Approvals", href: "/product/approvals" },
+  { title: "Evidence", href: "/product/evidence" },
+  { title: "Security", href: "/security" },
+];
+
+const DEVELOPERS_ITEMS: DropdownItem[] = [
+  { title: "Developer Overview", href: "/developers", desc: "SDKs, integration guides" },
+  { title: "API Reference", href: "/docs#api" },
+  { title: "Security", href: "/security" },
+];
+
+const RESOURCES_ITEMS: DropdownItem[] = [
+  { title: "Blog", href: "/blog", desc: "Articles and updates" },
+  { title: "Changelog", href: "/changelog" },
+  { title: "Resources", href: "/resources" },
+  { title: "Enterprise", href: "/enterprise" },
+];
 
 const MAIN_NAV = [
-  { name: "Product", href: "/product" },
-  { name: "Security", href: "/security" },
-  { name: "Developers", href: "/developers" },
-  { name: "Enterprise", href: "/enterprise" },
+  { name: "Product", href: "/product", dropdown: "product" as const },
+  { name: "Docs", href: "/docs", dropdown: "docs" as const },
+  { name: "Developers", href: "/developers", dropdown: "developers" as const },
+  { name: "Resources", href: "/resources", dropdown: "resources" as const },
   { name: "Pricing", href: "/pricing" },
-  { name: "Resources", href: "/resources" },
 ];
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-
+  // Route change intentionally closes the mobile navigation.
   useEffect(() => {
+  const timer = window.setTimeout(() => {
     setMobileOpen(false);
-  }, [pathname]);
+  }, 0);
+
+  return () => window.clearTimeout(timer);
+}, [pathname]);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -33,22 +61,38 @@ export function SiteHeader() {
 
   return (
     <>
-      {/* 1. ANA HEADER (Z-100 ile her şeyin en üstünde) */}
+      {/* 1. ANA HEADER - sayfa iceriginin container'iyla (max-w-6xl px-6) hizali*/}
       <header className="sticky top-0 z-[100] w-full border-b border-[#1677ff]/20 bg-[#020611]/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 h-16 lg:h-20">
-          
-          <div className="flex items-center gap-10">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 h-16 lg:h-20">
+
+          <div className="flex items-center gap-9">
             <Logo />
-            <nav className="hidden lg:flex items-center gap-7">
-              {MAIN_NAV.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="text-sm font-medium text-slate-300 transition-colors hover:text-white"
-                >
-                  {item.name}
-                </Link>
-              ))}
+            <nav className="hidden lg:flex items-center gap-6">
+              {MAIN_NAV.map((item) =>
+                item.dropdown ? (
+                  <div key={item.name} className="group relative">
+                    <Link
+                      href={item.href}
+                      className="flex items-center gap-1 text-sm font-medium text-slate-300 transition-colors hover:text-white"
+                    >
+                      {item.name}
+                      <ChevronDown size={14} className="transition-transform duration-200 group-hover:rotate-180" />
+                    </Link>
+                    {item.dropdown === "docs" && <DocsMegaMenu />}
+                    {item.dropdown === "product" && <NavDropdown items={PRODUCT_ITEMS} />}
+                    {item.dropdown === "developers" && <NavDropdown items={DEVELOPERS_ITEMS} />}
+                    {item.dropdown === "resources" && <NavDropdown items={RESOURCES_ITEMS} />}
+                  </div>
+                ) : (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="text-sm font-medium text-slate-300 transition-colors hover:text-white"
+                  >
+                    {item.name}
+                  </Link>
+                )
+              )}
             </nav>
           </div>
 
@@ -79,8 +123,7 @@ export function SiteHeader() {
         </div>
       </header>
 
-      {/* 2. MOBİL MENÜ OVERLAY (Z-90 ile sayfanın üstünde, Header'ın altında) */}
-      {/* fixed inset-0 ile ekranı %100 kaplar, alttaki hiçbir Pricing yazısı araya sızamaz */}
+      {/* 2. MOBIL MENU OVERLAY */}
       {mobileOpen && (
         <div className="fixed inset-0 z-[90] bg-[#020611] pt-24 px-6 pb-8 overflow-y-auto lg:hidden">
           <nav className="flex flex-col gap-4">
@@ -93,9 +136,9 @@ export function SiteHeader() {
                 {item.name}
               </Link>
             ))}
-            
+
             <div className="my-6 h-[1px] w-full bg-[#1677ff]/20" />
-            
+
             <Link
               href="/login"
               className="rounded-md p-3 text-xl font-semibold text-slate-200 transition-colors hover:bg-[#1677ff]/10 hover:text-[#1677ff]"
@@ -114,3 +157,6 @@ export function SiteHeader() {
     </>
   );
 }
+
+
+

@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { btnOutline, btnPrimary } from "@/lib/ui";
 import { cn } from "@/lib/utils";
+import { AmbientGridCells } from "@/components/aegisora/ambient-grid-cells";
+import { ScrambleText } from "@/components/aegisora/scramble-text";
+import { Reveal } from "@/components/aegisora/reveal";
 
 export function Eyebrow({ children, accent }: { children: React.ReactNode; accent?: boolean }) {
   return (
@@ -12,26 +15,43 @@ export function Eyebrow({ children, accent }: { children: React.ReactNode; accen
 
 export function PageHero({ eyebrow, title, lead, children }: { eyebrow: string; title: string; lead: string; children?: React.ReactNode }) {
   return (
-    <section className="aeg-hero aeg-grid-bg border-b border-border">
-      <div className="mx-auto max-w-6xl px-6 pb-16 pt-16 md:pb-20 md:pt-24">
-        <Eyebrow accent>{eyebrow}</Eyebrow>
-        <h1 className="mt-5 max-w-4xl text-4xl font-light leading-[1.05] tracking-tight md:text-6xl">{title}</h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">{lead}</p>
-        {children}
+    <section className="aeg-hero aeg-grid-bg border-b border-border relative overflow-hidden">
+      <AmbientGridCells cols={20} rows={10} count={22} opacity={0.3} />
+      <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-16 md:pb-20 md:pt-24">
+        <div className="animate-[fade-in-up_0.5s_ease-out_both]">
+          <Eyebrow accent>{eyebrow}</Eyebrow>
+        </div>
+        <h1 className="mt-5 max-w-4xl text-4xl font-light leading-[1.05] tracking-tight md:text-6xl">
+          <ScrambleText text={title} />
+        </h1>
+        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground animate-[fade-in-up_0.6s_ease-out_0.35s_both]">
+          {lead}
+        </p>
+        {children && (
+          <div className="animate-[fade-in-up_0.6s_ease-out_0.5s_both]">
+            {children}
+          </div>
+        )}
       </div>
     </section>
   );
 }
 
-export function Section({ id, eyebrow, title, lead, tone = "plain", children }: { id?: string; eyebrow?: string; title?: string; lead?: string; tone?: "plain" | "tinted"; children?: React.ReactNode }) {
+export function Section({ id, eyebrow, title, lead, tone = "plain", children }: {id?: string; eyebrow?: string; title?: string; lead?: string; tone?: "plain" | "tinted"; children?: React.ReactNode }) {
   const hasHead = Boolean(eyebrow || title || lead);
   return (
-    <section id={id} className={cn("scroll-mt-20", tone === "tinted" && "border-y border-border bg-surface-1")}>
+    <section id={id} className={cn("scroll-mt-20", tone === "tinted" && "border-yborder-border bg-surface-1")}>
       <div className="mx-auto max-w-6xl px-6 py-20 md:py-24">
-        {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-        {title && <h2 className="mt-4 max-w-3xl text-3xl font-light tracking-tight md:text-4xl">{title}</h2>}
-        {lead && <p className="mt-4 max-w-2xl text-muted-foreground">{lead}</p>}
-        {children && <div className={hasHead ? "mt-10" : ""}>{children}</div>}
+        <Reveal>
+          {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+          {title && <h2 className="mt-4 max-w-3xl text-3xl font-light tracking-tight md:text-4xl">{title}</h2>}
+          {lead && <p className="mt-4 max-w-2xl text-muted-foreground">{lead}</p>}
+        </Reveal>
+        {children && (
+          <Reveal delayMs={hasHead ? 120 : 0} className={hasHead ? "mt-10" : ""}>
+            {children}
+          </Reveal>
+        )}
       </div>
     </section>
   );
@@ -103,11 +123,13 @@ export function CtaBand({ title }: { title: string }) {
   return (
     <section className="border-t border-border bg-surface-1">
       <div className="mx-auto max-w-6xl px-6 py-20 text-center">
-        <h2 className="mx-auto max-w-2xl text-3xl font-light tracking-tight md:text-4xl">{title}</h2>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link href="/signup" className={btnPrimary}>Test Aegisora</Link>
-          <Link href="/enterprise" className={btnOutline}>Talk to Enterprise</Link>
-        </div>
+        <Reveal>
+          <h2 className="mx-auto max-w-2xl text-3xl font-light tracking-tight md:text-4xl">{title}</h2>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link href="/signup" className={btnPrimary}>Test Aegisora</Link>
+            <Link href="/enterprise" className={btnOutline}>Talk to Enterprise</Link>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

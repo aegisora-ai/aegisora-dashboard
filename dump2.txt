@@ -1,0 +1,1607 @@
+﻿
+===== C:\AI\AEGISORA\website4\src\app\[locale]\(app)\layout.tsx =====
+import { AppShell } from "@/components/aegisora/app-shell";
+
+export default function AppLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  return <AppShell>{children}</AppShell>;
+}
+===== C:\AI\AEGISORA\website4\src\app\[locale]\(app)\dashboard\page.tsx =====
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { ShieldAlert, Zap, Server, Activity, ShieldCheck, AlertTriangle } from 'lucide-react';
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar,
+  PieChart, Pie, Cell, Legend, RadialBarChart, RadialBar, PolarAngleAxis,
+} from 'recharts';
+import { Link } from '@/i18n/navigation';
+
+const mockChartData = [
+  { time: '08:00', allowed: 120, blocked: 12 },
+  { time: '09:00', allowed: 210, blocked: 25 },
+  { time: '10:00', allowed: 380, blocked: 45 },
+  { time: '11:00', allowed: 310, blocked: 30 },
+  { time: '12:00', allowed: 450, blocked: 80 },
+  { time: '13:00', allowed: 390, blocked: 60 },
+  { time: '14:00', allowed: 520, blocked: 90 },
+];
+
+const decisionDistribution = [
+  { name: 'Allowed', value: 2380000, color: '#1677ff' },
+  { name: 'Blocked', value: 18400, color: '#ef4444' },
+  { name: 'Escalated', value: 4200, color: '#eab308' },
+];
+
+const topRiskyAgents = [
+  { agent: 'Financial-Forecaster', short: 'Financial-Forecast..', score: 82 },
+  { agent: 'Customer-Support-Bot', short: 'Customer-Support..', score: 67 },
+  { agent: 'HR-Assistant-Agent', short: 'HR-Assistant-Agent', score: 41 },
+  { agent: 'Internal-Data-Analyzer', short: 'Internal-Data-Ana..', score: 18 },
+];
+
+const uptimeData = [{ name: 'Uptime', value: 99.98, fill: '#1677ff' }];
+
+const mockLogs = [
+  { id: '1', agent: 'Customer-Support-Bot', action: 'stripe_refund_api', risk: 'High', status: 'BLOCKED', time: 'Just now' },
+  { id: '2', agent: 'Internal-Data-Analyzer', action: 'postgres_read_query', risk: 'Low', status: 'ALLOWED', time: '2 min ago' },
+  { id: '3', agent: 'HR-Assistant-Agent', action: 'send_email_api', risk: 'Medium', status: 'ESCALATED', time: '15 min ago' },
+  { id: '4', agent: 'Financial-Forecaster', action: 'aws_s3_write', risk: 'High', status: 'BLOCKED', time: '1 hour ago' },
+  { id: '5', agent: 'Marketing-Copy-Agent', action: 'openai_completion_api', risk: 'Low', status: 'ALLOWED', time: '2 hours ago' },
+  { id: '6', agent: 'Customer-Support-Bot', action: 'zendesk_ticket_close', risk: 'Medium', status: 'ESCALATED', time: '3 hours ago' },
+];
+
+const riskStyles: Record<string, string> = {
+  High: 'bg-red-500/10 text-red-400 ring-red-500/20',
+  Medium: 'bg-yellow-500/10 text-yellow-400 ring-yellow-500/20',
+  Low: 'bg-green-500/10 text-green-400 ring-green-500/20',
+};
+
+const statusStyles: Record<string, string> = {
+  BLOCKED: 'bg-red-500/20 text-red-400',
+  ALLOWED: 'bg-green-500/20 text-green-400',
+  ESCALATED: 'bg-yellow-500/20 text-yellow-400',
+};
+
+function CardShell({ title, subtitle, grow, children }: { title: string; subtitle?: string; grow?: number; children: React.ReactNode }) {
+  return (
+    <div
+      className="min-w-[280px] rounded-xl border border-slate-800 bg-[#061022] p-6 shadow-lg"
+      style={{ flex: grow ? `${grow} 1 0px` : '1 1 280px' }}
+    >
+      <h3 className="text-lg font-semibold text-white">{title}</h3>
+      {subtitle && <p className="mt-1 text-xs text-slate-400">{subtitle}</p>}
+      <div className="mt-6">{children}</div>
+    </div>
+  );
+}
+
+export default function DashboardPage() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const stats = [
+    { name: 'Total Intercepted', value: '2.4M', change: '+14%', icon: Activity, color: 'text-blue-500' },
+    { name: 'Actions Blocked', value: '18,400', change: '+2%', icon: ShieldAlert, color: 'text-red-500' },
+    { name: 'Active Agents', value: '37', change: '+5', icon: Server, color: 'text-green-500' },
+    { name: 'Avg. Latency', value: '18ms', change: '-2ms', icon: Zap, color: 'text-yellow-500' },
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#020611] p-4 lg:p-8">
+      <div className="mx-auto max-w-7xl">
+
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="text-3xl font-bold text-white">Environment Overview</h1>
+            <p className="text-sm text-slate-400">Real-time metrics for your production AI agents.</p>
+          </div>
+          <div className="flex items-center gap-2 rounded-lg border border-[#1677ff]/20 bg-[#1677ff]/10 px-4 py-2 text-[#1677ff]">
+            <span className="relative flex h-3 w-3 shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#1677ff] opacity-75"></span>
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-[#1677ff]"></span>
+            </span>
+            <span className="whitespace-nowrap text-sm font-semibold">System Active</span>
+          </div>
+        </div>
+
+        {/* ===== STAT CARDS - flex-wrap, taskar asla ust uste binmez ===== */}
+        <div className="flex flex-wrap gap-6">
+          {stats.map((stat) => (
+            <div
+              key={stat.name}
+              className="group relative min-w-[190px] flex-1 basis-[190px] overflow-hidden rounded-xl border border-slate-800 bg-[#061022] p-6 shadow-lg transition-all hover:border-[#1677ff]/50 hover:shadow-[#1677ff]/10"
+            >
+              <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-slate-800/20 blur-2xl transition-all group-hover:bg-[#1677ff]/10"></div>
+              <div className="flex items-center gap-2">
+                <div className="shrink-0 rounded-lg bg-slate-800/50 p-2.5">
+                  <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                </div>
+                <dt className="truncate text-sm font-medium text-slate-400">{stat.name}</dt>
+              </div>
+              <dd className="mt-4 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                <span className="text-2xl font-bold text-white">{stat.value}</span>
+                <span className="text-sm font-semibold text-green-400">{stat.change}</span>
+              </dd>
+            </div>
+          ))}
+        </div>
+
+        {/* ===== ANA GRAFIKLER - flex-wrap, buyuk grafik dar olunca alta duser ===== */}
+        <div className="mt-8 flex flex-wrap gap-6">
+          <div className="min-w-[320px] flex-[2] basis-[420px] rounded-xl border border-slate-800 bg-[#061022] p-6 shadow-lg">
+            <h3 className="mb-6 text-lg font-semibold text-white">Agent Action Volume</h3>
+            <div className="h-[300px] w-full">
+              {isMounted && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={mockChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorAllowed" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#1677ff" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#1677ff" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorBlocked" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                    <XAxis dataKey="time" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#09162e', borderColor: '#1e293b', color: '#fff', borderRadius: '8px' }}
+                      itemStyle={{ color: '#fff' }}
+                    />
+                    <Area type="monotone" dataKey="allowed" stroke="#1677ff" strokeWidth={2} fillOpacity={1} fill="url(#colorAllowed)" />
+                    <Area type="monotone" dataKey="blocked" stroke="#ef4444" strokeWidth={2} fillOpacity={1} fill="url(#colorBlocked)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </div>
+
+          <div className="min-w-[280px] flex-1 basis-[280px] rounded-xl border border-slate-800 bg-[#061022] p-6 shadow-lg">
+            <h3 className="mb-6 text-lg font-semibold text-white">Action Risk Levels</h3>
+            <div className="h-[300px] w-full">
+              {isMounted && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={mockChartData.slice(-4)} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                    <XAxis dataKey="time" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                    <Tooltip
+                      cursor={{fill: '#1e293b', opacity: 0.4}}
+                      contentStyle={{ backgroundColor: '#09162e', borderColor: '#1e293b', borderRadius: '8px' }}
+                    />
+                    <Bar dataKey="blocked" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="allowed" fill="#1677ff" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ===== IKINCI SATIR: donut + top-risk bar + uptime gauge - flex-wrap ===== */}
+        <div className="mt-8 flex flex-wrap gap-6">
+          <CardShell title="Decision Outcomes" subtitle="All evaluated actions, last 30 days">
+            <div className="h-[260px] w-full">
+              {isMounted && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={decisionDistribution} dataKey="value" nameKey="name" innerRadius={55} outerRadius={90} paddingAngle={2}>
+                      {decisionDistribution.map((entry) => (
+                        <Cell key={entry.name} fill={entry.color} stroke="#061022" strokeWidth={2} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ backgroundColor: '#09162e', borderColor: '#1e293b', borderRadius: '8px' }} />
+                    <Legend verticalAlign="bottom" height={30} formatter={(v) => <span style={{ color: '#94a3b8', fontSize: 12 }}>{v}</span>} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </CardShell>
+
+          <CardShell title="Highest-Risk Agents" subtitle="Composite risk score, 0-100">
+            <div className="h-[260px] w-full">
+              {isMounted && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={topRiskyAgents} layout="vertical" margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
+                    <XAxis type="number" domain={[0, 100]} stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+                    <YAxis type="category" dataKey="short" stroke="#94a3b8" fontSize={10} width={110} tickLine={false} axisLine={false} />
+                    <Tooltip
+                      cursor={{ fill: '#1e293b', opacity: 0.3 }}
+                      position={{ x: 120, y: -8 }}
+                      wrapperStyle={{ zIndex: 50, pointerEvents: 'none' }}
+                      contentStyle={{ backgroundColor: '#09162e', borderColor: '#1e293b', borderRadius: '8px', padding: '8px 12px' }}
+                      itemStyle={{ padding: 0 }}
+                      labelStyle={{ color: '#94a3b8', fontSize: 11, marginBottom: 2 }}
+                      formatter={(value, _name, item) => [value as number, item?.payload?.agent ?? '']}
+                    />
+                    <Bar dataKey="score" radius={[0, 4, 4, 0]}>
+                      {topRiskyAgents.map((entry) => (
+                        <Cell key={entry.agent} fill={entry.score >= 70 ? '#ef4444' : entry.score >= 40 ? '#eab308' : '#22c55e'} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </CardShell>
+
+          <CardShell title="System Uptime" subtitle="Rolling 30-day availability">
+            <div className="relative h-[260px] w-full">
+              {isMounted && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadialBarChart innerRadius="70%" outerRadius="100%" data={uptimeData} startAngle={90} endAngle={-270}>
+                    <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
+                    <RadialBar background={{ fill: '#1e293b' }} dataKey="value" cornerRadius={8} />
+                  </RadialBarChart>
+                </ResponsiveContainer>
+              )}
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-3xl font-bold text-white">99.98%</span>
+                <span className="mt-1 text-xs text-slate-400">last 30 days</span>
+              </div>
+            </div>
+          </CardShell>
+        </div>
+
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-xl font-bold text-white">Real-time Policy Evaluations</h2>
+          <Link href="/dashboard/decisions" className="text-sm font-medium text-[#1677ff] hover:underline">
+            View all decisions &rarr;
+          </Link>
+        </div>
+        <div className="mt-4 overflow-x-auto rounded-xl border border-slate-800 bg-[#061022] shadow-lg">
+          <table className="min-w-full divide-y divide-slate-800">
+            <thead className="bg-[#09162e]">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">AI Agent</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Action / Tool Call</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Risk Factor</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Decision</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Timestamp</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800 bg-[#061022]">
+              {mockLogs.map((log) => (
+                <tr key={log.id} className="transition-colors hover:bg-[#09162e]">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-white">
+                    <span className="flex items-center gap-3">
+                      <Server className="h-4 w-4 text-slate-500" /> {log.agent}
+                    </span>
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 font-mono text-sm text-slate-300">{log.action}</td>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <span className={`inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${riskStyles[log.risk]}`}>
+                      {log.risk === 'High' ? <AlertTriangle size={12} /> : <ShieldCheck size={12} />}
+                      {log.risk}
+                    </span>
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${statusStyles[log.status]}`}>
+                      {log.status}
+                    </span>
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-400">{log.time}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+===== C:\AI\AEGISORA\website4\src\app\[locale]\(app)\dashboard\agents\page.tsx =====
+import type { Metadata } from "next";
+import { DataTable } from "@/components/aegisora/page-kit";
+
+export const metadata: Metadata = { title: "Agents" };
+
+const agents = [
+  ["finance-operator", "Finance Workspace", "transfer-threshold-v4", "Active", "2 mins ago"],
+  ["ops-assistant", "Platform Engineering", "access-change-control-v1", "Active", "1 hour ago"],
+  ["customer-support-bot", "Support", "read-only-v2", "Paused", "3 days ago"],
+];
+
+export default function AgentsPage() {
+  return (
+    <div className="mx-auto max-w-6xl space-y-6">
+      <header>
+        <h1 className="text-3xl font-light tracking-tight">Agents</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Identities proposing actions at the boundary.</p>
+      </header>
+      <DataTable head={["Agent ID", "Workspace", "Bound Policy", "Status", "Last Request"]} rows={agents} mono={[0, 2]} />
+    </div>
+  );
+}
+===== C:\AI\AEGISORA\website4\src\app\[locale]\(auth)\signup\page.tsx =====
+import type { Metadata } from "next";
+import { AuthForm } from "@/components/aegisora/auth-form";
+
+export const metadata: Metadata = { title: "Test Aegisora" };
+
+export default function SignupPage() {
+  return (
+    <AuthForm
+      mode="signup"
+      title="Test Aegisora"
+      description="Create a workspace, connect an agent and see ALLOW, BLOCK and ESCALATE decisions."
+      fields={[
+        { name: "name", label: "Full name", type: "text", autoComplete: "name" },
+        { name: "email", label: "Work email", type: "email", autoComplete: "email" },
+        { name: "password", label: "Password", type: "password", autoComplete: "new-password" },
+      ]}
+      submitLabel="Continue"
+      redirectTo="/onboarding"
+      links={[{ text: "Already have an account?", label: "Log in", href: "/login" }]}
+    />
+  );
+}
+===== C:\AI\AEGISORA\website4\src\components\aegisora\onboarding-flow.tsx =====
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { DecisionBadge, type DecisionState } from "@/components/aegisora/state-badge";
+import { WORKSPACE_STORAGE_KEY } from "@/components/aegisora/workspace-provider";
+import { createClient } from "@/lib/supabase/client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { btnOutline, btnPrimary } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+const steps = ["Workspace", "Agent", "Policy", "Execution", "Decision", "Evidence"];
+
+const rules: { value: DecisionState; title: string; text: string; gate: string; execution: string }[] = [
+  { value: "ESCALATE", title: "Escalate", text: "Pause execution and require human approval.", gate: "Gate paused", execution: "Waiting for approval" },
+  { value: "BLOCK", title: "Block", text: "Stop the action from executing.", gate: "Gate closed", execution: "Not executed" },
+  { value: "ALLOW", title: "Allow", text: "Let the action proceed.", gate: "Gate open", execution: "Executed" },
+];
+
+function slugify(name: string) {
+  const base = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const suffix = Math.random().toString(36).slice(2, 6);
+  return `${base || "workspace"}-${suffix}`;
+}
+
+function Row({ k, children }: { k: string; children: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-[120px_1fr] gap-3 py-2 text-sm">
+      <dt className="text-muted-foreground">{k}</dt>
+      <dd className="break-all font-mono text-xs">{children}</dd>
+    </div>
+  );
+}
+
+export function OnboardingFlow() {
+  const [step, setStep] = useState(0);
+  const [workspace, setWorkspace] = useState("demo-workspace");
+  const [agent, setAgent] = useState("finance-operator");
+  const [rule, setRule] = useState<DecisionState>("ESCALATE");
+  const [ran, setRan] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  const chosen = rules.find((r) => r.value === rule) ?? rules[0];
+  const canNext =
+    step === 0 ? workspace.trim().length > 0 : step === 1 ? agent.trim().length > 0 : step === 3 ? ran : true;
+
+  async function handleContinue() {
+    if (step === 0) {
+      setCreateError(null);
+      setCreating(true);
+      const supabase = createClient();
+      const { data, error } = await supabase.rpc("create_workspace", {
+        workspace_name: workspace,
+        workspace_slug: slugify(workspace),
+      });
+      setCreating(false);
+      if (error) {
+        setCreateError(error.message);
+        return;
+      }
+      if (data && typeof window !== "undefined") {
+        window.localStorage.setItem(WORKSPACE_STORAGE_KEY, data as string);
+      }
+      setStep(step + 1);
+      return;
+    }
+    setStep(step + 1);
+  }
+
+  return (
+    <div className="mx-auto max-w-2xl px-6 py-12">
+      <ol className="mb-10 grid grid-cols-6 gap-1">
+        {steps.map((s, i) => (
+          <li key={s} aria-current={i === step ? "step" : undefined}>
+            <div className={cn("h-0.5", i <= step ? "bg-cyan" : "bg-surface-4")} />
+            <div className={cn("mt-2 font-mono text-[10px] tracking-wider", i === step ? "text-foreground" : "text-muted-foreground")}>
+              {String(i + 1).padStart(2, "0")}
+              <span className="hidden sm:inline"> {s.toUpperCase()}</span>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <p className="mb-6 rounded-sm border border-escalate/30 bg-escalate-muted px-3 py-2 text-xs text-escalate">
+        Your workspace is created for real. Agent, policy and execution steps below are a guided simulation.
+      </p>
+
+      <section aria-labelledby="step-title" className="rounded-md border border-border bg-surface-2 p-6">
+        {step === 0 && (
+          <>
+            <h1 id="step-title" className="text-xl font-semibold">Create your workspace</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Agents, policies, decisions and evidence belong to a workspace.</p>
+            <div className="mt-6 space-y-1.5">
+              <Label htmlFor="workspace">Workspace name</Label>
+              <Input id="workspace" value={workspace} onChange={(e) => setWorkspace(e.target.value)} />
+            </div>
+            {createError && (
+              <p role="alert" className="mt-4 rounded-sm border border-block/30 bg-block-muted px-3 py-2 text-xs text-block">
+                {createError}
+              </p>
+            )}
+          </>
+        )}
+
+        {step === 1 && (
+          <>
+            <h1 id="step-title" className="text-xl font-semibold">Connect an agent</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Register the agent whose actions Aegisora should evaluate.</p>
+            <div className="mt-6 space-y-1.5">
+              <Label htmlFor="agent">Agent name</Label>
+              <Input id="agent" value={agent} onChange={(e) => setAgent(e.target.value)} />
+            </div>
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <h1 id="step-title" className="text-xl font-semibold">Create a policy</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              When {agent} proposes external_transfer in production at an elevated threshold:
+            </p>
+            <fieldset className="mt-6 space-y-2">
+              <legend className="sr-only">Policy decision</legend>
+              {rules.map((r) => (
+                <label
+                  key={r.value}
+                  className={cn(
+                    "flex cursor-pointer items-start gap-3 rounded-sm border p-3 text-sm",
+                    rule === r.value ? "border-primary bg-surface-3" : "border-border hover:bg-surface-3",
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name="rule"
+                    value={r.value}
+                    checked={rule === r.value}
+                    onChange={() => {
+                      setRule(r.value);
+                      setRan(false);
+                    }}
+                    className="mt-1"
+                  />
+                  <span>
+                    <span className="font-mono text-xs font-semibold tracking-wider">{r.value}</span>
+                    <span className="block text-muted-foreground">{r.text}</span>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+          </>
+        )}
+
+        {step === 3 && (
+          <>
+            <h1 id="step-title" className="text-xl font-semibold">Run an execution</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {agent} proposes external_transfer in production. Aegisora evaluates it against your policy.
+            </p>
+            <button type="button" onClick={() => setRan(true)} className={`${btnPrimary} mt-6`}>
+              Run execution
+            </button>
+            {ran && (
+              <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border pt-5" aria-live="polite">
+                <DecisionBadge state={rule} />
+                <span className="text-sm text-muted-foreground">
+                  {chosen.gate}. {chosen.execution}.
+                </span>
+              </div>
+            )}
+          </>
+        )}
+
+        {step === 4 && (
+          <>
+            <h1 id="step-title" className="text-xl font-semibold">Inspect the decision</h1>
+            <dl className="mt-4 divide-y divide-border/60">
+              <Row k="Decision"><DecisionBadge state={rule} /></Row>
+              <Row k="Agent">{agent}</Row>
+              <Row k="Action">external_transfer</Row>
+              <Row k="Environment">production</Row>
+              <Row k="Policy">transfer-threshold</Row>
+              <Row k="Risk">HIGH</Row>
+              <Row k="Enforcement">{chosen.gate}</Row>
+              <Row k="Execution">{chosen.execution}</Row>
+            </dl>
+          </>
+        )}
+
+        {step === 5 && (
+          <>
+            <h1 id="step-title" className="text-xl font-semibold">Inspect the evidence</h1>
+            <p className="mt-2 text-sm text-muted-foreground">The decision is linked to these records (sample identifiers).</p>
+            <dl className="mt-4 divide-y divide-border/60">
+              <Row k="Workspace">{workspace}</Row>
+              <Row k="Decision">dec_01J8XQ5N8R</Row>
+              <Row k="Trace">trc_9a41c7e2</Row>
+              <Row k="Execution">exe_3d8f10b5</Row>
+              <Row k="Evidence">evd_c7e20a94</Row>
+              <Row k="Audit">aud_58b1d3f6</Row>
+            </dl>
+          </>
+        )}
+      </section>
+
+      <div className="mt-6 flex justify-between">
+        <button
+          type="button"
+          onClick={() => setStep(Math.max(0, step - 1))}
+          disabled={step === 0}
+          className={`${btnOutline} disabled:opacity-40`}
+        >
+          Back
+        </button>
+        {step < steps.length - 1 ? (
+          <button
+            type="button"
+            onClick={handleContinue}
+            disabled={!canNext || creating}
+            className={`${btnPrimary} disabled:opacity-40`}
+          >
+            {creating ? "Creating..." : "Continue"}
+          </button>
+        ) : (
+          <Link href="/dashboard" className={btnPrimary}>Open Aegisora Control</Link>
+        )}
+      </div>
+    </div>
+  );
+}
+===== C:\AI\AEGISORA\website4\src\components\aegisora\workspace-provider.tsx =====
+"use client";
+
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+
+export type WorkspaceSummary = { id: string; name: string; slug: string; role: string };
+
+type WorkspaceContextValue = {
+  loading: boolean;
+  userEmail: string | null;
+  userName: string | null;
+  workspaces: WorkspaceSummary[];
+  currentWorkspace: WorkspaceSummary | null;
+  setCurrentWorkspaceId: (id: string) => void;
+  refresh: () => void;
+};
+
+const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
+
+export const WORKSPACE_STORAGE_KEY = "aeg-current-workspace";
+
+export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
+  const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [workspaces, setWorkspaces] = useState<WorkspaceSummary[]>([]);
+  const [currentId, setCurrentId] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const supabase = createClient();
+
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData.user;
+    setUserEmail(user?.email ?? null);
+    setUserName((user?.user_metadata?.full_name as string) ?? null);
+
+    if (!user) {
+      setWorkspaces([]);
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("workspace_members")
+      .select("role, workspaces(id, name, slug)")
+      .eq("user_id", user.id)
+      .eq("status", "active");
+
+    if (error || !data) {
+      setWorkspaces([]);
+      setLoading(false);
+      return;
+    }
+
+    const list: WorkspaceSummary[] = data
+      .filter((m: any) => m.workspaces)
+      .map((m: any) => ({
+        id: m.workspaces.id,
+        name: m.workspaces.name,
+        slug: m.workspaces.slug,
+        role: m.role,
+      }));
+
+    setWorkspaces(list);
+
+    const stored = typeof window !== "undefined" ? window.localStorage.getItem(WORKSPACE_STORAGE_KEY) : null;
+    const valid = list.find((w) => w.id === stored);
+    setCurrentId(valid ? valid.id : (list[0]?.id ?? null));
+
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  function setCurrentWorkspaceId(id: string) {
+    setCurrentId(id);
+    if (typeof window !== "undefined") window.localStorage.setItem(WORKSPACE_STORAGE_KEY, id);
+  }
+
+  const currentWorkspace = workspaces.find((w) => w.id === currentId) ?? null;
+
+  return (
+    <WorkspaceContext.Provider
+      value={{ loading, userEmail, userName, workspaces, currentWorkspace, setCurrentWorkspaceId, refresh: load }}
+    >
+      {children}
+    </WorkspaceContext.Provider>
+  );
+}
+
+export function useWorkspace() {
+  const ctx = useContext(WorkspaceContext);
+  if (!ctx) throw new Error("useWorkspace must be used within WorkspaceProvider");
+  return ctx;
+}
+===== C:\AI\AEGISORA\website4\src\components\aegisora\account-switcher.tsx =====
+"use client";
+
+import Link from "next/link";
+import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useWorkspace } from "@/components/aegisora/workspace-provider";
+import { focusRing } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+export function AccountSwitcher() {
+  const { loading, workspaces, currentWorkspace, setCurrentWorkspaceId } = useWorkspace();
+
+  if (loading) {
+    return <span className="hidden font-mono text-xs text-muted-foreground sm:inline">workspace / loading...</span>;
+  }
+
+  if (!currentWorkspace) {
+    return (
+      <Link href="/onboarding" className="hidden font-mono text-xs text-cyan underline-offset-4 hover:underline sm:inline">
+        workspace / create one
+      </Link>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            className={cn(
+              "hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground hover:bg-surface-3 hover:text-foreground sm:flex",
+              focusRing,
+            )}
+          >
+            workspace / <span className="text-foreground">{currentWorkspace.slug}</span>
+            <ChevronsUpDown className="size-3.5" />
+          </button>
+        }
+      />
+      <DropdownMenuContent align="start" className="w-64">
+        <DropdownMenuLabel className="font-mono text-[10px] tracking-wider text-muted-foreground">
+          WORKSPACES
+        </DropdownMenuLabel>
+        {workspaces.map((w) => (
+          <DropdownMenuItem key={w.id} onClick={() => setCurrentWorkspaceId(w.id)} className="flex items-center justify-between gap-2">
+            <span>
+              <span className="block text-sm">{w.name}</span>
+              <span className="block font-mono text-[10px] text-muted-foreground">{w.role}</span>
+            </span>
+            {w.id === currentWorkspace.id && <Check className="size-4 text-cyan" />}
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          render={
+            <Link href="/onboarding" className="flex items-center gap-2">
+              <Plus className="size-4" /> Create workspace
+            </Link>
+          }
+        />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+===== C:\AI\AEGISORA\website4\src\proxy.ts =====
+import { type NextRequest } from 'next/server';
+import createIntlMiddleware from 'next-intl/middleware';
+import { routing } from '@/i18n/routing';
+
+const intlMiddleware = createIntlMiddleware(routing);
+
+export async function proxy(request: NextRequest) {
+  // Tüm rotalarda (login, onboarding vb.) dil (locale) yönlendirmesini sağla
+  return intlMiddleware(request);
+}
+
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
+};
+===== C:\AI\AEGISORA\website4\src\middleware.ts =====
+(BULUNAMADI)
+===== C:\AI\AEGISORA\website4\src\app\api\runtime-proof\route.ts =====
+import { NextResponse } from "next/server"
+
+const runtimeUrl =
+  process.env.AEGISORA_RUNTIME_URL ??
+  "http://127.0.0.1:8787"
+
+export async function GET() {
+
+  try {
+
+    const response =
+      await fetch(
+        `${runtimeUrl}/health`,
+        {
+          cache: "no-store",
+        },
+      )
+
+    const body =
+      await response.json()
+
+    return NextResponse.json(
+      body,
+      {
+        status: response.status,
+      },
+    )
+
+  } catch (error) {
+
+    return NextResponse.json(
+      {
+        live: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : String(error),
+      },
+      {
+        status: 503,
+      },
+    )
+  }
+}
+
+export async function POST(
+  request: Request,
+) {
+
+  try {
+
+    const input =
+      await request.json()
+
+    const response =
+      await fetch(
+        `${runtimeUrl}/enforce`,
+        {
+          method: "POST",
+          headers: {
+            "content-type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            agentId:
+              input.agentId ??
+              "website-proof-agent",
+
+            action:
+              input.action ??
+              "tool.execute",
+
+            tool:
+              input.tool,
+
+            requiresReview:
+              input.requiresReview === true,
+
+            input:
+              input.input ?? {
+                source:
+                  "aegisora-public-proof",
+              },
+          }),
+
+          cache: "no-store",
+        },
+      )
+
+    const body =
+      await response.json()
+
+    return NextResponse.json(
+      {
+        ...body,
+        live: response.ok,
+      },
+      {
+        status: response.status,
+      },
+    )
+
+  } catch (error) {
+
+    return NextResponse.json(
+      {
+        live: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : String(error),
+      },
+      {
+        status: 503,
+      },
+    )
+  }
+}
+===== src\lib\supabase (dosya listesi) =====
+client.ts
+middleware.ts
+server.ts
+===== C:\AI\AEGISORA\website4\src\lib\demo-agents.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+
+export type AgentStatus = "ACTIVE" | "PAUSED" | "DISABLED";
+
+export type DemoAgent = {
+  id: string;
+  name: string;
+  description: string;
+  environment: string;
+  status: AgentStatus;
+  owner: string;
+  requestsToday: number;
+  allowRate: number;
+  avgRiskScore: number;
+  lastActive: string;
+  createdAt: string;
+  activityTrend: number[];
+};
+
+export const demoAgents: DemoAgent[] = [
+  {
+    id: "finance-operator",
+    name: "finance-operator",
+    description: "Handles outbound transfers, invoice reconciliation, and payout approvals.",
+    environment: "production",
+    status: "ACTIVE",
+    owner: "platform-team",
+    requestsToday: 412,
+    allowRate: 86.4,
+    avgRiskScore: 2.4,
+    lastActive: "2026-09-21 22:20:15Z",
+    createdAt: "2026-06-02",
+    activityTrend: [180, 210, 260, 240, 300, 340, 320, 360, 390, 370, 400, 412],
+  },
+  {
+    id: "ops-assistant",
+    name: "ops-assistant",
+    description: "Internal tooling assistant for infrastructure and data operations tasks.",
+    environment: "production",
+    status: "ACTIVE",
+    owner: "infra-team",
+    requestsToday: 288,
+    allowRate: 91.2,
+    avgRiskScore: 3.1,
+    lastActive: "2026-09-21 21:40:02Z",
+    createdAt: "2026-05-14",
+    activityTrend: [120, 140, 130, 160, 150, 190, 210, 200, 230, 250, 260, 288],
+  },
+  {
+    id: "report-builder",
+    name: "report-builder",
+    description: "Generates scheduled and ad hoc analytics reports from staging data sources.",
+    environment: "staging",
+    status: "ACTIVE",
+    owner: "data-team",
+    requestsToday: 940,
+    allowRate: 99.1,
+    avgRiskScore: 0.6,
+    lastActive: "2026-09-21 19:52:03Z",
+    createdAt: "2026-04-01",
+    activityTrend: [600, 650, 700, 680, 720, 760, 800, 820, 860, 900, 910, 940],
+  },
+  {
+    id: "support-bot",
+    name: "support-bot",
+    description: "Customer-facing assistant with read access to account and ticket data.",
+    environment: "production",
+    status: "PAUSED",
+    owner: "support-team",
+    requestsToday: 0,
+===== C:\AI\AEGISORA\website4\src\lib\demo-approvals.ts =====
+import type { ApprovalStatus, RiskLevel } from "@/components/aegisora/state-badge";
+
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+
+export type DemoApproval = {
+  id: string;
+  decisionId?: string;
+  evidenceId?: string;
+  agent: string;
+  action: string;
+  target: string;
+  environment: string;
+  policy: string;
+  risk: RiskLevel;
+  reason: string;
+  requestedAt: string;
+  requiredPermission: string;
+  status: ApprovalStatus;
+  resolution?: string;
+  resolvedAt?: string;
+};
+
+export const demoApprovals: DemoApproval[] = [
+  {
+    id: "apr_9d41e7a3",
+    decisionId: "dec_01J8XQ4M2K",
+    evidenceId: "evd_a24c07f1",
+    agent: "finance-operator",
+    action: "external_transfer",
+    target: "external account (amount above threshold)",
+    environment: "production",
+    policy: "transfer-threshold-v4",
+    risk: "HIGH",
+    reason: "Policy requires human authorization for external transfers above the elevated threshold in production.",
+    requestedAt: "2026-09-21 22:14:07Z",
+    requiredPermission: "approvals.manage",
+    status: "PENDING",
+  },
+  {
+    id: "apr_2b78e4c1",
+    agent: "ops-assistant",
+    action: "modify_permissions",
+    target: "workspace roles (grant admin)",
+    environment: "production",
+    policy: "access-change-control-v1",
+    risk: "HIGH",
+    reason: "Granting administrative rights requires human authorization.",
+    requestedAt: "2026-09-21 20:41:12Z",
+    requiredPermission: "approvals.manage",
+    status: "APPROVED",
+    resolution: "Approved after review of the requested role change.",
+    resolvedAt: "2026-09-21 20:52:40Z",
+  },
+  {
+    id: "apr_7e03d5a9",
+    agent: "finance-operator",
+    action: "external_transfer",
+    target: "external account (amount above threshold)",
+    environment: "production",
+    policy: "transfer-threshold-v4",
+    risk: "MEDIUM",
+    reason: "Transfer above the elevated threshold requires human authorization.",
+    requestedAt: "2026-09-21 18:03:55Z",
+    requiredPermission: "approvals.manage",
+    status: "EXPIRED",
+    resolution: "No resolution before the approval window closed. Execution did not proceed.",
+    resolvedAt: "2026-09-21 19:03:55Z",
+  },
+];
+
+===== C:\AI\AEGISORA\website4\src\lib\demo-billing.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+
+export type InvoiceStatus = "PAID" | "OPEN" | "OVERDUE";
+export type DemoInvoice = { id: string; period: string; amount: string; status: InvoiceStatus; issuedAt: string };
+
+export const billing = {
+  plan: "Scale",
+  seatsUsed: 5,
+  seatsIncluded: 10,
+  requestsUsed: 812000,
+  requestsIncluded: 1000000,
+  renewalDate: "2026-10-15",
+  paymentMethod: "Visa â€¢â€¢â€¢â€¢ 4412",
+};
+
+export const invoices: DemoInvoice[] = [
+  { id: "inv_2026_09", period: "Sep 2026", amount: "$1,240.00", status: "OPEN", issuedAt: "2026-09-01" },
+  { id: "inv_2026_08", period: "Aug 2026", amount: "$1,180.00", status: "PAID", issuedAt: "2026-08-01" },
+  { id: "inv_2026_07", period: "Jul 2026", amount: "$1,180.00", status: "PAID", issuedAt: "2026-07-01" },
+  { id: "inv_2026_06", period: "Jun 2026", amount: "$980.00", status: "PAID", issuedAt: "2026-06-01" },
+];
+===== C:\AI\AEGISORA\website4\src\lib\demo-data.ts =====
+import type {
+  ApprovalStatus,
+  DecisionState,
+  RiskLevel,
+} from "@/components/aegisora/state-badge";
+
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+// Replace with server-side queries once the data layer exists.
+
+export type DemoDecision = {
+  id: string;
+  traceId: string;
+  executionId: string;
+  evidenceId: string;
+  auditId: string;
+  timestamp: string;
+  workspace: string;
+  agent: string;
+  action: string;
+  target: string;
+  environment: string;
+  policy: string;
+  policyVersion: string;
+  risk: RiskLevel;
+  riskFactors: string[];
+  state: DecisionState;
+  reason: string;
+  enforcement: string;
+  execution: string;
+  approval?: {
+    id: string;
+    status: ApprovalStatus;
+    requiredRole: string;
+  };
+};
+
+export const demoDecisions: DemoDecision[] = [
+  {
+    id: "dec_01J8XQ4M2K",
+    traceId: "trc_7f3a91c2",
+    executionId: "exe_5b10d8e4",
+    evidenceId: "evd_a24c07f1",
+    auditId: "aud_3e9b62d0",
+    timestamp: "2026-09-21 22:14:07Z",
+    workspace: "demo-workspace",
+    agent: "finance-operator",
+    action: "external_transfer",
+    target: "external account (amount above threshold)",
+    environment: "production",
+    policy: "transfer-threshold",
+    policyVersion: "v4",
+    risk: "HIGH",
+    riskFactors: [
+      "Action moves value to an external destination",
+      "Environment is production",
+      "Amount exceeds the elevated threshold defined in the policy",
+    ],
+    state: "ESCALATE",
+    reason:
+      "Policy requires human authorization for external transfers above the elevated threshold in production.",
+    enforcement: "Execution gate closed. Request paused pending approval.",
+    execution: "PAUSED: awaiting approval",
+    approval: {
+      id: "apr_9d41e7a3",
+      status: "PENDING",
+      requiredRole: "approvals.manage",
+    },
+  },
+  {
+    id: "dec_01J8XQ3H7P",
+===== C:\AI\AEGISORA\website4\src\lib\demo-identity.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+
+export const identityConfig = {
+  ssoProvider: "Okta (SAML 2.0)",
+  ssoConfigured: false,
+  scimEnabled: false,
+  mfaEnforced: true,
+  mfaMethods: ["Authenticator app", "Passkey"],
+  sessionTimeoutMinutes: 720,
+  allowedDomains: ["aegisora.dev"],
+  lastSecurityReview: "2026-08-15",
+};
+===== C:\AI\AEGISORA\website4\src\lib\demo-incidents.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+import type { RiskLevel } from "@/components/aegisora/state-badge";
+
+export type IncidentStatus = "OPEN" | "INVESTIGATING" | "RESOLVED";
+
+export type DemoIncident = {
+  id: string;
+  title: string;
+  summary: string;
+  severity: RiskLevel;
+  status: IncidentStatus;
+  agent: string;
+  decisionId?: string;
+  openedAt: string;
+  resolvedAt?: string;
+  timeline: { at: string; label: string }[];
+};
+
+export const demoIncidents: DemoIncident[] = [
+  {
+    id: "inc_7a2c9f01",
+    title: "Repeated BLOCK on delete_records by ops-assistant",
+    summary: "ops-assistant attempted delete_records against production three times within an hour, each blocked by prod-data-protection-v1.",
+    severity: "CRITICAL",
+    status: "INVESTIGATING",
+    agent: "ops-assistant",
+    decisionId: "dec_01J8XQ4M2L",
+    openedAt: "2026-09-21 21:40:02Z",
+    timeline: [
+      { at: "2026-09-21 21:12:08Z", label: "First blocked attempt recorded" },
+      { at: "2026-09-21 21:31:44Z", label: "Second blocked attempt recorded" },
+      { at: "2026-09-21 21:40:02Z", label: "Threshold exceeded, incident opened automatically" },
+    ],
+  },
+  {
+    id: "inc_4e18b370",
+    title: "Escalation queue backing up for finance-operator",
+    summary: "Approval resolution time for finance-operator transfers exceeded the expected window, risking automatic expiry.",
+    severity: "HIGH",
+    status: "OPEN",
+    agent: "finance-operator",
+    decisionId: "dec_01J8XQ4M2K",
+    openedAt: "2026-09-21 22:20:15Z",
+    timeline: [
+      { at: "2026-09-21 22:14:07Z", label: "Approval apr_9d41e7a3 created" },
+      { at: "2026-09-21 22:20:15Z", label: "Resolution window warning threshold reached" },
+    ],
+  },
+  {
+    id: "inc_9c5f1e22",
+    title: "Unusual read volume from report-builder",
+    summary: "report-builder read volume in staging exceeded its typical range. No policy violation, flagged for review.",
+    severity: "MEDIUM",
+    status: "RESOLVED",
+    agent: "report-builder",
+    openedAt: "2026-09-20 14:02:40Z",
+    resolvedAt: "2026-09-20 15:10:12Z",
+    timeline: [
+      { at: "2026-09-20 14:02:40Z", label: "Volume anomaly detected" },
+      { at: "2026-09-20 14:20:00Z", label: "Reviewed by workspace owner" },
+      { at: "2026-09-20 15:10:12Z", label: "Marked resolved: expected reporting run" },
+    ],
+  },
+];
+
+export function getIncident(id: string) {
+  return demoIncidents.find((i) => i.id === id);
+}
+===== C:\AI\AEGISORA\website4\src\lib\demo-integrations.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+
+export type IntegrationStatus = "CONNECTED" | "NOT_CONNECTED";
+
+export type DemoIntegration = {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  status: IntegrationStatus;
+  connectedSince?: string;
+  syncedItem: string;
+};
+
+export const demoIntegrations: DemoIntegration[] = [
+  { id: "slack", name: "Slack", category: "Alerting", description: "Sends incident and approval notifications to workspace channels.", status: "CONNECTED", connectedSince: "2026-05-01", syncedItem: "#aegisora-alerts" },
+  { id: "pagerduty", name: "PagerDuty", category: "Alerting", description: "Pages the on-call engineer for CRITICAL incidents.", status: "CONNECTED", connectedSince: "2026-05-03", syncedItem: "Aegisora Escalation Policy" },
+  { id: "datadog", name: "Datadog", category: "Observability", description: "Exports trace and latency metrics for external dashboards.", status: "CONNECTED", connectedSince: "2026-06-14", syncedItem: "aegisora.traces" },
+  { id: "jira", name: "Jira", category: "Ticketing", description: "Creates tickets automatically from incidents and policy reviews.", status: "NOT_CONNECTED", syncedItem: "-" },
+  { id: "okta", name: "Okta", category: "Identity", description: "Syncs users and group membership for workspace access control.", status: "NOT_CONNECTED", syncedItem: "-" },
+  { id: "github", name: "GitHub", category: "Developer tooling", description: "Links policy changes to pull requests for review history.", status: "NOT_CONNECTED", syncedItem: "-" },
+];
+===== C:\AI\AEGISORA\website4\src\lib\demo-policies.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+import type { demoDecisions } from "@/lib/demo-data";
+
+type DecisionState = (typeof demoDecisions)[number]["state"];
+
+export type DemoPolicy = {
+  id: string;
+  name: string;
+  version: string;
+  agent: string;
+  action: string;
+  environment: string;
+  decision: DecisionState;
+  description: string;
+  conditions: string[];
+  updatedAt: string;
+  matchesToday: number;
+};
+
+export const demoPolicies: DemoPolicy[] = [
+  {
+    id: "prod-data-protection-v1",
+    name: "prod-data-protection",
+    version: "v1",
+    agent: "ops-assistant",
+    action: "delete_records",
+    environment: "production",
+    decision: "BLOCK",
+    description: "Blocks any destructive write against production data tables regardless of caller.",
+    conditions: ["environment == production", "action in [delete_records, drop_table, truncate]", "resource.sensitivity >= high"],
+    updatedAt: "2026-08-30",
+    matchesToday: 3,
+  },
+  {
+    id: "finance-transfer-review-v2",
+    name: "finance-transfer-review",
+    version: "v2",
+    agent: "finance-operator",
+    action: "external_transfer",
+    environment: "production",
+    decision: "ESCALATE",
+    description: "Routes external transfers above the configured threshold to human approval.",
+    conditions: ["action == external_transfer", "amount > 5000", "destination.verified == false"],
+    updatedAt: "2026-09-10",
+    matchesToday: 14,
+  },
+  {
+    id: "staging-read-only-v1",
+    name: "staging-read-only",
+    version: "v1",
+    agent: "report-builder",
+    action: "read_report_data",
+    environment: "staging",
+    decision: "ALLOW",
+    description: "Allows read-only report generation queries against staging datasets.",
+    conditions: ["environment == staging", "action == read_report_data"],
+    updatedAt: "2026-07-22",
+    matchesToday: 128,
+  },
+  {
+    id: "support-pii-mask-v3",
+    name: "support-pii-mask",
+    version: "v3",
+    agent: "support-bot",
+    action: "read_account",
+    environment: "production",
+    decision: "ALLOW",
+    description: "Allows account lookups with automatic PII field masking applied at response time.",
+    conditions: ["action == read_account", "response.fields masked = [ssn, dob, card_number]"],
+    updatedAt: "2026-09-01",
+===== C:\AI\AEGISORA\website4\src\lib\demo-providers.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+
+export type ProviderStatus = "CONNECTED" | "DEGRADED" | "NOT_CONNECTED";
+
+export type DemoModel = { name: string; contextWindow: string; avgLatencyMs: number };
+
+export type DemoProvider = {
+  id: string;
+  name: string;
+  kind: string;
+  status: ProviderStatus;
+  region: string;
+  connectedSince?: string;
+  requestsToday: number;
+  avgLatencyMs: number;
+  models: DemoModel[];
+  notes: string;
+};
+
+export const demoProviders: DemoProvider[] = [
+  {
+    id: "openai",
+    name: "OpenAI",
+    kind: "LLM provider",
+    status: "CONNECTED",
+    region: "us-east-1",
+    connectedSince: "2026-04-02",
+    requestsToday: 3820,
+    avgLatencyMs: 410,
+    models: [
+      { name: "gpt-4.1", contextWindow: "128K", avgLatencyMs: 480 },
+      { name: "gpt-4.1-mini", contextWindow: "128K", avgLatencyMs: 260 },
+    ],
+    notes: "Primary provider for finance-operator and ops-assistant.",
+  },
+  {
+    id: "anthropic",
+    name: "Anthropic",
+    kind: "LLM provider",
+    status: "CONNECTED",
+    region: "us-west-2",
+    connectedSince: "2026-04-02",
+    requestsToday: 2140,
+    avgLatencyMs: 520,
+    models: [
+      { name: "claude-sonnet-4-6", contextWindow: "200K", avgLatencyMs: 540 },
+      { name: "claude-haiku-4-5", contextWindow: "200K", avgLatencyMs: 210 },
+    ],
+    notes: "Used by report-builder for long-context analytics summaries.",
+  },
+  {
+    id: "azure-openai",
+    name: "Azure OpenAI",
+    kind: "Cloud AI platform",
+    status: "DEGRADED",
+    region: "eu-west-1",
+    connectedSince: "2026-05-19",
+    requestsToday: 640,
+    avgLatencyMs: 910,
+    models: [{ name: "gpt-4o", contextWindow: "128K", avgLatencyMs: 910 }],
+    notes: "Elevated latency reported by the EU workspace since 2026-09-20.",
+  },
+  {
+    id: "aws-bedrock",
+    name: "AWS Bedrock",
+    kind: "Cloud AI platform",
+    status: "NOT_CONNECTED",
+    region: "-",
+    requestsToday: 0,
+    avgLatencyMs: 0,
+===== C:\AI\AEGISORA\website4\src\lib\demo-risk.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+
+export const riskTrend = [
+  { day: 1, low: 40, medium: 12, high: 4, critical: 1 },
+  { day: 2, low: 44, medium: 14, high: 3, critical: 0 },
+  { day: 3, low: 41, medium: 16, high: 5, critical: 1 },
+  { day: 4, low: 48, medium: 15, high: 4, critical: 0 },
+  { day: 5, low: 46, medium: 18, high: 6, critical: 2 },
+  { day: 6, low: 52, medium: 17, high: 5, critical: 1 },
+  { day: 7, low: 50, medium: 20, high: 7, critical: 1 },
+  { day: 8, low: 55, medium: 19, high: 6, critical: 0 },
+  { day: 9, low: 53, medium: 22, high: 8, critical: 2 },
+  { day: 10, low: 58, medium: 21, high: 6, critical: 1 },
+  { day: 11, low: 57, medium: 24, high: 9, critical: 2 },
+  { day: 12, low: 61, medium: 23, high: 7, critical: 1 },
+];
+
+export const riskByAgent: { agent: string; low: number; medium: number; high: number; critical: number }[] = [
+  { agent: "finance-operator", low: 720, medium: 84, high: 32, critical: 5 },
+  { agent: "ops-assistant", low: 1140, medium: 60, high: 20, critical: 2 },
+  { agent: "report-builder", low: 2280, medium: 20, high: 2, critical: 0 },
+  { agent: "support-bot", low: 1490, medium: 100, high: 30, critical: 3 },
+];
+===== C:\AI\AEGISORA\website4\src\lib\demo-settings.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+
+export type DemoApiKey = { id: string; label: string; prefix: string; createdAt: string; lastUsed: string; scopes: string[] };
+
+export const apiKeys: DemoApiKey[] = [
+  { id: "key_1", label: "CI pipeline", prefix: "aeg_live_4f2a...", createdAt: "2026-05-02", lastUsed: "2026-09-21 22:10:00Z", scopes: ["decisions:read", "traces:read"] },
+  { id: "key_2", label: "Local dev", prefix: "aeg_test_9c31...", createdAt: "2026-06-11", lastUsed: "2026-09-18 09:44:00Z", scopes: ["decisions:read"] },
+];
+
+export const notificationPreferences: { label: string; channel: string; enabled: boolean }[] = [
+  { label: "Critical incidents", channel: "Slack + Email", enabled: true },
+  { label: "Approval requests", channel: "Slack", enabled: true },
+  { label: "Weekly digest", channel: "Email", enabled: true },
+  { label: "Policy changes", channel: "Email", enabled: false },
+];
+
+export const account = {
+  name: "Maradona Ã–zer",
+  email: "maradona@aegisora.dev",
+  timezone: "Europe/Berlin",
+};
+===== C:\AI\AEGISORA\website4\src\lib\demo-team.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+
+export type MemberRole = "OWNER" | "ADMIN" | "MEMBER" | "VIEWER";
+export type MemberStatus = "ACTIVE" | "INVITED" | "SUSPENDED";
+
+export type DemoMember = {
+  id: string;
+  name: string;
+  email: string;
+  role: MemberRole;
+  status: MemberStatus;
+  lastActive: string;
+  joinedAt: string;
+};
+
+export const demoMembers: DemoMember[] = [
+  { id: "u_01", name: "Maradona Ã–zer", email: "maradona@aegisora.dev", role: "OWNER", status: "ACTIVE", lastActive: "2026-09-22 08:10:00Z", joinedAt: "2026-03-19" },
+  { id: "u_02", name: "Lena Brandt", email: "lena@aegisora.dev", role: "ADMIN", status: "ACTIVE", lastActive: "2026-09-21 19:44:00Z", joinedAt: "2026-04-01" },
+  { id: "u_03", name: "Marco Ferreira", email: "marco@aegisora.dev", role: "MEMBER", status: "ACTIVE", lastActive: "2026-09-20 16:02:00Z", joinedAt: "2026-05-14" },
+  { id: "u_04", name: "Priya Nair", email: "priya@aegisora.dev", role: "MEMBER", status: "INVITED", lastActive: "-", joinedAt: "2026-09-18" },
+  { id: "u_05", name: "Tomasz WiÅ›niewski", email: "tomasz@aegisora.dev", role: "VIEWER", status: "SUSPENDED", lastActive: "2026-08-02 10:00:00Z", joinedAt: "2026-04-22" },
+];
+
+export const roleDescriptions: { role: MemberRole; label: string; description: string }[] = [
+  { role: "OWNER", label: "Owner", description: "Full control, including billing, workspace deletion, and ownership transfer." },
+  { role: "ADMIN", label: "Admin", description: "Manages policies, agents, and integrations. Cannot delete the workspace." },
+  { role: "MEMBER", label: "Member", description: "Views runtime data and can respond to approval requests." },
+  { role: "VIEWER", label: "Viewer", description: "Read-only access to dashboards, decisions, and evidence." },
+];
+===== C:\AI\AEGISORA\website4\src\lib\demo-traces.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+
+export type TraceStageStatus = "done" | "skipped";
+
+export type DemoTrace = {
+  id: string;
+  decisionId: string;
+  agent: string;
+  action: string;
+  environment: string;
+  outcome: "ALLOW" | "BLOCK" | "ESCALATE";
+  durationMs: number;
+  startedAt: string;
+  stages: { name: string; status: TraceStageStatus; durationMs: number }[];
+};
+
+export const demoTraces: DemoTrace[] = [
+  {
+    id: "trc_9a41c7e2",
+    decisionId: "dec_01J8XQ4M2K",
+    agent: "finance-operator",
+    action: "external_transfer",
+    environment: "production",
+    outcome: "ESCALATE",
+    durationMs: 184,
+    startedAt: "2026-09-21 22:14:07Z",
+    stages: [
+      { name: "REQUEST", status: "done", durationMs: 4 },
+      { name: "CONTEXT", status: "done", durationMs: 22 },
+      { name: "POLICY", status: "done", durationMs: 31 },
+      { name: "RISK", status: "done", durationMs: 40 },
+      { name: "DECISION", status: "done", durationMs: 12 },
+      { name: "ENFORCEMENT", status: "done", durationMs: 9 },
+      { name: "EXECUTION", status: "skipped", durationMs: 0 },
+      { name: "EVIDENCE", status: "done", durationMs: 66 },
+    ],
+  },
+  {
+    id: "trc_6b30f2a9",
+    decisionId: "dec_01J8XQ4M2J",
+    agent: "report-builder",
+    action: "read_report_data",
+    environment: "staging",
+    outcome: "ALLOW",
+    durationMs: 61,
+    startedAt: "2026-09-21 19:52:03Z",
+    stages: [
+      { name: "REQUEST", status: "done", durationMs: 2 },
+      { name: "CONTEXT", status: "done", durationMs: 8 },
+      { name: "POLICY", status: "done", durationMs: 11 },
+      { name: "RISK", status: "done", durationMs: 9 },
+      { name: "DECISION", status: "done", durationMs: 4 },
+      { name: "ENFORCEMENT", status: "done", durationMs: 3 },
+      { name: "EXECUTION", status: "done", durationMs: 18 },
+      { name: "EVIDENCE", status: "done", durationMs: 6 },
+    ],
+  },
+  {
+    id: "trc_f81d5c30",
+    decisionId: "dec_01J8XQ4M2L",
+    agent: "ops-assistant",
+    action: "delete_records",
+    environment: "production",
+    outcome: "BLOCK",
+    durationMs: 47,
+    startedAt: "2026-09-21 21:12:08Z",
+    stages: [
+      { name: "REQUEST", status: "done", durationMs: 3 },
+      { name: "CONTEXT", status: "done", durationMs: 10 },
+      { name: "POLICY", status: "done", durationMs: 14 },
+===== C:\AI\AEGISORA\website4\src\lib\demo-webhooks.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+
+export type WebhookStatus = "ACTIVE" | "FAILING" | "DISABLED";
+
+export type DemoDelivery = {
+  id: string;
+  event: string;
+  statusCode: number;
+  success: boolean;
+  attempt: number;
+  sentAt: string;
+  durationMs: number;
+};
+
+export type DemoWebhook = {
+  id: string;
+  url: string;
+  events: string[];
+  status: WebhookStatus;
+  createdAt: string;
+  lastDeliveryAt: string;
+  successRate: number;
+  deliveries: DemoDelivery[];
+};
+
+export const demoWebhooks: DemoWebhook[] = [
+  {
+    id: "wh_3f9a1c",
+    url: "https://hooks.internal.example.com/aegisora/incidents",
+    events: ["incident.opened", "incident.resolved"],
+    status: "ACTIVE",
+    createdAt: "2026-05-10",
+    lastDeliveryAt: "2026-09-21 22:20:20Z",
+    successRate: 99.4,
+    deliveries: [
+      { id: "dlv_1", event: "incident.opened", statusCode: 200, success: true, attempt: 1, sentAt: "2026-09-21 22:20:20Z", durationMs: 145 },
+      { id: "dlv_2", event: "incident.opened", statusCode: 200, success: true, attempt: 1, sentAt: "2026-09-21 21:40:05Z", durationMs: 132 },
+      { id: "dlv_3", event: "incident.resolved", statusCode: 200, success: true, attempt: 1, sentAt: "2026-09-20 15:10:14Z", durationMs: 118 },
+    ],
+  },
+  {
+    id: "wh_7b2e88",
+    url: "https://hooks.internal.example.com/aegisora/approvals",
+    events: ["approval.requested", "approval.resolved"],
+    status: "FAILING",
+    createdAt: "2026-06-02",
+    lastDeliveryAt: "2026-09-21 22:14:10Z",
+    successRate: 61.2,
+    deliveries: [
+      { id: "dlv_4", event: "approval.requested", statusCode: 503, success: false, attempt: 3, sentAt: "2026-09-21 22:14:10Z", durationMs: 3040 },
+      { id: "dlv_5", event: "approval.requested", statusCode: 503, success: false, attempt: 2, sentAt: "2026-09-21 22:14:07Z", durationMs: 2980 },
+      { id: "dlv_6", event: "approval.resolved", statusCode: 200, success: true, attempt: 1, sentAt: "2026-09-20 11:02:00Z", durationMs: 154 },
+    ],
+  },
+  {
+    id: "wh_c19d40",
+    url: "https://hooks.internal.example.com/aegisora/decisions",
+    events: ["decision.blocked"],
+    status: "DISABLED",
+    createdAt: "2026-04-20",
+    lastDeliveryAt: "2026-08-30 09:00:00Z",
+    successRate: 100,
+    deliveries: [
+      { id: "dlv_7", event: "decision.blocked", statusCode: 200, success: true, attempt: 1, sentAt: "2026-08-30 09:00:00Z", durationMs: 98 },
+    ],
+  },
+];
+
+export function getWebhook(id: string) {
+  return demoWebhooks.find((w) => w.id === id);
+===== C:\AI\AEGISORA\website4\src\lib\demo-workspace.ts =====
+// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+
+export const workspace = {
+  name: "Aegisora Production",
+  slug: "aegisora-prod",
+  createdAt: "2026-03-19",
+  region: "eu-central-1",
+  environments: ["production", "staging", "development"],
+  dataRetentionDays: 90,
+  evidenceRetentionDays: 365,
+  defaultDecisionMode: "ENFORCE",
+};
+===== BOZUK KARAKTER TARAMASI =====

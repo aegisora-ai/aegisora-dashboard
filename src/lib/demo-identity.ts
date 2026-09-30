@@ -1,12 +1,11 @@
-// SAMPLE DATA ONLY. Not connected to Aegisora Core.
+// Values verified from the current application configuration; live provider
+// and project settings are not represented as configured without evidence.
 
 export const identityConfig = {
-  ssoProvider: "Okta (SAML 2.0)",
+  ssoProvider: "No identity provider linked",
   ssoConfigured: false,
   scimEnabled: false,
-  mfaEnforced: true,
-  mfaMethods: ["Authenticator app", "Passkey"],
-  sessionTimeoutMinutes: 720,
-  allowedDomains: ["aegisora.dev"],
-  lastSecurityReview: "2026-08-15",
+  sessionTimeoutMinutes: null,
+  allowedDomains: [] as string[],
+  lastSecurityReview: null,
 };

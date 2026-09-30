@@ -1,50 +1,47 @@
-import Link from "next/link";
-import type { Metadata } from "next";
-import { DecisionBadge } from "@/components/aegisora/state-badge";
-import { demoDecisions } from "@/lib/demo-data";
+"use client";
 
-export const metadata: Metadata = { title: "Evidence" };
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { LiveTable } from "@/components/aegisora/live/live-table";
+import { Notice, btnGhost, fmt } from "@/components/aegisora/live/ui";
+
+function Verify({ wsId }: { wsId: string }) {
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  return (
+    <>
+      <button
+        className={btnGhost}
+        onClick={async () => {
+          const { data, error } = await createClient().rpc("verify_evidence_chain", { ws: wsId });
+          if (error) return setMsg({ ok: false, text: error.message });
+          const r = (Array.isArray(data) ? data[0] : data) as { total: number; broken: number };
+          setMsg(r.broken === 0 ? { ok: true, text: `Chain intact: ${r.total} records verified.` } : { ok: false, text: `Integrity failure: ${r.broken} of ${r.total} records do not verify.` });
+        }}
+      >
+        Verify chain
+      </button>
+      {msg && <Notice ok={msg.ok}>{msg.text}</Notice>}
+    </>
+  );
+}
 
 export default function EvidencePage() {
   return (
-    <div className="mx-auto max-w-[80rem] space-y-6">
-      <header>
-        <h1 className="text-3xl font-light tracking-tight">Evidence ledger</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Records linked to decisions, traces and executions.
-        </p>
-      </header>
-
-      <div className="aeg-panel overflow-x-auto">
-        <table className="w-full min-w-[900px] text-left text-sm">
-          <thead>
-            <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-              <th className="px-4 py-3 font-medium">Evidence ID</th>
-              <th className="px-4 py-3 font-medium">Decision</th>
-              <th className="px-4 py-3 font-medium">Outcome</th>
-              <th className="px-4 py-3 font-medium">Agent</th>
-              <th className="px-4 py-3 font-medium">Trace ID</th>
-              <th className="px-4 py-3 font-medium">Execution ID</th>
-              <th className="px-4 py-3 font-medium">Recorded (UTC)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {demoDecisions.map((d) => (
-              <tr key={d.evidenceId} className="border-b border-border/60 last:border-0 hover:bg-surface-3">
-                <td className="px-4 py-3 font-mono text-xs">{d.evidenceId}</td>
-                <td className="px-4 py-3">
-                  <Link href={`/dashboard/decisions/${d.id}`} className="font-mono text-xs text-cyan underline-offset-4 hover:underline">{d.id}</Link>
-                </td>
-                <td className="px-4 py-3"><DecisionBadge state={d.state} /></td>
-                <td className="px-4 py-3 font-mono text-xs">{d.agent}</td>
-                <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{d.traceId}</td>
-                <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{d.executionId}</td>
-                <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-muted-foreground">{d.timestamp}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <LiveTable
+      table="evidence"
+      title="Evidence"
+      description="Append-only, hash-chained record of every decision. Each entry commits to the one before it."
+      orderBy="seq"
+      limit={200}
+      headerActions={(ws) => <Verify wsId={ws.id} />}
+      columns={[
+        { label: "#", render: (r) => <span className="font-mono text-xs">{r.seq}</span> },
+        { label: "Time", render: (r) => fmt(r.created_at) },
+        { label: "Action", render: (r) => <span className="font-mono text-xs">{r.payload?.action}</span> },
+        { label: "Effect", render: (r) => r.payload?.effect },
+        { label: "Hash", render: (r) => <span className="font-mono text-[11px] text-muted-foreground">{String(r.hash).slice(0, 16)}...</span> },
+      ]}
+      empty={{ title: "No evidence yet", body: "An evidence record is written for every decision, including blocked ones." }}
+    />
   );
 }

@@ -1,19 +1,23 @@
-import type { Metadata } from "next";
-import { DecisionsTable } from "@/components/aegisora/decisions-table";
-import { demoDecisions } from "@/lib/demo-data";
+"use client";
 
-export const metadata: Metadata = { title: "Decisions" };
+import { LiveTable } from "@/components/aegisora/live/live-table";
+import { Badge, fmt } from "@/components/aegisora/live/ui";
 
 export default function DecisionsPage() {
   return (
-    <div className="mx-auto max-w-[80rem] space-y-6">
-      <header>
-        <h1 className="text-3xl font-light tracking-tight">Decision ledger</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Every evaluated action, with the decision that governed its execution.
-        </p>
-      </header>
-      <DecisionsTable rows={demoDecisions} />
-    </div>
+    <LiveTable
+      table="decisions"
+      title="Decisions"
+      description="Every action your agents attempted and what governance decided. Click a row for the full record."
+      limit={200}
+      columns={[
+        { label: "Time", render: (r) => fmt(r.created_at) },
+        { label: "Agent", render: (r) => r.agent_name },
+        { label: "Action", render: (r) => <span className="font-mono text-xs">{r.action}</span> },
+        { label: "Decision", render: (r) => <Badge value={r.effect} /> },
+        { label: "Reason", render: (r) => <span className="text-muted-foreground">{r.reason}</span> },
+      ]}
+      empty={{ title: "No decisions yet", body: "Decisions appear as soon as an agent calls POST /api/v1/evaluate. Create an API key, then use the quickstart on the Agents page." }}
+    />
   );
 }

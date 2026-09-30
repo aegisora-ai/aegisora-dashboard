@@ -1,55 +1,39 @@
-import Link from "next/link";
-import type { Metadata } from "next";
-import { ApprovalBadge, RiskIndicator } from "@/components/aegisora/state-badge";
-import { demoApprovals } from "@/lib/demo-approvals";
-import { cn } from "@/lib/utils";
+"use client";
 
-export const metadata: Metadata = { title: "Approvals" };
+import { createClient } from "@/lib/supabase/client";
+import { LiveTable } from "@/components/aegisora/live/live-table";
+import { Badge, btnGhost, fmt } from "@/components/aegisora/live/ui";
+
+async function resolve(id: string, status: "approved" | "rejected", reload: () => void) {
+  const { data, error } = await createClient().from("approvals").update({ status }).eq("id", id).eq("status", "pending").select("id");
+  if (error) alert(error.message);
+  else if (!data || data.length === 0) alert("Nothing changed. You may lack permission (owner, admin or analyst) or it was already resolved.");
+  reload();
+}
 
 export default function ApprovalsPage() {
-  const rows = [...demoApprovals].sort((a, b) => Number(b.status === "PENDING") - Number(a.status === "PENDING"));
-
   return (
-    <div className="mx-auto max-w-[80rem] space-y-6">
-      <header>
-        <h1 className="text-3xl font-light tracking-tight">Approval queue</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Actions that paused at the execution boundary and need an authorized person.
-        </p>
-      </header>
-
-      <div className="aeg-panel overflow-x-auto">
-        <table className="w-full min-w-[820px] text-left text-sm">
-          <thead>
-            <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Agent</th>
-              <th className="px-4 py-3 font-medium">Action</th>
-              <th className="px-4 py-3 font-medium">Environment</th>
-              <th className="px-4 py-3 font-medium">Risk</th>
-              <th className="px-4 py-3 font-medium">Requested (UTC)</th>
-              <th className="px-4 py-3 font-medium">Approval ID</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((a) => (
-              <tr key={a.id} className={cn("border-b border-border/60 last:border-0 hover:bg-surface-3", a.status === "PENDING" && "bg-escalate-muted/40")}>
-                <td className="px-4 py-3"><ApprovalBadge status={a.status} /></td>
-                <td className="px-4 py-3 font-mono text-xs">{a.agent}</td>
-                <td className="px-4 py-3 font-mono text-xs">{a.action}</td>
-                <td className="px-4 py-3 text-xs">{a.environment}</td>
-                <td className="px-4 py-3"><RiskIndicator level={a.risk} /></td>
-                <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-muted-foreground">{a.requestedAt}</td>
-                <td className="px-4 py-3">
-                  <Link href={`/dashboard/approvals/${a.id}`} className="font-mono text-xs text-cyan underline-offset-4 hover:underline">
-                    {a.id}
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <LiveTable
+      table="approvals"
+      title="Approvals"
+      description="Escalated actions wait here. Execution stays paused until a human decides."
+      realtime
+      columns={[
+        { label: "Requested", render: (r) => fmt(r.requested_at) },
+        { label: "Agent", render: (r) => r.agent_name },
+        { label: "Action", render: (r) => <span className="font-mono text-xs">{r.action}</span> },
+        { label: "Status", render: (r) => <Badge value={r.status === "pending" && new Date(r.expires_at) < new Date() ? "expired" : r.status} /> },
+        { label: "Expires", render: (r) => fmt(r.expires_at) },
+      ]}
+      actions={(r, reload) =>
+        r.status === "pending" && new Date(r.expires_at) > new Date() ? (
+          <div className="flex justify-end gap-2">
+            <button className={btnGhost} onClick={() => void resolve(r.id, "approved", reload)}>Approve</button>
+            <button className={btnGhost} onClick={() => void resolve(r.id, "rejected", reload)}>Reject</button>
+          </div>
+        ) : null
+      }
+      empty={{ title: "No approvals yet", body: "When a policy returns ESCALATE, the request appears here. Load the starter policies and send a payment.* action to try it." }}
+    />
   );
 }

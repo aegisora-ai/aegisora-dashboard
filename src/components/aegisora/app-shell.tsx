@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,8 +10,9 @@ import { CommandPalette } from "@/components/aegisora/command-palette";
 import { Logo } from "@/components/aegisora/logo";
 
 import { UserMenu } from "@/components/aegisora/user-menu";
+import { WelcomeTour } from "@/components/aegisora/welcome-tour";
 import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
-import { demoApprovals } from "@/lib/demo-approvals";
+import { usePendingApprovals } from "@/lib/aegisora/use-pending-approvals";
 import { focusRing } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -51,12 +52,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [palette, setPalette] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [notif, setNotif] = useState(false);
-  const pending = demoApprovals.filter((a) => a.status === "PENDING").length;
+  const pending = usePendingApprovals(); const isDemo = /\/dashboard\/(providers|integrations)(\/|$)/.test(pathname) || /\/dashboard\/(agents|policies|approvals|decisions|incidents|traces|webhooks|evidence)\/[^/]+/.test(pathname);
 
+  // Route change intentionally resets transient shell UI state.
   useEffect(() => {
+  const timer = window.setTimeout(() => {
     setDrawer(false);
     setNotif(false);
-  }, [pathname]);
+  }, 0);
+
+  return () => window.clearTimeout(timer);
+}, [pathname]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -85,7 +91,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <SidebarNav />
           </div>
           <div className="border-t border-border px-5 py-3 font-mono text-[10px] tracking-wider text-muted-foreground">
-            AEGISORA 3.0 / SAMPLE DATA
+            AEGISORA 3.0
           </div>
         </aside>
 
@@ -148,7 +154,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       <span className="block text-sm font-medium">{pending} approval waiting</span>
                       <span className="block text-xs text-muted-foreground">Execution is paused until it is resolved.</span>
                     </Link>
-                    <p className="px-3 py-2 font-mono text-[10px] tracking-wider text-muted-foreground">SAMPLE DATA</p>
                   </div>
                 )}
               </div>
@@ -160,15 +165,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          <div className="border-b border-escalate/30 bg-escalate-muted px-4 py-1.5 text-xs text-escalate md:px-6">
-            Sample data. This console is not yet connected to Aegisora Core.
-          </div>
+          {isDemo && (<div className="border-b border-escalate/30 bg-escalate-muted px-4 py-1.5 text-xs text-escalate md:px-6">Sample data. This section is not yet connected to live data.</div>)}
 
           <main className="flex-1 px-4 py-8 md:px-6">{children}</main>
         </div>
 
         <CommandPalette open={palette} onClose={() => setPalette(false)} />
+        <WelcomeTour />
       </div>
     </WorkspaceProvider>
   );
 }
+
+
+
+

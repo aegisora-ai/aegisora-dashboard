@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
 
@@ -42,27 +42,27 @@
   --radius: 0.25rem;
 }
 
-:root.dark {
+.dark {
   color-scheme: dark;
-  --background: #070b12;
-  --surface-1: #0a0f19;
-  --surface-2: #0d1420;
-  --surface-3: #121b28;
-  --surface-4: #1a2738;
-  --foreground: #f5f7fa;
-  --muted-foreground: #8993a5;
+  --background: #020611;
+  --surface-1: #061022;
+  --surface-2: #09162e;
+  --surface-3: #0c1c3a;
+  --surface-4: #102347;
+  --foreground: #ffffff;
+  --muted-foreground: #8a9fc2;
   --primary: #1677ff;
   --primary-hover: #2188ff;
   --primary-foreground: #ffffff;
   --cyan: #00b8ff;
-  --card: #0d1420;
-  --card-foreground: #f5f7fa;
-  --popover: #121b28;
-  --popover-foreground: #f5f7fa;
-  --secondary: #121b28;
-  --secondary-foreground: #f5f7fa;
-  --muted: #0d1420;
-  --accent: #1a2738;
+  --card: #061022;
+  --card-foreground: #ffffff;
+  --popover: #061022;
+  --popover-foreground: #ffffff;
+  --secondary: #0c1c3a;
+  --secondary-foreground: #ffffff;
+  --muted: #09162e;
+  --accent: #102347;
   --accent-foreground: #f5f7fa;
   --border: #1a2738;
   --input: #1a2738;
@@ -113,8 +113,8 @@
   --color-block-muted: var(--block-muted);
   --color-escalate: var(--escalate);
   --color-escalate-muted: var(--escalate-muted);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-sans: var(--font-app-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-app-mono), ui-monospace, SFMono-Regular, monospace;
   --radius-sm: calc(var(--radius) - 1px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
@@ -128,7 +128,7 @@
 }
 
 .aeg-grid-bg {
-  background-image: 
+  background-image:
     linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
   background-size: 32px 32px;
@@ -159,38 +159,69 @@
   border-radius: 6px;
   box-shadow: var(--panel-shadow);
 }
-/* === AEGISORA PRODUCTION DARK THEME === */
-:root {
-  color-scheme: dark !important;
-  --background: #020611 !important;
-  --surface-1: #061022 !important;
-  --surface-2: #09162e !important;
-  --surface-3: #0c1c3a !important;
-  --surface-4: #102347 !important;
-  --foreground: #ffffff !important;
-  --muted-foreground: #8a9fc2 !important;
-  --card: #061022 !important;
-  --card-foreground: #ffffff !important;
-  --popover: #061022 !important;
-  --popover-foreground: #ffffff !important;
-  --secondary: #0c1c3a !important;
-  --secondary-foreground: #ffffff !important;
-  --muted: #09162e !important;
-  --accent: #102347 !important;
-}
 
-body {
-  background-color: var(--background) !important;
-  background-image: 
+.dark body {
+  background-image:
     radial-gradient(circle at 0% 0%, rgba(22, 119, 255, 0.15) 0%, transparent 45%),
-    radial-gradient(circle at 100% 100%, rgba(11, 111, 181, 0.12) 0%, transparent 45%) !important;
-  background-attachment: fixed !important;
+    radial-gradient(circle at 100% 100%, rgba(11, 111, 181, 0.12) 0%, transparent 45%);
+  background-attachment: fixed;
 }
 
-/* Glassmorphism Header (Cam Efekti) */
-header, [class*="site-header"] {
-  background: rgba(2, 6, 17, 0.65) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border-bottom: 1px solid rgba(22, 119, 255, 0.15) !important;
+header,
+[class*="site-header"] {
+  background: color-mix(in srgb, var(--background) 65%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+/* === Ozel Scrollbar - Soft, Tema ile Uyumlu === */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(22, 119, 255, 0.25) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(22, 119, 255, 0.25);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(22, 119, 255, 0.45);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+
+
+.aeg-ambient-cell {
+  animation-name: aeg-ambient-pulse;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+@keyframes aeg-ambient-pulse {
+  0%, 100% { opacity: 0; }
+  50% { opacity: var(--tw-opacity, 1); }
+}
+
+@keyframes loading-bar {
+  0%   { transform: translateX(-100%); }
+  50%  { transform: translateX(150%); }
+  100% { transform: translateX(300%); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

@@ -1,15 +1,37 @@
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = { title: "Incidents" };
+import { createClient } from "@/lib/supabase/client";
+import { LiveTable } from "@/components/aegisora/live/live-table";
+import { Badge, btnGhost, fmt } from "@/components/aegisora/live/ui";
 
 export default function IncidentsPage() {
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <header>
-        <h1 className="text-3xl font-light tracking-tight">Incidents</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Security alerts and threshold violations.</p>
-      </header>
-      <div className="aeg-panel px-5 py-8 text-sm text-muted-foreground">No active incidents in this workspace.</div>
-    </div>
+    <LiveTable
+      table="incidents"
+      title="Incidents"
+      description="Blocked actions raise an incident (configurable in Settings)."
+      realtime
+      columns={[
+        { label: "Time", render: (r) => fmt(r.created_at) },
+        { label: "Severity", render: (r) => <Badge value={r.severity} /> },
+        { label: "Title", render: (r) => r.title },
+        { label: "Status", render: (r) => <Badge value={r.status} /> },
+      ]}
+      actions={(r, reload) =>
+        r.status === "open" ? (
+          <button
+            className={btnGhost}
+            onClick={async () => {
+              const { error } = await createClient().from("incidents").update({ status: "resolved", resolved_at: new Date().toISOString() }).eq("id", r.id);
+              if (error) alert(error.message);
+              reload();
+            }}
+          >
+            Resolve
+          </button>
+        ) : null
+      }
+      empty={{ title: "No incidents", body: "Nothing has been blocked yet. Incidents are created automatically when a policy blocks an action." }}
+    />
   );
 }

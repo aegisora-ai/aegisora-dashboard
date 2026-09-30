@@ -1,181 +1,120 @@
-﻿'use client';
+﻿"use client";
 
-import React, { useState, useEffect } from 'react';
-import { ShieldAlert, Zap, Server, Activity, ShieldCheck, AlertTriangle } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { useEffect, useState } from "react";
+import { Check, Circle } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import type { Workspace } from "@/lib/aegisora/use-workspace";
+import { Badge, PageHeader, Panel, Skeleton, WorkspaceGate, fmt } from "@/components/aegisora/live/ui";
+import type { Row } from "@/components/aegisora/live/live-table";
 
-const mockChartData = [
-  { time: '08:00', allowed: 120, blocked: 12 },
-  { time: '09:00', allowed: 210, blocked: 25 },
-  { time: '10:00', allowed: 380, blocked: 45 },
-  { time: '11:00', allowed: 310, blocked: 30 },
-  { time: '12:00', allowed: 450, blocked: 80 },
-  { time: '13:00', allowed: 390, blocked: 60 },
-  { time: '14:00', allowed: 520, blocked: 90 },
-];
+type Stats = { agents: number; policies: number; keys: number; pending: number; incidents: number; allow: number; block: number; escalate: number };
 
-const mockLogs = [
-  { id: '1', agent: 'Customer-Support-Bot', action: 'stripe_refund_api', risk: 'High', status: 'BLOCKED', time: 'Just now' },
-  { id: '2', agent: 'Internal-Data-Analyzer', action: 'postgres_read_query', risk: 'Low', status: 'ALLOWED', time: '2 min ago' },
-  { id: '3', agent: 'HR-Assistant-Agent', action: 'send_email_api', risk: 'Medium', status: 'ESCALATED', time: '15 min ago' },
-  { id: '4', agent: 'Financial-Forecaster', action: 'aws_s3_write', risk: 'High', status: 'BLOCKED', time: '1 hour ago' },
-];
-
-const riskStyles: Record<string, string> = {
-  High: 'bg-red-500/10 text-red-400 ring-red-500/20',
-  Medium: 'bg-yellow-500/10 text-yellow-400 ring-yellow-500/20',
-  Low: 'bg-green-500/10 text-green-400 ring-green-500/20',
-};
-
-const statusStyles: Record<string, string> = {
-  BLOCKED: 'bg-red-500/20 text-red-400',
-  ALLOWED: 'bg-green-500/20 text-green-400',
-  ESCALATED: 'bg-yellow-500/20 text-yellow-400',
-};
-
-export default function DashboardPage() {
-  const [isMounted, setIsMounted] = useState(false);
+function Overview({ ws }: { ws: Workspace }) {
+  const [s, setS] = useState<Stats | null>(null);
+  const [recent, setRecent] = useState<Row[]>([]);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    let alive = true;
+    (async () => {
+      const supabase = createClient();
+      const c = (t: string) => supabase.from(t).select("id", { count: "exact", head: true }).eq("workspace_id", ws.id);
+      const since = new Date(Date.now() - 864e5).toISOString();
+      const [agents, policies, keys, pending, incidents, allow, block, esc, rec] = await Promise.all([
+        c("agents"),
+        c("policies").eq("enabled", true),
+        c("api_keys").is("revoked_at", null),
+        c("approvals").eq("status", "pending"),
+        c("incidents").eq("status", "open"),
+        c("decisions").eq("decision", "ALLOW").gte("created_at", since),
+        c("decisions").eq("decision", "BLOCK").gte("created_at", since),
+        c("decisions").eq("decision", "ESCALATE").gte("created_at", since),
+        supabase.from("decisions").select("id,created_at,decision,agent_id,agents(name),evidence(action)").eq("workspace_id", ws.id).order("created_at", { ascending: false }).limit(8),
+      ]);
+      if (!alive) return;
+      setS({
+        agents: agents.count ?? 0, policies: policies.count ?? 0, keys: keys.count ?? 0, pending: pending.count ?? 0,
+        incidents: incidents.count ?? 0, allow: allow.count ?? 0, block: block.count ?? 0, escalate: esc.count ?? 0,
+      });
+      setRecent((rec.data ?? []) as Row[]);
+    })();
+    return () => { alive = false; };
+  }, [ws.id]);
 
-  const stats = [
-    { name: 'Total Intercepted', value: '2.4M', change: '+14%', icon: Activity, color: 'text-blue-500' },
-    { name: 'Actions Blocked', value: '18,400', change: '+2%', icon: ShieldAlert, color: 'text-red-500' },
-    { name: 'Active Agents', value: '37', change: '+5', icon: Server, color: 'text-green-500' },
-    { name: 'Avg. Latency', value: '18ms', change: '-2ms', icon: Zap, color: 'text-yellow-500' },
+  if (!s) return <Skeleton />;
+  const total24 = s.allow + s.block + s.escalate;
+  const steps = [
+    { done: s.keys > 0, label: "Create an API key", href: "/dashboard/api-keys" },
+    { done: s.policies > 0, label: "Add a policy (or load the starter policies)", href: "/dashboard/policies" },
+    { done: s.agents > 0, label: "Connect or import your agents", href: "/dashboard/agents" },
+    { done: total24 > 0 || recent.length > 0, label: "Send your first test action", href: "/dashboard/decisions" },
+  ];
+  const tiles = [
+    { label: "Agents", value: s.agents, href: "/dashboard/agents" },
+    { label: "Active policies", value: s.policies, href: "/dashboard/policies" },
+    { label: "Pending approvals", value: s.pending, href: "/dashboard/approvals" },
+    { label: "Open incidents", value: s.incidents, href: "/dashboard/incidents" },
   ];
 
   return (
-    <div className="min-h-screen bg-[#020611] p-4 lg:p-8">
-      <div className="mx-auto max-w-7xl">
+    <div className="space-y-6">
+      <PageHeader title="Overview" description={`${ws.name}: live governance state.`} />
 
-        <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-white">Environment Overview</h1>
-            <p className="text-sm text-slate-400">Real-time metrics for your production AI agents.</p>
-          </div>
-          <div className="flex items-center gap-2 rounded-lg bg-[#1677ff]/10 px-4 py-2 text-[#1677ff] border border-[#1677ff]/20">
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1677ff] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#1677ff]"></span>
-            </span>
-            <span className="text-sm font-semibold">System Active</span>
-          </div>
-        </div>
+      {!steps.every((x) => x.done) && (
+        <Panel>
+          <h2 className="text-sm font-semibold">Get started</h2>
+          <ul className="mt-3 space-y-2">
+            {steps.map((x) => (
+              <li key={x.label}>
+                <Link href={x.href} className="flex items-center gap-2.5 text-sm hover:underline">
+                  {x.done ? <Check className="size-4 text-allow" /> : <Circle className="size-4 text-muted-foreground" />}
+                  <span className={x.done ? "text-muted-foreground line-through" : ""}>{x.label}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      )}
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat) => (
-            <div key={stat.name} className="group relative overflow-hidden rounded-xl border border-slate-800 bg-[#061022] p-6 shadow-lg transition-all hover:border-[#1677ff]/50 hover:shadow-[#1677ff]/10">
-              <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-slate-800/20 blur-2xl group-hover:bg-[#1677ff]/10 transition-all"></div>
-              <div className="flex items-center">
-                <div className="rounded-lg bg-slate-800/50 p-3">
-                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dt className="truncate text-sm font-medium text-slate-400">{stat.name}</dt>
-                  <dd className="flex items-baseline">
-                    <span className="text-2xl font-bold text-white">{stat.value}</span>
-                    <span className="ml-2 text-sm font-semibold text-green-400">{stat.change}</span>
-                  </dd>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="col-span-1 lg:col-span-2 rounded-xl border border-slate-800 bg-[#061022] p-6 shadow-lg">
-            <h3 className="text-lg font-semibold text-white mb-6">Agent Action Volume</h3>
-            <div className="h-[300px] w-full">
-              {isMounted && (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={mockChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorAllowed" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#1677ff" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#1677ff" stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorBlocked" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                    <XAxis dataKey="time" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#09162e', borderColor: '#1e293b', color: '#fff', borderRadius: '8px' }}
-                      itemStyle={{ color: '#fff' }}
-                    />
-                    <Area type="monotone" dataKey="allowed" stroke="#1677ff" strokeWidth={2} fillOpacity={1} fill="url(#colorAllowed)" />
-                    <Area type="monotone" dataKey="blocked" stroke="#ef4444" strokeWidth={2} fillOpacity={1} fill="url(#colorBlocked)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-slate-800 bg-[#061022] p-6 shadow-lg">
-            <h3 className="text-lg font-semibold text-white mb-6">Action Risk Levels</h3>
-            <div className="h-[300px] w-full">
-              {isMounted && (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={mockChartData.slice(-4)} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                    <XAxis dataKey="time" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                    <Tooltip
-                      cursor={{fill: '#1e293b', opacity: 0.4}}
-                      contentStyle={{ backgroundColor: '#09162e', borderColor: '#1e293b', borderRadius: '8px' }}
-                    />
-                    <Bar dataKey="blocked" fill="#ef4444" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="allowed" fill="#1677ff" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <h2 className="mt-12 text-xl font-bold text-white mb-4">Real-time Policy Evaluations</h2>
-        <div className="overflow-x-auto rounded-xl border border-slate-800 bg-[#061022] shadow-lg">
-          <table className="min-w-full divide-y divide-slate-800">
-            <thead className="bg-[#09162e]">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">AI Agent</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Action / Tool Call</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Risk Factor</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Decision</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Timestamp</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800 bg-[#061022]">
-              {mockLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-[#09162e] transition-colors">
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-white flex items-center gap-3">
-                    <Server className="h-4 w-4 text-slate-500" /> {log.agent}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-mono text-slate-300">{log.action}</td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${riskStyles[log.risk]}`}>
-                      {log.risk === 'High' ? <AlertTriangle size={12} /> : <ShieldCheck size={12} />}
-                      {log.risk}
-                    </span>
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${statusStyles[log.status]}`}>
-                      {log.status}
-                    </span>
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-400">{log.time}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {tiles.map((t) => (
+          <Link key={t.label} href={t.href} className="rounded-md border border-border bg-surface-1 p-5 hover:bg-surface-3">
+            <div className="font-mono text-[10px] tracking-wider text-muted-foreground">{t.label.toUpperCase()}</div>
+            <div className="mt-2 text-3xl font-semibold">{t.value}</div>
+          </Link>
+        ))}
       </div>
+
+      <Panel>
+        <h2 className="text-sm font-semibold">Decisions, last 24 hours</h2>
+        <div className="mt-3 flex gap-8 text-sm">
+          <span><span className="text-2xl font-semibold text-allow">{s.allow}</span> <span className="text-muted-foreground">allowed</span></span>
+          <span><span className="text-2xl font-semibold text-escalate">{s.escalate}</span> <span className="text-muted-foreground">escalated</span></span>
+          <span><span className="text-2xl font-semibold text-block">{s.block}</span> <span className="text-muted-foreground">blocked</span></span>
+        </div>
+      </Panel>
+
+      <Panel>
+        <h2 className="text-sm font-semibold">Recent activity</h2>
+        {recent.length === 0 ? (
+          <p className="mt-2 text-sm text-muted-foreground">Nothing yet. Decisions appear here the moment an agent calls the API.</p>
+        ) : (
+          <ul className="mt-3 divide-y divide-border/60">
+            {recent.map((r) => (
+              <li key={r.id} className="flex items-center gap-3 py-2 text-sm">
+                <Badge value={r.decision} />
+                <span className="font-mono text-xs">{r.evidence?.[0]?.action ?? "—"}</span>
+                <span className="text-muted-foreground">{r.agents?.name ?? "Unknown agent"}</span>
+                <span className="ml-auto text-xs text-muted-foreground">{fmt(r.created_at)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Panel>
     </div>
   );
+}
+
+export default function OverviewPage() {
+  return <WorkspaceGate>{(ws) => <Overview key={ws.id} ws={ws} />}</WorkspaceGate>;
 }

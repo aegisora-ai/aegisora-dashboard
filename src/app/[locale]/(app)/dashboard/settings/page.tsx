@@ -1,77 +1,89 @@
-import type { Metadata } from "next";
-import { account, apiKeys, notificationPreferences } from "@/lib/demo-settings";
-import { cn } from "@/lib/utils";
+"use client";
 
-export const metadata: Metadata = { title: "Settings" };
+import { useEffect, useState, type FormEvent } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { Notice, PageHeader, Panel, WorkspaceGate, selectCls } from "@/components/aegisora/live/ui";
+import type { Workspace } from "@/lib/aegisora/use-workspace";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { btnPrimary } from "@/lib/ui";
 
-export default function SettingsPage() {
+type S = { default_effect: string; auto_register_agents: boolean; approval_expiry_hours: number; alert_on_block: boolean };
+
+function Settings({ ws }: { ws: Workspace }) {
+  const [name, setName] = useState(ws.name);
+  const [s, setS] = useState<S>({ default_effect: "BLOCK", auto_register_agents: true, approval_expiry_hours: 24, alert_on_block: true });
+  const [fullName, setFullName] = useState("");
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  useEffect(() => {
+    void (async () => {
+      const supabase = createClient();
+      const [{ data: st }, { data: auth }] = await Promise.all([
+        supabase.from("workspace_settings").select("*").eq("workspace_id", ws.id).maybeSingle(),
+        supabase.auth.getUser(),
+      ]);
+      if (st) setS({ default_effect: st.default_effect, auto_register_agents: st.auto_register_agents, approval_expiry_hours: st.approval_expiry_hours, alert_on_block: st.alert_on_block });
+      if (auth.user) {
+        const { data: p } = await supabase.from("profiles").select("full_name").eq("id", auth.user.id).maybeSingle();
+        setFullName(p?.full_name ?? "");
+      }
+    })();
+  }, [ws.id]);
+
+  async function saveWorkspace(e: FormEvent) {
+    e.preventDefault();
+    const supabase = createClient();
+    const r1 = await supabase.from("workspaces").update({ name: name.trim() }).eq("id", ws.id).select("id");
+    if (r1.error || !r1.data?.length) return setMsg({ ok: false, text: r1.error?.message ?? "Only owners and admins can change workspace settings." });
+    const r2 = await supabase.from("workspace_settings").upsert({ workspace_id: ws.id, ...s, approval_expiry_hours: Math.max(1, Math.min(720, Number(s.approval_expiry_hours) || 24)), updated_at: new Date().toISOString() }, { onConflict: "workspace_id" });
+    setMsg(r2.error ? { ok: false, text: r2.error.message } : { ok: true, text: "Workspace settings saved. They apply to the next API call." });
+  }
+
+  async function saveProfile(e: FormEvent) {
+    e.preventDefault();
+    const supabase = createClient();
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) return;
+    const { error } = await supabase.from("profiles").update({ full_name: fullName.trim() }).eq("id", auth.user.id);
+    setMsg(error ? { ok: false, text: error.message } : { ok: true, text: "Profile saved." });
+  }
+
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <header>
-        <h1 className="text-3xl font-light tracking-tight">Settings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Account, API access, and notification preferences.</p>
-      </header>
+    <div className="max-w-2xl space-y-6">
+      <PageHeader title="Settings" description="Governance behaviour for this workspace, and your profile." />
+      {msg && <Notice ok={msg.ok}>{msg.text}</Notice>}
 
-      <section aria-labelledby="account-title" className="aeg-panel p-5">
-        <h2 id="account-title" className="text-sm font-medium">Account</h2>
-        <dl className="mt-4 divide-y divide-border/60 border-t border-border">
-          <div className="grid grid-cols-[140px_1fr] gap-3 py-2.5 text-sm">
-            <dt className="text-muted-foreground">Name</dt>
-            <dd className="text-sm">{account.name}</dd>
+      <Panel>
+        <form onSubmit={saveWorkspace} className="space-y-4">
+          <h2 className="text-sm font-semibold">Workspace and governance defaults</h2>
+          <div className="space-y-1.5"><Label htmlFor="s-name">Workspace name</Label><Input id="s-name" value={name} onChange={(e) => setName(e.target.value)} required maxLength={80} /></div>
+          <div className="space-y-1.5">
+            <Label htmlFor="s-def">When no policy matches</Label>
+            <select id="s-def" className={selectCls} value={s.default_effect} onChange={(e) => setS({ ...s, default_effect: e.target.value })}>
+              <option value="BLOCK">BLOCK (fail closed, recommended)</option>
+              <option value="ESCALATE">ESCALATE (ask a human)</option>
+              <option value="ALLOW">ALLOW (open)</option>
+            </select>
           </div>
-          <div className="grid grid-cols-[140px_1fr] gap-3 py-2.5 text-sm">
-            <dt className="text-muted-foreground">Email</dt>
-            <dd className="font-mono text-xs">{account.email}</dd>
-          </div>
-          <div className="grid grid-cols-[140px_1fr] gap-3 py-2.5 text-sm">
-            <dt className="text-muted-foreground">Timezone</dt>
-            <dd className="font-mono text-xs">{account.timezone}</dd>
-          </div>
-        </dl>
-      </section>
+          <div className="space-y-1.5"><Label htmlFor="s-exp">Approval expires after (hours)</Label><Input id="s-exp" type="number" min={1} max={720} value={s.approval_expiry_hours} onChange={(e) => setS({ ...s, approval_expiry_hours: Number(e.target.value) })} /></div>
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={s.auto_register_agents} onChange={(e) => setS({ ...s, auto_register_agents: e.target.checked })} />Auto-register unknown agents on first API call</label>
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={s.alert_on_block} onChange={(e) => setS({ ...s, alert_on_block: e.target.checked })} />Open an incident when an action is blocked</label>
+          <button type="submit" className={btnPrimary}>Save</button>
+        </form>
+      </Panel>
 
-      <section aria-labelledby="keys-title">
-        <h2 id="keys-title" className="mb-3 text-sm font-medium">API keys</h2>
-        <div className="aeg-panel overflow-x-auto">
-          <table className="w-full min-w-[560px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-                <th className="px-4 py-3 font-medium">Label</th>
-                <th className="px-4 py-3 font-medium">Key</th>
-                <th className="px-4 py-3 font-medium">Scopes</th>
-                <th className="px-4 py-3 font-medium">Last used</th>
-              </tr>
-            </thead>
-            <tbody>
-              {apiKeys.map((k) => (
-                <tr key={k.id} className="border-b border-border/60 last:border-0">
-                  <td className="px-4 py-3 text-sm">{k.label}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{k.prefix}</td>
-                  <td className="px-4 py-3 font-mono text-[11px] text-muted-foreground">{k.scopes.join(", ")}</td>
-                  <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-muted-foreground">{k.lastUsed}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section aria-labelledby="notif-title" className="aeg-panel p-5">
-        <h2 id="notif-title" className="text-sm font-medium">Notifications</h2>
-        <ul className="mt-4 divide-y divide-border/60">
-          {notificationPreferences.map((n) => (
-            <li key={n.label} className="flex items-center justify-between py-3 text-sm">
-              <div>
-                <div>{n.label}</div>
-                <div className="text-xs text-muted-foreground">{n.channel}</div>
-              </div>
-              <span className={cn("font-mono text-[11px] tracking-wider", n.enabled ? "text-allow" : "text-muted-foreground")}>
-                {n.enabled ? "ON" : "OFF"}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <Panel>
+        <form onSubmit={saveProfile} className="space-y-4">
+          <h2 className="text-sm font-semibold">Your profile</h2>
+          <div className="space-y-1.5"><Label htmlFor="s-full">Full name</Label><Input id="s-full" value={fullName} onChange={(e) => setFullName(e.target.value)} maxLength={120} /></div>
+          <button type="submit" className={btnPrimary}>Save profile</button>
+        </form>
+      </Panel>
     </div>
   );
+}
+
+export default function SettingsPage() {
+  return <WorkspaceGate>{(ws) => <Settings key={ws.id} ws={ws} />}</WorkspaceGate>;
 }

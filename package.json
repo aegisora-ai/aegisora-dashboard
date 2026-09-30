@@ -3,12 +3,26 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev",
-        "build": "next build",
+        "dev": "next dev --webpack",
+        "build": "next build --webpack",
         "start": "next start",
-        "lint": "eslint",
+        "lint": "eslint src",
         "typecheck": "tsc -p tsconfig.json --noEmit",
-        "build:webpack": "next build --webpack"
+        "build:webpack": "next build --webpack",
+        "test:e2e": "playwright test",
+        "test:e2e:smoke": "playwright test tests/e2e/smoke.spec.ts",
+        "test:e2e:auth": "playwright test tests/e2e/auth.spec.ts",
+        "test:e2e:mfa": "playwright test tests/e2e/mfa.spec.ts",
+        "test:enterprise:auth-fixture": "node .enterprise/run-auth-e2e.mjs",
+        "test:enterprise:mfa-fixture": "node scripts/security/phase-c15-mfa-e2e.mjs",
+        "test:enterprise:team-lifecycle": "node scripts/security/phase-c13-team-lifecycle.mjs",
+        "test:enterprise:agent-api": "node scripts/security/phase-c13-c21-agent-api-e2e.mjs",
+        "test:enterprise:evidence-chain": "python scripts/security/verify-evidence-chain-local.py",
+        "test:enterprise:schema-migration": "python scripts/security/verify-governance-schema-migration.py",
+        "test:security:policy-redaction": "node scripts/security/verify-policy-and-redaction.mjs",
+        "test:enterprise:pilot-docs": "node scripts/security/verify-pilot-docs.mjs",
+        "preflight:enterprise:schema": "node scripts/security/inspect-live-schema-contract.mjs",
+        "test": "playwright test tests/e2e/smoke.spec.ts"
     },
     "dependencies": {
         "@base-ui/react": "^1.8.0",
@@ -22,6 +36,7 @@
         "@tanstack/react-table": "^9.2.4",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
+        "lightningcss": "^1.33.0",
         "lucide-react": "^1.47.0",
         "motion": "^13.4.1",
         "next": "16.3.5",
@@ -37,13 +52,14 @@
         "zod": "^3.25.76"
     },
     "devDependencies": {
-        "@tailwindcss/postcss": "^4",
+        "@playwright/test": "^1.63.0",
+        "@tailwindcss/postcss": "^4.3.3",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",
         "eslint": "^9",
         "eslint-config-next": "16.3.5",
-        "tailwindcss": "^4",
+        "tailwindcss": "^4.3.3",
         "typescript": "^5"
     }
 }

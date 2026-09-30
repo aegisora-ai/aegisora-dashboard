@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { DecisionBadge, type DecisionState } from "@/components/aegisora/state-badge";
+import { useEffect, useState } from "react";
 import { WORKSPACE_STORAGE_KEY } from "@/components/aegisora/workspace-provider";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -10,221 +9,209 @@ import { Label } from "@/components/ui/label";
 import { btnOutline, btnPrimary } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
-const steps = ["Workspace", "Agent", "Policy", "Execution", "Decision", "Evidence"];
-
-const rules: { value: DecisionState; title: string; text: string; gate: string; execution: string }[] = [
-  { value: "ESCALATE", title: "Escalate", text: "Pause execution and require human approval.", gate: "Gate paused", execution: "Waiting for approval" },
-  { value: "BLOCK", title: "Block", text: "Stop the action from executing.", gate: "Gate closed", execution: "Not executed" },
-  { value: "ALLOW", title: "Allow", text: "Let the action proceed.", gate: "Gate open", execution: "Executed" },
-];
+const steps = ["Workspace", "MFA", "Agent", "Policy", "Integrate"];
+type PolicyDecision = "ALLOW" | "BLOCK" | "ESCALATE";
 
 function slugify(name: string) {
   const base = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  const suffix = Math.random().toString(36).slice(2, 6);
-  return `${base || "workspace"}-${suffix}`;
-}
-
-function Row({ k, children }: { k: string; children: React.ReactNode }) {
-  return (
-    <div className="grid grid-cols-[120px_1fr] gap-3 py-2 text-sm">
-      <dt className="text-muted-foreground">{k}</dt>
-      <dd className="break-all font-mono text-xs">{children}</dd>
-    </div>
-  );
+  return `${base || "workspace"}-${crypto.randomUUID().slice(0, 8)}`;
 }
 
 export function OnboardingFlow() {
   const [step, setStep] = useState(0);
-  const [workspace, setWorkspace] = useState("demo-workspace");
-  const [agent, setAgent] = useState("finance-operator");
-  const [rule, setRule] = useState<DecisionState>("ESCALATE");
-  const [ran, setRan] = useState(false);
-  const [creating, setCreating] = useState(false);
-  const [createError, setCreateError] = useState<string | null>(null);
+  const [workspace, setWorkspace] = useState("My workspace");
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
+  const [agentName, setAgentName] = useState("finance-operator");
+  const [actionPattern, setActionPattern] = useState("invoice.read");
+  const [resourcePattern, setResourcePattern] = useState("invoice:sample-001");
+  const [decision, setDecision] = useState<PolicyDecision>("ESCALATE");
+  const [agentId, setAgentId] = useState<string | null>(null);
+  const [policyId, setPolicyId] = useState<string | null>(null);
+  const [aal, setAal] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const chosen = rules.find((r) => r.value === rule) ?? rules[0];
-  const canNext =
-    step === 0 ? workspace.trim().length > 0 : step === 1 ? agent.trim().length > 0 : step === 3 ? ran : true;
+  useEffect(() => {
+    if (step !== 1) return;
+    let cancelled = false;
+    void createClient().auth.mfa.getAuthenticatorAssuranceLevel().then(({ data, error: mfaError }) => {
+      if (!cancelled) {
+        setAal(mfaError ? null : data.currentLevel);
+        if (mfaError) setError("Unable to verify the current MFA assurance level.");
+      }
+    });
+    return () => { cancelled = true; };
+  }, [step]);
 
-  async function handleContinue() {
-    if (step === 0) {
-      setCreateError(null);
-      setCreating(true);
-      const supabase = createClient();
-      const { data, error } = await supabase.rpc("create_workspace", {
-        workspace_name: workspace,
-        workspace_slug: slugify(workspace),
-      });
-      setCreating(false);
-      if (error) {
-        setCreateError(error.message);
-        return;
-      }
-      if (data && typeof window !== "undefined") {
-        window.localStorage.setItem(WORKSPACE_STORAGE_KEY, data as string);
-      }
-      setStep(step + 1);
+  async function checkMfa() {
+    setBusy(true);
+    setError(null);
+    const { data, error: mfaError } = await createClient().auth.mfa.getAuthenticatorAssuranceLevel();
+    setBusy(false);
+    if (mfaError) { setError("Unable to verify the current MFA assurance level."); return; }
+    setAal(data.currentLevel);
+  }
+
+  async function createWorkspace() {
+    setBusy(true);
+    setError(null);
+    const { data, error: createError } = await createClient().rpc("create_workspace", {
+      workspace_name: workspace.trim(),
+      workspace_slug: slugify(workspace),
+    });
+    setBusy(false);
+    if (createError || typeof data !== "string") {
+      setError(createError?.message ?? "Workspace creation did not return a workspace ID.");
       return;
     }
-    setStep(step + 1);
+    setWorkspaceId(data);
+    window.localStorage.setItem(WORKSPACE_STORAGE_KEY, data);
+    setStep(1);
   }
+
+  async function postWorkspaceMutation(path: string, body: Record<string, unknown>) {
+    if (!workspaceId) { setError("Create a workspace before continuing."); return null; }
+    setBusy(true);
+    setError(null);
+    try {
+      const { data: { session } } = await createClient().auth.getSession();
+      if (!session?.access_token) throw new Error("Sign in again to continue onboarding.");
+      const response = await fetch(path, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ workspace_id: workspaceId, ...body }),
+        cache: "no-store",
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        const message = result?.error?.message ?? "The workspace setup request failed.";
+        if (result?.error?.code === "mfa_required") setAal("aal1");
+        throw new Error(message);
+      }
+      return result as Record<string, unknown>;
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "The workspace setup request failed.");
+      return null;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function createAgent() {
+    const result = await postWorkspaceMutation("/api/v1/workspace/agents", {
+      operation: "create",
+      agent: { name: agentName.trim(), framework: null, description: "Created during workspace onboarding", external_id: null },
+    });
+    if (typeof result?.id === "string") setAgentId(result.id);
+  }
+
+  async function createPolicy() {
+    const result = await postWorkspaceMutation("/api/v1/workspace/policies", {
+      name: `${agentName.trim()} onboarding rule`,
+      agent_id: agentId,
+      action_pattern: actionPattern.trim(),
+      resource_pattern: resourcePattern.trim(),
+      decision,
+      priority: 100,
+    });
+    if (typeof result?.id === "string") setPolicyId(result.id);
+  }
+
+  const continueStep = () => {
+    setError(null);
+    if (step === 1 && aal !== "aal2") return;
+    setStep((current) => Math.min(current + 1, steps.length - 1));
+  };
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-12">
-      <ol className="mb-10 grid grid-cols-6 gap-1">
-        {steps.map((s, i) => (
-          <li key={s} aria-current={i === step ? "step" : undefined}>
-            <div className={cn("h-0.5", i <= step ? "bg-cyan" : "bg-surface-4")} />
-            <div className={cn("mt-2 font-mono text-[10px] tracking-wider", i === step ? "text-foreground" : "text-muted-foreground")}>
-              {String(i + 1).padStart(2, "0")}
-              <span className="hidden sm:inline"> {s.toUpperCase()}</span>
+      <ol className="mb-10 grid grid-cols-5 gap-1">
+        {steps.map((label, index) => (
+          <li key={label} aria-current={index === step ? "step" : undefined}>
+            <div className={cn("h-0.5", index <= step ? "bg-cyan" : "bg-surface-4")} />
+            <div className={cn("mt-2 font-mono text-[10px] tracking-wider", index === step ? "text-foreground" : "text-muted-foreground")}>
+              {String(index + 1).padStart(2, "0")}<span className="hidden sm:inline"> {label.toUpperCase()}</span>
             </div>
           </li>
         ))}
       </ol>
 
-      <p className="mb-6 rounded-sm border border-escalate/30 bg-escalate-muted px-3 py-2 text-xs text-escalate">
-        Your workspace is created for real. Agent, policy and execution steps below are a guided simulation.
-      </p>
-
       <section aria-labelledby="step-title" className="rounded-md border border-border bg-surface-2 p-6">
         {step === 0 && (
           <>
             <h1 id="step-title" className="text-xl font-semibold">Create your workspace</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Agents, policies, decisions and evidence belong to a workspace.</p>
-            <div className="mt-6 space-y-1.5">
-              <Label htmlFor="workspace">Workspace name</Label>
-              <Input id="workspace" value={workspace} onChange={(e) => setWorkspace(e.target.value)} />
-            </div>
-            {createError && (
-              <p role="alert" className="mt-4 rounded-sm border border-block/30 bg-block-muted px-3 py-2 text-xs text-block">
-                {createError}
-              </p>
-            )}
+            <p className="mt-2 text-sm text-muted-foreground">This creates a real workspace and OWNER membership through the authenticated workspace-creation RPC.</p>
+            <div className="mt-6 space-y-1.5"><Label htmlFor="workspace">Workspace name</Label><Input id="workspace" value={workspace} maxLength={120} onChange={(event) => setWorkspace(event.target.value)} /></div>
+            <button type="button" onClick={() => void createWorkspace()} disabled={busy || !workspace.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? "Creating…" : "Create workspace"}</button>
           </>
         )}
 
         {step === 1 && (
           <>
-            <h1 id="step-title" className="text-xl font-semibold">Connect an agent</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Register the agent whose actions Aegisora should evaluate.</p>
-            <div className="mt-6 space-y-1.5">
-              <Label htmlFor="agent">Agent name</Label>
-              <Input id="agent" value={agent} onChange={(e) => setAgent(e.target.value)} />
-            </div>
+            <h1 id="step-title" className="text-xl font-semibold">Secure workspace administration</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Agent and policy changes require a verified TOTP factor and an AAL2 session. This setup stops here until the session is stepped up.</p>
+            <p role="status" className="mt-4 font-mono text-xs">CURRENT ASSURANCE: {aal?.toUpperCase() ?? "CHECKING"}</p>
+            {aal !== "aal2" && <a className="mt-4 inline-flex text-sm underline underline-offset-4" href="/dashboard/identity" target="_blank" rel="noreferrer">Open Identity in a new tab to enroll and verify MFA</a>}
+            <button type="button" onClick={() => void checkMfa()} disabled={busy} className={`${btnOutline} mt-5 disabled:opacity-50`}>{busy ? "Checking…" : "Check MFA again"}</button>
           </>
         )}
 
         {step === 2 && (
           <>
-            <h1 id="step-title" className="text-xl font-semibold">Create a policy</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              When {agent} proposes external_transfer in production at an elevated threshold:
-            </p>
-            <fieldset className="mt-6 space-y-2">
-              <legend className="sr-only">Policy decision</legend>
-              {rules.map((r) => (
-                <label
-                  key={r.value}
-                  className={cn(
-                    "flex cursor-pointer items-start gap-3 rounded-sm border p-3 text-sm",
-                    rule === r.value ? "border-primary bg-surface-3" : "border-border hover:bg-surface-3",
-                  )}
-                >
-                  <input
-                    type="radio"
-                    name="rule"
-                    value={r.value}
-                    checked={rule === r.value}
-                    onChange={() => {
-                      setRule(r.value);
-                      setRan(false);
-                    }}
-                    className="mt-1"
-                  />
-                  <span>
-                    <span className="font-mono text-xs font-semibold tracking-wider">{r.value}</span>
-                    <span className="block text-muted-foreground">{r.text}</span>
-                  </span>
-                </label>
-              ))}
-            </fieldset>
+            <h1 id="step-title" className="text-xl font-semibold">Register a real agent</h1>
+            <p className="mt-2 text-sm text-muted-foreground">The agent is persisted in this workspace through the authenticated, AAL2-protected API.</p>
+            <div className="mt-6 space-y-1.5"><Label htmlFor="agent">Agent name</Label><Input id="agent" value={agentName} maxLength={120} onChange={(event) => setAgentName(event.target.value)} disabled={Boolean(agentId)} /></div>
+            {agentId ? <p className="mt-4 break-all font-mono text-xs text-allow">Registered agent ID: {agentId}</p> : <button type="button" onClick={() => void createAgent()} disabled={busy || !agentName.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? "Registering…" : "Register agent"}</button>}
           </>
         )}
 
         {step === 3 && (
           <>
-            <h1 id="step-title" className="text-xl font-semibold">Run an execution</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {agent} proposes external_transfer in production. Aegisora evaluates it against your policy.
-            </p>
-            <button type="button" onClick={() => setRan(true)} className={`${btnPrimary} mt-6`}>
-              Run execution
-            </button>
-            {ran && (
-              <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border pt-5" aria-live="polite">
-                <DecisionBadge state={rule} />
-                <span className="text-sm text-muted-foreground">
-                  {chosen.gate}. {chosen.execution}.
-                </span>
-              </div>
-            )}
+            <h1 id="step-title" className="text-xl font-semibold">Create a persisted policy</h1>
+            <p className="mt-2 text-sm text-muted-foreground">This rule applies only to the registered agent and the action/resource patterns below.</p>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5"><Label htmlFor="action-pattern">Action pattern</Label><Input id="action-pattern" value={actionPattern} maxLength={200} onChange={(event) => setActionPattern(event.target.value)} disabled={Boolean(policyId)} /></div>
+              <div className="space-y-1.5"><Label htmlFor="resource-pattern">Resource pattern</Label><Input id="resource-pattern" value={resourcePattern} maxLength={500} onChange={(event) => setResourcePattern(event.target.value)} disabled={Boolean(policyId)} /></div>
+            </div>
+            <fieldset className="mt-5 space-y-2"><legend className="mb-2 text-sm font-medium">Policy outcome</legend>
+              {(["ESCALATE", "BLOCK", "ALLOW"] as const).map((effect) => (
+                <label key={effect} className="flex cursor-pointer items-start gap-3 rounded-sm border border-border p-3 text-sm">
+                  <input type="radio" name="decision" value={effect} checked={decision === effect} disabled={Boolean(policyId)} onChange={() => setDecision(effect)} className="mt-1" />
+                  <span><span className="font-mono text-xs font-semibold">{effect}</span><span className="block text-muted-foreground">{effect === "ESCALATE" ? "Pause and require human review." : effect === "BLOCK" ? "Deny the matching action." : "Permit the matching action."}</span></span>
+                </label>
+              ))}
+            </fieldset>
+            {policyId ? <p className="mt-4 break-all font-mono text-xs text-allow">Persisted policy ID: {policyId}</p> : <button type="button" onClick={() => void createPolicy()} disabled={busy || !actionPattern.trim() || !resourcePattern.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? "Saving…" : "Create policy"}</button>}
           </>
         )}
 
         {step === 4 && (
           <>
-            <h1 id="step-title" className="text-xl font-semibold">Inspect the decision</h1>
-            <dl className="mt-4 divide-y divide-border/60">
-              <Row k="Decision"><DecisionBadge state={rule} /></Row>
-              <Row k="Agent">{agent}</Row>
-              <Row k="Action">external_transfer</Row>
-              <Row k="Environment">production</Row>
-              <Row k="Policy">transfer-threshold</Row>
-              <Row k="Risk">HIGH</Row>
-              <Row k="Enforcement">{chosen.gate}</Row>
-              <Row k="Execution">{chosen.execution}</Row>
+            <h1 id="step-title" className="text-xl font-semibold">Connect your server-side integration</h1>
+            <p className="mt-2 text-sm text-muted-foreground">The workspace, agent, and policy below were saved. Create an API key and keep it in your server-side secret manager; this browser flow does not simulate a decision or execution.</p>
+            <dl className="mt-5 divide-y divide-border/60 border-y border-border">
+              <div className="py-3"><dt className="text-xs text-muted-foreground">Workspace ID</dt><dd className="mt-1 break-all font-mono text-xs">{workspaceId}</dd></div>
+              <div className="py-3"><dt className="text-xs text-muted-foreground">Agent ID</dt><dd className="mt-1 break-all font-mono text-xs">{agentId}</dd></div>
+              <div className="py-3"><dt className="text-xs text-muted-foreground">Policy ID / outcome</dt><dd className="mt-1 break-all font-mono text-xs">{policyId} / {decision}</dd></div>
             </dl>
+            <div className="mt-5 space-y-3 text-sm">
+              <Link href="/dashboard/api-keys" className="block underline underline-offset-4">Create a workspace API key</Link>
+              <Link href="/developers" className="block underline underline-offset-4">Open API quickstart</Link>
+              <p className="text-xs leading-5 text-muted-foreground">Send evaluations from your backend to <code>POST /api/v1/evaluate</code>. Continue your customer-owned action only on ALLOW; stop on BLOCK; pause for human review on ESCALATE. Aegisora records the governance result and does not execute your external action.</p>
+            </div>
           </>
         )}
 
-        {step === 5 && (
-          <>
-            <h1 id="step-title" className="text-xl font-semibold">Inspect the evidence</h1>
-            <p className="mt-2 text-sm text-muted-foreground">The decision is linked to these records (sample identifiers).</p>
-            <dl className="mt-4 divide-y divide-border/60">
-              <Row k="Workspace">{workspace}</Row>
-              <Row k="Decision">dec_01J8XQ5N8R</Row>
-              <Row k="Trace">trc_9a41c7e2</Row>
-              <Row k="Execution">exe_3d8f10b5</Row>
-              <Row k="Evidence">evd_c7e20a94</Row>
-              <Row k="Audit">aud_58b1d3f6</Row>
-            </dl>
-          </>
-        )}
+        {error && <p role="alert" className="mt-5 rounded-sm border border-block/30 bg-block-muted px-3 py-2 text-xs text-block">{error}</p>}
       </section>
 
       <div className="mt-6 flex justify-between">
-        <button
-          type="button"
-          onClick={() => setStep(Math.max(0, step - 1))}
-          disabled={step === 0}
-          className={`${btnOutline} disabled:opacity-40`}
-        >
-          Back
-        </button>
-        {step < steps.length - 1 ? (
-          <button
-            type="button"
-            onClick={handleContinue}
-            disabled={!canNext || creating}
-            className={`${btnPrimary} disabled:opacity-40`}
-          >
-            {creating ? "Creating..." : "Continue"}
-          </button>
-        ) : (
-          <Link href="/dashboard" className={btnPrimary}>Open Aegisora Control</Link>
-        )}
+        {step < 4 ? (
+          <>
+            <button type="button" onClick={() => { setError(null); setStep((current) => Math.max(0, current - 1)); }} disabled={step === 0 || busy} className={`${btnOutline} disabled:opacity-40`}>Back</button>
+            {step === 0 ? <span /> : <button type="button" onClick={continueStep} disabled={busy || (step === 1 && aal !== "aal2") || (step === 2 && !agentId) || (step === 3 && !policyId)} className={`${btnPrimary} disabled:opacity-40`}>Continue</button>}
+          </>
+        ) : <Link href="/dashboard" className={btnPrimary}>Open Aegisora Control</Link>}
       </div>
     </div>
   );

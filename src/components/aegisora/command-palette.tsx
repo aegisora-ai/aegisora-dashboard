@@ -8,7 +8,6 @@ import { demoApprovals } from "@/lib/demo-approvals";
 import { demoDecisions } from "@/lib/demo-data";
 import { demoIncidents } from "@/lib/demo-incidents";
 import { demoIntegrations } from "@/lib/demo-integrations";
-import { demoMembers } from "@/lib/demo-team";
 import { demoPolicies } from "@/lib/demo-policies";
 import { demoProviders } from "@/lib/demo-providers";
 import { demoTraces } from "@/lib/demo-traces";
@@ -99,13 +98,6 @@ const items: Item[] = [
     href: `/dashboard/webhooks/${w.id}`,
     group: "Webhooks",
     keywords: `${w.status} ${w.events.join(" ")}`,
-  })),
-  ...demoMembers.map((m) => ({
-    label: m.name,
-    hint: m.role,
-    href: "/dashboard/team",
-    group: "Team",
-    keywords: `${m.email} ${m.status} ${m.role}`,
   })),
 ];
 

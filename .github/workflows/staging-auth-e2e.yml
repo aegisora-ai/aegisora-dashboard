@@ -1,0 +1,66 @@
+﻿name: Staging Authentication E2E
+
+on:
+  workflow_dispatch:
+
+  deployment_status:
+
+permissions:
+  contents: read
+
+jobs:
+  auth-e2e:
+    name: Real Supabase Auth E2E
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.deployment_status.state == 'success'
+
+    runs-on: ubuntu-latest
+
+    env:
+      PLAYWRIGHT_BASE_URL: ${{ github.event_name == 'deployment_status' && github.event.deployment_status.target_url || vars.STAGING_BASE_URL }}
+      E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
+      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify required staging variables
+        shell: bash
+        run: |
+          test -n "$PLAYWRIGHT_BASE_URL"
+          test -n "$E2E_EMAIL"
+          test -n "$E2E_PASSWORD"
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run real auth E2E
+        run: npm run test:e2e:auth
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-auth-playwright-report
+          path: .enterprise/playwright-report/
+          retention-days: 30
+
+      - name: Upload traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-auth-playwright-traces
+          path: .enterprise/playwright-results/
+          retention-days: 30

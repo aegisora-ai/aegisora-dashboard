@@ -1,0 +1,106 @@
+﻿name: Enterprise Readiness Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: enterprise-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Typecheck + Lint + Build + E2E Smoke
+    runs-on: ubuntu-latest
+    env:
+      AEGISORA_TEST_PGHOST: 127.0.0.1
+      AEGISORA_TEST_PGPORT: 5432
+      AEGISORA_TEST_PGUSER: postgres
+      AEGISORA_TEST_PGPASSWORD: aegisora-ci-local
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: aegisora-ci-local
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Setup Python for disposable PostgreSQL tests
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PostgreSQL test dependency
+        run: python -m pip install -r requirements-security-tests.txt
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
+
+      - name: Test gate
+        run: npm test
+
+      - name: Deterministic governance and security contracts
+        run: npm run test:security:policy-redaction
+
+      - name: PostgreSQL evidence-chain and schema-migration tests
+        run: |
+          npm run test:enterprise:evidence-chain
+          npm run test:enterprise:schema-migration
+
+      - name: Pilot documentation contracts
+        run: npm run test:enterprise:pilot-docs
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: enterprise-playwright-report
+          path: .enterprise/playwright-report/
+          retention-days: 30
+
+      - name: Upload Playwright traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: enterprise-playwright-traces
+          path: .enterprise/playwright-results/
+          retention-days: 30

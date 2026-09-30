@@ -1,4 +1,4 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+﻿# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
@@ -41,3 +41,31 @@ yarn-error.log*
 next-env.d.ts
 
 .env.local
+.vercel
+.env*
+playwright-report/
+test-results/
+coverage/
+trivy-results.sarif
+
+
+*.bak*
+
+*.backup
+
+*.old
+
+# local evidence, probes, logs, backups (not for repo)
+.enterprise/
+.enterprise-backup-*/
+.work/
+*.log
+*.raw
+*.stderr
+*.backup*
+*-backup-*/
+all-dashboard-pages.txt
+all-routes-combined.txt
+common-components.txt
+remaining-pages.txt
+changelog-page.backup.txt

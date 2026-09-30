@@ -1,20 +1,24 @@
-import type { Metadata } from "next";
-import { Activity } from "lucide-react";
+"use client";
 
-export const metadata: Metadata = { title: "Live Activity" };
+import { LiveTable } from "@/components/aegisora/live/live-table";
+import { Badge, fmt } from "@/components/aegisora/live/ui";
 
 export default function ActivityPage() {
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <header>
-        <h1 className="text-3xl font-light tracking-tight">Live Activity</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Real-time execution requests and enforcement actions.</p>
-      </header>
-      <div className="aeg-panel flex h-[400px] flex-col items-center justify-center text-muted-foreground">
-        <Activity className="mb-4 size-8 animate-pulse text-cyan/50" />
-        <p className="text-sm">Listening to execution boundary...</p>
-        <p className="mt-1 font-mono text-[10px] tracking-wider">AWAITING REQUESTS</p>
-      </div>
-    </div>
+    <LiveTable
+      table="decisions"
+      title="Live Activity"
+      description="Streams new decisions in real time."
+      limit={50}
+      realtime
+      columns={[
+        { label: "Time", render: (r) => fmt(r.created_at) },
+        { label: "Agent", render: (r) => r.agent_name },
+        { label: "Action", render: (r) => <span className="font-mono text-xs">{r.action}</span> },
+        { label: "Resource", render: (r) => <span className="text-muted-foreground">{r.resource || "-"}</span> },
+        { label: "Decision", render: (r) => <Badge value={r.effect} /> },
+      ]}
+      empty={{ title: "Waiting for the first action", body: "This view updates live. Send a test action from your agent or with curl and it will appear here instantly." }}
+    />
   );
 }

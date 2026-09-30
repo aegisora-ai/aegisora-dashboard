@@ -8,10 +8,10 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = { title: "Enterprise" };
 
 const cards = [
-  { title: "Workspace isolation", copy: "Separate policy, identity and evidence per workspace or team.", index: "01" },
-  { title: "Role-based access", copy: "Scope who can change policy versus who can only review it.", index: "02" },
-  { title: "Centralized audit", copy: "Every decision across every workspace rolls up to one ledger.", index: "03" },
-  { title: "SSO & provisioning", copy: "Bring your existing identity provider and access model.", index: "04" },
+  { title: "Workspace-scoped API", copy: "API keys and persisted decisions are associated with a workspace; cross-workspace ownership checks have runtime evidence.", index: "01" },
+  { title: "Four workspace roles", copy: "OWNER, ADMIN, OPERATOR, and VIEWER team permissions have a real Supabase JWT test. Invite and member-removal flows are not available yet.", index: "02" },
+  { title: "Decision and evidence paths", copy: "The API records runtime decisions and evidence. End-to-end governance coverage is still being validated; no complete audit-ledger claim is made.", index: "03" },
+  { title: "Identity federation planned", copy: "A provider boundary is documented, but customer SAML/OIDC and automated provisioning are not configured or verified.", index: "04" },
 ];
 
 export default function EnterprisePage() {
@@ -23,18 +23,18 @@ export default function EnterprisePage() {
             ENTERPRISE
           </span>
           <h1 className="mt-4 max-w-2xl text-4xl font-light tracking-tight md:text-5xl">
-            Governance that scales with every agent you deploy.
+            Scoped pilots for runtime control of AI agent actions.
           </h1>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
-            Enterprise controls for multi-workspace policy, access and audit -- so agent autonomy grows without losing oversight.
+            Aegisora is seeking design partners to test a policy decision before a consequential tool action. Production hosting, customer SSO, and full audit operations are not yet verified.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/signup" className={cn(btnPrimary)}>
-              Test Aegisora
+              Create an account
               <ArrowRight className="ml-2 size-4" />
             </Link>
-            <Link href="/proof" className={cn(btnOutline)}>
-              Run live runtime proof
+            <Link href="/developers" className={cn(btnOutline)}>
+              Review the API
             </Link>
           </div>
         </div>

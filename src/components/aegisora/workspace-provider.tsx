@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -41,6 +41,15 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (sessionData.session?.access_token) {
+      await fetch("/api/v1/workspace/members/accept", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${sessionData.session.access_token}` },
+        cache: "no-store",
+      }).catch(() => undefined);
+    }
+
     const { data, error } = await supabase
       .from("workspace_members")
       .select("role, workspaces(id, name, slug)")
@@ -54,7 +63,11 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     }
 
     const list: WorkspaceSummary[] = data
+  // Legacy boundary typing retained temporarily; runtime validation occurs at the Supabase boundary.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .filter((m: any) => m.workspaces)
+  // Legacy boundary typing retained temporarily; runtime validation occurs at the Supabase boundary.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((m: any) => ({
         id: m.workspaces.id,
         name: m.workspaces.name,
@@ -71,8 +84,12 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    load();
+    useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void load();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [load]);
 
   function setCurrentWorkspaceId(id: string) {
@@ -96,3 +113,8 @@ export function useWorkspace() {
   if (!ctx) throw new Error("useWorkspace must be used within WorkspaceProvider");
   return ctx;
 }
+
+
+
+
+

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { identityConfig } from "@/lib/demo-identity";
 import { cn } from "@/lib/utils";
+import { MfaSettings } from "@/components/aegisora/mfa-settings";
 
 export const metadata: Metadata = { title: "Identity" };
 
@@ -31,30 +32,18 @@ export default function IdentityPage() {
         </dl>
       </section>
 
-      <section aria-labelledby="mfa-title" className="aeg-panel p-5">
-        <div className="flex items-center justify-between">
-          <h2 id="mfa-title" className="text-sm font-medium">Multi-factor authentication</h2>
-          <span className={cn("font-mono text-[11px] tracking-wider", identityConfig.mfaEnforced ? "text-allow" : "text-block")}>
-            {identityConfig.mfaEnforced ? "ENFORCED" : "NOT ENFORCED"}
-          </span>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {identityConfig.mfaMethods.map((m) => (
-            <span key={m} className="rounded-sm bg-surface-3 px-3 py-1.5 font-mono text-[11px]">{m}</span>
-          ))}
-        </div>
-      </section>
+      <MfaSettings />
 
       <section aria-labelledby="session-title" className="aeg-panel p-5">
         <h2 id="session-title" className="text-sm font-medium">Session policy</h2>
         <dl className="mt-4 divide-y divide-border/60 border-t border-border">
           <div className="grid grid-cols-[160px_1fr] gap-3 py-2.5 text-sm">
             <dt className="text-muted-foreground">Session timeout</dt>
-            <dd className="font-mono text-xs">{identityConfig.sessionTimeoutMinutes} minutes</dd>
+            <dd className="font-mono text-xs">{identityConfig.sessionTimeoutMinutes ? `${identityConfig.sessionTimeoutMinutes} minutes` : "Not verified against hosted Auth settings"}</dd>
           </div>
           <div className="grid grid-cols-[160px_1fr] gap-3 py-2.5 text-sm">
             <dt className="text-muted-foreground">Last security review</dt>
-            <dd className="font-mono text-xs">{identityConfig.lastSecurityReview}</dd>
+            <dd className="font-mono text-xs">{identityConfig.lastSecurityReview ?? "No completed review recorded"}</dd>
           </div>
         </dl>
       </section>
@@ -62,9 +51,9 @@ export default function IdentityPage() {
       <section aria-labelledby="domains-title" className="aeg-panel p-5">
         <h2 id="domains-title" className="text-sm font-medium">Allowed email domains</h2>
         <div className="mt-4 flex flex-wrap gap-2">
-          {identityConfig.allowedDomains.map((d) => (
-            <span key={d} className="rounded-sm bg-surface-3 px-3 py-1.5 font-mono text-[11px]">{d}</span>
-          ))}
+          {identityConfig.allowedDomains.length
+            ? identityConfig.allowedDomains.map((d) => <span key={d} className="rounded-sm bg-surface-3 px-3 py-1.5 font-mono text-[11px]">{d}</span>)
+            : <span className="text-xs text-muted-foreground">No domain restriction configured.</span>}
         </div>
       </section>
     </div>
