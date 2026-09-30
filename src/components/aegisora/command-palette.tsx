@@ -3,16 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
-import { demoAgents } from "@/lib/demo-agents";
-import { demoApprovals } from "@/lib/demo-approvals";
-import { demoDecisions } from "@/lib/demo-data";
-import { demoIncidents } from "@/lib/demo-incidents";
-import { demoIntegrations } from "@/lib/demo-integrations";
-import { demoPolicies } from "@/lib/demo-policies";
-import { demoProviders } from "@/lib/demo-providers";
-import { demoTraces } from "@/lib/demo-traces";
-import { demoWebhooks } from "@/lib/demo-webhooks";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import { useWorkspace } from "@/lib/aegisora/use-workspace";
 
 type Item = { label: string; hint?: string; href: string; group: string; keywords?: string };
 
@@ -28,77 +21,11 @@ const items: Item[] = [
   { label: "Incidents", href: "/dashboard/incidents", group: "Go to" },
   { label: "Traces", href: "/dashboard/traces", group: "Go to" },
   { label: "Live Activity", href: "/dashboard/activity", group: "Go to" },
-  { label: "Providers", href: "/dashboard/providers", group: "Go to" },
-  { label: "Integrations", href: "/dashboard/integrations", group: "Go to" },
   { label: "Webhooks", href: "/dashboard/webhooks", group: "Go to" },
   { label: "Team", href: "/dashboard/team", group: "Go to" },
-  { label: "Identity", href: "/dashboard/identity", group: "Go to" },
   { label: "Billing", href: "/dashboard/billing", group: "Go to" },
   { label: "Workspace", href: "/dashboard/workspace", group: "Go to" },
   { label: "Settings", href: "/dashboard/settings", group: "Go to" },
-  ...demoDecisions.map((d) => ({
-    label: `${d.action} by ${d.agent}`,
-    hint: d.id,
-    href: `/dashboard/decisions/${d.id}`,
-    group: "Decisions",
-    keywords: `${d.agent} ${d.policy} ${d.traceId} ${d.evidenceId} ${d.auditId} ${d.state} ${d.environment}`,
-  })),
-  ...demoApprovals.map((a) => ({
-    label: `${a.action} by ${a.agent}`,
-    hint: a.id,
-    href: `/dashboard/approvals/${a.id}`,
-    group: "Approvals",
-    keywords: `${a.policy} ${a.status} ${a.environment}`,
-  })),
-  ...demoAgents.map((a) => ({
-    label: a.name,
-    hint: a.id,
-    href: `/dashboard/agents/${a.id}`,
-    group: "Agents",
-    keywords: `${a.environment} ${a.status} ${a.owner}`,
-  })),
-  ...demoPolicies.map((p) => ({
-    label: `${p.name}-${p.version}`,
-    hint: p.id,
-    href: `/dashboard/policies/${p.id}`,
-    group: "Policies",
-    keywords: `${p.agent} ${p.action} ${p.environment} ${p.decision}`,
-  })),
-  ...demoIncidents.map((i) => ({
-    label: i.title,
-    hint: i.id,
-    href: `/dashboard/incidents/${i.id}`,
-    group: "Incidents",
-    keywords: `${i.agent} ${i.status} ${i.severity}`,
-  })),
-  ...demoTraces.map((t) => ({
-    label: `${t.agent} / ${t.action}`,
-    hint: t.id,
-    href: `/dashboard/traces/${t.id}`,
-    group: "Traces",
-    keywords: `${t.environment} ${t.outcome}`,
-  })),
-  ...demoProviders.map((p) => ({
-    label: p.name,
-    hint: p.id,
-    href: `/dashboard/providers/${p.id}`,
-    group: "Providers",
-    keywords: `${p.kind} ${p.status} ${p.region}`,
-  })),
-  ...demoIntegrations.map((i) => ({
-    label: i.name,
-    hint: i.category,
-    href: "/dashboard/integrations",
-    group: "Integrations",
-    keywords: `${i.category} ${i.status}`,
-  })),
-  ...demoWebhooks.map((w) => ({
-    label: w.url,
-    hint: w.id,
-    href: `/dashboard/webhooks/${w.id}`,
-    group: "Webhooks",
-    keywords: `${w.status} ${w.events.join(" ")}`,
-  })),
 ];
 
 export function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -107,6 +34,41 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
   const [q, setQ] = useState("");
   const [idx, setIdx] = useState(0);
   const [prevOpen, setPrevOpen] = useState(open);
+  const { ws } = useWorkspace();
+  const wsId = ws?.id;
+  const term = q.trim();
+  const [live, setLive] = useState<{ q: string; items: Item[] }>({ q: "", items: [] });
+
+  // Live search over the signed-in workspace (RLS-scoped), replaces sample data.
+  useEffect(() => {
+    if (!open || !wsId || term.length < 2) return;
+    let alive = true;
+    const timer = setTimeout(() => {
+      void (async () => {
+        const sb = createClient();
+        const like = `%${term.replace(/[%_,()]/g, " ")}%`;
+        const [a, p, d] = await Promise.all([
+          sb.from("agents").select("id,name,framework").eq("workspace_id", wsId).ilike("name", like).limit(5),
+          sb.from("policies").select("id,name,version").eq("workspace_id", wsId).ilike("name", like).limit(5),
+          sb.from("decisions").select("id,agent_name,action").eq("workspace_id", wsId).ilike("action", like).order("created_at", { ascending: false }).limit(5),
+        ]);
+        const found: Item[] = [
+          ...((a.data ?? []) as { id: string; name: string; framework: string | null }[]).map((r) => ({
+            label: r.name, hint: r.framework ?? "agent", href: `/dashboard/agents/${r.id}`, group: "Agents",
+          })),
+          ...((p.data ?? []) as { id: string; name: string; version: number }[]).map((r) => ({
+            label: `${r.name} (v${r.version})`, hint: "policy", href: `/dashboard/policies/${r.id}`, group: "Policies",
+          })),
+          ...((d.data ?? []) as { id: string; agent_name: string; action: string }[]).map((r) => ({
+            label: `${r.action} by ${r.agent_name}`, hint: r.id.slice(0, 8), href: `/dashboard/decisions/${r.id}`, group: "Decisions",
+          })),
+        ];
+        if (alive) setLive({ q: term, items: found });
+      })();
+    }, 250);
+    return () => { alive = false; clearTimeout(timer); };
+  }, [open, wsId, term]);
+  const liveItems = useMemo(() => (live.q === term ? live.items : []), [live, term]);
 
   if (open !== prevOpen) {
     setPrevOpen(open);
@@ -118,10 +80,10 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
 
   const results = useMemo(() => {
     const s = q.trim().toLowerCase();
-    return items
+    return [...items, ...liveItems]
       .filter((i) => !s || `${i.label} ${i.hint ?? ""} ${i.keywords ?? ""}`.toLowerCase().includes(s))
       .slice(0, 12);
-  }, [q]);
+  }, [q, liveItems]);
 
   useEffect(() => {
     if (open) {
