@@ -80,7 +80,7 @@ export function WelcomeTour() {
         <h2 className="mt-4 text-lg font-semibold text-white">{s.title}</h2>
         <p className="mt-2 text-sm leading-relaxed text-slate-400">{s.body}</p>
         {s.href && (
-          <Link href={s.href} onClick={() => void close()} className="mt-3 inline-block text-sm text-blue-400 hover:underline">{s.cta} â†’</Link>
+          <Link href={s.href} onClick={() => void close()} className="mt-3 inline-block text-sm text-blue-400 hover:underline">{s.cta} →</Link>
         )}
         <div className="mt-6 flex items-center justify-between">
           <div className="flex gap-1.5">

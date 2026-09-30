@@ -46,7 +46,7 @@ export function MfaSettings() {
       setError(enrollError.message);
     } else if (data.type === "totp") {
       setPendingId(data.id);
-      setQrCode(`data:image/svg+xml;utf-8,${encodeURIComponent(data.totp.qr_code)}`);
+      setQrCode(data.totp.qr_code.startsWith("data:") ? data.totp.qr_code : `data:image/svg+xml;utf-8,${encodeURIComponent(data.totp.qr_code)}`);
       setSecret(data.totp.secret);
       setNotice("Scan the QR code in an authenticator app, then enter its current six-digit code.");
     }

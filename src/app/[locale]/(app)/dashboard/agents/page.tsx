@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { LiveTable } from "@/components/aegisora/live/live-table";
 import { Badge, Notice, Panel, btnGhost, fmt } from "@/components/aegisora/live/ui";
@@ -154,6 +155,7 @@ export default function AgentsPage() {
       ]}
       actions={(r, reload) => (
         <div className="flex justify-end gap-2">
+          <Link href={`/dashboard/agents/${r.id}`} className={btnGhost}>Open</Link>
           <button
             className={btnGhost}
             onClick={async () => {

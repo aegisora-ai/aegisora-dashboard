@@ -1,7 +1,8 @@
 "use client";
 
 import { LiveTable } from "@/components/aegisora/live/live-table";
-import { Badge, fmt } from "@/components/aegisora/live/ui";
+import Link from "next/link";
+import { Badge, btnGhost, fmt } from "@/components/aegisora/live/ui";
 
 export default function DecisionsPage() {
   return (
@@ -17,6 +18,7 @@ export default function DecisionsPage() {
         { label: "Decision", render: (r) => <Badge value={r.decision ?? r.effect} /> },
         { label: "Reason", render: (r) => <span className="text-muted-foreground">{r.reason}</span> },
       ]}
+      actions={(r) => <Link href={`/dashboard/decisions/${r.id}`} className={btnGhost}>Open</Link>}
       empty={{ title: "No decisions yet", body: "Decisions appear as soon as an agent calls POST /api/v1/evaluate. Create an API key, then use the quickstart on the Agents page." }}
     />
   );

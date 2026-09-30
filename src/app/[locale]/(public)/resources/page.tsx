@@ -72,7 +72,7 @@ export default function ResourcesPage() {
       <PageHero
         eyebrow="RESOURCES"
         title="Everything you need to run Aegisora."
-        lead="Documentation, product references, developer tools, and security material â€” organized by what you're trying to do."
+        lead="Documentation, product references, developer tools, and security material — organized by what you're trying to do."
       />
 
       <Section eyebrow="DOCUMENTATION" title="Start here" lead="The core model: policy, risk, enforcement, and evidence.">

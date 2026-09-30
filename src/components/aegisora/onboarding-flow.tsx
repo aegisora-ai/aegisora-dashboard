@@ -151,7 +151,7 @@ export function OnboardingFlow() {
             <h1 id="step-title" className="text-xl font-semibold">Secure workspace administration</h1>
             <p className="mt-2 text-sm text-muted-foreground">Agent and policy changes require a verified TOTP factor and an AAL2 session. This setup stops here until the session is stepped up.</p>
             <p role="status" className="mt-4 font-mono text-xs">CURRENT ASSURANCE: {aal?.toUpperCase() ?? "CHECKING"}</p>
-            {aal !== "aal2" && <a className="mt-4 inline-flex text-sm underline underline-offset-4" href="/dashboard/identity" target="_blank" rel="noreferrer">Open Identity in a new tab to enroll and verify MFA</a>}
+            {aal !== "aal2" && <a className="mt-4 flex w-fit text-sm underline underline-offset-4" href="/dashboard/identity" target="_blank" rel="noreferrer">Open Identity in a new tab to enroll and verify MFA</a>}
             <button type="button" onClick={() => void checkMfa()} disabled={busy} className={`${btnOutline} mt-5 disabled:opacity-50`}>{busy ? "Checking…" : "Check MFA again"}</button>
           </>
         )}

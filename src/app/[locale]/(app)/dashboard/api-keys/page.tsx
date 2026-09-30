@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { LiveTable } from "@/components/aegisora/live/live-table";
 import { Badge, Notice, Panel, btnGhost, fmt } from "@/components/aegisora/live/ui";
@@ -14,12 +15,21 @@ function KeyTools({ ws, reload }: { ws: Workspace; reload: () => void }) {
   const [fresh, setFresh] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [needsMfa, setNeedsMfa] = useState(false);
 
   async function create(e: FormEvent) {
     e.preventDefault();
-    setErr(null); setCopied(false);
+    setErr(null); setCopied(false); setNeedsMfa(false);
     const { data, error } = await createClient().rpc("create_api_key", { ws: ws.id, key_name: name.trim() });
-    if (error) return setErr(error.message);
+    if (error) {
+      if (/forbidden/i.test(error.message)) {
+        const { data: lvl } = await createClient().auth.mfa.getAuthenticatorAssuranceLevel();
+        const mfaMissing = lvl?.currentLevel !== "aal2";
+        setNeedsMfa(mfaMissing);
+        return setErr(mfaMissing ? "Multi-factor verification is required before you can manage API keys." : "Only workspace owners and admins can create API keys.");
+      }
+      return setErr(error.message);
+    }
     setFresh(String(data)); setName(""); reload();
   }
 
@@ -31,7 +41,12 @@ function KeyTools({ ws, reload }: { ws: Workspace; reload: () => void }) {
           <button type="submit" className={btnPrimary}>Create API key</button>
         </form>
       </Panel>
-      {err && <Notice>{err}</Notice>}
+      {err && (
+        <Notice>
+          {err}
+          {needsMfa && <>{" "}<Link href="/dashboard/identity" className="underline underline-offset-2">Verify on the Identity page</Link>.</>}
+        </Notice>
+      )}
       {fresh && (
         <Panel>
           <p className="text-sm font-medium">Copy your key now. It is shown only once and cannot be recovered.</p>

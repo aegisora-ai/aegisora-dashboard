@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, type FormEvent, type ReactNode } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -77,13 +77,13 @@ function CreateWorkspace({ onDone }: { onDone: () => void }) {
     const { data: userData, error: userErr } = await supabase.auth.getUser();
     if (userErr || !userData?.user) {
       setBusy(false);
-      setErr(`DEBUG: no client session. userErr=${userErr?.message ?? "none"}`);
+      setErr("Your session has expired. Sign in again to continue.");
       return;
     }
     const slug = (name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "workspace") + "-" + Math.random().toString(16).slice(2, 8);
     const { error } = await supabase.rpc("create_workspace", { workspace_name: name.trim(), workspace_slug: slug });
     setBusy(false);
-    if (error) setErr(`DEBUG: uid=${userData.user.id} | ${error.message}`);
+    if (error) setErr(error.message);
     else onDone();
   }
 
@@ -108,7 +108,7 @@ function CreateWorkspace({ onDone }: { onDone: () => void }) {
 export function WorkspaceGate({ children }: { children: (ws: Workspace) => ReactNode }) {
   const { ws, loading, error, reload } = useWorkspace();
   if (loading && !ws) return <Skeleton />;
-  if (error) return <Notice>Could not load your workspace: {error}. If this mentions a missing table, run supabase/003_core.sql.</Notice>;
+  if (error) return <Notice>Could not load your workspace: {error}. Refresh the page, or contact support if this continues.</Notice>;
   if (!ws) return <CreateWorkspace onDone={() => void reload()} />;
   return <>{children(ws)}</>;
 }
