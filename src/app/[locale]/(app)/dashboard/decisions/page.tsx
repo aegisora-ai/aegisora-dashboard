@@ -14,7 +14,7 @@ export default function DecisionsPage() {
         { label: "Time", render: (r) => fmt(r.created_at) },
         { label: "Agent", render: (r) => r.agent_name },
         { label: "Action", render: (r) => <span className="font-mono text-xs">{r.action}</span> },
-        { label: "Decision", render: (r) => <Badge value={r.effect} /> },
+        { label: "Decision", render: (r) => <Badge value={r.decision ?? r.effect} /> },
         { label: "Reason", render: (r) => <span className="text-muted-foreground">{r.reason}</span> },
       ]}
       empty={{ title: "No decisions yet", body: "Decisions appear as soon as an agent calls POST /api/v1/evaluate. Create an API key, then use the quickstart on the Agents page." }}
