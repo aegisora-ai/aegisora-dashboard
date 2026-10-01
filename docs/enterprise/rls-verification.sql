@@ -1,4 +1,4 @@
-﻿-- Aegisora RLS verification
+-- Aegisora RLS verification
 -- Execute against staging/production Supabase DB.
 
 SELECT

@@ -1,4 +1,4 @@
-﻿-- ============================================================
+-- ============================================================
 -- AEGISORA CANONICAL PRODUCTION SCHEMA BASELINE
 -- Source: direct PostgreSQL production catalog
 -- Production: hypbttzeqeupwdzbgwbd

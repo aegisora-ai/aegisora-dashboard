@@ -1,4 +1,4 @@
-﻿-- Align the fresh-install SQL contract with fields used by the live runtime.
+-- Align the fresh-install SQL contract with fields used by the live runtime.
 -- This migration is idempotent and preserves existing rows. It intentionally
 -- raises on ambiguous dual columns instead of guessing which data is correct.
 BEGIN;

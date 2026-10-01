@@ -1,4 +1,4 @@
-﻿-- ---------- atomik workspace olusturma (owner uyeligi ile birlikte) ----------
+-- ---------- atomik workspace olusturma (owner uyeligi ile birlikte) ----------
 create or replace function public.create_workspace(workspace_name text, workspace_slug text)
 returns uuid
 language plpgsql
