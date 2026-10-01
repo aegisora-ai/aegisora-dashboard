@@ -53,6 +53,9 @@ export const footerGroups: { title: string; links: NavLink[] }[] = [
       { label: "Pricing", href: "/pricing" },
       { label: "Changelog", href: "/changelog" },
       { label: "About", href: "/about" },
+      { label: "Privacy", href: "/trust/privacy" },
+      { label: "Terms", href: "/terms" },
+      { label: "Subprocessors", href: "/trust/subprocessors" },
     ],
   },
 ];
