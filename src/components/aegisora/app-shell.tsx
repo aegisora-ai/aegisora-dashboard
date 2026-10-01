@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -52,7 +52,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [palette, setPalette] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [notif, setNotif] = useState(false);
-  const pending = usePendingApprovals(); const isDemo = /\/dashboard\/(providers|integrations)(\/|$)/.test(pathname) || /\/dashboard\/(agents|policies|approvals|decisions|incidents|traces|webhooks|evidence)\/[^/]+/.test(pathname);
+  const pending = usePendingApprovals(); const isDemo = false;
 
   // Route change intentionally resets transient shell UI state.
   useEffect(() => {
