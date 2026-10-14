@@ -20,7 +20,7 @@ check("pilot quickstart matches the implemented evaluation API and truthful enfo
   assert.match(quickstart, /"action":"invoice\.read"/);
   assert.match(evaluateRoute, /str\(body\.agent, "agent"/);
   assert.match(evaluateRoute, /str\(body\.action, "action"/);
-  assert.match(evaluateRoute, /const effect = decision\.effect/);
+  assert.match(evaluateRoute, /let effect = decision\.effect/);
   assert.match(quickstart, /Aegisora records decisions and evidence\. It does not execute your external tool action/);
   assert.match(quickstart, /synthetic data/);
   assert.match(quickstart, /Stripe checkout or invoicing/);
