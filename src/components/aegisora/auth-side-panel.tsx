@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Logo } from '@/components/aegisora/logo';
@@ -39,10 +39,10 @@ export function AuthSidePanel() {
       </div>
 
       <div className="relative z-10 mb-10">
-        <h1 className="mb-12 text-5xl font-light tracking-tight text-white">
+        <h2 className="mb-12 text-5xl font-light tracking-tight text-white">
           An agent proposes. <br />
           <span className="font-medium">Aegisora decides.</span>
-        </h1>
+        </h2>
 
         <div className="flex flex-col gap-3 font-mono text-xs font-semibold tracking-widest">
           {STEPS.map((step, idx) => {

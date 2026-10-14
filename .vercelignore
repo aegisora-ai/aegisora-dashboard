@@ -1,0 +1,15 @@
+.env*
+.enterprise/
+_repairs/
+_revenue-final/
+_revenue-repair-backup/
+export.json
+verify_evidence.py
+Aegisora-Pilot-Closeout.ps1
+*.backup-*
+*.bak
+*.stdout.log
+*.stderr.log
+_backups/
+_foundation/
+_notes/

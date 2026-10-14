@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -42,7 +42,7 @@ export function useWorkspace() {
     }
 
     return undefined;
-  }, [cached, load]);
+  }, [load]);
 
   return { ws, loading, error, reload: load };
 }

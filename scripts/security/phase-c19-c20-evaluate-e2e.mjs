@@ -1,4 +1,4 @@
-import { createRequire } from "node:module";
+﻿import { createRequire } from "node:module";
 import { createServer } from "node:net";
 import { spawn } from "node:child_process";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
@@ -57,6 +57,15 @@ try {
     auto_register_agents: true,
   }, { onConflict: "workspace_id" });
   if (settingsError) throw settingsError;
+
+  const { error: entitlementError } = await admin.from("workspace_entitlements").upsert({
+    workspace_id: workspaceId,
+    plan_key: "founder_pilot",
+    status: "active",
+    billing_mode: "one_time_pilot",
+  }, { onConflict: "workspace_id" });
+
+  if (entitlementError) throw entitlementError;
 
   const { error: keyError } = await admin.from("api_keys").insert({
     workspace_id: workspaceId,
@@ -197,3 +206,4 @@ try {
 
 console.log(JSON.stringify(result, null, 2));
 process.exitCode = result.status === "PASS" ? 0 : 1;
+

@@ -93,7 +93,7 @@ export function requestSupabase(req: Request): SupabaseClient {
 
   return createClient(
     env("NEXT_PUBLIC_SUPABASE_URL"),
-    env("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+    (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? env("NEXT_PUBLIC_SUPABASE_ANON_KEY")),
     {
       auth: {
         persistSession: false,
@@ -116,7 +116,7 @@ export async function authenticateUser(
   const response = await fetch(`${env("NEXT_PUBLIC_SUPABASE_URL")}/auth/v1/user`, {
     method: "GET",
     headers: {
-      apikey: env("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+      apikey: (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? env("NEXT_PUBLIC_SUPABASE_ANON_KEY")),
       Authorization: `Bearer ${token}`,
     },
     cache: "no-store",

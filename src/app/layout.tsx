@@ -1,20 +1,10 @@
 import type { Metadata } from "next";
-import { Archivo, IBM_Plex_Mono } from "next/font/google";
+import "@fontsource-variable/archivo";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+import "@fontsource/ibm-plex-mono/600.css";
+import "@fontsource/ibm-plex-mono/700.css";
 import "./globals.css";
-
-const appSans = Archivo({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-app-sans",
-  display: "swap",
-});
-
-const appMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-app-mono",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -29,7 +19,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`dark ${appSans.variable} ${appMono.variable}`}>
+    <html lang="en" className="dark">
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         {children}
       </body>

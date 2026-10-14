@@ -1,101 +1,429 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { UsageCard } from "./usage-card";
+"use client";
 
-export const metadata: Metadata = { title: "Billing" };
+import { useEffect, useState } from "react";
+import { useLocale } from "next-intl";
 
-const SALES_EMAIL = process.env.NEXT_PUBLIC_SALES_EMAIL;
-const MAIL_SUBJECT = "Aegisora design-partner pilot request";
+type Plan =
+  | "founder_pilot"
+  | "pilot"
+  | "team"
+  | "business"
+  | "enterprise";
 
-const included = [
-  "One customer-owned non-production workspace",
-  "One workflow and one framework, after a technical-fit check confirms the integration is supported",
-  "Up to three explicit allow / block / escalate policies",
-  "A controlled test plan using synthetic or customer-approved low-risk data",
-  "One kickoff, weekly reviews, and a closeout session",
-  "Closeout packet: configured policy set, observed decision outcomes, failure notes, and an evidence export",
+type BillingState = {
+  customer: {
+    stripe_customer_id: string;
+    email: string | null;
+  } | null;
+
+  subscription: {
+    stripe_subscription_id: string;
+    plan_key: string;
+    status: string;
+    current_period_end: string | null;
+    cancel_at_period_end: boolean;
+  } | null;
+
+  entitlement: {
+    plan_key: string;
+    status: string;
+    billing_mode: string;
+    current_period_end: string | null;
+    updated_at: string;
+  } | null;
+};
+
+const plans: Array<{
+  key: Plan;
+  title: string;
+  price: string;
+  detail: string;
+}> = [
+  {
+    key: "founder_pilot",
+    title: "Founder Pilot",
+    price: "$1,250",
+    detail: "one-time",
+  },
+  {
+    key: "pilot",
+    title: "Pilot",
+    price: "$2,500",
+    detail: "one-time",
+  },
+  {
+    key: "team",
+    title: "Team",
+    price: "$299",
+    detail: "per month",
+  },
+  {
+    key: "business",
+    title: "Business",
+    price: "$999",
+    detail: "per month",
+  },
+  {
+    key: "enterprise",
+    title: "Enterprise",
+    price: "$2,500+",
+    detail: "starting per month",
+  },
 ];
-
-const excluded = [
-  "Production traffic, or sensitive personal, health, or payment data",
-  "Autonomous execution controlled by Aegisora",
-  "SLA, uptime, latency, accuracy, ROI, or compliance guarantees",
-  "SSO/SCIM, dedicated VPC or on-premises delivery, custom integrations, 24/7 incident response, certification claims",
-  "Use of customer name, logo, quotations, or metrics in marketing without separate written consent",
-];
-
-const terms = [
-  "Fixed fee and currency are agreed for the exact scope before signature.",
-  "Tax treatment and invoice issuer are verified before any invoice is issued.",
-  "Invoice schedule, due date, payment method, cancellation, and refund terms are written in the order form.",
-  "Work starts only after both signatures, payment arrangement, technical owner, test environment, data boundaries, and rollback contact are confirmed.",
-];
-
-const btn = "inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted";
-
-function List({ items }: { items: string[] }) {
-  return (
-    <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-6 text-muted-foreground">
-      {items.map((t) => <li key={t}>{t}</li>)}
-    </ul>
-  );
-}
 
 export default function BillingPage() {
+  const locale = useLocale();
+
+  const [state, setState] =
+    useState<BillingState | null>(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  const [working, setWorking] =
+    useState<Plan | null>(null);
+
+  const [portalWorking, setPortalWorking] =
+    useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      setError("");
+
+      try {
+        const response =
+          await fetch(
+            "/api/billing/status",
+            {
+              cache: "no-store",
+            },
+          );
+
+        const data =
+          (await response.json()) as {
+            success?: boolean;
+            error?: string;
+            customer?: BillingState["customer"];
+            subscription?: BillingState["subscription"];
+            entitlement?: BillingState["entitlement"];
+          };
+
+        if (
+          !response.ok ||
+          !data.success
+        ) {
+          throw new Error(
+            data.error ??
+              "Unable to load billing status.",
+          );
+        }
+
+        if (!cancelled) {
+          setState({
+            customer:
+              data.customer ?? null,
+            subscription:
+              data.subscription ?? null,
+            entitlement:
+              data.entitlement ?? null,
+          });
+        }
+      } catch (loadError) {
+        if (!cancelled) {
+          setError(
+            loadError instanceof Error
+              ? loadError.message
+              : "Unable to load billing status.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [locale]);
+
+  async function checkout(
+    plan: Plan,
+  ) {
+    setWorking(plan);
+    setError("");
+
+    try {
+      const response =
+        await fetch(
+          "/api/stripe/checkout",
+          {
+            method: "POST",
+            headers: {
+              "content-type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              plan,
+              locale,
+            }),
+          },
+        );
+
+      const data =
+        (await response.json()) as {
+          url?: string;
+          error?: string;
+        };
+
+      if (
+        !response.ok ||
+        !data.url
+      ) {
+        throw new Error(
+          data.error ??
+            "Checkout could not be started.",
+        );
+      }
+
+      window.location.assign(
+        data.url,
+      );
+    } catch (checkoutError) {
+      setError(
+        checkoutError instanceof Error
+          ? checkoutError.message
+          : "Checkout failed.",
+      );
+      setWorking(null);
+    }
+  }
+
+  async function openPortal() {
+    setPortalWorking(true);
+    setError("");
+
+    try {
+      const response =
+        await fetch(
+          "/api/stripe/portal",
+          {
+            method: "POST",
+            headers: {
+              "content-type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              locale,
+            }),
+          },
+        );
+
+      const data =
+        (await response.json()) as {
+          url?: string;
+          error?: string;
+        };
+
+      if (
+        !response.ok ||
+        !data.url
+      ) {
+        throw new Error(
+          data.error ??
+            "Billing portal could not be opened.",
+        );
+      }
+
+      window.location.assign(
+        data.url,
+      );
+    } catch (portalError) {
+      setError(
+        portalError instanceof Error
+          ? portalError.message
+          : "Billing portal failed.",
+      );
+      setPortalWorking(false);
+    }
+  }
+
+  const activePlan =
+    state?.entitlement?.status ===
+    "active"
+      ? state.entitlement.plan_key
+      : state?.subscription?.plan_key ??
+        null;
+
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <header>
-        <h1 className="text-3xl font-light tracking-tight">Billing</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Plan and commercial status for this workspace.</p>
-      </header>
-
-      <section aria-labelledby="plan-heading" className="aeg-panel space-y-4 p-5">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 id="plan-heading" className="text-sm font-medium">Paid design-partner pilot</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Four weeks. Validates one non-production AI-agent workflow at the point right before a consequential tool action.</p>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-muted-foreground">Fee</p>
-            <p className="text-sm font-medium">Price on request</p>
-          </div>
-        </div>
-        <p className="text-sm text-muted-foreground">Status: no pilot agreement is recorded for this workspace.</p>
-        <div className="grid gap-6 md:grid-cols-2">
-          <div>
-            <h3 className="text-sm font-medium">Included</h3>
-            <List items={included} />
-          </div>
-          <div>
-            <h3 className="text-sm font-medium">Not included</h3>
-            <List items={excluded} />
-          </div>
-        </div>
+    <main className="mx-auto w-full max-w-7xl px-6 py-10 lg:px-10">
+      <div className="flex flex-col gap-6 border-b border-border pb-8 md:flex-row md:items-end md:justify-between">
         <div>
-          <h3 className="text-sm font-medium">How it works</h3>
-          <List items={terms} />
+          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+            AEGISORA / BILLING
+          </p>
+
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight">
+            Billing & access
+          </h1>
+
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+            Workspace billing is backed by Stripe and linked to the authenticated workspace.
+          </p>
         </div>
-        <p className="text-sm leading-6 text-muted-foreground">
-          You keep the final tool-execution decision. A tool must not run unless your integration receives an ALLOW result. ESCALATE is not an approval and must pause the action for your human reviewer.
-        </p>
-        <div className="flex flex-wrap items-center gap-4 pt-1">
-          {SALES_EMAIL ? (
-            <a href={"mailto:" + SALES_EMAIL + "?subject=" + encodeURIComponent(MAIL_SUBJECT)} className={btn}>Request a pilot</a>
-          ) : (
-            <Link href="/pricing" className={btn}>Request a pilot</Link>
+
+        {state?.customer?.stripe_customer_id ? (
+          <button
+            type="button"
+            onClick={() =>
+              void openPortal()
+            }
+            disabled={
+              portalWorking
+            }
+            className="inline-flex h-10 items-center justify-center rounded-md border border-border px-4 text-sm font-medium transition hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+          >
+            {portalWorking
+              ? "Opening..."
+              : "Manage billing"}
+          </button>
+        ) : null}
+      </div>
+
+      {error ? (
+        <div className="mt-6 rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+          {error}
+        </div>
+      ) : null}
+
+      <section className="mt-8 rounded-xl border border-border bg-card p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
+              Current access
+            </p>
+
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <h2 className="text-xl font-semibold">
+                {loading
+                  ? "Loading..."
+                  : activePlan
+                    ? activePlan.replaceAll(
+                        "_",
+                        " ",
+                      )
+                    : "No active plan"}
+              </h2>
+
+              {activePlan ? (
+                <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                  {String(
+                    state?.entitlement?.status ??
+                      state?.subscription?.status ??
+                      "active",
+                  ).toUpperCase()}
+                </span>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="text-xs text-muted-foreground">
+            {state?.entitlement?.updated_at
+              ? `Updated ${new Date(
+                  state.entitlement.updated_at,
+                ).toLocaleString()}`
+              : "Waiting for first billing event"}
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <div className="mb-6">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+            PLANS
+          </p>
+
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+            Choose the access level for this workspace.
+          </h2>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          {plans.map(
+            (plan) => {
+              const active =
+                activePlan ===
+                plan.key;
+
+              const busy =
+                working ===
+                plan.key;
+
+              return (
+                <article
+                  key={plan.key}
+                  className="flex min-h-[245px] flex-col rounded-xl border border-border bg-card p-5"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="text-base font-semibold">
+                      {plan.title}
+                    </h3>
+
+                    {active ? (
+                      <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase text-emerald-700 dark:text-emerald-300">
+                        Active
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-7">
+                    <div className="text-2xl font-semibold tracking-tight">
+                      {plan.price}
+                    </div>
+
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {plan.detail}
+                    </div>
+                  </div>
+
+                  <p className="mt-5 text-xs leading-5 text-muted-foreground">
+                    Governed agent execution, policy enforcement, decisions and audit evidence.
+                  </p>
+
+                  <button
+                    type="button"
+                    disabled={
+                      active ||
+                      Boolean(working)
+                    }
+                    onClick={() =>
+                      void checkout(
+                        plan.key,
+                      )
+                    }
+                    className="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
+                  >
+                    {active
+                      ? "Current plan"
+                      : busy
+                        ? "Starting checkout..."
+                        : "Continue to payment"}
+                  </button>
+                </article>
+              );
+            },
           )}
-          <Link href="/pricing" className="text-sm underline underline-offset-4">Pilot pricing status</Link>
         </div>
       </section>
-
-      <UsageCard />
-
-      <section aria-labelledby="billing-status" className="aeg-panel p-5">
-        <h2 id="billing-status" className="text-sm font-medium">Payment and invoices</h2>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-          No subscription or online checkout is available, and no payment details are collected in this application. Pilots are agreed in a signed quote and invoiced outside the product.
-        </p>
-      </section>
-    </div>
+    </main>
   );
 }

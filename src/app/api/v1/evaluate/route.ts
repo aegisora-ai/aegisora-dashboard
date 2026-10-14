@@ -1,8 +1,10 @@
-﻿import { NextResponse, after } from "next/server";
+﻿import { conditionsMet } from "@/lib/aegisora/policy-evaluator";
+import { NextResponse, after } from "next/server";
 import { randomUUID } from "node:crypto";
 import { ApiError, admin, authenticate, deliverWebhooks, fail, matches, readJson, str } from "@/lib/aegisora/server";
 import { maskSensitiveData, maskSensitiveText } from "@/lib/aegisora/redaction";
 import { decidePolicy, type Effect } from "@/lib/aegisora/policy-evaluator";
+import { evaluateWorkspaceExecutionEntitlement } from "@/lib/aegisora/entitlement";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -57,12 +59,12 @@ export async function POST(req: Request) {
     // ---- policy evaluation: BLOCK > ESCALATE > ALLOW > workspace default ----
     const { data: pols } = await db
       .from("policies")
-      .select("id,name,decision,priority,action_pattern,resource_pattern,agent_id")
+      .select("id,name,decision,priority,action_pattern,resource_pattern,agent_id,conditions")
       .eq("workspace_id", ws)
       .eq("enabled", true)
       .order("priority", { ascending: true });
     const hits = (pols ?? []).filter(
-      (p) => (!p.agent_id || (agent && p.agent_id === agent.id)) && matches(p.action_pattern, action) && matches(p.resource_pattern, resource),
+      (p) => (!p.agent_id || (agent && p.agent_id === agent.id)) && matches(p.action_pattern, action) && matches(p.resource_pattern, resource) && conditionsMet(p.conditions, { risk, input }, p.decision as Effect),
     );
 
     const decision = decidePolicy({
@@ -71,9 +73,19 @@ export async function POST(req: Request) {
       defaultEffect: settings.default_effect,
       policies: hits.map((policy) => ({ id: policy.id as string, name: policy.name as string, decision: policy.decision as Effect })),
     });
-    const effect = decision.effect;
+    let effect = decision.effect;
     const policyId = decision.policyId;
-    const reason = maskSensitiveText(decision.reason);
+    let reason = maskSensitiveText(decision.reason);
+    if (effect === "ALLOW") {
+      const entitlement = await evaluateWorkspaceExecutionEntitlement(ws);
+
+      if (!entitlement.allowed) {
+        effect = "BLOCK";
+        reason = maskSensitiveText(
+          `Entitlement blocked execution: ${entitlement.reason}`,
+        );
+      }
+    }
 
     // ---- record ----
     const traceId = maskSensitiveText(str(trace.id, "trace.id", 128, false) ?? randomUUID());
@@ -113,6 +125,7 @@ export async function POST(req: Request) {
         .single();
       if (ex.error) throw ex.error;
       executionId = ex.data.id as string;
+      await db.from("decisions").update({ execution_id: executionId }).eq("id", decisionId);
     }
 
     const ev = await db
@@ -181,3 +194,4 @@ export async function POST(req: Request) {
     return fail(e);
   }
 }
+

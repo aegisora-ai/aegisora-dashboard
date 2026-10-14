@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
 
@@ -113,8 +113,8 @@
   --color-block-muted: var(--block-muted);
   --color-escalate: var(--escalate);
   --color-escalate-muted: var(--escalate-muted);
-  --font-sans: var(--font-app-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-app-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
   --radius-sm: calc(var(--radius) - 1px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);

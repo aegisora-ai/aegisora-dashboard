@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PageHero, Section } from "@/components/aegisora/page-kit";
 import { DraftNotice } from "@/components/aegisora/draft-notice";
 import { meta } from "@/lib/seo";
@@ -39,7 +40,7 @@ export default function PrivacyPage() {
           </div>
           <div>
             <h2 className="text-base font-medium text-foreground">Providers and transfers</h2>
-            <p className="mt-3">Providers that process data for us are listed on the <a href="/trust/subprocessors" className="underline underline-offset-4">subprocessors page</a>. Regions and transfer mechanisms are to be confirmed.</p>
+            <p className="mt-3">Providers that process data for us are listed on the <Link href="/trust/subprocessors" className="underline underline-offset-4">subprocessors page</Link>. Regions and transfer mechanisms are to be confirmed.</p>
           </div>
           <div>
             <h2 className="text-base font-medium text-foreground">Your rights and contact</h2>

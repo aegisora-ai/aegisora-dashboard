@@ -1,10 +1,10 @@
 ﻿# Aegisora Enterprise Readiness
 
-Generated: 2026-09-26 23:59:00
+Generated: 2026-10-04 03:48:12
 
 | ID | Area | Status | Requirement | Evidence |
 |---|---|---|---|---|
-| C01 | Core Reliability | FAIL | Auth E2E incl. locale routes | Playwright/login E2E implementation present; real credentials still required |
+| C01 | Core Reliability | NOT_VERIFIED | Auth E2E incl. locale routes | Playwright/login E2E implementation present; real credentials still required |
 | C02 | Core Reliability | NOT_VERIFIED | Workspace creation E2E | Dedicated workspace test still required |
 | C03 | Core Reliability | NOT_VERIFIED | Production error monitoring | Sentry implementation detection |
 | C04 | Core Reliability | NOT_VERIFIED | Uptime monitoring/status page | Requires external uptime/status provider |
@@ -14,7 +14,7 @@ Generated: 2026-09-26 23:59:00
 | C08 | Multi Tenant | NOT_VERIFIED | RLS everywhere + automated verification | RLS/policy SQL detection |
 | C09 | Multi Tenant | NOT_VERIFIED | Cross-workspace isolation | Live two-tenant adversarial test required |
 | C10 | Multi Tenant | NOT_VERIFIED | Service-role server only | Requires complete server/client data-flow inspection |
-| C11 | Multi Tenant | NOT_VERIFIED | API ownership checks | 7 API route files detected |
+| C11 | Multi Tenant | NOT_VERIFIED | API ownership checks | 14 API route files detected |
 | C12 | Multi Tenant | NOT_VERIFIED | Rate limiting | Rate-limit implementation detection |
 | C13 | Identity | NOT_VERIFIED | Owner/Admin/Member enforced | RBAC terminology detected |
 | C14 | Identity | NOT_VERIFIED | SSO SAML/OIDC | SSO detection |
@@ -33,7 +33,7 @@ Generated: 2026-09-26 23:59:00
 | C27 | Distribution | NOT_VERIFIED | Managed-cloud responsibility model | Runbook/document exists |
 | C28 | Distribution | NOT_VERIFIED | Helm/Terraform reproducible private deployment | Helm/Terraform detection |
 | C29 | Distribution | PASS | SECURITY.md responsible disclosure | SECURITY.md exists |
-| C30 | Distribution | FAIL | Container vulnerability scan | Dockerfile detection |
+| C30 | Distribution | NOT_VERIFIED | Container vulnerability scan | Dockerfile detection |
 | C31 | Compliance | NOT_VERIFIED | privacy-policy.md | Document exists; legal/operational validation required |
 | C32 | Compliance | NOT_VERIFIED | subprocessors.md | Document exists; legal/operational validation required |
 | C33 | Compliance | NOT_VERIFIED | terms-of-service.md | Document exists; legal/operational validation required |
@@ -60,6 +60,6 @@ Generated: 2026-09-26 23:59:00
 ## Summary
 
 - PASS: 1
-- FAIL: 2
-- NOT_VERIFIED: 49
+- FAIL: 0
+- NOT_VERIFIED: 51
 - BLOCKED: 0

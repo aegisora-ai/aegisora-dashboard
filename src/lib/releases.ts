@@ -63,7 +63,7 @@ export const RELEASES: Release[] = [
         "Resolution synchronization",
       ]},
       { title: "Evidence and Audit", items: [
-        "Immutable evidence ledger",
+        "Tamper-evident evidence ledger",
         "Runtime evidence persistence",
         "Enterprise audit ledger",
         "Trace, decision, execution and evidence correlation",

@@ -16,6 +16,8 @@
 -- ------------------------------------------------------------
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+SET search_path TO public, extensions;
+
 
 -- ------------------------------------------------------------
 -- ENUMS
@@ -143,6 +145,10 @@ resource text DEFAULT ''::text NOT NULL,
 input jsonb
 );
 
+-- CONSTRAINT: decisions.decisions_pkey
+ALTER TABLE public.decisions ADD CONSTRAINT decisions_pkey PRIMARY KEY (id);
+
+
 -- TABLE: evidence
 CREATE TABLE IF NOT EXISTS public.evidence (
 id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -176,6 +182,10 @@ created_at timestamp with time zone DEFAULT now() NOT NULL,
 event_id text,
 state text DEFAULT 'COMPLETED'::text NOT NULL
 );
+
+-- CONSTRAINT: executions.executions_pkey
+ALTER TABLE public.executions ADD CONSTRAINT executions_pkey PRIMARY KEY (id);
+
 
 -- TABLE: global_search_documents
 CREATE TABLE IF NOT EXISTS public.global_search_documents (
@@ -223,6 +233,10 @@ resource_pattern text,
 priority integer DEFAULT 100 NOT NULL
 );
 
+-- CONSTRAINT: policies.policies_pkey
+ALTER TABLE public.policies ADD CONSTRAINT policies_pkey PRIMARY KEY (id);
+
+
 -- TABLE: policy_audit_events
 CREATE TABLE IF NOT EXISTS public.policy_audit_events (
 id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -250,6 +264,10 @@ review_note text,
 created_at timestamp with time zone DEFAULT now() NOT NULL,
 reviewed_at timestamp with time zone
 );
+
+-- CONSTRAINT: policy_change_requests.policy_change_requests_pkey
+ALTER TABLE public.policy_change_requests ADD CONSTRAINT policy_change_requests_pkey PRIMARY KEY (id);
+
 
 -- TABLE: policy_versions
 CREATE TABLE IF NOT EXISTS public.policy_versions (
@@ -320,6 +338,10 @@ updated_at timestamp with time zone DEFAULT now() NOT NULL,
 last_used_at timestamp with time zone
 );
 
+-- CONSTRAINT: service_accounts.service_accounts_pkey
+ALTER TABLE public.service_accounts ADD CONSTRAINT service_accounts_pkey PRIMARY KEY (id);
+
+
 -- TABLE: traces
 CREATE TABLE IF NOT EXISTS public.traces (
 id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -388,6 +410,10 @@ created_at timestamp with time zone DEFAULT now() NOT NULL,
 updated_at timestamp with time zone DEFAULT now() NOT NULL,
 created_by uuid
 );
+
+-- CONSTRAINT: workspaces.workspaces_pkey
+ALTER TABLE public.workspaces ADD CONSTRAINT workspaces_pkey PRIMARY KEY (id);
+
 
 -- ------------------------------------------------------------
 -- CONSTRAINTS
@@ -466,7 +492,6 @@ ALTER TABLE public.decisions ADD CONSTRAINT decisions_decision_check CHECK (deci
 ALTER TABLE public.decisions ADD CONSTRAINT decisions_execution_id_fkey FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE;
 
 -- CONSTRAINT: decisions.decisions_pkey
-ALTER TABLE public.decisions ADD CONSTRAINT decisions_pkey PRIMARY KEY (id);
 
 -- CONSTRAINT: decisions.decisions_policy_id_fkey
 ALTER TABLE public.decisions ADD CONSTRAINT decisions_policy_id_fkey FOREIGN KEY (policy_id) REFERENCES policies(id);
@@ -499,7 +524,6 @@ ALTER TABLE public.evidence ADD CONSTRAINT evidence_workspace_id_fkey FOREIGN KE
 ALTER TABLE public.executions ADD CONSTRAINT executions_agent_id_fkey FOREIGN KEY (agent_id) REFERENCES agents(id) ON DELETE SET NULL;
 
 -- CONSTRAINT: executions.executions_pkey
-ALTER TABLE public.executions ADD CONSTRAINT executions_pkey PRIMARY KEY (id);
 
 -- CONSTRAINT: executions.executions_risk_score_check
 ALTER TABLE public.executions ADD CONSTRAINT executions_risk_score_check CHECK (risk_score >= 0 AND risk_score <= 100);
@@ -538,7 +562,6 @@ ALTER TABLE public.policies ADD CONSTRAINT policies_agent_id_fkey FOREIGN KEY (a
 ALTER TABLE public.policies ADD CONSTRAINT policies_decision_allowed CHECK (decision = ANY (ARRAY['ALLOW'::security_decision, 'BLOCK'::security_decision, 'ESCALATE'::security_decision]));
 
 -- CONSTRAINT: policies.policies_pkey
-ALTER TABLE public.policies ADD CONSTRAINT policies_pkey PRIMARY KEY (id);
 
 -- CONSTRAINT: policies.policies_workspace_id_fkey
 ALTER TABLE public.policies ADD CONSTRAINT policies_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
@@ -559,7 +582,6 @@ ALTER TABLE public.policy_audit_events ADD CONSTRAINT policy_audit_events_policy
 ALTER TABLE public.policy_audit_events ADD CONSTRAINT policy_audit_events_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
 
 -- CONSTRAINT: policy_change_requests.policy_change_requests_pkey
-ALTER TABLE public.policy_change_requests ADD CONSTRAINT policy_change_requests_pkey PRIMARY KEY (id);
 
 -- CONSTRAINT: policy_change_requests.policy_change_requests_policy_id_fkey
 ALTER TABLE public.policy_change_requests ADD CONSTRAINT policy_change_requests_policy_id_fkey FOREIGN KEY (policy_id) REFERENCES policies(id) ON DELETE CASCADE;
@@ -622,7 +644,6 @@ ALTER TABLE public.service_account_keys ADD CONSTRAINT service_account_keys_work
 ALTER TABLE public.service_accounts ADD CONSTRAINT service_accounts_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE RESTRICT;
 
 -- CONSTRAINT: service_accounts.service_accounts_pkey
-ALTER TABLE public.service_accounts ADD CONSTRAINT service_accounts_pkey PRIMARY KEY (id);
 
 -- CONSTRAINT: service_accounts.service_accounts_status_check
 ALTER TABLE public.service_accounts ADD CONSTRAINT service_accounts_status_check CHECK (status = ANY (ARRAY['ACTIVE'::text, 'DISABLED'::text, 'REVOKED'::text]));
@@ -682,7 +703,6 @@ ALTER TABLE public.workspace_settings ADD CONSTRAINT workspace_settings_workspac
 ALTER TABLE public.workspaces ADD CONSTRAINT workspaces_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
 
 -- CONSTRAINT: workspaces.workspaces_pkey
-ALTER TABLE public.workspaces ADD CONSTRAINT workspaces_pkey PRIMARY KEY (id);
 
 -- CONSTRAINT: workspaces.workspaces_slug_key
 ALTER TABLE public.workspaces ADD CONSTRAINT workspaces_slug_key UNIQUE (slug);
@@ -826,7 +846,7 @@ $function$
 ;
 
 -- FUNCTION: add_workspace_member/25769
-CREATE OR REPLACE FUNCTION public.add_workspace_member(p_workspace_id uuid, p_user_id uuid, p_role workspace_role, p_status member_status, p_actor_id uuid)
+CREATE OR REPLACE FUNCTION public.add_workspace_member(p_workspace_id uuid, p_user_id uuid, p_role workspace_role, p_status text, p_actor_id uuid)
  RETURNS void
  LANGUAGE plpgsql
  SECURITY DEFINER

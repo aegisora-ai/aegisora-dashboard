@@ -23,7 +23,7 @@ let cached: SupabaseClient | null = null;
 export function admin(): SupabaseClient {
   if (cached) return cached;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new ApiError(500, "server_misconfigured", "Server is missing Supabase credentials.");
   cached = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   return cached;
@@ -37,6 +37,19 @@ export function fail(e: unknown) {
         status: e.status,
         headers: e.headers,
       }
+    );
+  }
+
+  const authStatus = (e as { status?: unknown } | null)?.status;
+  if (e instanceof Error && (authStatus === 401 || authStatus === 403)) {
+    return NextResponse.json(
+      {
+        error: {
+          code: authStatus === 401 ? "unauthorized" : "forbidden",
+          message: e.message,
+        },
+      },
+      { status: authStatus }
     );
   }
 

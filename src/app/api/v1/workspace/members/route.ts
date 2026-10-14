@@ -284,12 +284,14 @@ export async function PATCH(req: Request) {
 }
 
 export async function POST(req: Request) {
+  let inviteStage = "request";
   try {
     const workspaceId = workspaceIdFrom(req);
     if (!workspaceId) {
       return errorResponse(400, "invalid_workspace", "X-Workspace-Id header is required.");
     }
 
+    inviteStage = "authenticate_and_authorize";
     const { user, aal } = await authenticateUser(req);
     const actorRole = await requireWorkspacePermission(user.id, workspaceId, "team:manage");
     requireAal2(aal);
@@ -309,6 +311,7 @@ export async function POST(req: Request) {
     const db = admin();
     // Reuse an existing auth account when present. Otherwise Supabase sends its
     // normal invitation email and returns the user id needed for membership.
+    inviteStage = "lookup_auth_user";
     let targetUserId: string | null = null;
     let page = 1;
     while (!targetUserId && page <= 10) {
@@ -318,6 +321,7 @@ export async function POST(req: Request) {
       if (listed.data.users.length < 1000) break;
       page += 1;
     }
+    inviteStage = "check_existing_membership";
     if (targetUserId) {
       const { data: existingMember, error: existingError } = await db.from("workspace_members")
         .select("user_id").eq("workspace_id", workspaceId).eq("user_id", targetUserId).maybeSingle();
@@ -327,12 +331,14 @@ export async function POST(req: Request) {
 
     let newlyInvited = false;
     if (!targetUserId) {
+      inviteStage = "send_invitation";
       const invite = await db.auth.admin.inviteUserByEmail(email);
       if (invite.error) throw invite.error;
       targetUserId = invite.data.user.id;
       newlyInvited = true;
     }
 
+    inviteStage = "add_workspace_member_rpc";
     const { error: insertError } = await db.rpc("add_workspace_member", {
       p_workspace_id: workspaceId,
       p_user_id: targetUserId,
@@ -352,6 +358,22 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ invited: true, email_sent: newlyInvited, workspace_id: workspaceId, user_id: targetUserId, role, status: "invited" }, { status: 201 });
   } catch (error) {
+    const inviteFailure =
+      typeof error === "object" && error !== null
+        ? (error as { name?: unknown; code?: unknown; message?: unknown })
+        : null;
+    const inviteMessage =
+      typeof inviteFailure?.message === "string"
+        ? inviteFailure.message
+            .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted email]")
+            .slice(0, 240)
+        : "Unknown error";
+    console.error("[aegisora] workspace member invite failed", {
+      stage: inviteStage,
+      name: typeof inviteFailure?.name === "string" ? inviteFailure.name : "UnknownError",
+      code: typeof inviteFailure?.code === "string" ? inviteFailure.code : undefined,
+      message: inviteMessage,
+    });
     const status = typeof error === "object" && error !== null && "status" in error && typeof (error as { status?: unknown }).status === "number"
       ? Number((error as { status: number }).status)
       : 500;

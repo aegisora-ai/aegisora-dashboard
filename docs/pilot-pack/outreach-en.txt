@@ -1,0 +1,13 @@
+Subject: 20 minutes on AI agent guardrails?
+
+Hi [Name],
+
+I'm building Aegisora, an open-source runtime layer that checks what an AI agent is about to do (ALLOW / BLOCK / ESCALATE) and keeps an audit trail.
+
+I'm looking for 2-3 design partners to test it on one non-production agent workflow. I handle the setup myself, and we review results together every week.
+
+Would a 20-minute call make sense?
+
+Best,
+Eray Ozer
+https://www.aegisora.org

@@ -1,4 +1,4 @@
-import { createHmac } from "node:crypto";
+﻿import { createHmac } from "node:crypto";
 import { test, expect } from "@playwright/test";
 
 function base32Decode(value: string): Buffer {
@@ -37,11 +37,26 @@ test("TOTP step-up upgrades the browser session to AAL2", async ({ page }) => {
   await page.waitForURL(/\/dashboard/, { timeout: 30_000 });
   const tour = page.getByRole("dialog", { name: "Welcome tour" });
   await tour.waitFor({ state: "visible", timeout: 5_000 }).catch(() => undefined);
-  if (await tour.isVisible().catch(() => false)) await tour.getByRole("button", { name: "Skip", exact: true }).click();
+
+  if (await tour.isVisible().catch(() => false)) {
+    await tour.getByRole("button", { name: "Skip", exact: true }).click();
+    await expect(tour).toBeHidden({ timeout: 5_000 });
+  }
+
   await page.goto("/dashboard/identity");
+
+  const identityTour = page.getByRole("dialog", { name: "Welcome tour" });
+  await identityTour.waitFor({ state: "visible", timeout: 2_000 }).catch(() => undefined);
+
+  if (await identityTour.isVisible().catch(() => false)) {
+    await identityTour.getByRole("button", { name: "Skip", exact: true }).click();
+    await expect(identityTour).toBeHidden({ timeout: 5_000 });
+  }
+
   await expect(page.getByText("CURRENT SESSION: AAL1")).toBeVisible({ timeout: 15_000 });
   await page.getByLabel("Authenticator code").fill(currentTotp(secret!));
   await page.getByRole("button", { name: "Verify code" }).click();
   await expect(page.getByText("CURRENT SESSION: AAL2")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByRole("status")).toContainText("AAL2");
 });
+

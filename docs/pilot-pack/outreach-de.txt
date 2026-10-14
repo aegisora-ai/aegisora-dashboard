@@ -1,0 +1,13 @@
+Betreff: 20 Minuten zu Guardrails fuer KI-Agenten?
+
+Hallo [Name],
+
+ich baue Aegisora, eine Open-Source-Laufzeitschicht, die prueft, was ein KI-Agent als Naechstes tun will (ALLOW / BLOCK / ESCALATE), und einen Audit-Trail fuehrt.
+
+Ich suche 2-3 Design-Partner, die Aegisora an einem Nicht-Produktiv-Workflow testen. Das Setup uebernehme ich selbst, die Ergebnisse besprechen wir woechentlich gemeinsam.
+
+Passt Ihnen ein 20-minuetiges Gespraech?
+
+Viele Gruesse
+Eray Ozer
+https://www.aegisora.org

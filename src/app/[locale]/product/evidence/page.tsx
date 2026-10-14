@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 import { PublicShell } from "@/components/aegisora/public-shell";
@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Evidence" };
 const cards = [
   { title: "Stable identity", copy: "Every action gets a durable evidence id at creation.", index: "01" },
   { title: "End-to-end trace", copy: "Follow a single request from proposal to execution.", index: "02" },
-  { title: "Tamper-evident", copy: "Evidence records are immutable once written.", index: "03" },
+  { title: "Tamper-evident", copy: "Evidence records are written once and designed to be tamper-evident.", index: "03" },
   { title: "Export-ready", copy: "Pull records for audit or compliance review.", index: "04" },
 ];
 

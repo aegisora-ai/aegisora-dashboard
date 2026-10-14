@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { ApiError, admin, authenticate, fail } from "@/lib/aegisora/server";
 
 export const runtime = "nodejs";
@@ -18,7 +18,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       .maybeSingle();
     if (!d) throw new ApiError(404, "not_found", "Decision not found.");
 
-    const { data: ev } = await db.from("evidence").select("payload").eq("decision_id", id).maybeSingle();
+    const { data: ev } = await db.from("evidence").select("payload").eq("decision_id", id).order("created_at", { ascending: true }).limit(1).maybeSingle();
     const payload = (ev?.payload ?? {}) as Record<string, unknown>;
     const agentName = (payload.agent_name as string) ?? null;
     const action = (payload.action as string) ?? null;

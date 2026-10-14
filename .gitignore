@@ -1,4 +1,4 @@
-﻿# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
@@ -70,3 +70,19 @@ common-components.txt
 remaining-pages.txt
 changelog-page.backup.txt
 dump*.txt
+
+# local tooling
+_repairs/
+_revenue-*/
+export.json
+supabase/.temp/
+.env
+.env.*
+!.env.example
+.vercel/
+_backups/
+_foundation/
+_notes/
+_revenue-repair-backup/
+node_modules/
+.next/
