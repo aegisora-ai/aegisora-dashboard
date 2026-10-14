@@ -1,0 +1,4 @@
+Contact: mailto:sales@aegisora.org
+Expires: 2027-09-14T18:02:18Z
+Preferred-Languages: en, de
+Canonical: https://www.aegisora.org/.well-known/security.txt

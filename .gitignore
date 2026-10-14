@@ -86,3 +86,5 @@ _notes/
 _revenue-repair-backup/
 node_modules/
 .next/
+
+docs/audit/
