@@ -69,7 +69,7 @@ export function getStripe(): Stripe {
 export function getAdminClient() {
   return createAdminClient(
     env("NEXT_PUBLIC_SUPABASE_URL"),
-    env("SUPABASE_SERVICE_ROLE_KEY"),
+    (process.env.SUPABASE_SECRET_KEY || env("SUPABASE_SERVICE_ROLE_KEY")),
     {
       auth: {
         persistSession: false,
