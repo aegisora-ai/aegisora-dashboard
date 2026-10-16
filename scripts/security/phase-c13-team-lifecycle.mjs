@@ -5,7 +5,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
-require("@next/env").loadEnvConfig(root, false);
+require("@next/env").loadEnvConfig(root, true);
+require("./_prod-guard.cjs");
 if ((process.env.NEXT_PUBLIC_SUPABASE_URL || '').includes('hypbttzeqeupwdzbgwbd')) { console.error('REFUSING: runtime Supabase project is LIVE.'); process.exit(1); } // AEGISORA-LIVE-GUARD
 const baseUrl = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3199";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

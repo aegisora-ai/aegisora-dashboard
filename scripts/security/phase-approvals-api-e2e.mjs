@@ -561,6 +561,8 @@ try {
   const failed = result.checks.filter(item => !item.pass).length;
   result.summary = { passed, failed, cleanup_verified: result.cleanup.verified };
 
+  if (!result.error && failed === 0 && passed > 0 && result.cleanup.verified) result.status = "PASS";
+
   const outDir = path.join(root, ".enterprise");
   const outputPath = path.join(outDir, "phase-approvals-api-e2e.json");
 

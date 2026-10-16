@@ -1,4 +1,4 @@
-﻿import { createRequire } from "node:module";
+import { createRequire } from "node:module";
 import { createServer } from "node:net";
 import { spawn } from "node:child_process";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
@@ -10,7 +10,8 @@ import { setTimeout as delay } from "node:timers/promises";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
-require("@next/env").loadEnvConfig(root, false);
+require("@next/env").loadEnvConfig(root, true);
+require("./_prod-guard.cjs");
 const url = process.env.AEGISORA_E2E_SUPABASE_URL;
 const anon = process.env.AEGISORA_E2E_SUPABASE_ANON_KEY;
 const serviceRole = process.env.AEGISORA_E2E_SUPABASE_SERVICE_ROLE_KEY;

@@ -9,7 +9,8 @@ import { setTimeout as delay } from "node:timers/promises";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
-require("@next/env").loadEnvConfig(root, false);
+require("@next/env").loadEnvConfig(root, true);
+require("./_prod-guard.cjs");
 if ((process.env.NEXT_PUBLIC_SUPABASE_URL || '').includes('hypbttzeqeupwdzbgwbd')) { console.error('REFUSING: runtime Supabase project is LIVE.'); process.exit(1); } // AEGISORA-LIVE-GUARD
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
