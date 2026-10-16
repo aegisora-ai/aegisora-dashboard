@@ -96,8 +96,8 @@ export const RELEASES: Release[] = [
       ]},
       { title: "Enterprise Contracts", items: [
         "Billing state contracts",
-        "SSO identity contracts",
-        "SCIM provisioning contracts",
+        "SSO identity contracts (interface definitions; not verified with a customer IdP)",
+        "SCIM provisioning contracts (interface definitions; not verified with a customer IdP)",
         "Enterprise recovery contracts",
       ]},
       { title: "Security Model", body:

@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import {
   BookOpen, Code2, ShieldCheck, Building2, MessageCircle, ScrollText,
   Scale, UserCheck, FileSearch, Route, ArrowUpRight,
@@ -60,7 +60,7 @@ const BUILD_LINKS: ResourceLink[] = [
 ];
 
 const COMPANY_LINKS: ResourceLink[] = [
-  { title: "Enterprise", desc: "Deployment models, SSO, and dedicated support.", href: "/enterprise", icon: Building2 },
+  { title: "Enterprise", desc: "Scoped design-partner pilots and security review.", href: "/enterprise", icon: Building2 },
   { title: "Pricing", desc: "Plans for teams evaluating and running in production.", href: "/pricing", icon: ScrollText },
   { title: "Changelog", desc: "What shipped in Aegisora 3.0 and what came before.", href: "/changelog", icon: Route },
   { title: "About", desc: "Why the execution boundary matters to us.", href: "/about", icon: BookOpen },

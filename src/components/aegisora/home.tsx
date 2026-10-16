@@ -251,7 +251,7 @@ export default function Home() {
       <section className="px-6 pb-24">
         <motion.div {...fadeUp()} className="aeg-hero mx-auto max-w-7xl rounded-xl border border-border bg-surface-1 px-8 py-16 text-center">
           <h2 className="mx-auto max-w-2xl text-4xl font-semibold tracking-tight">Put a decision point in front of your agents today.</h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">Start free and open source, or talk to us about enterprise controls, SSO and audit requirements.</p>
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">Create a test workspace, or talk to us about a scoped enterprise pilot.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link href="/signup" className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
               Test Aegisora <ArrowRight className="size-4" />

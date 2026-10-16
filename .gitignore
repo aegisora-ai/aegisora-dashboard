@@ -88,3 +88,6 @@ node_modules/
 .next/
 
 docs/audit/
+
+# local audit reports
+_launch_audit*.txt
