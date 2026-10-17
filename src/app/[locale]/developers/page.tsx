@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 import { PublicShell } from "@/components/aegisora/public-shell";
@@ -36,6 +36,7 @@ export default function DevelopersPage() {
             <Link href="/proof" className={cn(btnOutline)}>
               Run live runtime proof
             </Link>
+<Link href="/developers/quickstart" className={cn(btnOutline)}>Quickstart</Link>
           </div>
         </div>
       </section>

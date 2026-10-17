@@ -11,12 +11,13 @@ function errorResponse(status: number, code: string, message: string) {
 
 export async function GET(req: Request) {
   try {
+    const { user } = await authenticateUser(req);
     const workspaceId = req.headers.get("x-workspace-id")?.trim() ?? "";
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(workspaceId)) {
       return errorResponse(400, "invalid_workspace", "X-Workspace-Id header must contain a workspace UUID.");
     }
 
-    const { user } = await authenticateUser(req);
+    
     await requireWorkspacePermission(user.id, workspaceId, "workspace:read");
 
     const now = new Date();

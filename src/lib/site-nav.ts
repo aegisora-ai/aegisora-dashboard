@@ -20,7 +20,7 @@ export const nav: NavGroup[] = [
   {
     label: "Resources",
     items: [
-      { label: "Changelog", href: "/changelog", desc: "What Aegisora 3.0 includes." },
+      { label: "Changelog", href: "/changelog", desc: "What Aegisora 4.0 includes." },
       { label: "Company", href: "/about", desc: "Why the execution boundary matters." },
     ],
   },

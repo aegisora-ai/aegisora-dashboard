@@ -1,8 +1,8 @@
-﻿"use client";
+"use client";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/aegisora/logo";
 import { DocsMegaMenu } from "@/components/aegisora/docs-mega-menu";
 import { NavDropdown, type DropdownItem } from "@/components/aegisora/nav-dropdown";
@@ -19,6 +19,7 @@ const PRODUCT_ITEMS: DropdownItem[] = [
 
 const DEVELOPERS_ITEMS: DropdownItem[] = [
   { title: "Developer Overview", href: "/developers", desc: "SDKs, integration guides" },
+  { title: "Quickstart", href: "/developers/quickstart" },
   { title: "API Reference", href: "/docs#api" },
   { title: "Security", href: "/security" },
 ];
@@ -38,43 +39,54 @@ const MAIN_NAV = [
   { name: "Pricing", href: "/pricing" },
 ];
 
+const MOBILE_GROUPS: { title: string; items: DropdownItem[] }[] = [
+  { title: "Product", items: PRODUCT_ITEMS },
+  { title: "Developers", items: DEVELOPERS_ITEMS },
+  { title: "Resources", items: RESOURCES_ITEMS },
+];
+
+const navLink = "text-sm font-medium text-[#c7d4ee] transition-colors hover:text-white";
+
 export function SiteHeader() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+
   // Route change intentionally closes the mobile navigation.
   useEffect(() => {
-  const timer = window.setTimeout(() => {
-    setMobileOpen(false);
-  }, 0);
-
-  return () => window.clearTimeout(timer);
-}, [pathname]);
+    const timer = window.setTimeout(() => setMobileOpen(false), 0);
+    return () => window.clearTimeout(timer);
+  }, [pathname]);
 
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
+    document.body.style.overflow = mobileOpen ? "hidden" : "unset";
+    return () => {
       document.body.style.overflow = "unset";
-    }
-    return () => { document.body.style.overflow = "unset"; }
+    };
   }, [mobileOpen]);
 
   return (
     <>
-      {/* 1. ANA HEADER - sayfa iceriginin container'iyla (max-w-6xl px-6) hizali*/}
-      <header className="sticky top-0 z-[100] w-full border-b border-[#1677ff]/20 bg-[#020611]/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 h-16 lg:h-20">
+      {/* ANNOUNCEMENT BAR */}
+      <div className="border-b border-[#0f2a5c] bg-gradient-to-r from-[#00309c] to-[#0a5bd6] text-white">
+        <div className="mx-auto flex min-h-12 max-w-[1280px] items-center justify-center gap-3 px-4 py-2 text-sm sm:px-6">
+          <span className="hidden rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-semibold sm:inline">Early access</span>
+          <span>Create a test workspace and evaluate your first agent action.</span>
+          <Link href="/signup" className="inline-flex shrink-0 items-center gap-1 font-semibold underline-offset-4 hover:underline">
+            Test Aegisora <ArrowRight size={14} />
+          </Link>
+        </div>
+      </div>
 
+      {/* MAIN HEADER */}
+      <header className="sticky top-0 z-[100] w-full border-b border-[#0f2a5c] bg-[#000b24]/95 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-[1280px] items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-9">
             <Logo />
-            <nav className="hidden lg:flex items-center gap-6">
+            <nav className="hidden items-center gap-6 lg:flex">
               {MAIN_NAV.map((item) =>
                 item.dropdown ? (
                   <div key={item.name} className="group relative">
-                    <Link
-                      href={item.href}
-                      className="flex items-center gap-1 text-sm font-medium text-slate-300 transition-colors hover:text-white"
-                    >
+                    <Link href={item.href} className={"flex items-center gap-1 " + navLink}>
                       {item.name}
                       <ChevronDown size={14} className="transition-transform duration-200 group-hover:rotate-180" />
                     </Link>
@@ -84,11 +96,7 @@ export function SiteHeader() {
                     {item.dropdown === "resources" && <NavDropdown items={RESOURCES_ITEMS} />}
                   </div>
                 ) : (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="text-sm font-medium text-slate-300 transition-colors hover:text-white"
-                  >
+                  <Link key={item.name} href={item.href} className={navLink}>
                     {item.name}
                   </Link>
                 )
@@ -97,57 +105,61 @@ export function SiteHeader() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="hidden lg:flex items-center gap-5">
-              <Link
-                href="/login"
-                className="text-sm font-medium text-slate-300 transition-colors hover:text-white"
-              >
+            <div className="hidden items-center gap-5 lg:flex">
+              <Link href="/login" className={navLink}>
                 Log in
               </Link>
               <Link
-                href="/onboarding"
-                className="rounded-lg bg-[#1677ff] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#0b6fb5] hover:shadow-[#1677ff]/20 hover:shadow-lg"
+                href="/signup"
+                className="inline-flex h-9 items-center rounded bg-primary px-5 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover"
               >
                 Test Aegisora
               </Link>
             </div>
-
             <button
-              className="inline-flex items-center justify-center rounded-md border border-[#1677ff]/30 p-2 text-slate-300 transition-colors hover:bg-[#1677ff]/10 hover:text-white focus:outline-none lg:hidden"
+              type="button"
+              className="inline-flex items-center justify-center rounded-md border border-[#27457f] p-2 text-[#c7d4ee] transition-colors hover:bg-white/10 hover:text-white focus:outline-none lg:hidden"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
             >
-              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* 2. MOBIL MENU OVERLAY */}
+      {/* MOBILE MENU */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-[90] bg-[#020611] pt-24 px-6 pb-8 overflow-y-auto lg:hidden">
-          <nav className="flex flex-col gap-4">
-            {MAIN_NAV.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="rounded-md p-3 text-xl font-semibold text-slate-200 transition-colors hover:bg-[#1677ff]/10 hover:text-[#1677ff]"
-              >
-                {item.name}
-              </Link>
+        <div className="fixed inset-0 z-[90] overflow-y-auto bg-[#000b24] px-6 pb-10 pt-28 lg:hidden">
+          <nav className="flex flex-col gap-6">
+            {MOBILE_GROUPS.map((g) => (
+              <div key={g.title}>
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#8fa4cc]">{g.title}</p>
+                <ul className="mt-2 flex flex-col">
+                  {g.items.map((i) => (
+                    <li key={i.href}>
+                      <Link href={i.href} className="block rounded-md px-2 py-2.5 text-lg font-semibold text-[#e6eeff] hover:bg-white/10">
+                        {i.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-
-            <div className="my-6 h-[1px] w-full bg-[#1677ff]/20" />
-
-            <Link
-              href="/login"
-              className="rounded-md p-3 text-xl font-semibold text-slate-200 transition-colors hover:bg-[#1677ff]/10 hover:text-[#1677ff]"
-            >
+            <Link href="/docs" className="rounded-md px-2 py-2.5 text-lg font-semibold text-[#e6eeff] hover:bg-white/10">
+              Docs
+            </Link>
+            <Link href="/pricing" className="rounded-md px-2 py-2.5 text-lg font-semibold text-[#e6eeff] hover:bg-white/10">
+              Pricing
+            </Link>
+            <div className="h-px w-full bg-[#0f2a5c]" />
+            <Link href="/login" className="rounded-md px-2 py-2.5 text-lg font-semibold text-[#e6eeff] hover:bg-white/10">
               Log in
             </Link>
             <Link
-              href="/onboarding"
-              className="mt-6 flex w-full items-center justify-center rounded-lg bg-[#1677ff] px-4 py-4 text-lg font-bold text-white shadow-[0_0_20px_rgba(22,119,255,0.3)] transition-all hover:bg-[#0b6fb5]"
+              href="/signup"
+              className="flex h-12 w-full items-center justify-center rounded bg-primary text-base font-medium text-primary-foreground hover:bg-primary-hover"
             >
               Test Aegisora
             </Link>
@@ -157,6 +169,3 @@ export function SiteHeader() {
     </>
   );
 }
-
-
-

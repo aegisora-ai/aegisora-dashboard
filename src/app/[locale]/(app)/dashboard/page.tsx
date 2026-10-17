@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { Check, Circle } from "lucide-react";
@@ -78,9 +78,9 @@ function Overview({ ws }: { ws: Workspace }) {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {tiles.map((t) => (
-          <Link key={t.label} href={t.href} className="rounded-md border border-border bg-surface-1 p-5 hover:bg-surface-3">
+          <Link key={t.label} href={t.href} className="rounded-lg border border-border bg-surface-1 p-5 transition hover:border-primary/60 hover:bg-surface-3">
             <div className="font-mono text-[10px] tracking-wider text-muted-foreground">{t.label.toUpperCase()}</div>
-            <div className="mt-2 text-3xl font-semibold">{t.value}</div>
+            <div className="mt-2 text-4xl font-semibold tracking-tight">{t.value}</div>
           </Link>
         ))}
       </div>

@@ -61,7 +61,7 @@ export function V2Canvas() {
 export function V3Canvas() {
   const stages = ["REQUEST", "CONTEXT", "POLICY", "RISK", "DECISION", "ENFORCEMENT", "EXECUTION", "EVIDENCE"];
   return (
-    <svg viewBox="0 0 760 220" className="w-full h-auto" role="img" aria-label="Aegisora 3.0 architecture">
+    <svg viewBox="0 0 760 220" className="w-full h-auto" role="img" aria-label="Aegisora 4.0 architecture">
       <defs>
         <marker id="arrow-v3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
           <path d="M0,0 L10,5 L0,10 z" fill="var(--primary)" />

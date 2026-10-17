@@ -43,7 +43,7 @@ export function PageHeader({ title, description, actions }: { title: string; des
 }
 
 export function Panel({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("rounded-md border border-border bg-surface-1 p-5", className)}>{children}</div>;
+  return <div className={cn("rounded-lg border border-border bg-surface-1 p-5 [box-shadow:var(--panel-shadow)]", className)}>{children}</div>;
 }
 
 export function Notice({ ok, children }: { ok?: boolean; children: ReactNode }) {

@@ -91,7 +91,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <SidebarNav />
           </div>
           <div className="border-t border-border px-5 py-3 font-mono text-[10px] tracking-wider text-muted-foreground">
-            AEGISORA 3.0
+            AEGISORA 4.0
           </div>
         </aside>
 

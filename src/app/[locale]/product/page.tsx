@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 import { PublicShell } from "@/components/aegisora/public-shell";
@@ -22,7 +22,7 @@ export default function ProductOverviewPage() {
           <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">
             PRODUCT
           </span>
-          <h1 className="mt-4 max-w-2xl text-4xl font-light tracking-tight md:text-5xl">
+          <h1 className="aeg-display mt-4 max-w-3xl text-5xl md:text-6xl">
             Control what the agent is allowed to do.
           </h1>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">

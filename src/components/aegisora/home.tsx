@@ -1,4 +1,8 @@
 "use client";
+import { StartBuilding } from "@/components/aegisora/start-building";
+import { PlatformTabs } from "@/components/aegisora/platform-tabs";
+import { HeroTop } from "@/components/aegisora/hero-top";
+import { Reveal } from "@/components/aegisora/fx/reveal";
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -7,7 +11,6 @@ import {
   ArrowRight,
   Check,
   KeyRound,
-  Layers,
   Lock,
   ScrollText,
   ShieldCheck,
@@ -107,7 +110,7 @@ function LiveConsole() {
   );
 }
 
-const TRUST = ["MIT open source", "Tenant isolation (RLS)", "MFA step-up (AAL2)", "Signed webhooks", "SHA-256 evidence chain"];
+const TRUST = ["Tenant isolation (RLS)", "MFA step-up (AAL2)", "Signed webhooks", "SHA-256 evidence chain"];
 
 const STEPS = [
   { n: "01", title: "Intercept", body: "Every sensitive agent action is captured at the execution boundary, before it touches a real system." },
@@ -135,46 +138,17 @@ const SNIPPET = `curl -X POST https://api.aegisora.org/api/v1/evaluate \\
 
 export default function Home() {
   return (
-    <div className="overflow-x-clip">
+    <div className="aeg-page overflow-x-clip">
       {/* HERO */}
-      <section className="aeg-hero relative">
-        <div
-          aria-hidden
-          className="aeg-grid-bg pointer-events-none absolute inset-0 -z-10 opacity-60"
-          style={{ maskImage: "radial-gradient(ellipse at 50% 30%, black 20%, transparent 75%)" }}
-        />
-        <div className="mx-auto grid max-w-7xl items-center gap-14 px-6 pb-24 pt-20 lg:grid-cols-[1.05fr_0.95fr] lg:pt-28">
-          <div>
-            <motion.p {...fadeUp(0)} className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-surface-1 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-cyan">
-              <span className="size-1.5 rounded-full bg-primary" />
-              Open-source runtime security
-            </motion.p>
-            <motion.h1 {...fadeUp(1)} className="text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-              Secure what your AI agents are{" "}
-              <span className="bg-gradient-to-r from-primary to-cyan bg-clip-text text-transparent">allowed to do.</span>
-            </motion.h1>
-            <motion.p {...fadeUp(2)} className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              Aegisora sits at the execution boundary of autonomous systems. Every sensitive action is evaluated against
-              context, policy, risk and authorization before it reaches the real environment.
-            </motion.p>
-            <motion.div {...fadeUp(3)} className="mt-9 flex flex-wrap items-center gap-3">
-              <Link href="/signup" className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover">
-                Test Aegisora <ArrowRight className="size-4" />
-              </Link>
-              <Link href="/enterprise" className="inline-flex h-11 items-center rounded-md border border-border bg-surface-1 px-5 text-sm font-semibold transition hover:bg-surface-3">
-                Talk to Enterprise
-              </Link>
-            </motion.div>
-          </div>
-          <motion.div {...fadeUp(2)}>
-            <LiveConsole />
-          </motion.div>
+      <section>
+        <div className="mx-auto max-w-[1280px] px-4 pb-16 pt-8 sm:px-6 md:pt-12 lg:pb-20">
+          <HeroTop />
         </div>
       </section>
 
       {/* TRUST STRIP */}
-      <section className="border-y border-border bg-surface-1">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-6 py-6">
+      <section className="border-y border-border">
+        <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-center gap-x-10 gap-y-3 px-4 py-6 sm:px-6">
           {TRUST.map((t) => (
             <span key={t} className="flex items-center gap-2 text-sm text-muted-foreground">
               <Check className="size-4 text-allow" /> {t}
@@ -183,84 +157,128 @@ export default function Home() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <motion.div {...fadeUp()} className="max-w-2xl">
-          <p className="font-mono text-xs uppercase tracking-[0.18em] text-cyan">How it works</p>
-          <h2 className="mt-3 text-4xl font-semibold tracking-tight">One decision point for every agent action.</h2>
-        </motion.div>
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {STEPS.map((s, i) => (
-            <motion.div key={s.n} {...fadeUp(i)} className="aeg-panel p-6">
-              <span className="font-mono text-sm text-primary">{s.n}</span>
-              <h3 className="mt-4 text-xl font-semibold">{s.title}</h3>
-              <p className="mt-2 leading-relaxed text-muted-foreground">{s.body}</p>
-            </motion.div>
-          ))}
+      {/* LIVE CONSOLE */}
+      <section className="relative isolate border-b border-border">
+        <div
+          aria-hidden
+          className="aeg-grid-bg pointer-events-none absolute inset-0 -z-10 opacity-40"
+          style={{ maskImage: "radial-gradient(ellipse at 50% 40%, black 15%, transparent 75%)" }}
+        />
+        <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-4 py-20 sm:px-6 md:grid-cols-[1fr_1.2fr] lg:py-24">
+          <motion.div {...fadeUp()}>
+            <p className="aeg-eyebrow text-xs">Live decision console</p>
+            <h2 className="aeg-display mt-4 text-4xl sm:text-5xl lg:text-6xl">Every action gets a decision</h2>
+            <p className="aeg-body-text mt-5 max-w-lg text-base leading-relaxed">
+              Agents send the action they want to take. Aegisora evaluates it against policy, risk and authorization before it reaches the real environment.
+            </p>
+            <Link href="/developers/quickstart" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold transition hover:text-primary">
+              Evaluate your first action <ArrowRight className="size-4" />
+            </Link>
+          </motion.div>
+          <motion.div {...fadeUp(1)} className="aeg-tile p-3 sm:p-5">
+            <LiveConsole />
+          </motion.div>
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section className="border-t border-border bg-surface-1">
-        <div className="mx-auto max-w-7xl px-6 py-24">
-          <motion.div {...fadeUp()} className="max-w-2xl">
-            <p className="font-mono text-xs uppercase tracking-[0.18em] text-cyan">Platform</p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight">Built for security teams that need proof, not promises.</h2>
-          </motion.div>
-          <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {FEATURES.map((f, i) => (
-              <motion.div key={f.title} {...fadeUp(i)} className={`aeg-panel group p-6 transition hover:border-primary/60 ${f.span}`}>
-                <f.icon className="size-6 text-primary" />
-                <h3 className="mt-5 text-lg font-semibold">{f.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.body}</p>
+      {/* START BUILDING */}
+      <section className="border-b border-border bg-surface-1">
+        <div className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:py-24">
+          <Reveal><StartBuilding /></Reveal>
+        </div>
+      </section>
+
+      {/* PLATFORM */}
+      <section className="border-b border-border">
+        <div className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:py-24">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 className="aeg-display text-5xl sm:text-6xl lg:text-7xl">Aegisora Runtime</h2>
+            <Link href="/developers" className="inline-flex items-center gap-1.5 text-sm font-semibold transition hover:text-primary">
+              Learn about the platform <ArrowRight className="size-4" />
+            </Link>
+          </div>
+          <p className="mt-3 text-xl sm:text-2xl">Built for security teams that need proof, not promises.</p>
+          <div className="mt-12">
+            <Reveal><PlatformTabs features={FEATURES} /></Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS (light band) */}
+      <section className="aeg-light-band">
+        <div className="mx-auto max-w-[1280px] px-4 pt-20 sm:px-6 lg:pt-24">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 className="aeg-display max-w-3xl text-4xl sm:text-5xl lg:text-6xl">One decision point for every agent action.</h2>
+            <Link href="/developers/quickstart" className="inline-flex items-center gap-1.5 text-sm font-semibold transition hover:text-primary">
+              Read the quickstart <ArrowRight className="size-4" />
+            </Link>
+          </div>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {STEPS.map((s, i) => (
+              <motion.div key={s.n} {...fadeUp(i)} className="aeg-tile p-6 md:p-8">
+                <span className="aeg-eyebrow text-xs text-primary">{s.n}</span>
+                <h3 className="aeg-display mt-4 text-2xl sm:text-3xl">{s.title}</h3>
+                <p className="aeg-body-text mt-3 leading-relaxed">{s.body}</p>
               </motion.div>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* DEVELOPERS */}
-      <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-24 lg:grid-cols-2">
-        <motion.div {...fadeUp()}>
-          <p className="font-mono text-xs uppercase tracking-[0.18em] text-cyan">Developers</p>
-          <h2 className="mt-3 text-4xl font-semibold tracking-tight">One API call between your agent and production.</h2>
-          <p className="mt-5 max-w-lg leading-relaxed text-muted-foreground">
-            Send the action, get a decision. Integrate with any agent framework and keep a verifiable record of every call.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/developers" className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
-              Developer docs <ArrowRight className="size-4" />
-            </Link>
-            <a href="https://github.com/aegisora-ai/aegisora" target="_blank" rel="noreferrer" className="inline-flex h-11 items-center gap-2 rounded-md border border-border bg-surface-1 px-5 text-sm font-semibold hover:bg-surface-3">
-              <Layers className="size-4" /> View on GitHub
-            </a>
-          </div>
-        </motion.div>
-        <motion.div {...fadeUp(1)} className="aeg-panel overflow-hidden">
-          <div className="flex items-center gap-1.5 border-b border-border px-4 py-3">
-            <span className="size-2.5 rounded-full bg-block/70" />
-            <span className="size-2.5 rounded-full bg-escalate/70" />
-            <span className="size-2.5 rounded-full bg-allow/70" />
-            <span className="ml-3 font-mono text-xs text-muted-foreground">illustrative request</span>
-          </div>
-          <pre className="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed text-foreground">{SNIPPET}</pre>
-        </motion.div>
-      </section>
+        {/* FINAL */}
+        <div className="mx-auto max-w-[1280px] px-4 pb-20 pt-20 sm:px-6 lg:pb-24 lg:pt-24">
+          <h2 className="aeg-display max-w-3xl text-4xl sm:text-5xl lg:text-6xl">Put a decision point in front of your agents today.</h2>
+          <div className="mt-10 grid gap-4 lg:grid-cols-[1.7fr_1fr]">
+            <div className="aeg-night aeg-tile grid items-center gap-8 p-6 md:grid-cols-2 md:p-10">
+              <div>
+                <p className="aeg-eyebrow flex items-center gap-2 text-xs">
+                  <span className="size-1.5 rounded-full bg-allow" /> Start today
+                </p>
+                <h3 className="aeg-display mt-4 text-3xl sm:text-4xl">Evaluate your first agent action</h3>
+                <p className="aeg-body-text mt-4 text-base leading-relaxed">
+                  Create a test workspace, send one request and read the decision. Without a matching policy the default is BLOCK.
+                </p>
+                <div className="mt-7 flex flex-wrap items-center gap-5">
+                  <Link href="/signup" className="inline-flex h-11 items-center rounded bg-primary px-6 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover">
+                    Test Aegisora
+                  </Link>
+                  <Link href="/enterprise" className="inline-flex items-center gap-1.5 text-sm font-semibold transition hover:text-primary">
+                    Talk to Enterprise <ArrowRight className="size-4" />
+                  </Link>
+                </div>
+              </div>
+              <div className="overflow-hidden rounded-xl border border-border bg-surface-2">
+                <div className="flex items-center gap-1.5 border-b border-border px-4 py-2.5">
+                  <span className="size-2.5 rounded-full bg-block/70" />
+                  <span className="size-2.5 rounded-full bg-escalate/70" />
+                  <span className="size-2.5 rounded-full bg-allow/70" />
+                  <span className="ml-3 font-mono text-xs text-muted-foreground">illustrative request</span>
+                </div>
+                <pre className="overflow-x-auto p-4 font-mono text-[12px] leading-relaxed">{SNIPPET}</pre>
+              </div>
+            </div>
 
-      {/* FINAL CTA */}
-      <section className="px-6 pb-24">
-        <motion.div {...fadeUp()} className="aeg-hero mx-auto max-w-7xl rounded-xl border border-border bg-surface-1 px-8 py-16 text-center">
-          <h2 className="mx-auto max-w-2xl text-4xl font-semibold tracking-tight">Put a decision point in front of your agents today.</h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">Create a test workspace, or talk to us about a scoped enterprise pilot.</p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/signup" className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
-              Test Aegisora <ArrowRight className="size-4" />
-            </Link>
-            <Link href="/enterprise" className="inline-flex h-11 items-center rounded-md border border-border bg-background px-6 text-sm font-semibold hover:bg-surface-3">
-              Talk to Enterprise
-            </Link>
+            <div className="aeg-tile p-6 md:p-8">
+              <p className="aeg-eyebrow text-xs">More information</p>
+              <ul className="mt-5 divide-y divide-border">
+                <li>
+                  <Link href="/developers/quickstart" className="flex items-center gap-3 py-3 text-sm font-semibold transition hover:text-primary">
+                    <span className="size-1.5 rounded-full bg-primary" /> Quickstart <ArrowRight className="ml-auto size-4" />
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/developers" className="flex items-center gap-3 py-3 text-sm font-semibold transition hover:text-primary">
+                    <span className="size-1.5 rounded-full bg-primary" /> Developer docs <ArrowRight className="ml-auto size-4" />
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/enterprise" className="flex items-center gap-3 py-3 text-sm font-semibold transition hover:text-primary">
+                    <span className="size-1.5 rounded-full bg-primary" /> Enterprise <ArrowRight className="ml-auto size-4" />
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </section>
     </div>
   );

@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
@@ -225,3 +226,160 @@ html {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+
+/* === AEGISORA DESIGN V2 (MongoDB-inspired layout, blue palette) === */
+.aeg-dark-band {
+  color-scheme: dark;
+  --background: #020611;
+  --surface-1: #061022;
+  --surface-2: #09162e;
+  --surface-3: #0c1c3a;
+  --surface-4: #102347;
+  --foreground: #ffffff;
+  --muted-foreground: #8a9fc2;
+  --card: #061022;
+  --card-foreground: #ffffff;
+  --border: #1a2738;
+  --input: #1a2738;
+  --cyan: #00b8ff;
+  --primary-hover: #2188ff;
+  --allow: #34b37e;
+  --allow-muted: #0f2a22;
+  --block: #e5484d;
+  --block-muted: #2c1518;
+  --escalate: #e0a030;
+  --escalate-muted: #2b2210;
+  --grid-line: rgb(26 39 56 / 0.5);
+  --panel-shadow: none;
+  background-color: var(--background);
+  color: var(--foreground);
+  background-image: radial-gradient(ellipse 60% 50% at 50% 0%, rgb(22 119 255 / 0.22), transparent 70%);
+}
+
+.aeg-panel {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.aeg-panel.group:hover {
+  border-color: color-mix(in srgb, var(--primary) 60%, var(--border));
+  box-shadow: 0 18px 40px -26px rgb(22 119 255 / 0.55);
+}
+
+/* === AEGISORA DESIGN V3 (structure inspired by dark data-platform sites; own palette and fonts) === */
+.aeg-display {
+  font-family: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+  line-height: 0.98;
+}
+.aeg-dark-band, .aeg-dark-page {
+  --surface-1: #07142a;
+  --surface-2: #0a1a35;
+  --surface-3: #0e2243;
+  --border: #1f3350;
+}
+.aeg-eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.aeg-tile {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  transition: border-color 0.2s ease;
+}
+.aeg-tile:hover { border-color: color-mix(in srgb, var(--primary) 55%, var(--border)); }
+
+/* === AEGISORA DESIGN V4 (full home rebuild) === */
+.aeg-page {
+  color-scheme: dark;
+  --background: #001e2b;
+  --surface-1: #061621;
+  --surface-2: #0a1f2c;
+  --surface-3: #0e2837;
+  --surface-4: #12313f;
+  --foreground: #fdfeec;
+  --muted-foreground: #b8c4c2;
+  --card: #061621;
+  --card-foreground: #fdfeec;
+  --border: #1c2d38;
+  --input: #1c2d38;
+  --aeg-body: #b8c4c2;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+.aeg-page .aeg-display { letter-spacing: -0.02em; line-height: 0.95; font-weight: 600; }
+.aeg-page .aeg-eyebrow { font-weight: 600; letter-spacing: 0.08em; }
+.aeg-page .aeg-tile { border-radius: 16px; border: 1px solid var(--border); background: var(--surface-1); }
+.aeg-body-text { color: var(--aeg-body, #b8c4c2); }
+.aeg-announce { background: color-mix(in srgb, var(--primary) 38%, #001e2b); }
+
+/* === AEGISORA DESIGN V5 (palette matched to hero artwork) === */
+.aeg-page {
+  color-scheme: dark;
+  --background: #000b24;
+  --surface-1: #000f33;
+  --surface-2: #00143d;
+  --surface-3: #001a4a;
+  --surface-4: #00225c;
+  --foreground: #f4f8ff;
+  --muted-foreground: #a9bbdb;
+  --card: #000f33;
+  --card-foreground: #f4f8ff;
+  --border: #0f2a5c;
+  --input: #0f2a5c;
+  --aeg-body: #a9bbdb;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+.aeg-page .aeg-display { letter-spacing: -0.02em; line-height: 0.95; font-weight: 600; }
+.aeg-page .aeg-eyebrow { font-weight: 600; letter-spacing: 0.08em; }
+.aeg-page .aeg-tile { border-radius: 16px; border: 1px solid var(--border); background: var(--surface-1); }
+.aeg-page .aeg-tile:hover { border-color: color-mix(in srgb, var(--primary) 45%, var(--border)); }
+.aeg-body-text { color: var(--aeg-body, #a9bbdb); }
+.aeg-announce { background: linear-gradient(90deg, #00309c, #0a5bd6); }
+
+/* === AEGISORA DESIGN V6 (video-matched page flow, artwork palette) === */
+.aeg-page, .aeg-night {
+  color-scheme: dark;
+  --background: #000b24;
+  --surface-1: #000f33;
+  --surface-2: #00143d;
+  --surface-3: #001a4a;
+  --surface-4: #00225c;
+  --foreground: #f4f8ff;
+  --muted-foreground: #a9bbdb;
+  --card: #000f33;
+  --card-foreground: #f4f8ff;
+  --border: #0f2a5c;
+  --input: #0f2a5c;
+  --aeg-body: #a9bbdb;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+.aeg-light-band {
+  color-scheme: light;
+  --background: #eef4ff;
+  --surface-1: #ffffff;
+  --surface-2: #f6f9ff;
+  --surface-3: #e3ecff;
+  --surface-4: #d5e2fb;
+  --foreground: #000b24;
+  --muted-foreground: #3d5280;
+  --card: #ffffff;
+  --card-foreground: #000b24;
+  --border: #cfdcf5;
+  --input: #cfdcf5;
+  --aeg-body: #3d5280;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+.aeg-page .aeg-display { letter-spacing: -0.02em; line-height: 0.95; font-weight: 600; }
+.aeg-page .aeg-eyebrow { font-weight: 600; letter-spacing: 0.08em; }
+.aeg-page .aeg-tile { border-radius: 16px; border: 1px solid var(--border); background: var(--surface-1); }
+.aeg-page .aeg-tile:hover { border-color: color-mix(in srgb, var(--primary) 45%, var(--border)); }
+.aeg-body-text { color: var(--aeg-body, #a9bbdb); }
