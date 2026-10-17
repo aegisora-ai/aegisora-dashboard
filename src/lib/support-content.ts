@@ -8,7 +8,9 @@ export type Block =
   | { t: "h"; text: string }
   | { t: "ul"; items: string[] }
   | { t: "ol"; items: string[] }
-  | { t: "note"; text: string };
+  | { t: "note"; text: string }
+  | { t: "tip"; text: string }
+  | { t: "warn"; text: string };
 
 export type Article = { slug: string; title: string; summary: string; body: Block[] };
 export type Collection = { slug: string; title: string; desc: string; icon: LucideIcon; articles: Article[] };
@@ -35,7 +37,7 @@ export const COLLECTIONS: Collection[] = [
           ] },
           { t: "h", text: "What it works with" },
           { t: "p", text: "The boundary is framework independent. It sits beneath your agent stack rather than inside one specific framework, and provider execution can pass through the same enforcement path." },
-          { t: "note", text: "Aegisora is in early access and is being validated with design partners. Production hosting, customer SSO and full audit operations are not yet verified. See the Pilots and pricing collection for details." },
+          { t: "warn", text: "Aegisora is in early access and is being validated with design partners. Production hosting, customer SSO and full audit operations are not yet verified. See the Pilots and pricing collection for details." },
         ],
       },
       {
@@ -71,7 +73,7 @@ export const COLLECTIONS: Collection[] = [
             "Note the decision identity and evidence hash that come back with it.",
           ] },
           { t: "p", text: "If you would rather watch the runtime decide before writing any code, the live runtime proof runs a decision for you on the main site." },
-          { t: "note", text: "A new workspace has no policies yet, so your first action is expected to be BLOCKED. That is the default behaviour, not an error." },
+          { t: "tip", text: "A new workspace has no policies yet, so your first action is expected to be BLOCKED. That is the default behaviour, not an error." },
         ],
       },
       {
@@ -107,7 +109,7 @@ export const COLLECTIONS: Collection[] = [
             "An action that matches no policy is blocked by default.",
             "A policy can lead to ALLOW, BLOCK or ESCALATE for the actions it covers.",
           ] },
-          { t: "note", text: "Because the default is BLOCK, an empty workspace never allows anything. Add policies deliberately and test them with your own actions." },
+          { t: "tip", text: "Because the default is BLOCK, an empty workspace never allows anything. Add policies deliberately and test them with your own actions." },
         ],
       },
       {
@@ -353,4 +355,45 @@ export function popularArticles() {
     const art = findArticle(c, a);
     return art ? [{ title: art.title, href: articleHref(c, a) }] : [];
   });
+}
+export const UPDATED = "October 2026";
+
+export function slugify(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+export function headingsOf(a: Article) {
+  return a.body.flatMap((b) => (b.t === "h" ? [{ text: b.text, id: slugify(b.text) }] : []));
+}
+
+export function neighbours(c: string, a: string) {
+  const col = findCollection(c);
+  if (!col) return { prev: null, next: null };
+  const i = col.articles.findIndex((x) => x.slug === a);
+  return {
+    prev: i > 0 ? col.articles[i - 1] : null,
+    next: i >= 0 && i < col.articles.length - 1 ? col.articles[i + 1] : null,
+  };
+}
+
+export function readMinutes(a: Article) {
+  const words = a.body
+    .map((b) => (b.t === "ul" || b.t === "ol" ? b.items.join(" ") : b.text))
+    .join(" ")
+    .split(/\s+/).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
+export function toMarkdown(a: Article) {
+  const label = { note: "Note", tip: "Tip", warn: "Important" } as const;
+  const out: string[] = ["# " + a.title, "", a.summary, ""];
+  for (const b of a.body) {
+    if (b.t === "h") out.push("## " + b.text);
+    else if (b.t === "p") out.push(b.text);
+    else if (b.t === "ul") out.push(b.items.map((x) => "- " + x).join("\n"));
+    else if (b.t === "ol") out.push(b.items.map((x, i) => String(i + 1) + ". " + x).join("\n"));
+    else out.push("> **" + label[b.t] + ":** " + b.text);
+    out.push("");
+  }
+  return out.join("\n");
 }

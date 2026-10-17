@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { FileText, Search } from "lucide-react";
 
 type Item = { title: string; summary: string; collection: string; href: string };
 
 export function SupportSearch({ items }: { items: Item[] }) {
   const [q, setQ] = useState("");
+  const [active, setActive] = useState(0);
   const ref = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -26,8 +26,23 @@ export function SupportSearch({ items }: { items: Item[] }) {
     if (term.length < 2) return [];
     return items
       .filter((i) => (i.title + " " + i.summary + " " + i.collection).toLowerCase().includes(term))
+      .sort((a, b) => Number(!a.title.toLowerCase().includes(term)) - Number(!b.title.toLowerCase().includes(term)))
       .slice(0, 6);
   }, [q, items]);
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActive((i) => Math.min(i + 1, Math.max(results.length - 1, 0)));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActive((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter" && results[active]) {
+      window.location.assign(results[active].href);
+    } else if (e.key === "Escape") {
+      setQ("");
+    }
+  };
 
   return (
     <div className="relative max-w-xl">
@@ -36,7 +51,11 @@ export function SupportSearch({ items }: { items: Item[] }) {
         <input
           ref={ref}
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setActive(0);
+          }}
+          onKeyDown={onKeyDown}
           placeholder="Search for articles..."
           aria-label="Search for articles"
           className="h-full min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
@@ -49,12 +68,19 @@ export function SupportSearch({ items }: { items: Item[] }) {
             <p className="px-5 py-4 text-sm text-muted-foreground">No articles found. Try a different word.</p>
           ) : (
             <ul>
-              {results.map((r) => (
+              {results.map((r, i) => (
                 <li key={r.href} className="border-b border-border last:border-b-0">
-                  <Link href={r.href} className="block px-5 py-3 transition hover:bg-surface-3">
-                    <span className="block text-sm font-semibold">{r.title}</span>
-                    <span className="mt-0.5 block text-xs text-muted-foreground">{r.collection} · {r.summary}</span>
-                  </Link>
+                  <a
+                    href={r.href}
+                    onMouseEnter={() => setActive(i)}
+                    className={"flex items-start gap-3 px-5 py-3 transition " + (i === active ? "bg-surface-3" : "")}
+                  >
+                    <FileText className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+                    <span>
+                      <span className="block text-sm font-semibold">{r.title}</span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">{r.collection} · {r.summary}</span>
+                    </span>
+                  </a>
                 </li>
               ))}
             </ul>
