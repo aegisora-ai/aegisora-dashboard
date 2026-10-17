@@ -91,3 +91,6 @@ docs/audit/
 
 # local audit reports
 _launch_audit*.txt
+
+# yerel operasyon scriptleri
+Aegisora-*.ps1

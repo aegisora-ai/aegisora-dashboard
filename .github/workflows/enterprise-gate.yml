@@ -1,13 +1,19 @@
-﻿name: Enterprise Readiness Gate
+name: Enterprise Readiness Gate
 
 on:
   pull_request:
     branches:
       - main
+      - master
+      - rebuild/aegisora-v3
 
   push:
     branches:
       - main
+      - master
+      - rebuild/aegisora-v3
+
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -74,6 +80,13 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+      - name: Bundle leak check (no production project reference)
+        run: |
+          if grep -rIq "hypbttzeqeupwdzbgwbd" .next --exclude-dir=cache; then
+            echo "::error::production project reference found in build output"
+            exit 1
+          fi
 
       - name: Test gate
         run: npm test
