@@ -1,7 +1,9 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { PublicShell } from "@/components/aegisora/public-shell";
+import { PageHero } from "@/components/aegisora/page-kit";
+import { Reveal } from "@/components/aegisora/fx/reveal";
 import { btnPrimary, btnOutline } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -17,40 +19,35 @@ const cards = [
 export default function DevelopersPage() {
   return (
     <PublicShell>
-      <section className="aeg-grid-bg border-b border-border bg-surface-1 px-6 py-20">
-        <div className="mx-auto max-w-[80rem]">
-          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">
-            DEVELOPERS
-          </span>
-          <h1 className="mt-4 max-w-2xl text-4xl font-light tracking-tight md:text-5xl">
-            Build agents around a real enforcement boundary.
-          </h1>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
-            Aegisora is designed to sit underneath the agent orchestration layer, where requests become executable actions.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/signup" className={cn(btnPrimary)}>
-              Test Aegisora
-              <ArrowRight className="ml-2 size-4" />
-            </Link>
-            <Link href="/proof" className={cn(btnOutline)}>
-              Run live runtime proof
-            </Link>
-<Link href="/developers/quickstart" className={cn(btnOutline)}>Quickstart</Link>
-          </div>
+      <PageHero
+        eyebrow="DEVELOPERS"
+        title="Build agents around a real enforcement boundary."
+        lead="Aegisora is designed to sit underneath the agent orchestration layer, where requests become executable actions."
+      >
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link href="/signup" className={cn(btnPrimary)}>
+            Test Aegisora
+            <ArrowRight className="ml-2 size-4" />
+          </Link>
+          <Link href="/proof" className={cn(btnOutline)}>
+            Run live runtime proof
+          </Link>
+          <Link href="/developers/quickstart" className={cn(btnOutline)}>
+            Quickstart
+          </Link>
         </div>
-      </section>
+      </PageHero>
 
-      <section className="px-6 py-16">
-        <div className="mx-auto grid max-w-[80rem] gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+      <section className="px-4 py-16 sm:px-6">
+        <Reveal className="mx-auto grid max-w-[1280px] gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger>
           {cards.map((card) => (
-            <article key={card.title} className="bg-surface-2 p-6">
-              <span className="font-mono text-xs text-muted-foreground">{card.index}</span>
-              <h3 className="mt-3 text-base font-medium">{card.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{card.copy}</p>
+            <article key={card.title} className="rounded-2xl border border-border bg-surface-1 p-6">
+              <span className="font-mono text-xs text-primary">{card.index}</span>
+              <h3 className="mt-3 text-base font-semibold">{card.title}</h3>
+              <p className="aeg-body-text mt-2 text-sm leading-relaxed">{card.copy}</p>
             </article>
           ))}
-        </div>
+        </Reveal>
       </section>
     </PublicShell>
   );

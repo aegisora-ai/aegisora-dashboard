@@ -40,5 +40,17 @@
                           "destination":  "/enterprise",
                           "permanent":  true
                       }
-                  ]
+                  ],
+    "rewrites":  [
+                     {
+                         "source":  "/",
+                         "has":  [
+                                     {
+                                         "type":  "host",
+                                         "value":  "support.aegisora.org"
+                                     }
+                                 ],
+                         "destination":  "/support"
+                     }
+                 ]
 }

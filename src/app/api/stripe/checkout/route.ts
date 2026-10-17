@@ -22,15 +22,7 @@ export async function POST(
         locale?: unknown;
       };
 
-    if (!isBillingPlan(body.plan)) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid billing plan.",
-        },
-        { status: 400 },
-      );
-    }
+    
 
     const auth =
       await requireBillingAdmin();
@@ -46,6 +38,16 @@ export async function POST(
             "Authentication and workspace membership are required.",
         },
         { status: 401 },
+      );
+    }
+
+  if (!isBillingPlan(body.plan)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid billing plan.",
+        },
+        { status: 400 },
       );
     }
 
