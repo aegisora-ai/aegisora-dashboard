@@ -94,3 +94,8 @@ _launch_audit*.txt
 
 # yerel operasyon scriptleri
 Aegisora-*.ps1
+
+# local backups, repair snapshots, notes (kept on disk, not in repo)
+/_backups/
+/_repairs/
+/_notes/
