@@ -23,10 +23,10 @@ export async function POST() {
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!apiKey) {
-    return NextResponse.json({ error: "Aeri voice is not configured: OPENAI_API_KEY is missing on the server." }, { status: 503 });
+    return NextResponse.json({ error: "Aeri voice is not available." }, { status: 503 });
   }
   if (!supabaseUrl || !supabaseKey) {
-    return NextResponse.json({ error: "Aeri voice authentication is not configured: Supabase public URL/key is missing." }, { status: 503 });
+    return NextResponse.json({ error: "Aeri voice is not available." }, { status: 503 });
   }
 
   try {
