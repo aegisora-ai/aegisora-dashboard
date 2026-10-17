@@ -28,6 +28,13 @@ jobs:
     name: Typecheck + Lint + Build + E2E Smoke
     runs-on: ubuntu-latest
     env:
+      NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key-not-a-real-credential
+      SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-key-not-a-real-credential
+      STRIPE_SECRET_KEY: sk_test_disabled_for_ci
+      STRIPE_WEBHOOK_SECRET: whsec_disabled_for_ci
+      GROQ_API_KEY: disabled-for-ci
+      AEGISORA_API_KEY: disabled-for-ci
       AEGISORA_TEST_PGHOST: 127.0.0.1
       AEGISORA_TEST_PGPORT: 5432
       AEGISORA_TEST_PGUSER: postgres
