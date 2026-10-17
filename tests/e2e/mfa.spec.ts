@@ -1,4 +1,4 @@
-﻿import { createHmac } from "node:crypto";
+import { createHmac } from "node:crypto";
 import { test, expect } from "@playwright/test";
 
 function base32Decode(value: string): Buffer {
@@ -31,9 +31,15 @@ test("TOTP step-up upgrades the browser session to AAL2", async ({ page }) => {
   test.skip(!email || !password || !secret, "temporary MFA test credentials are required");
 
   await page.goto("/login");
+  const loginSubmit = page.locator('button[type="submit"]');
   await page.locator('input[name="email"]').fill(email!);
-  await page.locator('input[name="password"]').fill(password!);
-  await page.locator('button[type="submit"]').click();
+  await expect(loginSubmit).toBeEnabled();
+  await loginSubmit.click();
+  const loginPassword = page.locator('input[name="password"]');
+  await expect(loginPassword).toBeVisible();
+  await loginPassword.fill(password!);
+  await expect(loginSubmit).toBeEnabled();
+  await loginSubmit.click();
   await page.waitForURL(/\/dashboard/, { timeout: 30_000 });
   const tour = page.getByRole("dialog", { name: "Welcome tour" });
   await tour.waitFor({ state: "visible", timeout: 5_000 }).catch(() => undefined);
