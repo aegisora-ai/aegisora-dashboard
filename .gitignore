@@ -99,3 +99,8 @@ Aegisora-*.ps1
 /_backups/
 /_repairs/
 /_notes/
+
+aegisora-rapor-*.md
+e2e-workspaces-backup-*.json
+auth-config-backup-*.json
+backend-files*.txt
