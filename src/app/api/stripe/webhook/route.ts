@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 
 import {
@@ -222,15 +222,20 @@ async function persistSubscription(
   const priceId =
     idOf(priceValue);
 
+  const itemPeriod =
+
+    firstItem && typeof firstItem === "object"
+
+      ? (firstItem as { current_period_start?: unknown; current_period_end?: unknown })
+
+      : null;
+
+
   const currentStart =
-    dateFromUnix(
-      raw.current_period_start,
-    );
+    dateFromUnix(raw.current_period_start ?? itemPeriod?.current_period_start);
 
   const currentEnd =
-    dateFromUnix(
-      raw.current_period_end,
-    );
+    dateFromUnix(raw.current_period_end ?? itemPeriod?.current_period_end);
 
   const status =
     String(
