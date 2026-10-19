@@ -1,4 +1,4 @@
-﻿import { conditionsMet } from "@/lib/aegisora/policy-evaluator";
+import { conditionsMet } from "@/lib/aegisora/policy-evaluator";
 import { NextResponse, after } from "next/server";
 import { randomUUID } from "node:crypto";
 import { ApiError, admin, authenticate, deliverWebhooks, fail, matches, readJson, str } from "@/lib/aegisora/server";
@@ -18,7 +18,8 @@ export async function POST(req: Request) {
     const agentName = str(body.agent, "agent", 120)!.trim();
     const action = str(body.action, "action", 200)!.trim();
     const resource = str(body.resource, "resource", 500, false) ?? "";
-    const risk = typeof body.risk === "number" ? Math.max(0, Math.min(100, Math.round(body.risk))) : 0;
+    if (body.risk !== undefined && body.risk !== null && (typeof body.risk !== "number" || !Number.isFinite(body.risk) || body.risk < 0 || body.risk > 100)) throw new ApiError(400, "invalid_request", "'risk' must be a number between 0 and 100.");
+    const risk = typeof body.risk === "number" ? Math.round(body.risk) : 0;
     const input = body.input && typeof body.input === "object" ? body.input : null;
     const trace = (body.trace && typeof body.trace === "object" ? body.trace : {}) as Record<string, unknown>;
     const safeAgentName = maskSensitiveText(agentName);
