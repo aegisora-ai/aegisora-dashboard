@@ -9,7 +9,7 @@ const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "https://YOUR-AEGISORA-HOST";
 const curlExample = `curl -s -X POST ${BASE}/api/v1/evaluate \\
   -H "Authorization: Bearer $AEGISORA_API_KEY" \\
   -H "Content-Type: application/json" \\
-  -d '{"agent":"my-agent","action":"payments.transfer","resource":"acct:123","risk":80}'`;
+  -d '{"agent":"finance-operator","action":"invoice.read","resource":"invoice:sample-001","risk":20}'`;
 
 const responseExample = `{
   "decision_id": "...",
@@ -30,7 +30,7 @@ const aegisora = new Aegisora({ baseUrl: process.env.AEGISORA_BASE_URL });
 // The callback runs only when the decision is ALLOW.
 // BLOCK and ESCALATE throw AegisoraDecisionError.
 const result = await aegisora.guard(
-  { agent: "my-agent", action: "payments.transfer", resource: "acct:123", risk: 80 },
+  { agent: "finance-operator", action: "invoice.read", resource: "invoice:sample-001", risk: 20 },
   async (decision) => doTransfer(decision.decision_id)
 );`;
 
