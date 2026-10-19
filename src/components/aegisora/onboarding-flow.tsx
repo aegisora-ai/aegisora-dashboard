@@ -12,11 +12,6 @@ import { cn } from "@/lib/utils";
 const steps = ["Workspace", "MFA", "Agent", "Policy", "Integrate"];
 type PolicyDecision = "ALLOW" | "BLOCK" | "ESCALATE";
 
-function slugify(name: string) {
-  const base = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  return `${base || "workspace"}-${crypto.randomUUID().slice(0, 8)}`;
-}
-
 export function OnboardingFlow() {
   const [step, setStep] = useState(0);
   const [workspace, setWorkspace] = useState("My workspace");
