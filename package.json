@@ -20,6 +20,8 @@
     "test:enterprise:evidence-chain": "python scripts/security/verify-evidence-chain-local.py",
     "test:enterprise:schema-migration": "python scripts/security/verify-governance-schema-migration.py",
     "test:security:policy-redaction": "node scripts/security/verify-policy-and-redaction.mjs",
+    "test:e2e:isolation": "node scripts/security/phase-c24-workspace-isolation.mjs",
+    "test:e2e:entitlement": "node scripts/security/phase-c25-entitlement-e2e.mjs",
     "test:enterprise:pilot-docs": "node scripts/security/verify-pilot-docs.mjs",
     "preflight:enterprise:schema": "node scripts/security/inspect-live-schema-contract.mjs",
     "test": "playwright test tests/e2e/smoke.spec.ts",

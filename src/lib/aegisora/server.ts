@@ -73,7 +73,14 @@ const RATE_LIMIT_API_KEY = 60;
 const RATE_LIMIT_FAILED_AUTH = 10;
 
 function requestClientIp(req: Request): string {
+  const hops = Number.parseInt(process.env.AEGISORA_TRUSTED_PROXY_HOPS ?? "", 10);
   const forwarded = req.headers.get("x-forwarded-for");
+  if (Number.isFinite(hops) && hops >= 1) {
+    const parts = (forwarded ?? "").split(",").map((p) => p.trim()).filter(Boolean);
+    if (parts.length) return parts[Math.max(0, parts.length - hops)];
+    return "unknown";
+  }
+
   if (forwarded) {
     const first = forwarded.split(",")[0]?.trim();
     if (first) return first;
