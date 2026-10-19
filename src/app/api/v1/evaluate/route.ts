@@ -5,6 +5,7 @@ import { ApiError, admin, authenticate, deliverWebhooks, fail, matches, readJson
 import { maskSensitiveData, maskSensitiveText } from "@/lib/aegisora/redaction";
 import { decidePolicy, type Effect } from "@/lib/aegisora/policy-evaluator";
 import { evaluateWorkspaceExecutionEntitlement } from "@/lib/aegisora/entitlement";
+import { evaluateMonthlyQuota } from "@/lib/aegisora/quota";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -85,6 +86,12 @@ export async function POST(req: Request) {
         reason = maskSensitiveText(
           `Entitlement blocked execution: ${entitlement.reason}`,
         );
+      } else {
+        const quota = await evaluateMonthlyQuota(ws, entitlement.planKey);
+        if (!quota.allowed) {
+          effect = "BLOCK";
+          reason = maskSensitiveText(`Quota blocked execution: ${quota.reason}`);
+        }
       }
     }
 
