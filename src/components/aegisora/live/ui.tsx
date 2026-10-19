@@ -81,7 +81,7 @@ function CreateWorkspace({ onDone }: { onDone: () => void }) {
       return;
     }
     const slug = (name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "workspace") + "-" + Math.random().toString(16).slice(2, 8);
-    const { error } = await supabase.rpc("create_workspace", { workspace_name: name.trim(), workspace_slug: slug });
+    const { error } = await supabase.rpc("create_workspace", { p_name: name.trim() });
     setBusy(false);
     if (error) setErr(error.message);
     else onDone();

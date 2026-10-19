@@ -56,8 +56,7 @@ export function OnboardingFlow() {
     setBusy(true);
     setError(null);
     const { data, error: createError } = await createClient().rpc("create_workspace", {
-      workspace_name: workspace.trim(),
-      workspace_slug: slugify(workspace),
+      p_name: workspace.trim(),
     });
     setBusy(false);
     if (createError || typeof data !== "string") {
