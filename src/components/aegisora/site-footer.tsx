@@ -41,6 +41,7 @@ const GROUPS: { title: string; links: FooterLink[] }[] = [
       { label: "Pricing", href: "/pricing" },
       { label: "Contact", href: "/contact" },
       { label: "Terms", href: "/terms" },
+      { label: "Impressum", href: "/impressum" },
     ],
   },
 ];
@@ -82,6 +83,7 @@ export function SiteFooter() {
           <span className="flex gap-5">
             <Link href="/trust/privacy" className="hover:text-white">Privacy</Link>
             <Link href="/terms" className="hover:text-white">Terms</Link>
+            <Link href="/impressum" className="hover:text-white">Impressum</Link>
           </span>
         </div>
       </div>
