@@ -9,7 +9,7 @@ const root = process.cwd();
 const url = process.env.AEGISORA_E2E_SUPABASE_URL;
 const anon = process.env.AEGISORA_E2E_SUPABASE_ANON_KEY;
 const serviceRole = process.env.AEGISORA_E2E_SUPABASE_SERVICE_ROLE_KEY;
-const stagingRef = "bvdsfwmlylnmahridalj";
+const stagingRef = "daigywopatmznzgaouqo";
 
 if (!url || !url.includes(stagingRef) || !anon || !serviceRole) {
   console.error("STOP: Staging guard or test credentials failed.");
