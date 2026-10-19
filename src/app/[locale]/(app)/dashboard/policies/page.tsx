@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -10,9 +10,19 @@ import { Label } from "@/components/ui/label";
 import { btnPrimary } from "@/lib/ui";
 
 const STARTERS = [
-  { name: "Block destructive actions", action_pattern: "*delete*", decision: "BLOCK", priority: 10 },
-  { name: "Require approval for payments", action_pattern: "payment.*", decision: "ESCALATE", priority: 20 },
-  { name: "Allow read-only actions", action_pattern: "read.*", decision: "ALLOW", priority: 100 },
+  { name: "Safe start: block secrets access", action_pattern: "secrets.*", decision: "BLOCK", priority: 10 },
+  { name: "Safe start: block deletes", action_pattern: "*.delete", decision: "BLOCK", priority: 20 },
+  { name: "Safe start: approve payments", action_pattern: "payments.*", decision: "ESCALATE", priority: 30 },
+  { name: "Safe start: approve external email", action_pattern: "email.send", decision: "ESCALATE", priority: 40 },
+  {
+    name: "Safe start: approve high-risk actions",
+    action_pattern: "*",
+    decision: "ESCALATE",
+    priority: 50,
+    conditions: [{ op: "gte", field: "risk", value: 70 }],
+  },
+  { name: "Safe start: allow reads", action_pattern: "*.read", decision: "ALLOW", priority: 100 },
+  { name: "Safe start: allow search", action_pattern: "search.*", decision: "ALLOW", priority: 110 },
 ];
 
 function PolicyTools({ ws, reload }: { ws: Workspace; reload: () => void }) {
