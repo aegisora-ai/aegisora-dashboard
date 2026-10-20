@@ -71,7 +71,7 @@ try {
   const viewerLogin = await viewer.auth.signInWithPassword({ email: viewerEmail, password: viewerPassword });
   if (ownerLogin.error || !ownerLogin.data.session) throw ownerLogin.error ?? new Error("OWNER sign-in failed.");
   if (viewerLogin.error || !viewerLogin.data.session) throw viewerLogin.error ?? new Error("VIEWER sign-in failed.");
-  const workspace = await owner.rpc("create_workspace", { workspace_name: "Temporary Agent API E2E", workspace_slug: slug });
+  const workspace = await owner.rpc("create_workspace", { p_name: "Temporary Agent API E2E" });
   if (workspace.error || typeof workspace.data !== "string") throw workspace.error ?? new Error("Temporary workspace creation failed.");
   workspaceId = workspace.data;
 

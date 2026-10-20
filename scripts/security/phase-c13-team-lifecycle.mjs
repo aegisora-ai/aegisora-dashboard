@@ -101,7 +101,7 @@ try {
   const target = await newFixture("TARGET");
   const ownerLogin = await signIn(owner);
   Object.assign(ownerLogin, { role: "OWNER", token: ownerLogin.session.access_token });
-  const createdWorkspace = await ownerLogin.client.rpc("create_workspace", { workspace_name: `C13 lifecycle ${runId}`, workspace_slug: `c13-${runId}` });
+  const createdWorkspace = await ownerLogin.client.rpc("create_workspace", { p_name: `C13 lifecycle ${runId}` });
   if (createdWorkspace.error || typeof createdWorkspace.data !== "string") throw createdWorkspace.error ?? new Error("Workspace fixture creation failed.");
   workspaceId = createdWorkspace.data;
 

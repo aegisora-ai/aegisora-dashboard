@@ -48,7 +48,7 @@ try {
   const auth = createClient(url, anon, { auth: { persistSession: false, autoRefreshToken: false } });
   const signedIn = await auth.auth.signInWithPassword({ email, password });
   if (signedIn.error || !signedIn.data.session) throw signedIn.error ?? new Error("Temporary evaluate user sign-in failed.");
-  const workspace = await auth.rpc("create_workspace", { workspace_name: "Temporary Evaluate E2E", workspace_slug: workspaceSlug });
+  const workspace = await auth.rpc("create_workspace", { p_name: "Temporary Evaluate E2E" });
   if (workspace.error || typeof workspace.data !== "string") throw workspace.error ?? new Error("Temporary evaluate workspace creation failed.");
   workspaceId = workspace.data;
 

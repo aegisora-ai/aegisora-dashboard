@@ -50,7 +50,7 @@ try {
   const signedIn = await userClient.auth.signInWithPassword({ email, password });
   if (signedIn.error || !signedIn.data.session) throw signedIn.error ?? new Error("MFA fixture sign-in failed.");
 
-  const workspace = await userClient.rpc("create_workspace", { workspace_name: "Temporary MFA E2E", workspace_slug: slug });
+  const workspace = await userClient.rpc("create_workspace", { p_name: "Temporary MFA E2E" });
   if (workspace.error || typeof workspace.data !== "string") throw workspace.error ?? new Error("Temporary workspace creation failed.");
   workspaceId = workspace.data;
   result.checks.push({ name: "temporary workspace provisioned for protected API check", pass: true });

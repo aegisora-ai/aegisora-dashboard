@@ -283,8 +283,7 @@ try {
   const viewer = await createFixture("viewer");
 
   const workspace = await owner.client.rpc("create_workspace", {
-    workspace_name: "Temporary Approvals API E2E",
-    workspace_slug: `approvals-e2e-${randomBytes(5).toString("hex")}`,
+    p_name: "Temporary Approvals API E2E",
   });
 
   ensureNoError(workspace.error, "Create temporary workspace");
