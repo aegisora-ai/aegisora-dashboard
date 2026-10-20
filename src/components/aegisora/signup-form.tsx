@@ -154,7 +154,7 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
           <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5 size-4 accent-primary" />
           <span>
             I accept the{" "}
-            <Link href="/privacy" target="_blank" className="text-primary underline-offset-4 hover:underline">Privacy Policy</Link>{" "}
+            <Link href="/trust/privacy" target="_blank" className="text-primary underline-offset-4 hover:underline">Privacy Policy</Link>{" "}
             and the{" "}
             <Link href="/terms" target="_blank" className="text-primary underline-offset-4 hover:underline">Terms of Service</Link>
           </span>
