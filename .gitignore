@@ -99,3 +99,9 @@ Aegisora-*.ps1
 /_backups/
 /_repairs/
 /_notes/
+
+# yerel rapor ve dokum dosyalari
+LOGIN-FORENSICS-*.txt
+backend-files*.txt
+aegisora-rapor-*.md
+preflight-*.txt
