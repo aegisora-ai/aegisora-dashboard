@@ -8,6 +8,7 @@ import { evaluateWorkspaceExecutionEntitlement } from "@/lib/aegisora/entitlemen
 import { evaluateMonthlyQuota } from "@/lib/aegisora/quota";
 
 export const runtime = "nodejs";
+export const preferredRegion = "fra1";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
