@@ -127,7 +127,7 @@ const FEATURES = [
   { icon: KeyRound, title: "Scoped API keys", body: "Hashed at rest, rate limited per key and per IP, revocable at any time.", span: "" },
 ];
 
-const SNIPPET = `curl -X POST https://api.aegisora.org/api/v1/evaluate \\
+const SNIPPET = `curl -X POST https://www.aegisora.org/api/v1/evaluate \\
   -H "Authorization: Bearer aeg_live_..." \\
   -H "Content-Type: application/json" \\
   -d '{ "agent": "finance-agent",
