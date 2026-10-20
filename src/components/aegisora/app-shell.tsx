@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Bell, Menu, Search, X } from "lucide-react";
+import { Bell, Menu, PanelLeftClose, PanelLeftOpen, Search, X } from "lucide-react";
 import { AccountSwitcher } from "@/components/aegisora/account-switcher";
 import { SidebarNav } from "@/components/aegisora/app-sidebar";
 import { CommandPalette } from "@/components/aegisora/command-palette";
@@ -52,6 +52,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [palette, setPalette] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [notif, setNotif] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      try { setCollapsed(window.localStorage.getItem("aegisora.sidebar.collapsed") === "1"); } catch {}
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  function toggleSidebar() {
+    setCollapsed((v) => {
+      const next = !v;
+      try { window.localStorage.setItem("aegisora.sidebar.collapsed", next ? "1" : "0"); } catch {}
+      return next;
+    });
+  }
   const pending = usePendingApprovals(); const isDemo = false;
 
   // Route change intentionally resets transient shell UI state.
@@ -82,7 +98,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <WorkspaceProvider>
       <div className="flex min-h-screen">
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-surface-1 lg:flex">
+        <aside className={cn("sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-surface-1", collapsed ? "lg:hidden" : "lg:flex")}>
           <div className="border-b border-border px-5 py-4">
             <Logo />
             <div className="mt-1 pl-[32px] font-mono text-[10px] tracking-[0.25em] text-muted-foreground">CONTROL</div>
@@ -120,6 +136,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 className={cn("inline-flex size-9 items-center justify-center rounded-sm border border-border lg:hidden", focusRing)}
               >
                 <Menu className="size-4" />
+              </button>
+
+              <button
+                type="button"
+                aria-label={collapsed ? "Show sidebar" : "Hide sidebar"}
+                aria-pressed={collapsed}
+                onClick={toggleSidebar}
+                className={cn("hidden size-9 items-center justify-center rounded-sm border border-border text-muted-foreground hover:bg-surface-3 lg:inline-flex", focusRing)}
+              >
+                {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
               </button>
 
               <AccountSwitcher />
