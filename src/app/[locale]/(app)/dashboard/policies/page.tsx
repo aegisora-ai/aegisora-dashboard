@@ -13,6 +13,7 @@ const STARTERS = [
   { name: "Safe start: block secrets access", action_pattern: "secrets.*", decision: "BLOCK", priority: 10 },
   { name: "Safe start: block deletes", action_pattern: "*.delete", decision: "BLOCK", priority: 20 },
   { name: "Safe start: approve payments", action_pattern: "payments.*", decision: "ESCALATE", priority: 30 },
+  { name: "Safe start: approve payment (singular)", action_pattern: "payment.*", decision: "ESCALATE", priority: 31 },
   { name: "Safe start: approve external email", action_pattern: "email.send", decision: "ESCALATE", priority: 40 },
   {
     name: "Safe start: approve high-risk actions",

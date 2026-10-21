@@ -1,5 +1,5 @@
 import PwaBoot from "@/components/pwa-boot";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed } from "next/font/google";
 import "@fontsource-variable/archivo";
 import "@fontsource/ibm-plex-mono/400.css";
@@ -15,6 +15,10 @@ const barlow = Barlow_Condensed({
   display: "swap",
   variable: "--font-barlow",
 });
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a",
+};
 
 export const metadata: Metadata = {
   title: {
