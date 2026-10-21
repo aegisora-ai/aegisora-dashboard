@@ -29,7 +29,7 @@
                                         },
                                         {
                                             "key":  "Content-Security-Policy-Report-Only",
-                                            "value":  "default-src \u0027self\u0027; script-src \u0027self\u0027 \u0027unsafe-inline\u0027 https://js.stripe.com; style-src \u0027self\u0027 \u0027unsafe-inline\u0027; img-src \u0027self\u0027 data: blob: https:; font-src \u0027self\u0027 data:; connect-src \u0027self\u0027 https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://api.openai.com; frame-src https://js.stripe.com https://hooks.stripe.com; frame-ancestors \u0027none\u0027; base-uri \u0027self\u0027; object-src \u0027none\u0027; report-uri /api/csp-report"
+                                            "value":  "default-src \u0027self\u0027; script-src \u0027self\u0027 \u0027unsafe-inline\u0027 https://js.stripe.com; style-src \u0027self\u0027 \u0027unsafe-inline\u0027; img-src \u0027self\u0027 data: blob: https:; font-src \u0027self\u0027 data:; connect-src \u0027self\u0027 https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://api.openai.com https://*.ingest.de.sentry.io; frame-src https://js.stripe.com https://hooks.stripe.com; frame-ancestors \u0027none\u0027; base-uri \u0027self\u0027; object-src \u0027none\u0027; report-uri /api/csp-report"
                                         }
                                     ]
                     }
