@@ -24,6 +24,16 @@ for (const route of authRoutes) {
   });
 }
 
+async function fillEmailWhenHydrated(page: Page, value: string) {
+  const email = page.locator('input[name="email"]');
+  const submit = page.locator('button[type="submit"]');
+  await expect(async () => {
+    await email.fill("");
+    await email.fill(value);
+    await expect(submit).toBeEnabled({ timeout: 1000 });
+  }).toPass({ timeout: 20000 });
+}
+
 // Giris iki adimli: once e-posta ve Next, sonra parola.
 async function checkTwoStepLogin(page: Page, path: string) {
   await page.goto(path, { waitUntil: "domcontentloaded" });
@@ -38,7 +48,7 @@ async function checkTwoStepLogin(page: Page, path: string) {
   await expect(submit).toBeDisabled();
 
   // Buton ancak sayfa hydrate olup state guncellenince aktif olur.
-  await email.fill("test@example.com");
+  await fillEmailWhenHydrated(page, "test@example.com");
   await expect(submit).toBeEnabled();
   await submit.click();
 
@@ -60,7 +70,7 @@ test("login Change link returns to the email step", async ({ page }) => {
   await page.goto("/login", { waitUntil: "domcontentloaded" });
   const email = page.locator('input[name="email"]');
   const submit = page.locator('button[type="submit"]');
-  await email.fill("test@example.com");
+  await fillEmailWhenHydrated(page, "test@example.com");
   await expect(submit).toBeEnabled();
   await submit.click();
   await expect(page.locator('input[name="password"]')).toBeVisible();
