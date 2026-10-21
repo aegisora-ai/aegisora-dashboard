@@ -7,7 +7,7 @@ export default function PublicLayout({
   return (
     <div className="aeg-public">
       <SiteHeader />
-      <main>{children}</main>
+      <main className="min-h-screen">{children}</main>
       <SiteFooter />
     </div>
   );
