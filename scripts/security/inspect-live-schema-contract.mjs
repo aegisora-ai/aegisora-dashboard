@@ -1,4 +1,4 @@
-import { createRequire } from "node:module";
+﻿import { createRequire } from "node:module";
 import { mkdir, writeFile } from "node:fs/promises";
 
 const require = createRequire(import.meta.url);
@@ -26,11 +26,11 @@ const checks = [];
 for (const [table, columns] of variants) {
   for (const column of columns) {
     const { error } = await db.from(table).select(column).limit(0);
-    checks.push({ table, column, present: !error, error_code: error?.code ?? null });
+    checks.push({ table, column, present: !error, error_code: error?.code ?? null, error_message: error ? String(error.message ?? "").slice(0, 120) : null });
   }
 }
 await mkdir(".enterprise", { recursive: true });
-const missingColumnCodes = new Set(["42703", "PGRST204"]);
+const missingColumnCodes = new Set(["42703", "PGRST204", "42P01", "PGRST205"]);
 const mismatches = Object.entries(applicationRequired).flatMap(([table, requiredColumns]) => requiredColumns.flatMap((column) => {
   const runtime = checks.find((item) => item.table === table && item.column === column);
   return runtime?.present ? [] : [{ table, required_by_application: column, runtime_column_present: false, runtime_probe_error: runtime?.error_code ?? "unknown" }];
@@ -40,8 +40,8 @@ const report = {
   target_host: new URL(url).host,
   data_read: false,
   checks,
-  probe_status: checks.every((item) => !item.error_code || missingColumnCodes.has(item.error_code)) ? "PASS" : "FAIL",
-  schema_compatibility: mismatches.length ? "MISMATCH" : "MATCH",
+  probe_status: checks.every((item) => item.present || (item.error_code && missingColumnCodes.has(item.error_code))) ? "PASS" : "FAIL",
+  schema_compatibility: !checks.every((item) => item.present || (item.error_code && missingColumnCodes.has(item.error_code))) ? "PROBE_FAILED" : mismatches.length ? "MISMATCH" : "MATCH",
   application_required_columns: applicationRequired,
   missing_application_columns: mismatches,
   legacy_aliases: checks.filter((item) => ["status", "effect"].includes(item.column) && item.present).map(({ table, column }) => ({ table, column })),
