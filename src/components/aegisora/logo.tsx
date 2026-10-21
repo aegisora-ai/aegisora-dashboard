@@ -10,7 +10,9 @@ export function Logo({ className = '' }: { className?: string }) {
       title="Ana Sayfaya Dön"
     >
       <img
-        src="/LOGO-icon-trimmed.png"
+        src="/LOGO-icon-trimmed-420.webp"
+        width={420}
+        height={89}
         alt="Aegisora Logo"
         className="h-6 md:h-7 w-auto object-contain"
       />

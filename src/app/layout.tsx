@@ -1,11 +1,19 @@
 import PwaBoot from "@/components/pwa-boot";
 import type { Metadata } from "next";
+import { Barlow_Condensed } from "next/font/google";
 import "@fontsource-variable/archivo";
 import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";
 import "@fontsource/ibm-plex-mono/600.css";
 import "@fontsource/ibm-plex-mono/700.css";
 import "./globals.css";
+
+const barlow = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  display: "swap",
+  variable: "--font-barlow",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -20,7 +28,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`dark ${barlow.variable}`}>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         {children}
       <PwaBoot />

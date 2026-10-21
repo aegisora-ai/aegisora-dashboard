@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
@@ -268,7 +267,7 @@ html {
 
 /* === AEGISORA DESIGN V3 (structure inspired by dark data-platform sites; own palette and fonts) === */
 .aeg-display {
-  font-family: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  font-family: var(--font-barlow), "Barlow Condensed", "Arial Narrow", sans-serif;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.005em;
@@ -383,3 +382,7 @@ html {
 .aeg-page .aeg-tile { border-radius: 16px; border: 1px solid var(--border); background: var(--surface-1); }
 .aeg-page .aeg-tile:hover { border-color: color-mix(in srgb, var(--primary) 45%, var(--border)); }
 .aeg-body-text { color: var(--aeg-body, #a9bbdb); }
+
+/* a11y: white text on #1677ff was 4.1:1. Filled primary surfaces use a darker blue (5.4:1, hover 6.8:1). */
+.bg-primary { background-color: #0f63e0; }
+.hover\:bg-primary-hover:hover { background-color: #0b54c4; }
