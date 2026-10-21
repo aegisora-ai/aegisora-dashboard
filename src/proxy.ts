@@ -41,7 +41,14 @@ function handleSupport(request: NextRequest) {
   return NextResponse.rewrite(url);
 }
 
+const PWA_PATHS = new Set(["/manifest.webmanifest", "/sw.js", "/offline.html", "/apple-icon.png"]);
+
 export async function proxy(request: NextRequest) {
+  // PWA files are served as-is: no locale rewrite, no auth redirect.
+  if (PWA_PATHS.has(request.nextUrl.pathname)) {
+    return NextResponse.next();
+  }
+
   if (isSupportHost(request)) {
     return handleSupport(request);
   }

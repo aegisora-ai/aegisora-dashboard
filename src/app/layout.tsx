@@ -1,3 +1,4 @@
+import PwaBoot from "@/components/pwa-boot";
 import type { Metadata } from "next";
 import "@fontsource-variable/archivo";
 import "@fontsource/ibm-plex-mono/400.css";
@@ -22,7 +23,8 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         {children}
-      </body>
+      <PwaBoot />
+</body>
     </html>
   );
 }
