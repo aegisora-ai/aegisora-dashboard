@@ -190,8 +190,7 @@ export default function BillingPage() {
         !data.url
       ) {
         throw new Error(
-          data.error ??
-            "Checkout could not be started.",
+          (response.status === 503 ? "This plan is not available for self-service checkout yet. Please contact us and we will set it up with you." : data.error) ?? "Checkout could not be started.",
         );
       }
 
