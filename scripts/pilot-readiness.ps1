@@ -442,7 +442,7 @@ function Test-Remote {
   $paths = @(@{ P = '/'; Req = $true })
   foreach ($loc in $Locales) {
     $paths += @{ P = "/$loc"; Req = $true }
-    foreach ($s in 'login', 'signup', 'reset-password', 'privacy', 'terms', 'docs') {
+    foreach ($s in 'login', 'signup', 'reset-password', 'trust/privacy', 'terms', 'impressum', 'docs') {
       $req = $s -in 'login', 'signup'
       $paths += @{ P = "/$loc/$s"; Req = $req }
     }
@@ -543,7 +543,7 @@ function Test-Supabase {
     else { Add-Result 'RLS' "$t (anon okuma)" 'WARN' "HTTP $($r.Status). Tablo var mi?" }
   }
 
-  $rpc = Invoke-Rest -Method 'POST' -Url "$SupabaseUrl/rest/v1/rpc/create_workspace" -Headers $h -Body '{"workspace_name":"probe","workspace_slug":"probe-readiness-check"}'
+  $rpc = Invoke-Rest -Method 'POST' -Url "$SupabaseUrl/rest/v1/rpc/create_workspace" -Headers $h -Body '{"p_name":"readiness-probe"}'
   if ($rpc.Status -ge 400 -or $rpc.Status -eq 0) { Add-Result 'RLS' 'create_workspace (anon)' 'PASS' "Anonim cagri basarisiz (HTTP $($rpc.Status))" }
   else { Add-Result 'RLS' 'create_workspace (anon)' 'FAIL' "Anonim cagri BASARILI (HTTP $($rpc.Status)). Fonksiyondan anon yetkisini kaldir ve olusan kaydi sil." }
 
@@ -686,5 +686,7 @@ try {
 }
 if ($Fix) { Write-Host "`n-Fix degisiklik yapti. Incele: git diff --stat, sonra commit et." -ForegroundColor Yellow }
 if ($failCount -gt 0) { exit 1 } else { exit 0 }
+
+
 
 
