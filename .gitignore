@@ -105,3 +105,5 @@ LOGIN-FORENSICS-*.txt
 backend-files*.txt
 aegisora-rapor-*.md
 preflight-*.txt
+
+dump.txt
