@@ -107,3 +107,9 @@ aegisora-rapor-*.md
 preflight-*.txt
 
 dump.txt
+
+# pilot-readiness
+*.key
+*.p12
+*.pfx
+pilot-reports/

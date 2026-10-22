@@ -59,7 +59,7 @@ create type public.member_status as enum ('active', 'invited', 'suspended');
 create table if not exists public.workspace_members (
   workspace_id uuid not null references public.workspaces(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete cascade,
-  role public.workspace_role not null default 'member'::public.workspace_role,
+  role public.workspace_role not null default 'viewer'::public.workspace_role,
   status public.member_status not null default 'active',
   created_at timestamptz not null default now(),
   primary key (workspace_id, user_id)
