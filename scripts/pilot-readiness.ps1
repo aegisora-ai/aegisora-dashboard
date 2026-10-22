@@ -660,6 +660,8 @@ function Write-Report {
 # ----------------------------------------------------------------------------
 # Calistir
 # ----------------------------------------------------------------------------
+if ($ProdUrl -and $ProdUrl -notmatch '^https://[a-z0-9][a-z0-9.-]*\.[a-z]{2,}(/.*)?$') { Write-Host "ProdUrl gecersiz (yer tutucu mu?): $ProdUrl" -ForegroundColor Red; exit 2 }
+if ($Domain -and $Domain -notmatch '^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$') { Write-Host "Domain gecersiz: $Domain" -ForegroundColor Red; exit 2 }
 if (-not (Test-Path $RepoPath)) { Write-Host "Depo yolu yok: $RepoPath" -ForegroundColor Red; exit 2 }
 Push-Location $RepoPath
 try {
@@ -684,4 +686,5 @@ try {
 }
 if ($Fix) { Write-Host "`n-Fix degisiklik yapti. Incele: git diff --stat, sonra commit et." -ForegroundColor Yellow }
 if ($failCount -gt 0) { exit 1 } else { exit 0 }
+
 
