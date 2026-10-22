@@ -1,5 +1,11 @@
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /dashboard
+Disallow: /*/dashboard
+Disallow: /onboarding
+Disallow: /*/onboarding
+Disallow: /accept-invite
+Disallow: /*/accept-invite
 
-Sitemap: https://www.aegisora.org/sitemap.xml
+Sitemap: https://aegisora.org/sitemap.xml
