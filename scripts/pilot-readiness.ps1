@@ -87,21 +87,29 @@ function Get-HeaderValue($Headers, [string]$Name) {
 function Invoke-Probe {
   param([string]$Url, [int]$TimeoutSec = 20)
   $sw = [Diagnostics.Stopwatch]::StartNew()
-  try {
-    $r = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec $TimeoutSec -ErrorAction Stop
-    $sw.Stop()
-    return [pscustomobject]@{ Ok = $true; Status = [int]$r.StatusCode; Headers = $r.Headers; Ms = $sw.ElapsedMilliseconds; Length = $r.RawContentLength; Error = '' }
-  } catch {
-    $sw.Stop()
-    $code = 0; $hdr = $null
-    if ($_.Exception.Response) {
-      $code = [int]$_.Exception.Response.StatusCode
-      $hdr = $_.Exception.Response.Headers
+  $current = $Url
+  $hops = 0
+  while ($true) {
+    $code = 0; $hdr = $null; $err = ''; $len = 0
+    try {
+      $r = Invoke-WebRequest -Uri $current -UseBasicParsing -TimeoutSec $TimeoutSec -MaximumRedirection 0 -ErrorAction Stop
+      $code = [int]$r.StatusCode; $hdr = $r.Headers; $len = $r.RawContentLength
+    } catch {
+      $err = $_.Exception.Message
+      if ($_.Exception.Response) { $code = [int]$_.Exception.Response.StatusCode; $hdr = $_.Exception.Response.Headers }
     }
-    return [pscustomobject]@{ Ok = $false; Status = $code; Headers = $hdr; Ms = $sw.ElapsedMilliseconds; Length = 0; Error = $_.Exception.Message }
+    if ($code -in 301, 302, 303, 307, 308) {
+      $loc = Get-HeaderValue $hdr 'Location'
+      if ($loc -and $hops -lt 6) {
+        $current = (New-Object System.Uri((New-Object System.Uri($current)), $loc)).AbsoluteUri
+        $hops++
+        continue
+      }
+    }
+    $sw.Stop()
+    return [pscustomobject]@{ Ok = ($code -ge 200 -and $code -lt 300); Status = $code; Headers = $hdr; Ms = $sw.ElapsedMilliseconds; Length = $len; Error = $err; FinalUrl = $current }
   }
 }
-
 function Invoke-Rest {
   param([string]$Method = 'GET', [string]$Url, [hashtable]$Headers = @{}, [string]$Body = $null)
   try {
@@ -686,6 +694,7 @@ try {
 }
 if ($Fix) { Write-Host "`n-Fix degisiklik yapti. Incele: git diff --stat, sonra commit et." -ForegroundColor Yellow }
 if ($failCount -gt 0) { exit 1 } else { exit 0 }
+
 
 
 

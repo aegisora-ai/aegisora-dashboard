@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE = "https://www.aegisora.org";
+const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "https://aegisora.org";
 
 const PATHS = [
   "",
