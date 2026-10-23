@@ -36,7 +36,7 @@ export default function PrivacyPage() {
           </div>
           <div>
             <h2 className="text-base font-medium text-foreground">Cookies</h2>
-            <p className="mt-3">We use essential cookies to run the site. Analytics cookies are used only with your consent, and you can reject them.</p>
+            <p className="mt-3">We use essential cookies to run the site. We do not use analytics or advertising cookies. We use Sentry (EU region) for error monitoring; error reports can include your IP address and browser details.</p>
           </div>
           <div>
             <h2 className="text-base font-medium text-foreground">Retention</h2>
@@ -44,7 +44,7 @@ export default function PrivacyPage() {
           </div>
           <div>
             <h2 className="text-base font-medium text-foreground">Providers and transfers</h2>
-            <p className="mt-3">Providers that process data for us are listed on the <Link href="/trust/subprocessors" className="underline underline-offset-4">subprocessors page</Link>. Regions and transfer mechanisms are to be confirmed.</p>
+            <p className="mt-3">Providers that process data for us are listed on the <Link href="/trust/subprocessors" className="underline underline-offset-4">subprocessors page</Link>. Primary hosting is in Frankfurt, Germany (Supabase eu-central-1, Vercel functions in fra1). Error monitoring uses the Sentry EU region. Some providers are headquartered outside the EU, so transfers may occur and rely on the data processing terms of each provider.</p>
           </div>
           <div>
             <h2 className="text-base font-medium text-foreground">Your rights and contact</h2>
