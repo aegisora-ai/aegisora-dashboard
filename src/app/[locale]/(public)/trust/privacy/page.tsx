@@ -27,7 +27,7 @@ export default function PrivacyPage() {
             </ul>
           </div>
           <div>
-            <h2 className="text-base font-medium text-foreground">What we do not collect</h2>
+            <h2 className="text-base font-medium text-foreground">Payments and sensitive data</h2>
             <p className="mt-3">Payments are processed by Stripe. We do not store card numbers. We store Stripe customer and subscription identifiers, payment status and the billing details you enter at checkout. Pilot workspaces are non-production: do not submit sensitive personal, health, or payment data.</p>
           </div>
           <div>
