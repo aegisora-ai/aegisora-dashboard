@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 
 import {
   BILLING_PLANS,
-  ensureStripeCustomer,
-  getBaseUrl,
+  ensureStripeCustomer, getAdminClient, getBaseUrl,
   getPriceId,
   getStripe,
   isBillingPlan,
@@ -80,8 +79,27 @@ export async function POST(
       );
     }
 
-    const customerId =
-      await ensureStripeCustomer({
+    if (BILLING_PLANS[plan].mode === "subscription") {
+      const { data: activeSub } = await getAdminClient()
+        .from("billing_subscriptions")
+        .select("stripe_subscription_id")
+        .eq("workspace_id", auth.workspaceId)
+        .in("status", ["active", "trialing", "past_due", "unpaid"])
+        .limit(1)
+        .maybeSingle();
+
+      if (activeSub) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "This workspace already has an active subscription. Use the billing portal to change it.",
+          },
+          { status: 409 },
+        );
+      }
+    }
+
+    const customerId = await ensureStripeCustomer({
         workspaceId:
           auth.workspaceId,
         userId:
@@ -197,16 +215,14 @@ export async function POST(
     });
   } catch (error) {
     console.error(
-      "[aegisora] checkout error",
+      "[aegisora] checkout error:",
+      error instanceof Error ? error.message : "unknown error",
     );
 
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Unable to start checkout.",
+        error: "Unable to start checkout. Please try again or contact support.",
       },
       { status: 500 },
     );

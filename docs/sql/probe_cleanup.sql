@@ -1,0 +1,2 @@
+delete from public.workspace_members where user_id in ('aaaaaaaa-0000-4000-8000-000000000001','aaaaaaaa-0000-4000-8000-000000000002','aaaaaaaa-0000-4000-8000-000000000003');
+delete from auth.users where email like '%@probe.invalid';

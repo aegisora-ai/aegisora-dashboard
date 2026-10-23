@@ -9,7 +9,7 @@ const intlMiddleware = createIntlMiddleware(routing);
 const SUPPORT_HOST = "support.aegisora.org";
 const MAIN_ORIGIN = "https://aegisora.org";
 // Keep in sync with COLLECTIONS in src/lib/support-content.ts
-const SUPPORT_SLUGS = "getting-started|policies-decisions|access-security|pilots-pricing|aeri|help";
+const SUPPORT_SLUGS = "getting-started|policies-decisions|access-security|pilots-pricing|help";
 const CLEAN_PATH = new RegExp("^/(" + SUPPORT_SLUGS + ")(/[a-z0-9-]+)?/?$");
 
 function isSupportHost(request: NextRequest): boolean {
@@ -44,6 +44,11 @@ function handleSupport(request: NextRequest) {
 const PWA_PATHS = new Set(["/manifest.webmanifest", "/sw.js", "/offline.html", "/apple-icon.png"]);
 
 export async function proxy(request: NextRequest) {
+  // Supabase davet/dogrulama linki: dil yonlendirmesi olmadan calissin.
+  if (request.nextUrl.pathname.startsWith("/auth/")) {
+    return NextResponse.next();
+  }
+
   // PWA files are served as-is: no locale rewrite, no auth redirect.
   if (PWA_PATHS.has(request.nextUrl.pathname)) {
     return NextResponse.next();

@@ -17,7 +17,7 @@ const barlow = Barlow_Condensed({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
+  themeColor: "#020b2e",
 };
 
 export const metadata: Metadata = {
@@ -37,11 +37,11 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const locale = await getLocale();
   return (
-    <html lang={locale} className={`dark ${barlow.variable}`}>
+    <html lang={locale} className={barlow.variable + " dark"} suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         {children}
-      <PwaBoot />
-</body>
+        <PwaBoot />
+      </body>
     </html>
   );
 }

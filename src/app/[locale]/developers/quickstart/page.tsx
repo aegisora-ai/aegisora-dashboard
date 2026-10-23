@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PublicShell } from "@/components/aegisora/public-shell";
+import { PageHero, Section, CodeBlock, CtaBand } from "@/components/aegisora/page-kit";
 
 export const metadata: Metadata = { title: "Quickstart" };
 
@@ -34,51 +34,50 @@ const result = await aegisora.guard(
   async (decision) => doTransfer(decision.decision_id)
 );`;
 
-function Code({ children }: { children: string }) {
-  return (
-    <pre className="mt-3 overflow-x-auto rounded-lg border border-border bg-surface-1 p-4 text-xs leading-relaxed">
-      <code>{children}</code>
-    </pre>
-  );
-}
-
 export default function QuickstartPage() {
   return (
     <PublicShell>
-      <section className="px-6 py-16">
-        <div className="mx-auto max-w-3xl">
-          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">QUICKSTART</span>
-          <h1 className="mt-4 text-4xl font-light tracking-tight">Evaluate your first agent action</h1>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Early access. Evaluation requires a workspace with an active execution entitlement. Without a matching policy the workspace default applies, which is BLOCK unless you change it.
-          </p>
+      <PageHero
+        eyebrow="Quickstart"
+        title="Evaluate your first agent action"
+        intro="Early access. Evaluation requires a workspace with an active execution entitlement. Without a matching policy the workspace default applies, which is BLOCK unless you change it."
+        primary={{ label: "Create a workspace", href: "/signup" }}
+        secondary={{ label: "Read the docs", href: "/docs" }}
+      />
 
-          <h2 className="mt-10 text-xl font-semibold">1. Get an API key</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            <Link href="/signup" className="underline">Create a workspace</Link>, then open API keys in the dashboard. Keys look like aeg_live_ followed by 48 hex characters and are shown once.
-          </p>
+      <Section eyebrow="Step 1" title="Get an API key" intro="Create a workspace, then open API keys in the dashboard. Keys look like aeg_live_ followed by 48 hex characters and are shown once." tone="alt">
+        <span />
+      </Section>
 
-          <h2 className="mt-10 text-xl font-semibold">2. Send an action</h2>
-          <Code>{curlExample}</Code>
+      <Section eyebrow="Step 2" title="Send an action">
+        <CodeBlock code={curlExample} />
+      </Section>
 
-          <h2 className="mt-10 text-xl font-semibold">3. Read the decision</h2>
-          <Code>{responseExample}</Code>
-          <p className="mt-2 text-sm text-muted-foreground">
-            effect is ALLOW, BLOCK or ESCALATE. ESCALATE creates an approval and returns approval_id. Every decision returns an evidence_hash you can verify later.
-          </p>
+      <Section eyebrow="Step 3" title="Read the decision" tone="alt">
+        <CodeBlock code={responseExample} />
+        <p className="mt-4 max-w-3xl text-sm leading-relaxed text-white/70">
+          effect is ALLOW, BLOCK or ESCALATE. ESCALATE creates an approval and returns approval_id. Every decision returns an evidence_hash you can verify later.
+        </p>
+      </Section>
 
-          <h2 className="mt-10 text-xl font-semibold">4. Optional: Node helper (no dependencies)</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            <a href="/sdk/aegisora.mjs" download className="underline">Download aegisora.mjs</a>. Fail-closed by default: if the API cannot be reached, the decision is BLOCK. Pass failMode: &quot;open&quot; to change that.
-          </p>
-          <Code>{nodeExample}</Code>
+      <Section eyebrow="Step 4 (optional)" title="Node helper, no dependencies">
+        <p className="mb-6 max-w-3xl text-sm leading-relaxed text-white/70">
+          <a href="/sdk/aegisora.mjs" download className="font-semibold text-sky-300 underline underline-offset-4">Download aegisora.mjs</a>.
+          {" "}Fail-closed by default: if the API cannot be reached, the decision is BLOCK. Pass failMode: &quot;open&quot; to change that.
+        </p>
+        <CodeBlock code={nodeExample} />
+      </Section>
 
-          <h2 className="mt-10 text-xl font-semibold">Limits</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Requests are rate limited per IP (120 per minute) and per API key (60 per minute). Request bodies are limited to 64 KB. The agent field must be an identifier, not personal data or a credential.
-          </p>
-        </div>
-      </section>
+      <Section eyebrow="Limits" title="Rate and size limits" intro="Requests are rate limited per IP (120 per minute) and per API key (60 per minute). Request bodies are limited to 64 KB. The agent field must be an identifier, not personal data or a credential." tone="alt">
+        <span />
+      </Section>
+
+      <CtaBand
+        title="Send your first request."
+        body="Create a test workspace, send one request and read the decision."
+        primary={{ label: "Test Aegisora", href: "/signup" }}
+        secondary={{ label: "Run live runtime proof", href: "/proof" }}
+      />
     </PublicShell>
   );
 }

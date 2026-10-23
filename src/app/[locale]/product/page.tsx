@@ -1,56 +1,44 @@
-import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowRight } from "lucide-react";
-import { PublicShell } from "@/components/aegisora/public-shell";
-import { btnPrimary, btnOutline } from "@/lib/ui";
-import { cn } from "@/lib/utils";
+import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegisora/page-kit";
 
-export const metadata: Metadata = { title: "Product" };
+export const metadata: Metadata = {
+  title: "Product",
+  description: "One runtime between your AI agents and the systems they act on.",
+};
 
-const cards = [
-  { title: "Execution boundary", copy: "Evaluate the action before execution.", index: "01" },
-  { title: "Decision engine", copy: "Return ALLOW, BLOCK or ESCALATE.", index: "02" },
-  { title: "Enforcement", copy: "Prevent restricted capabilities from crossing the boundary.", index: "03" },
-  { title: "Evidence", copy: "Carry trace, decision, execution and evidence identity.", index: "04" },
-];
-
-export default function ProductOverviewPage() {
+export default function ProductIndex() {
   return (
-    <PublicShell>
-      <section className="aeg-grid-bg border-b border-border bg-surface-1 px-6 py-20">
-        <div className="mx-auto max-w-[80rem]">
-          <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground">
-            PRODUCT
-          </span>
-          <h1 className="aeg-display mt-4 max-w-3xl text-5xl md:text-6xl">
-            Control what the agent is allowed to do.
-          </h1>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
-            Aegisora provides an execution-boundary control plane where identity, policy, security and risk become an explicit runtime decision.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/signup" className={cn(btnPrimary)}>
-              Test Aegisora
-              <ArrowRight className="ml-2 size-4" />
-            </Link>
-            <Link href="/proof" className={cn(btnOutline)}>
-              Run live runtime proof
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-16">
-        <div className="mx-auto grid max-w-[80rem] gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
-          {cards.map((card) => (
-            <article key={card.title} className="bg-surface-2 p-6">
-              <span className="font-mono text-xs text-muted-foreground">{card.index}</span>
-              <h3 className="mt-3 text-base font-medium">{card.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{card.copy}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-    </PublicShell>
+    <>
+      <PageHero
+        eyebrow="Product"
+        title="One runtime between your agents and the real world."
+        intro="Aegisora checks every sensitive agent action against policy, risk and authorization, then returns ALLOW, ESCALATE or BLOCK before anything executes."
+        primary={{ label: "Test Aegisora", href: "/signup" }}
+        secondary={{ label: "Talk to Enterprise", href: "/enterprise" }}
+        rows={[
+          { action: "crm.read_ticket", meta: "support-agent · Within scope", v: "ALLOW" },
+          { action: "payments.transfer $48,000", meta: "finance-agent · Above approval limit", v: "ESCALATE" },
+          { action: "db.drop_table users", meta: "code-agent · Destructive action denied", v: "BLOCK" },
+        ]}
+      />
+      <Section eyebrow="Platform" title="Five parts, one decision path." tone="alt">
+        <CardGrid
+          cols={3}
+          items={[
+            { icon: "Workflow", title: "Runtime", body: "The eight-stage pipeline every action passes through, from request to evidence.", href: "/product/runtime" },
+            { icon: "ShieldCheck", title: "Policies", body: "Rules with conditions and redaction, enforced on every call and versioned.", href: "/product/policies" },
+            { icon: "Gauge", title: "Decisions", body: "ALLOW, BLOCK or ESCALATE with a reason, a decision id and an evidence hash.", href: "/product/decisions" },
+            { icon: "UserCheck", title: "Approvals", body: "Human review for the narrow set of actions that need it.", href: "/product/approvals" },
+            { icon: "ScrollText", title: "Evidence", body: "A SHA-256 hash-chained log you can verify independently.", href: "/product/evidence" },
+          ]}
+        />
+      </Section>
+      <CtaBand
+        title="See a decision for your own action."
+        body="Create a test workspace, send one request and read the verdict. Without a matching policy the default is BLOCK."
+        primary={{ label: "Test Aegisora", href: "/signup" }}
+        secondary={{ label: "Read the quickstart", href: "/developers/quickstart" }}
+      />
+    </>
   );
 }

@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Briefcase, LifeBuoy, Mic, Rocket, Scale, ShieldCheck } from "lucide-react";
+import { Briefcase, LifeBuoy, Rocket, Scale, ShieldCheck } from "lucide-react";
 
 export const MAIN_SITE = "https://aegisora.org";
 
@@ -265,47 +265,6 @@ export const COLLECTIONS: Collection[] = [
     ],
   },
   {
-    slug: "aeri",
-    title: "Aeri voice assistant",
-    desc: "Using Aeri voice sessions and fixing microphone or availability problems.",
-    icon: Mic,
-    articles: [
-      {
-        slug: "what-is-aeri",
-        title: "What is Aeri?",
-        summary: "Aeri is the voice session in Aegisora.",
-        body: [
-          { t: "p", text: "Aeri lets you talk to Aegisora with your voice in the browser. A voice session needs a signed-in account and microphone permission." },
-          { t: "ul", items: [
-            "Sign in first. Voice sessions are not available to signed-out visitors.",
-            "Allow microphone access when your browser asks.",
-            "Use a headset in a noisy room for better recognition.",
-          ] },
-        ],
-      },
-      {
-        slug: "microphone-troubleshooting",
-        title: "Fix microphone and Aeri availability problems",
-        summary: "Steps to try when Aeri cannot hear you or says it is not available.",
-        body: [
-          { t: "h", text: "Aeri cannot hear me" },
-          { t: "ol", items: [
-            "Click the lock or tune icon next to the address bar and set Microphone to Allow for this site.",
-            "Reload the page and start the session again.",
-            "Check that the right input device is selected in your system sound settings.",
-            "Close other apps that may be using the microphone.",
-          ] },
-          { t: "h", text: "Aeri says it is not available" },
-          { t: "ol", items: [
-            "Sign out and sign in again, then retry.",
-            "Try again after a minute. The voice service may be temporarily unavailable.",
-            "If it still fails, contact us and tell us the time of the attempt.",
-          ] },
-        ],
-      },
-    ],
-  },
-  {
     slug: "help",
     title: "Get help",
     desc: "How to reach the team and what to include so we can help quickly.",
@@ -336,7 +295,6 @@ export const POPULAR: [string, string][] = [
   ["access-security", "api-keys"],
   ["pilots-pricing", "is-pricing-published"],
   ["pilots-pricing", "how-a-pilot-works"],
-  ["aeri", "microphone-troubleshooting"],
 ];
 
 export const collectionHref = (c: string) => "/support/" + c;

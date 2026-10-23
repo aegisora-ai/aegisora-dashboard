@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 
 import {
@@ -191,9 +191,7 @@ async function persistSubscription(
     }
   }
 
-  if (!planKey) {
-    planKey = "enterprise";
-  }
+  if (!planKey) { throw new Error("Subscription plan could not be resolved."); }
 
   const items =
     raw.items &&
@@ -486,9 +484,7 @@ async function persistInvoice(
     >;
 
   const subscriptionId =
-    idOf(
-      raw.subscription,
-    );
+    idOf(raw.subscription ?? (raw.parent as { subscription_details?: { subscription?: unknown } } | null | undefined)?.subscription_details?.subscription);
 
   if (!subscriptionId) {
     return;
@@ -614,14 +610,11 @@ export async function POST(
         signature,
         secret,
       );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Invalid webhook signature.",
+        error: "Invalid webhook signature.",
       },
       { status: 400 },
     );

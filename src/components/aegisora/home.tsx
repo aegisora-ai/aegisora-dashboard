@@ -1,11 +1,7 @@
 "use client";
-import { StartBuilding } from "@/components/aegisora/start-building";
-import { PlatformTabs } from "@/components/aegisora/platform-tabs";
-import { HeroTop } from "@/components/aegisora/hero-top";
-import { Reveal } from "@/components/aegisora/fx/reveal";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import {
   Activity,
   ArrowRight,
@@ -18,14 +14,15 @@ import {
   Webhook,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { HeroBlue } from "@/components/aegisora/hero-blue";
 
 type Verdict = "ALLOW" | "BLOCK" | "ESCALATE";
 type Ev = { id: number; agent: string; action: string; verdict: Verdict; reason: string };
 
 const VERDICT_STYLE: Record<Verdict, string> = {
-  ALLOW: "bg-allow-muted text-allow",
-  BLOCK: "bg-block-muted text-block",
-  ESCALATE: "bg-escalate-muted text-escalate",
+  ALLOW: "bg-emerald-400/15 text-emerald-300",
+  BLOCK: "bg-red-400/15 text-red-300",
+  ESCALATE: "bg-amber-400/15 text-amber-300",
 };
 
 const FEED: Omit<Ev, "id">[] = [
@@ -47,11 +44,15 @@ function fadeUp(i = 0) {
   };
 }
 
+const CARD = "rounded-2xl border border-white/10 bg-white/[0.04]";
+const EYEBROW = "text-xs font-medium uppercase tracking-[0.16em] text-sky-300";
+const LINK = "inline-flex items-center gap-1.5 text-sm font-semibold text-white transition hover:text-sky-300";
+
 function LiveConsole() {
   const reduce = useReducedMotion();
-  const nextId = useRef(4);
+  const nextId = useRef(5);
   const [items, setItems] = useState<Ev[]>(() =>
-    FEED.slice(0, 4).map((e, i) => ({ ...e, id: i })),
+    FEED.slice(0, 5).map((e, i) => ({ ...e, id: i })),
   );
 
   useEffect(() => {
@@ -60,51 +61,45 @@ function LiveConsole() {
       const n = nextId.current++;
       const base = FEED[n % FEED.length];
       setItems((prev) => [{ ...base, id: n }, ...prev].slice(0, 5));
-    }, 2200);
+    }, 2600);
     return () => clearInterval(t);
   }, [reduce]);
 
   return (
-    <div className="aeg-panel overflow-hidden">
-      <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-          <Activity className="size-4 text-primary" />
+    <div className="overflow-hidden rounded-xl border border-white/10 bg-[#030f3d]">
+      <div className="flex h-12 items-center justify-between border-b border-white/10 px-4">
+        <div className="flex items-center gap-2 text-xs font-medium text-white/70">
+          <Activity className="size-4 text-sky-300" />
           Runtime decisions
         </div>
-        <span className="flex items-center gap-1.5 text-xs text-allow">
+        <span className="flex items-center gap-1.5 text-xs text-emerald-300">
           <span className="relative flex size-2">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-allow opacity-60" />
-            <span className="relative inline-flex size-2 rounded-full bg-allow" />
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+            <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
           </span>
           Live
         </span>
       </div>
-      <ul className="min-h-[19rem] divide-y divide-border">
-        <AnimatePresence initial={false}>
-          {items.map((e) => (
-            <motion.li
-              key={e.id}
-              layout
-              initial={{ opacity: 0, y: -14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.35 }}
-              className="flex items-center justify-between gap-3 px-4 py-3"
-            >
-              <div className="min-w-0">
-                <p className="truncate font-mono text-sm text-foreground">{e.action}</p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {e.agent} · {e.reason}
-                </p>
-              </div>
-              <span
-                className={`shrink-0 rounded px-2 py-1 font-mono text-[11px] font-semibold ${VERDICT_STYLE[e.verdict]}`}
-              >
-                {e.verdict}
-              </span>
-            </motion.li>
-          ))}
-        </AnimatePresence>
+      <ul className="h-[18.75rem] divide-y divide-white/10 overflow-hidden">
+        {items.map((e) => (
+          <motion.li
+            key={e.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="flex h-[3.75rem] items-center justify-between gap-3 px-4"
+          >
+            <div className="min-w-0">
+              <p className="truncate font-mono text-sm text-white">{e.action}</p>
+              <p className="truncate text-xs text-white/60">
+                {e.agent} · {e.reason}
+              </p>
+            </div>
+            <span className={`shrink-0 rounded px-2 py-1 font-mono text-[11px] font-semibold ${VERDICT_STYLE[e.verdict]}`}>
+              {e.verdict}
+            </span>
+          </motion.li>
+        ))}
       </ul>
     </div>
   );
@@ -119,162 +114,166 @@ const STEPS = [
 ];
 
 const FEATURES = [
-  { icon: ShieldCheck, title: "Policy engine", body: "Write policies once and enforce them on every agent action, with conditions and redaction built in.", span: "lg:col-span-2" },
-  { icon: Users, title: "Role-based access", body: "Owner, Admin, Operator and Viewer roles enforced server-side on every request.", span: "" },
-  { icon: Lock, title: "MFA step-up", body: "Governance changes require an AAL2 session. Password alone is never enough.", span: "" },
-  { icon: ScrollText, title: "Tamper-evident evidence", body: "Decisions are written to a hash-chained evidence log you can verify independently.", span: "lg:col-span-2" },
-  { icon: Webhook, title: "Signed webhooks", body: "Push decisions to your SIEM and ticketing with signed, retried deliveries.", span: "" },
-  { icon: KeyRound, title: "Scoped API keys", body: "Hashed at rest, rate limited per key and per IP, revocable at any time.", span: "" },
+  { icon: ShieldCheck, title: "Policy engine", body: "Write policies once and enforce them on every agent action, with conditions and redaction built in." },
+  { icon: Users, title: "Role-based access", body: "Owner, Admin, Operator and Viewer roles enforced server-side on every request." },
+  { icon: Lock, title: "MFA step-up", body: "Governance changes require an AAL2 session. Password alone is never enough." },
+  { icon: ScrollText, title: "Tamper-evident evidence", body: "Decisions are written to a hash-chained evidence log you can verify independently." },
+  { icon: Webhook, title: "Signed webhooks", body: "Push decisions to your SIEM and ticketing with signed, retried deliveries." },
+  { icon: KeyRound, title: "Scoped API keys", body: "Hashed at rest, rate limited per key and per IP, revocable at any time." },
 ];
 
-const SNIPPET = `curl -X POST https://www.aegisora.org/api/v1/evaluate \\
+const SNIPPET = `curl -X POST https://aegisora.org/api/v1/evaluate \\
   -H "Authorization: Bearer aeg_live_..." \\
   -H "Content-Type: application/json" \\
   -d '{ "agent": "finance-agent",
         "action": "payments.transfer",
-        "context": { "amount": 48000 } }'
+        "risk": 70,
+        "input": { "amount": 48000 } }'
 
-# -> { "decision": "ESCALATE", "approval_required": true }`;
+# -> e.g. { "effect": "ESCALATE", "approval_id": "<uuid>", "decision_id": "<uuid>", "evidence_hash": "<hash>", ... }`;
 
 export default function Home() {
   return (
-    <div className="aeg-page overflow-x-clip">
-      {/* HERO */}
-      <section>
-        <div className="mx-auto max-w-[1280px] px-4 pb-16 pt-8 sm:px-6 md:pt-12 lg:pb-20">
-          <HeroTop />
-        </div>
-      </section>
+    <div className="dark overflow-x-clip bg-[#020b2e] text-white">
+      <HeroBlue />
 
       {/* TRUST STRIP */}
-      <section className="border-y border-border">
-        <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-center gap-x-10 gap-y-3 px-4 py-6 sm:px-6">
+      <section className="border-y border-white/10 bg-[#020b2e]">
+        <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-3 px-4 py-6 sm:grid-cols-2 sm:px-6 lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-10">
           {TRUST.map((t) => (
-            <span key={t} className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Check className="size-4 text-allow" /> {t}
+            <span key={t} className="flex items-center gap-2 text-sm text-white/70">
+              <Check className="size-4 text-emerald-300" /> {t}
             </span>
           ))}
         </div>
       </section>
 
+      {/* HOW IT WORKS */}
+      <section
+        className="relative isolate"
+        style={{ background: "radial-gradient(ellipse 50% 60% at 50% 0%, rgba(21,100,255,0.28) 0%, rgba(2,11,46,0) 70%), #020b2e" }}
+      >
+        <div className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:py-28">
+          <motion.div {...fadeUp()} className="max-w-3xl">
+            <p className={EYEBROW}>How it works</p>
+            <h2 className="mt-4 text-4xl font-medium leading-[1.06] tracking-[-0.02em] sm:text-5xl lg:text-6xl">
+              One decision point for every agent action.
+            </h2>
+          </motion.div>
+          <div className="mt-12 grid gap-4 md:grid-cols-3">
+            {STEPS.map((s, i) => (
+              <motion.div key={s.n} {...fadeUp(i)} className={`${CARD} p-6 md:p-8`}>
+                <span className={EYEBROW}>{s.n}</span>
+                <h3 className="mt-4 text-2xl font-medium sm:text-3xl">{s.title}</h3>
+                <p className="mt-3 leading-relaxed text-white/70">{s.body}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* LIVE CONSOLE */}
-      <section className="relative isolate border-b border-border">
-        <div
-          aria-hidden
-          className="aeg-grid-bg pointer-events-none absolute inset-0 -z-10 opacity-40"
-          style={{ maskImage: "radial-gradient(ellipse at 50% 40%, black 15%, transparent 75%)" }}
-        />
-        <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-4 py-20 sm:px-6 md:grid-cols-[1fr_1.2fr] lg:py-24">
+      <section className="border-y border-white/10 bg-[#031249]">
+        <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-4 py-20 sm:px-6 md:grid-cols-[1fr_1.2fr] lg:py-28">
           <motion.div {...fadeUp()}>
-            <p className="aeg-eyebrow text-xs">Live decision console</p>
-            <h2 className="aeg-display mt-4 text-4xl sm:text-5xl lg:text-6xl">Every action gets a decision</h2>
-            <p className="aeg-body-text mt-5 max-w-lg text-base leading-relaxed">
+            <p className={EYEBROW}>Live decision console</p>
+            <h2 className="mt-4 text-4xl font-medium leading-[1.06] tracking-[-0.02em] sm:text-5xl">
+              Every action gets a decision.
+            </h2>
+            <p className="mt-5 max-w-lg text-base leading-relaxed text-white/70">
               Agents send the action they want to take. Aegisora evaluates it against policy, risk and authorization before it reaches the real environment.
             </p>
-            <Link href="/developers/quickstart" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold transition hover:text-primary">
+            <Link href="/developers/quickstart" className={`${LINK} mt-6`}>
               Evaluate your first action <ArrowRight className="size-4" />
             </Link>
           </motion.div>
-          <motion.div {...fadeUp(1)} className="aeg-tile p-3 sm:p-5">
+          <motion.div {...fadeUp(1)} className={`${CARD} p-3 sm:p-5`}>
             <LiveConsole />
           </motion.div>
         </div>
       </section>
 
-      {/* START BUILDING */}
-      <section className="border-b border-border bg-surface-1">
-        <div className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:py-24">
-          <Reveal><StartBuilding /></Reveal>
-        </div>
-      </section>
-
-      {/* PLATFORM */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:py-24">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="aeg-display text-5xl sm:text-6xl lg:text-7xl">Aegisora Runtime</h2>
-            <Link href="/developers" className="inline-flex items-center gap-1.5 text-sm font-semibold transition hover:text-primary">
+      {/* FEATURES */}
+      <section className="bg-[#020b2e]">
+        <div className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:py-28">
+          <motion.div {...fadeUp()} className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className={EYEBROW}>Platform</p>
+              <h2 className="mt-4 text-4xl font-medium tracking-[-0.02em] sm:text-5xl lg:text-6xl">Aegisora Runtime</h2>
+              <p className="mt-3 text-lg text-white/70 sm:text-xl">Built for security teams that need proof, not promises.</p>
+            </div>
+            <Link href="/developers" className={LINK}>
               Learn about the platform <ArrowRight className="size-4" />
             </Link>
-          </div>
-          <p className="mt-3 text-xl sm:text-2xl">Built for security teams that need proof, not promises.</p>
-          <div className="mt-12">
-            <Reveal><PlatformTabs features={FEATURES} /></Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS (light band) */}
-      <section className="aeg-light-band">
-        <div className="mx-auto max-w-[1280px] px-4 pt-20 sm:px-6 lg:pt-24">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="aeg-display max-w-3xl text-4xl sm:text-5xl lg:text-6xl">One decision point for every agent action.</h2>
-            <Link href="/developers/quickstart" className="inline-flex items-center gap-1.5 text-sm font-semibold transition hover:text-primary">
-              Read the quickstart <ArrowRight className="size-4" />
-            </Link>
-          </div>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
-            {STEPS.map((s, i) => (
-              <motion.div key={s.n} {...fadeUp(i)} className="aeg-tile p-6 md:p-8">
-                <span className="aeg-eyebrow text-xs text-primary">{s.n}</span>
-                <h3 className="aeg-display mt-4 text-2xl sm:text-3xl">{s.title}</h3>
-                <p className="aeg-body-text mt-3 leading-relaxed">{s.body}</p>
+          </motion.div>
+          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map((f, i) => (
+              <motion.div key={f.title} {...fadeUp(i)} className={`${CARD} p-6 transition hover:border-sky-400/50`}>
+                <span className="inline-flex size-10 items-center justify-center rounded-lg bg-sky-400/15 text-sky-300">
+                  <f.icon className="size-5" />
+                </span>
+                <h3 className="mt-5 text-lg font-medium">{f.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-white/70">{f.body}</p>
               </motion.div>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* FINAL */}
-        <div className="mx-auto max-w-[1280px] px-4 pb-20 pt-20 sm:px-6 lg:pb-24 lg:pt-24">
-          <h2 className="aeg-display max-w-3xl text-4xl sm:text-5xl lg:text-6xl">Put a decision point in front of your agents today.</h2>
+      {/* FINAL CTA */}
+      <section
+        className="border-t border-white/10"
+        style={{ background: "radial-gradient(ellipse 45% 70% at 90% 100%, rgba(15,155,255,0.45) 0%, rgba(2,11,46,0) 70%), radial-gradient(ellipse 40% 60% at 5% 0%, rgba(21,153,255,0.35) 0%, rgba(2,11,46,0) 70%), #001a6e" }}
+      >
+        <div className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:py-28">
+          <h2 className="max-w-3xl text-4xl font-medium leading-[1.06] tracking-[-0.02em] sm:text-5xl lg:text-6xl">
+            Put a decision point in front of your agents today.
+          </h2>
           <div className="mt-10 grid gap-4 lg:grid-cols-[1.7fr_1fr]">
-            <div className="aeg-night aeg-tile grid items-center gap-8 p-6 md:grid-cols-2 md:p-10">
+            <div className={`${CARD} grid items-center gap-8 p-6 md:grid-cols-2 md:p-10`}>
               <div>
-                <p className="aeg-eyebrow flex items-center gap-2 text-xs">
-                  <span className="size-1.5 rounded-full bg-allow" /> Start today
+                <p className={`${EYEBROW} flex items-center gap-2`}>
+                  <span className="size-1.5 rounded-full bg-emerald-300" /> Start today
                 </p>
-                <h3 className="aeg-display mt-4 text-3xl sm:text-4xl">Evaluate your first agent action</h3>
-                <p className="aeg-body-text mt-4 text-base leading-relaxed">
+                <h3 className="mt-4 text-3xl font-medium sm:text-4xl">Evaluate your first agent action</h3>
+                <p className="mt-4 leading-relaxed text-white/70">
                   Create a test workspace, send one request and read the decision. Without a matching policy the default is BLOCK.
                 </p>
-                <div className="mt-7 flex flex-wrap items-center gap-5">
-                  <Link href="/signup" className="inline-flex h-11 items-center rounded bg-primary px-6 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover">
+                <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
+                  <Link href="/signup" className="inline-flex h-12 items-center justify-center rounded-md bg-white px-6 text-sm font-semibold text-[#0a2a7a] transition hover:bg-white/90">
                     Test Aegisora
                   </Link>
-                  <Link href="/enterprise" className="inline-flex items-center gap-1.5 text-sm font-semibold transition hover:text-primary">
+                  <Link href="/enterprise" className={LINK}>
                     Talk to Enterprise <ArrowRight className="size-4" />
                   </Link>
                 </div>
               </div>
-              <div className="overflow-hidden rounded-xl border border-border bg-surface-2">
-                <div className="flex items-center gap-1.5 border-b border-border px-4 py-2.5">
-                  <span className="size-2.5 rounded-full bg-block/70" />
-                  <span className="size-2.5 rounded-full bg-escalate/70" />
-                  <span className="size-2.5 rounded-full bg-allow/70" />
-                  <span className="ml-3 font-mono text-xs text-muted-foreground">illustrative request</span>
+              <div className="overflow-hidden rounded-xl border border-white/10 bg-[#030f3d]">
+                <div className="flex items-center gap-1.5 border-b border-white/10 px-4 py-2.5">
+                  <span className="size-2.5 rounded-full bg-red-400/70" />
+                  <span className="size-2.5 rounded-full bg-amber-400/70" />
+                  <span className="size-2.5 rounded-full bg-emerald-400/70" />
+                  <span className="ml-3 font-mono text-xs text-white/60">illustrative request</span>
                 </div>
-                <pre className="overflow-x-auto p-4 font-mono text-[12px] leading-relaxed">{SNIPPET}</pre>
+                <pre className="overflow-x-auto p-4 font-mono text-[12px] leading-relaxed text-sky-100">{SNIPPET}</pre>
               </div>
             </div>
 
-            <div className="aeg-tile p-6 md:p-8">
-              <p className="aeg-eyebrow text-xs">More information</p>
-              <ul className="mt-5 divide-y divide-border">
-                <li>
-                  <Link href="/developers/quickstart" className="flex items-center gap-3 py-3 text-sm font-semibold transition hover:text-primary">
-                    <span className="size-1.5 rounded-full bg-primary" /> Quickstart <ArrowRight className="ml-auto size-4" />
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/developers" className="flex items-center gap-3 py-3 text-sm font-semibold transition hover:text-primary">
-                    <span className="size-1.5 rounded-full bg-primary" /> Developer docs <ArrowRight className="ml-auto size-4" />
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/enterprise" className="flex items-center gap-3 py-3 text-sm font-semibold transition hover:text-primary">
-                    <span className="size-1.5 rounded-full bg-primary" /> Enterprise <ArrowRight className="ml-auto size-4" />
-                  </Link>
-                </li>
+            <div className={`${CARD} p-6 md:p-8`}>
+              <p className={EYEBROW}>More information</p>
+              <ul className="mt-5 divide-y divide-white/10">
+                {[
+                  ["/developers/quickstart", "Quickstart"],
+                  ["/developers", "Developer docs"],
+                  ["/blog", "Blog"],
+                  ["/enterprise", "Enterprise"],
+                ].map(([href, label]) => (
+                  <li key={href}>
+                    <Link href={href} className="flex items-center gap-3 py-3 text-sm font-semibold transition hover:text-sky-300">
+                      <span className="size-1.5 rounded-full bg-sky-400" /> {label} <ArrowRight className="ml-auto size-4" />
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

@@ -13,6 +13,10 @@ export default function PrivacyPage() {
         <DraftNotice>Draft. This page describes current practice and has not yet been reviewed by legal counsel. It is not final legal text.</DraftNotice>
         <div className="max-w-2xl space-y-8 text-sm leading-6 text-muted-foreground">
           <div>
+            <h2 className="text-base font-medium text-foreground">Controller</h2>
+            <p className="mt-3">Eray &Ouml;zer (trading as Aegisora), Zurmaiener Stra&szlig;e 98, 54292 Trier, Germany. Email: <a href="mailto:eray@aegisora.org" className="underline underline-offset-4">eray@aegisora.org</a>. You may lodge a complaint with a data protection supervisory authority; for Rheinland-Pfalz this is the LfDI Rheinland-Pfalz.</p>
+          </div>
+          <div>
             <h2 className="text-base font-medium text-foreground">What we process</h2>
             <ul className="mt-3 list-disc space-y-1.5 pl-5">
               <li>Account information: email address, name, and company.</li>
@@ -24,7 +28,7 @@ export default function PrivacyPage() {
           </div>
           <div>
             <h2 className="text-base font-medium text-foreground">What we do not collect</h2>
-            <p className="mt-3">No payment details are collected in this application. Pilot workspaces are non-production: do not submit sensitive personal, health, or payment data.</p>
+            <p className="mt-3">Payments are processed by Stripe. We do not store card numbers. We store Stripe customer and subscription identifiers, payment status and the billing details you enter at checkout. Pilot workspaces are non-production: do not submit sensitive personal, health, or payment data.</p>
           </div>
           <div>
             <h2 className="text-base font-medium text-foreground">Purposes</h2>

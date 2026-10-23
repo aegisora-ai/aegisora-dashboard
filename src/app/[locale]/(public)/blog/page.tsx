@@ -1,22 +1,37 @@
-import { PageHero, Section } from "@/components/aegisora/page-kit";
-import { meta } from "@/lib/seo";
+import type { Metadata } from "next";
+import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegisora/page-kit";
+import { POSTS, formatDate } from "@/lib/blog-posts";
 
-export const metadata = meta(
-  "Blog",
-  "Notes on runtime security and execution control for autonomous AI agents.",
-);
+export const metadata: Metadata = {
+  title: "Blog",
+  description: "Notes on securing autonomous AI agents at runtime.",
+};
 
-export default function BlogPage() {
+export default function BlogIndex() {
   return (
     <>
       <PageHero
-        eyebrow="BLOG"
-        title="Notes on the execution boundary."
-        lead="Writing on runtime security, policy design and agent governance."
+        eyebrow="Blog"
+        title="Notes on securing AI agents at runtime."
+        intro="How to put a decision point in front of autonomous agents, what to record, and where humans belong in the loop."
       />
-      <Section>
-        <p className="text-sm text-muted-foreground">No posts have been published yet.</p>
+      <Section title="Latest posts" tone="alt">
+        <CardGrid
+          cols={3}
+          items={POSTS.map((p) => ({
+            n: p.category + " · " + formatDate(p.date),
+            title: p.title,
+            body: p.excerpt + " (" + p.readMinutes + " min read)",
+            href: "/blog/" + p.slug,
+          }))}
+        />
       </Section>
+      <CtaBand
+        title="Try it in a test workspace."
+        body="Send one request and read the decision."
+        primary={{ label: "Test Aegisora", href: "/signup" }}
+        secondary={{ label: "Read the quickstart", href: "/developers/quickstart" }}
+      />
     </>
   );
 }

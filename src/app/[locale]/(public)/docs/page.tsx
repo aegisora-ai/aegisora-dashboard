@@ -78,7 +78,7 @@ decision:    ESCALATE`}
         <div className="mt-6 overflow-x-auto"><V2Canvas /></div>
         <ul className="mt-6 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
           <li>&bull; Context resolution: identity, environment, workspace</li>
-          <li>&bull; Weighted risk scoring ahead of policy evaluation</li>
+          <li>&bull; Caller-supplied risk value evaluated against policy conditions</li>
           <li>&bull; Three-way decision: ALLOW / BLOCK / ESCALATE</li>
           <li>&bull; Basic decision logging (non-durable)</li>
         </ul>
@@ -101,9 +101,9 @@ decision:    ESCALATE`}
         <div className="mt-6 overflow-x-auto"><V3Canvas /></div>
         <ul className="mt-6 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
           <li>&bull; Eight-stage pipeline: request through evidence</li>
-          <li>&bull; Runtime-level enforcement, not advisory-only</li>
+          <li>&bull; Decision API called before your agent executes an action</li>
           <li>&bull; Durable, queryable evidence store</li>
-          <li>&bull; Evidence feeds back into risk scoring (closed loop)</li>
+          <li>&bull; Hash-chained evidence record for every decision</li>
           <li>&bull; Organized by workspace and role</li>
           <li>&bull; Approvals, incidents and webhooks as first-class objects</li>
         </ul>
@@ -115,13 +115,13 @@ decision:    ESCALATE`}
           head={["Capability", "1.0", "2.0", "3.0"]}
           rows={[
             ["Rule-based matching", "Yes", "Yes", "Yes"],
-            ["Context resolution", "&mdash;", "Yes", "Yes"],
-            ["Risk scoring", "&mdash;", "Yes", "Weighted + adaptive"],
+            ["Context resolution", "—", "Yes", "Yes"],
+            ["Risk input", "—", "Yes", "Caller-supplied score (0-100), usable in policy conditions"],
             ["Decision outcomes", "Allow / Deny", "Allow / Block / Escalate", "Allow / Block / Escalate"],
-            ["Runtime enforcement", "&mdash;", "Advisory only", "Yes, at execution boundary"],
-            ["Evidence store", "&mdash;", "Non-durable log", "Durable, queryable"],
-            ["Feedback into risk model", "&mdash;", "&mdash;", "Yes"],
-            ["Workspace / role model", "&mdash;", "&mdash;", "Yes"],
+            ["Decision point", "—", "Advisory only", "Decision API at the execution boundary"],
+            ["Evidence store", "—", "Non-durable log", "Durable, queryable"],
+            ["Evidence hash per decision", "—", "—", "Yes"],
+            ["Workspace / role model", "—", "—", "Yes"],
           ]}
         />
       </div>
@@ -135,8 +135,8 @@ decision:    ESCALATE`}
           cols={4}
           items={[
             ["Policy", "Declarative rules scoped by agent, action, environment and workspace."],
-            ["Risk", "A weighted score assembled from context, action sensitivity and evidence."],
-            ["Enforcement", "The decision is applied at the runtime boundary itself."],
+            ["Risk", "A 0-100 value sent with the request, usable in policy conditions."],
+            ["Decision", "Aegisora returns ALLOW, BLOCK or ESCALATE. Your code continues only on ALLOW."],
             ["Evidence", "Every decision and its inputs are written durably and are queryable."],
           ]}
         />
@@ -148,22 +148,30 @@ decision:    ESCALATE`}
       </p>
       <div className="mt-8">
         <CodeBlock
-          code={`POST /v1/evaluate
-{
-  "agent": "customer-support-bot",
-  "action": "stripe_refund_api",
-  "environment": "production",
-  "context": { "workspace": "billing", "amount_usd": 480 }
-}
+          code={`curl -X POST https://aegisora.org/api/v1/evaluate \\
+  -H "Authorization: Bearer aeg_live_<your-key>" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "agent": "customer-support-bot",
+    "action": "stripe_refund_api",
+    "resource": "invoice/INV-1042",
+    "risk": 40,
+    "input": { "amount_usd": 480 }
+  }'
 
-# Response
+# 200 response
 {
-  "decision": "ESCALATE",
-  "risk_score": 0.71,
-  "policy_id": "pol_refund_threshold",
-  "evidence_id": "ev_9f21ac"
+  "decision_id": "<uuid>",
+  "effect": "ESCALATE",
+  "reason": "<text>",
+  "policy_id": "<uuid or null>",
+  "approval_id": "<uuid or null>",
+  "execution_id": null,
+  "trace_id": "<id>",
+  "evidence_hash": "<hash>",
+  "agent_registered": false
 }`}
-          caption="Simplified evaluate/decide contract used by the current runtime."
+          caption="Request and response shape of the current endpoint. The outcome depends on your policies. Errors return { error: { code, message } }."
         />
       </div>
 

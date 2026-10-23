@@ -40,8 +40,8 @@ export function PlatformTabs({ features }: { features: readonly Feature[] }) {
             aria-selected={i === active}
             onClick={() => setActive(i)}
             className={
-              "shrink-0 border-b-2 px-3 py-2 text-left text-sm transition lg:border-b-0 lg:border-l-2 lg:py-1.5 " +
-              (i === active ? "border-primary font-semibold text-foreground" : "border-border text-muted-foreground hover:text-foreground")
+              "shrink-0 border-b-2 px-3 py-2 text-left text-sm transition lg:border-b-0 lg:border-l-2 lg:py-2 " +
+              (i === active ? "border-primary font-medium text-foreground" : "border-border text-muted-foreground hover:text-foreground")
             }
           >
             {x.title}
@@ -49,16 +49,16 @@ export function PlatformTabs({ features }: { features: readonly Feature[] }) {
         ))}
       </div>
 
-      <div key={active} role="tabpanel" className="aeg-tile grid items-center gap-8 p-6 md:grid-cols-2 md:p-10">
+      <div key={active} role="tabpanel" className="grid items-center gap-8 rounded-2xl border border-border bg-surface-1 p-6 md:grid-cols-2 md:p-10">
         <div>
           <Icon className="size-8 text-primary" />
-          <h3 className="aeg-display mt-5 text-3xl sm:text-4xl">{f.title}</h3>
-          <p className="aeg-body-text mt-4 text-base leading-relaxed">{f.body}</p>
+          <h3 className="mt-5 text-3xl font-medium tracking-tight text-foreground sm:text-4xl">{f.title}</h3>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground">{f.body}</p>
           <div className="mt-7 flex flex-wrap items-center gap-5">
-            <Link href="/developers/quickstart" className="inline-flex h-11 items-center rounded bg-primary px-6 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover">
+            <Link href="/developers/quickstart" className="inline-flex h-11 items-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover">
               Learn more
             </Link>
-            <Link href="/developers" className="inline-flex items-center gap-1.5 text-sm font-semibold transition hover:text-primary">
+            <Link href="/developers" className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground transition hover:text-primary">
               Documentation <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -67,16 +67,16 @@ export function PlatformTabs({ features }: { features: readonly Feature[] }) {
         <div>
           <div className="space-y-3">
             {cards.map((c) => (
-              <div key={c.action} className="rounded-xl border border-border bg-surface-2 p-4">
+              <div key={c.action} className="rounded-xl border border-border bg-background p-4">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="font-mono text-sm">{c.action}</span>
+                  <span className="font-mono text-sm text-foreground">{c.action}</span>
                   <span className={"rounded px-2 py-0.5 font-mono text-[11px] font-semibold " + BADGE[c.verdict]}>{c.verdict}</span>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">{c.meta}</p>
               </div>
             ))}
           </div>
-          <p className="mt-3 font-mono text-[11px] text-muted-foreground">Illustrative decisions</p>
+          <p className="mt-3 text-xs text-muted-foreground">Illustrative decisions</p>
         </div>
       </div>
     </div>

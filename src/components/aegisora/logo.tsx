@@ -7,14 +7,14 @@ export function Logo({ className = '' }: { className?: string }) {
     <Link
       href="/"
       className={"flex items-center shrink-0 cursor-pointer transition-opacity hover:opacity-85 " + className}
-      title="Ana Sayfaya Dön"
+      title="Aegisora"
     >
       <img
         src="/LOGO-icon-trimmed-420.webp"
         width={420}
         height={89}
         alt="Aegisora Logo"
-        className="h-6 md:h-7 w-auto object-contain"
+        className="h-6 w-auto object-contain md:h-7"
       />
     </Link>
   );

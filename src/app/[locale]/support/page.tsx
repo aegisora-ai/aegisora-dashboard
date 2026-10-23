@@ -6,7 +6,7 @@ import { COLLECTIONS, MAIN_SITE, articleHref, collectionHref, popularArticles, s
 
 export const metadata = meta(
   "Support",
-  "Help center for Aegisora: getting started, policies and decisions, access and security, pilots and pricing, and Aeri voice.",
+  "Help center for Aegisora: getting started, policies and decisions, access and security, and pilots and pricing.",
 );
 
 export default function SupportHome() {

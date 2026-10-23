@@ -70,7 +70,7 @@ export async function POST(
       return NextResponse.json(
         {
           success: false,
-          error: error.message,
+          error: "Unable to open billing portal.",
         },
         { status: 500 },
       );
@@ -116,16 +116,13 @@ export async function POST(
     });
   } catch (error) {
     console.error(
-      "[aegisora] billing portal error",
+      "[aegisora] billing portal error:", error instanceof Error ? error.message : "unknown error",
     );
 
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Unable to open billing portal.",
+        error: "Unable to open billing portal.",
       },
       { status: 500 },
     );

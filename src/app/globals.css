@@ -2,6 +2,10 @@
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
 
+/* =========================================================
+   AEGISORA DESIGN SYSTEM (light, single blue accent)
+   ========================================================= */
+
 :root {
   color-scheme: light;
   --background: #ffffff;
@@ -11,8 +15,8 @@
   --surface-4: #e1e8f0;
   --foreground: #0a1220;
   --muted-foreground: #58657c;
-  --primary: #1677ff;
-  --primary-hover: #0f63e0;
+  --primary: #0f63e0;
+  --primary-hover: #0b54c4;
   --primary-foreground: #ffffff;
   --cyan: #0b6fb5;
   --card: #ffffff;
@@ -26,7 +30,7 @@
   --accent-foreground: #0a1220;
   --border: #dbe3ed;
   --input: #dbe3ed;
-  --ring: #1677ff;
+  --ring: #0f63e0;
   --destructive: #c2262e;
   --destructive-foreground: #ffffff;
   --allow: #0f7b4f;
@@ -35,11 +39,10 @@
   --block-muted: #fbe8e9;
   --escalate: #9a6400;
   --escalate-muted: #fbf0d9;
-  --grid-line: rgb(10 18 32 / 0.06);
-  --panel-shadow: 0 1px 2px rgb(10 18 32 / 0.04), 0 14px 30px -18px rgb(10 18 32 / 0.18);
-  --band-a: rgb(22 119 255 / 0.13);
-  --band-b: rgb(0 184 255 / 0.12);
-  --radius: 0.25rem;
+  --grid-line: rgb(10 18 32 / 0.05);
+  --panel-shadow: 0 1px 2px rgb(10 18 32 / 0.04), 0 14px 30px -18px rgb(10 18 32 / 0.16);
+  --aeg-body: #58657c;
+  --radius: 0.375rem;
 }
 
 .dark {
@@ -77,9 +80,10 @@
   --escalate-muted: #2b2210;
   --grid-line: rgb(26 39 56 / 0.5);
   --panel-shadow: none;
-  --band-a: rgb(22 119 255 / 0.16);
-  --band-b: rgb(0 184 255 / 0.10);
+  --aeg-body: #8a9fc2;
 }
+
+
 
 @theme inline {
   --color-background: var(--background);
@@ -115,7 +119,7 @@
   --color-escalate-muted: var(--escalate-muted);
   --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
-  --radius-sm: calc(var(--radius) - 1px);
+  --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 4px);
@@ -123,88 +127,101 @@
 
 @layer base {
   * { @apply border-border; }
-  body { @apply bg-background text-foreground antialiased; }
+  body { @apply bg-background text-foreground antialiased; overflow-x: clip; }
   html { scroll-behavior: smooth; }
 }
+
+/* ---------- Typography ---------- */
+.aeg-display {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  text-wrap: balance;
+}
+.aeg-eyebrow {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--primary);
+}
+.aeg-body-text { color: var(--aeg-body); line-height: 1.7; }
+
+/* ---------- Surfaces ---------- */
+.aeg-panel {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--panel-shadow);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.aeg-panel.group:hover {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+}
+.aeg-tile {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.2s ease;
+}
+.aeg-tile:hover { border-color: color-mix(in srgb, var(--primary) 40%, var(--border)); }
 
 .aeg-grid-bg {
   background-image:
     linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-size: 40px 40px;
 }
+.aeg-hero { position: relative; overflow: hidden; isolation: isolate; }
 
-.aeg-hero {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
+/* Pages are plain light. Kept as a hook so old markup does not break. */
+.aeg-page, .aeg-light-band { background-color: var(--background); color: var(--foreground); }
+.aeg-section-glow { border-top: 1px solid var(--border); }
+.aeg-announce { background: var(--surface-1); color: var(--foreground); }
+
+/* ---------- Deliberate dark band (product visuals, code, CTA) ---------- */
+.aeg-dark-band, .aeg-dark-page, .aeg-night {
+  color-scheme: dark;
+  --background: #020a1c;
+  --surface-1: #07142a;
+  --surface-2: #0a1a35;
+  --surface-3: #0e2243;
+  --surface-4: #102347;
+  --foreground: #ffffff;
+  --muted-foreground: #a9bbdb;
+  --card: #07142a;
+  --card-foreground: #ffffff;
+  --border: #1f3350;
+  --input: #1f3350;
+  --cyan: #4da6ff;
+  --aeg-body: #a9bbdb;
+  --allow: #34b37e;
+  --allow-muted: #0f2a22;
+  --block: #e5484d;
+  --block-muted: #2c1518;
+  --escalate: #e0a030;
+  --escalate-muted: #2b2210;
+  --grid-line: rgb(31 51 80 / 0.5);
+  --panel-shadow: none;
+  background-color: var(--background);
+  color: var(--foreground);
 }
+.aeg-dark-band .text-primary, .aeg-night .text-primary, .aeg-dark-page .text-primary { color: #6aa6ff; }
 
-.aeg-hero::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  top: -30%;
-  right: -12%;
-  width: 72%;
-  height: 130%;
-  background: linear-gradient(115deg, transparent 18%, var(--band-a) 46%, var(--band-b) 72%, transparent 92%);
-  transform: skewY(-9deg);
-  pointer-events: none;
-}
-
-.aeg-panel {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  box-shadow: var(--panel-shadow);
-}
-
-.dark body {
-  background-image:
-    radial-gradient(circle at 0% 0%, rgba(22, 119, 255, 0.15) 0%, transparent 45%),
-    radial-gradient(circle at 100% 100%, rgba(11, 111, 181, 0.12) 0%, transparent 45%);
-  background-attachment: fixed;
-}
-
-header,
-[class*="site-header"] {
-  background: color-mix(in srgb, var(--background) 65%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-}
-
-/* === Ozel Scrollbar - Soft, Tema ile Uyumlu === */
+/* ---------- Scrollbar ---------- */
 html {
   scrollbar-width: thin;
-  scrollbar-color: rgba(22, 119, 255, 0.25) transparent;
+  scrollbar-color: rgba(10, 18, 32, 0.25) transparent;
 }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background-color: rgba(10, 18, 32, 0.22); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background-color: rgba(10, 18, 32, 0.4); }
+::-webkit-scrollbar-corner { background: transparent; }
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: rgba(22, 119, 255, 0.25);
-  border-radius: 999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(22, 119, 255, 0.45);
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-
-
+/* ---------- Animations ---------- */
 .aeg-ambient-cell {
   animation-name: aeg-ambient-pulse;
   animation-iteration-count: infinite;
@@ -214,175 +231,74 @@ html {
   0%, 100% { opacity: 0; }
   50% { opacity: var(--tw-opacity, 1); }
 }
-
 @keyframes loading-bar {
   0%   { transform: translateX(-100%); }
   50%  { transform: translateX(150%); }
   100% { transform: translateX(300%); }
 }
-
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .aeg-panel, .aeg-tile { transition: none; }
+}
+/* aeg-dark-scrollbar */
+html.dark { scrollbar-color: rgba(255,255,255,0.28) transparent; }
+.dark ::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.22); }
+.dark ::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
 
 
-/* === AEGISORA DESIGN V2 (MongoDB-inspired layout, blue palette) === */
-.aeg-dark-band {
+/* =========================================================
+   AEGISORA BLUE LOCK: tum site sabit lacivert tema
+   ========================================================= */
+:root, :root.dark, .dark {
   color-scheme: dark;
-  --background: #020611;
-  --surface-1: #061022;
-  --surface-2: #09162e;
-  --surface-3: #0c1c3a;
-  --surface-4: #102347;
+  --background: #020b2e;
+  --surface-1: #031249;
+  --surface-2: #051758;
+  --surface-3: #072065;
+  --surface-4: #0a2a7a;
   --foreground: #ffffff;
-  --muted-foreground: #8a9fc2;
-  --card: #061022;
+  --muted-foreground: #b4c3e6;
+  --primary: #1599ff;
+  --primary-hover: #3aa8ff;
+  --primary-foreground: #ffffff;
+  --cyan: #4da6ff;
+  --card: #031249;
   --card-foreground: #ffffff;
-  --border: #1a2738;
-  --input: #1a2738;
-  --cyan: #00b8ff;
-  --primary-hover: #2188ff;
-  --allow: #34b37e;
-  --allow-muted: #0f2a22;
-  --block: #e5484d;
-  --block-muted: #2c1518;
-  --escalate: #e0a030;
-  --escalate-muted: #2b2210;
-  --grid-line: rgb(26 39 56 / 0.5);
+  --popover: #031249;
+  --popover-foreground: #ffffff;
+  --secondary: #072065;
+  --secondary-foreground: #ffffff;
+  --muted: #051758;
+  --accent: #0a2a7a;
+  --accent-foreground: #ffffff;
+  --border: rgb(255 255 255 / 0.12);
+  --input: rgb(255 255 255 / 0.16);
+  --ring: #1599ff;
+  --destructive: #f26d72;
+  --destructive-foreground: #ffffff;
+  --allow: #34d399;
+  --allow-muted: rgb(52 211 153 / 0.14);
+  --block: #f87171;
+  --block-muted: rgb(248 113 113 / 0.14);
+  --escalate: #fbbf24;
+  --escalate-muted: rgb(251 191 36 / 0.14);
+  --grid-line: rgb(255 255 255 / 0.06);
   --panel-shadow: none;
-  background-color: var(--background);
-  color: var(--foreground);
-  background-image: radial-gradient(ellipse 60% 50% at 50% 0%, rgb(22 119 255 / 0.22), transparent 70%);
+  --aeg-body: #b4c3e6;
 }
 
-.aeg-panel {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+html { background-color: #020b2e; }
+body {
+  background-image:
+    radial-gradient(ellipse 45% 40% at 0% 0%, rgba(21,153,255,0.18) 0%, rgba(2,11,46,0) 70%),
+    radial-gradient(ellipse 45% 40% at 100% 100%, rgba(15,155,255,0.16) 0%, rgba(2,11,46,0) 70%);
+  background-attachment: fixed;
 }
 
-.aeg-panel.group:hover {
-  border-color: color-mix(in srgb, var(--primary) 60%, var(--border));
-  box-shadow: 0 18px 40px -26px rgb(22 119 255 / 0.55);
-}
-
-/* === AEGISORA DESIGN V3 (structure inspired by dark data-platform sites; own palette and fonts) === */
-.aeg-display {
-  font-family: var(--font-barlow), "Barlow Condensed", "Arial Narrow", sans-serif;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.005em;
-  line-height: 0.98;
-}
-.aeg-dark-band, .aeg-dark-page {
-  --surface-1: #07142a;
-  --surface-2: #0a1a35;
-  --surface-3: #0e2243;
-  --border: #1f3350;
-}
-.aeg-eyebrow {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-.aeg-tile {
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: var(--surface-1);
-  transition: border-color 0.2s ease;
-}
-.aeg-tile:hover { border-color: color-mix(in srgb, var(--primary) 55%, var(--border)); }
-
-/* === AEGISORA DESIGN V4 (full home rebuild) === */
-.aeg-page {
-  color-scheme: dark;
-  --background: #001e2b;
-  --surface-1: #061621;
-  --surface-2: #0a1f2c;
-  --surface-3: #0e2837;
-  --surface-4: #12313f;
-  --foreground: #fdfeec;
-  --muted-foreground: #b8c4c2;
-  --card: #061621;
-  --card-foreground: #fdfeec;
-  --border: #1c2d38;
-  --input: #1c2d38;
-  --aeg-body: #b8c4c2;
-  background-color: var(--background);
-  color: var(--foreground);
-}
-.aeg-page .aeg-display { letter-spacing: -0.02em; line-height: 0.95; font-weight: 600; }
-.aeg-page .aeg-eyebrow { font-weight: 600; letter-spacing: 0.08em; }
-.aeg-page .aeg-tile { border-radius: 16px; border: 1px solid var(--border); background: var(--surface-1); }
-.aeg-body-text { color: var(--aeg-body, #b8c4c2); }
-.aeg-announce { background: color-mix(in srgb, var(--primary) 38%, #001e2b); }
-
-/* === AEGISORA DESIGN V5 (palette matched to hero artwork) === */
-.aeg-page {
-  color-scheme: dark;
-  --background: #000b24;
-  --surface-1: #000f33;
-  --surface-2: #00143d;
-  --surface-3: #001a4a;
-  --surface-4: #00225c;
-  --foreground: #f4f8ff;
-  --muted-foreground: #a9bbdb;
-  --card: #000f33;
-  --card-foreground: #f4f8ff;
-  --border: #0f2a5c;
-  --input: #0f2a5c;
-  --aeg-body: #a9bbdb;
-  background-color: var(--background);
-  color: var(--foreground);
-}
-.aeg-page .aeg-display { letter-spacing: -0.02em; line-height: 0.95; font-weight: 600; }
-.aeg-page .aeg-eyebrow { font-weight: 600; letter-spacing: 0.08em; }
-.aeg-page .aeg-tile { border-radius: 16px; border: 1px solid var(--border); background: var(--surface-1); }
-.aeg-page .aeg-tile:hover { border-color: color-mix(in srgb, var(--primary) 45%, var(--border)); }
-.aeg-body-text { color: var(--aeg-body, #a9bbdb); }
-.aeg-announce { background: linear-gradient(90deg, #00309c, #0a5bd6); }
-
-/* === AEGISORA DESIGN V6 (video-matched page flow, artwork palette) === */
-.aeg-page, .aeg-night {
-  color-scheme: dark;
-  --background: #000b24;
-  --surface-1: #000f33;
-  --surface-2: #00143d;
-  --surface-3: #001a4a;
-  --surface-4: #00225c;
-  --foreground: #f4f8ff;
-  --muted-foreground: #a9bbdb;
-  --card: #000f33;
-  --card-foreground: #f4f8ff;
-  --border: #0f2a5c;
-  --input: #0f2a5c;
-  --aeg-body: #a9bbdb;
-  background-color: var(--background);
-  color: var(--foreground);
-}
-.aeg-light-band {
-  color-scheme: light;
-  --background: #eef4ff;
-  --surface-1: #ffffff;
-  --surface-2: #f6f9ff;
-  --surface-3: #e3ecff;
-  --surface-4: #d5e2fb;
-  --foreground: #000b24;
-  --muted-foreground: #3d5280;
-  --card: #ffffff;
-  --card-foreground: #000b24;
-  --border: #cfdcf5;
-  --input: #cfdcf5;
-  --aeg-body: #3d5280;
-  background-color: var(--background);
-  color: var(--foreground);
-}
-.aeg-page .aeg-display { letter-spacing: -0.02em; line-height: 0.95; font-weight: 600; }
-.aeg-page .aeg-eyebrow { font-weight: 600; letter-spacing: 0.08em; }
-.aeg-page .aeg-tile { border-radius: 16px; border: 1px solid var(--border); background: var(--surface-1); }
-.aeg-page .aeg-tile:hover { border-color: color-mix(in srgb, var(--primary) 45%, var(--border)); }
-.aeg-body-text { color: var(--aeg-body, #a9bbdb); }
-
-/* a11y: white text on #1677ff was 4.1:1. Filled primary surfaces use a darker blue (5.4:1, hover 6.8:1). */
-.bg-primary { background-color: #0f63e0; }
-.hover\:bg-primary-hover:hover { background-color: #0b54c4; }
+html { scrollbar-color: rgba(255,255,255,0.28) transparent; }
+::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.22); }
+::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
