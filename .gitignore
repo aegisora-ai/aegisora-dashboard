@@ -113,3 +113,11 @@ dump.txt
 *.p12
 *.pfx
 pilot-reports/
+
+docs/backups/
+docs/screenshots/
+docs/slices/
+docs/review*.txt
+docs/preflight.txt
+docs/screenshot-report.txt
+docs/site-audit.txt
