@@ -100,11 +100,11 @@ function Overview({ ws }: { ws: Workspace }) {
         </Panel>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {tiles.map((t) => (
-          <Link key={t.label} href={t.href} className="rounded-xl border border-border bg-surface-1 p-5 transition hover:border-primary/60">
+          <Link key={t.label} href={t.href} className="rounded-xl border border-border bg-surface-1 p-4 transition hover:border-primary/60 active:scale-[0.98] sm:p-5">
             <div className="text-xs font-medium text-muted-foreground">{t.label}</div>
-            <div className={cn("mt-2 text-4xl font-semibold tracking-tight", t.warn && "text-escalate")}>{t.value}</div>
+            <div className={cn("mt-2 text-3xl font-semibold tracking-tight sm:text-4xl", t.warn && "text-escalate")}>{t.value}</div>
           </Link>
         ))}
       </div>
@@ -136,7 +136,7 @@ function Overview({ ws }: { ws: Workspace }) {
                     type="button"
                     aria-expanded={open}
                     onClick={() => setOpenId(open ? null : r.id)}
-                    className="flex w-full items-center gap-3 py-2 text-left text-sm hover:bg-surface-3/60"
+                    className="flex min-h-12 w-full flex-wrap items-center gap-x-3 gap-y-1 py-2 text-left text-sm hover:bg-surface-3/60"
                   >
                     <Badge value={r.decision} />
                     <span className="font-mono text-xs">{r.evidence?.[0]?.action ?? "-"}</span>

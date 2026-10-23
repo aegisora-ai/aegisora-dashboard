@@ -302,3 +302,80 @@ body {
 html { scrollbar-color: rgba(255,255,255,0.28) transparent; }
 ::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.22); }
 ::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
+
+/* AEG-POLISH:START */
+/* aegisora-upgrade.ps1 tarafindan yonetilir. Tekrar calistirinca bu blok yerinde guncellenir. */
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+a, button, summary, select, [role="button"], [role="tab"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+@media (display-mode: standalone) {
+  body { overscroll-behavior-y: none; }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Motion that answers an action: route change and the mobile sheet. */
+@keyframes aeg-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes aeg-page-in { from { opacity: 0; transform: translate3d(0, 6px, 0); } to { opacity: 1; transform: none; } }
+@keyframes aeg-sheet-up { from { transform: translate3d(0, 100%, 0); } to { transform: none; } }
+
+.aeg-page-enter { animation: aeg-page-in .22s cubic-bezier(.22, 1, .36, 1) backwards; }
+.aeg-backdrop { animation: aeg-fade-in .2s ease-out backwards; }
+.aeg-sheet { animation: aeg-sheet-up .28s cubic-bezier(.22, 1, .36, 1) backwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .aeg-page-enter, .aeg-backdrop, .aeg-sheet { animation: none; }
+}
+
+/* Phones only */
+@media (max-width: 767px) {
+  html[data-density="compact"] { font-size: 15px; }
+  html[data-density="large"] { font-size: 17.5px; }
+
+  /* 16px inputs stop iOS from zooming the page on focus */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea { font-size: 16px; }
+
+  /* Dashboard tables become cards (cells are tagged by mobile-table-cards.tsx) */
+  table[data-aeg-cards] { display: block; width: 100%; min-width: 0 !important; border: 0; }
+  table[data-aeg-cards] thead {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  table[data-aeg-cards] tbody { display: grid; gap: .75rem; }
+  table[data-aeg-cards] tbody tr {
+    display: block;
+    padding: .25rem .875rem;
+    border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+    border-radius: .875rem;
+    background: color-mix(in srgb, currentColor 4%, transparent);
+  }
+  table[data-aeg-cards] tbody tr:active { background: color-mix(in srgb, currentColor 8%, transparent); }
+  table[data-aeg-cards] tbody td {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    width: auto; min-height: 2.5rem; padding: .5rem 0; border: 0; text-align: right;
+  }
+  table[data-aeg-cards] tbody td + td { border-top: 1px solid color-mix(in srgb, currentColor 9%, transparent); }
+  table[data-aeg-cards] tbody td[data-label]::before {
+    content: attr(data-label);
+    flex: 0 0 auto; max-width: 42%; text-align: left;
+    font-size: .75rem; font-weight: 500; opacity: .62;
+  }
+  table[data-aeg-cards] tbody td:not([data-label]) { display: block; text-align: left; }
+}
+/* AEG-POLISH:END */

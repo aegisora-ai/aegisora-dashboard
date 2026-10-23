@@ -18,6 +18,7 @@ const barlow = Barlow_Condensed({
 
 export const viewport: Viewport = {
   themeColor: "#020b2e",
+  viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
