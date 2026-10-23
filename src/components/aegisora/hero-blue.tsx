@@ -1,4 +1,6 @@
 import { Link } from "@/i18n/navigation";
+import { TypedLine } from "@/components/aegisora/typed-line";
+import { HeroCanvas } from "@/components/aegisora/hero-canvas";
 import { ArrowRight } from "lucide-react";
 
 const BG =
@@ -10,18 +12,22 @@ const ROWS = [
   { action: "db.drop_table users", meta: "code-agent · Destructive action denied", v: "BLOCK", c: "bg-red-100 text-red-700" },
 ];
 
+const HERO_PHRASES = ["before it runs.", "under your policy.", "with a verifiable record.", "at the execution boundary."];
+
 export function HeroBlue() {
   return (
     <section className="relative isolate overflow-hidden text-white" style={{ background: BG }}>
+      <HeroCanvas className="pointer-events-none absolute inset-0 -z-10" />
       <div className="mx-auto max-w-[1100px] px-4 pb-20 pt-16 text-center sm:px-6 md:pb-28 md:pt-24">
         <p className="text-xs font-medium uppercase tracking-[0.16em] text-white/80">
           Runtime security for AI agents
         </p>
         <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-medium leading-[1.05] tracking-[-0.03em] sm:text-5xl lg:text-7xl">
-          Every agent action gets a decision before it runs.
+          <span className="block">Every agent action gets a decision</span>
+          <TypedLine phrases={HERO_PHRASES} className="text-[#9fd0ff]" />
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/85 sm:text-lg">
-          Aegisora sits at the execution boundary of your AI agents. It checks each sensitive action against policy, risk and authorization, then returns ALLOW, ESCALATE or BLOCK.
+          Policy, risk and authorization, enforced at the execution boundary. Every action returns ALLOW, ESCALATE or BLOCK.
         </p>
 
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">

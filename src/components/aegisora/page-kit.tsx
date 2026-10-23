@@ -2,6 +2,8 @@
 
 import type { ReactNode } from "react";
 import { motion } from "motion/react";
+import { TypedLine } from "@/components/aegisora/typed-line";
+import { HeroCanvas } from "@/components/aegisora/hero-canvas";
 import { Link } from "@/i18n/navigation";
 import {
   ArrowRight, BookOpen, Clock, Eye, FileText, Fingerprint, Gauge, GitBranch,
@@ -29,6 +31,7 @@ const VERDICT: Record<Row["v"], string> = {
 };
 
 const CARD = "rounded-2xl border border-white/10 bg-white/[0.04]";
+const DEFAULT_PHRASES = ["Decide before it runs.", "Evidence you can verify.", "Fail closed by default.", "Built for security teams."];
 const EYEBROW = "text-xs font-medium uppercase tracking-[0.16em] text-sky-300";
 
 function fadeUp(i = 0) {
@@ -41,12 +44,13 @@ function fadeUp(i = 0) {
 }
 
 export function PageHero({
-  eyebrow, title, intro, lead, primary, secondary, rows, children,
+  eyebrow, title, phrases, intro, lead, primary, secondary, rows, children,
 }: {
   eyebrow: string;
   title: string;
   intro?: string;
   lead?: string;
+  phrases?: string[];
   primary?: Cta;
   secondary?: Cta;
   rows?: Row[];
@@ -55,6 +59,7 @@ export function PageHero({
   const text = intro ?? lead;
   return (
     <section className="relative isolate overflow-hidden text-white" style={{ background: BG }}>
+      <HeroCanvas className="pointer-events-none absolute inset-0 -z-10" />
       <div aria-hidden className="pointer-events-none absolute -left-24 top-10 -z-10 size-72 animate-pulse rounded-full bg-sky-400/20 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute -right-24 bottom-0 -z-10 size-80 animate-pulse rounded-full bg-blue-500/25 blur-3xl" />
       <div
@@ -71,6 +76,7 @@ export function PageHero({
         >
           <p className="text-xs font-medium uppercase tracking-[0.16em] text-white/80">{eyebrow}</p>
           <h1 className="mt-5 text-4xl font-medium leading-[1.05] tracking-[-0.03em] sm:text-5xl lg:text-6xl">{title}</h1>
+          <p className="mt-4 text-lg font-medium text-[#9fd0ff] sm:text-xl"><TypedLine decorative phrases={phrases?.length ? phrases : DEFAULT_PHRASES} /></p>
           {text ? <p className="mt-6 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">{text}</p> : null}
           {primary || secondary ? (
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">

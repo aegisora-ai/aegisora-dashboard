@@ -17,6 +17,25 @@ export const REPO_URL = "";
 
 export const RELEASES: Release[] = [
   {
+    version: "4.0.0",
+    kind: "Continuity Seal",
+    title: "Execution Continuity and Runtime Security",
+    summary: "Continuity Seal extends runtime governance from authorization into the integrity of the execution itself. The execution must remain the execution that was authorized.",
+    tagline: "Is this still the same action, under the same authorized security state, at the moment of execution?",
+
+    chains: [
+      { label: "Continuity boundary", steps: ["Decision", "Authorization", "Continuity Seal", "Enforcement", "Execution", "Effect reconciliation", "Evidence"] },
+    ],
+    sections: [
+      { title: "Continuity Seal", items: ["Deterministic execution sealing", "Immutable seal identity", "Cryptographic seal integrity validation", "Workspace, agent and execution identity binding", "Action, resource and tool binding"] },
+      { title: "Authority integrity", items: ["Authority-state fingerprinting", "Authority mutation and drift detection", "Workspace-scoped authority verification", "Fail-closed execution when authority changes"] },
+      { title: "Execution boundary", items: ["Provider execution sealing", "Tool execution bound to its authorization receipt", "Exact input verification", "Containment-aware sealing", "No external side effect when the sealed state changes"] },
+      { title: "Evidence correlation", items: ["sealId correlation across the evidence layer", "Blocked execution evidence", "Execution and effect reconciliation evidence"] },
+    ],
+    validation: ["20/20 Continuity Seal adversarial tests", "5/5 runtime continuity boundary tests", "115/115 runtime tests", "Build, typecheck and CodeQL passed", "Security Readiness passed"],
+    commit: "a99fa63",
+  },
+  {
     version: "3.0.0",
     title: "Enterprise Governance Runtime",
     kind: "Latest",

@@ -107,18 +107,9 @@ function ReleaseCard({ r, latest }: { r: Release; latest: boolean }) {
 
 export function ChangelogTimeline() {
   return (
-    <div className="mx-auto max-w-[1280px] px-4 py-16 sm:px-6 md:py-24">
-      <header className="max-w-3xl">
-        <div className="text-xs font-medium uppercase tracking-[0.16em] text-sky-300">Changelog</div>
-        <h1 className="mt-4 text-4xl font-medium leading-[1.05] tracking-[-0.03em] md:text-5xl">
-          Every release, from foundation to enterprise runtime.
-        </h1>
-        <p className="mt-5 leading-relaxed text-white/70">
-          Aegisora enforces governance before execution. Each release below builds on the last: evidence, canonical authority, governance boundary, runtime hardening, platform, enterprise runtime.
-        </p>
-      </header>
+    <div className="mx-auto max-w-[1280px] px-4 py-12 sm:px-6 md:py-16">
 
-      <div className="mt-12 grid gap-10 lg:grid-cols-[180px_minmax(0,1fr)]">
+      <div className="grid gap-10 lg:grid-cols-[180px_minmax(0,1fr)]">
         <aside className="hidden lg:block">
           <nav aria-label="Releases" className="sticky top-24">
             <div className={LABEL}>RELEASES</div>
