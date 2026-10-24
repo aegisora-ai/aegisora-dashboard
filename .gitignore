@@ -121,3 +121,8 @@ docs/review*.txt
 docs/preflight.txt
 docs/screenshot-report.txt
 docs/site-audit.txt
+# local backups and audit output
+/backups/
+/_audit/
+/_logs/
+/docs/backups/

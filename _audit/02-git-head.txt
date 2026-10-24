@@ -1,5 +1,0 @@
-﻿BRANCH:
-rebuild/aegisora-v3
-
-LATEST COMMIT:
-ee2fa73 design: switch to IBM Plex Sans/Mono, reduce eyebrow labels, differentiate Evidence and Enterprise section layouts

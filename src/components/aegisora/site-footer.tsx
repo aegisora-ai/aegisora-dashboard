@@ -2,52 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/aegisora/logo";
 import { SocialIcon } from "@/components/aegisora/social-icon";
 import { SOCIALS } from "@/lib/socials";
-
-type FooterLink = { label: string; href: string };
-
-const GROUPS: { title: string; links: FooterLink[] }[] = [
-  {
-    title: "Product",
-    links: [
-      { label: "Runtime", href: "/product/runtime" },
-      { label: "Policies", href: "/product/policies" },
-      { label: "Decisions", href: "/product/decisions" },
-      { label: "Approvals", href: "/product/approvals" },
-      { label: "Evidence", href: "/product/evidence" },
-    ],
-  },
-  {
-    title: "Developers",
-    links: [
-      { label: "Overview", href: "/developers" },
-      { label: "Quickstart", href: "/developers/quickstart" },
-      { label: "Docs", href: "/docs" },
-      { label: "Blog", href: "/blog" },
-      { label: "Changelog", href: "/changelog" },
-    ],
-  },
-  {
-    title: "Trust",
-    links: [
-      { label: "Security", href: "/security" },
-      { label: "Trust center", href: "/trust" },
-      { label: "Proof", href: "/proof" },
-      { label: "Privacy", href: "/trust/privacy" },
-      { label: "Subprocessors", href: "/trust/subprocessors" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "About", href: "/about" },
-      { label: "Enterprise", href: "/enterprise" },
-      { label: "Pricing", href: "/pricing" },
-      { label: "Contact", href: "/contact" },
-      { label: "Terms", href: "/terms" },
-      { label: "Impressum", href: "/impressum" },
-    ],
-  },
-];
+import { footerGroups } from "@/lib/main-nav";
 
 export function SiteFooter() {
   return (
@@ -59,18 +14,23 @@ export function SiteFooter() {
             Runtime security and execution control for autonomous AI agents.
           </p>
           <Link
-            href="/signup"
+            href="/pilot"
             className="mt-6 inline-flex h-10 items-center rounded-md bg-white px-5 text-sm font-semibold text-[#0a2a7a] transition hover:bg-white/90"
           >
-            Test Aegisora
+            Apply for Enterprise Pilot
           </Link>
+          <p className="mt-3 text-xs text-white/50">
+            <Link href="/signup" className="underline-offset-4 hover:text-sky-300 hover:underline">
+              Or create a test workspace
+            </Link>
+          </p>
         </div>
-        {GROUPS.map((g) => (
+        {footerGroups.map((g) => (
           <nav key={g.title} aria-label={g.title}>
             <h2 className="text-sm font-medium text-white">{g.title}</h2>
             <ul className="mt-4 space-y-2.5 text-sm">
               {g.links.map((l) => (
-                <li key={l.href}>
+                <li key={l.href + l.label}>
                   <Link href={l.href} className="text-white/60 transition hover:text-sky-300">
                     {l.label}
                   </Link>
@@ -85,9 +45,15 @@ export function SiteFooter() {
         <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-3 px-4 py-5 text-xs text-white/50 sm:px-6">
           <span>Aegisora 4.0. Examples on this site use illustrative sample data.</span>
           <span className="flex gap-5">
-            <Link href="/trust/privacy" className="hover:text-white">Privacy</Link>
-            <Link href="/terms" className="hover:text-white">Terms</Link>
-            <Link href="/impressum" className="hover:text-white">Impressum</Link>
+            <Link href="/trust/privacy" className="hover:text-white">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-white">
+              Terms
+            </Link>
+            <Link href="/impressum" className="hover:text-white">
+              Impressum
+            </Link>
           </span>
         </div>
       </div>
