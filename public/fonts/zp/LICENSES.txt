@@ -1,0 +1,2 @@
+Inter, Inter Tight, JetBrains Mono and Instrument Serif are licensed under the SIL Open Font License 1.1 (https://openfontlicense.org).
+Sources: @fontsource npm packages. Self-hosted so no request is made to Google Fonts (GDPR).

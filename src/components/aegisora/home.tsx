@@ -4,29 +4,43 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
-  Activity,
   ArrowRight,
-  Check,
+  Database,
+  Eye,
   FileCheck2,
-  KeyRound,
+  Fingerprint,
   Lock,
-  ScrollText,
+  Plus,
   ShieldCheck,
-  UserCheck,
-  Users,
-  Webhook,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { Accordion, Btn, Eyebrow, MockWindow, Reveal, VerdictBadge } from "@/components/zp/ui";
+import type { Verdict } from "@/components/zp/ui";
 
-type Verdict = "ALLOW" | "BLOCK" | "ESCALATE";
+/* ------------------------------------------------------------------ data */
+
+const CAPS: { icon: LucideIcon; title: string; body: string }[] = [
+  { icon: ShieldCheck, title: "Policy at the boundary", body: "Default BLOCK without a match" },
+  { icon: Database, title: "Tenant isolation", body: "Postgres RLS per workspace" },
+  { icon: Fingerprint, title: "MFA step-up", body: "AAL2 for governance changes" },
+  { icon: FileCheck2, title: "Verifiable evidence", body: "Hash-chained, offline verifier" },
+];
+
+const ACTIONS = [
+  "payments.transfer",
+  "db.drop_table",
+  "files.export",
+  "secrets.read",
+  "customers.delete",
+  "deploy.rollback",
+  "web.fetch",
+  "crm.read_ticket",
+  "email.send",
+  "iam.grant_role",
+];
+
 type Ev = { id: number; agent: string; action: string; verdict: Verdict; reason: string };
-
-const VERDICT_STYLE: Record<Verdict, string> = {
-  ALLOW: "bg-allow-muted text-allow",
-  BLOCK: "bg-block-muted text-block",
-  ESCALATE: "bg-escalate-muted text-escalate",
-};
-
 const FEED: Omit<Ev, "id">[] = [
   { agent: "support-agent", action: "crm.read_ticket", verdict: "ALLOW", reason: "Within scope" },
   { agent: "finance-agent", action: "payments.transfer $48,000", verdict: "ESCALATE", reason: "Above approval limit" },
@@ -37,38 +51,142 @@ const FEED: Omit<Ev, "id">[] = [
   { agent: "billing-agent", action: "customers.delete bulk", verdict: "BLOCK", reason: "No authorization" },
 ];
 
-function fadeUp(i = 0) {
-  return {
-    initial: { opacity: 0, y: 18 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-60px" },
-    transition: { duration: 0.5, delay: i * 0.06, ease: "easeOut" as const },
-  };
-}
+const POLICY_ITEMS = [
+  { title: "Policy engine", body: "Write policies once and enforce them on every agent action, with conditions and redaction built in." },
+  { title: "Human approval", body: "ESCALATE routes sensitive actions to an approver before anything executes." },
+  { title: "Role-based access", body: "Owner, Admin, Operator and Viewer roles, enforced server-side on every request." },
+  { title: "Default BLOCK", body: "Without a matching policy, the answer is BLOCK. Nothing runs by accident." },
+  { title: "Scoped API keys", body: "Hashed at rest, rate limited per key and per IP, and revocable at any time." },
+];
 
-const EYEBROW = "text-xs font-medium uppercase tracking-[0.16em] text-primary";
-const CARD = "rounded-xl border border-border bg-card p-6";
-const BTN_PRIMARY =
-  "inline-flex h-12 items-center justify-center rounded-md bg-primary px-7 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover";
-const BTN_OUTLINE =
-  "inline-flex h-12 items-center justify-center gap-1.5 rounded-md border border-border bg-background px-7 text-sm font-semibold text-foreground transition hover:border-primary hover:text-primary";
-const LINK = "inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition hover:text-primary-hover";
+const EVIDENCE_ITEMS = [
+  { title: "Hash-chained evidence", body: "Every decision is written to a SHA-256 hash chain with gapless sequence numbers." },
+  { title: "Offline verifier", body: "Export the chain and verify it on your own machine with a standalone Python script." },
+  { title: "Signed webhooks", body: "Push decisions to your SIEM and ticketing tools with signed, retried deliveries." },
+  { title: "Complete exports", body: "Each export contains every field needed to recompute every hash." },
+];
 
-function Section({ children, alt = false, id }: { children: ReactNode; alt?: boolean; id?: string }) {
+const AUDIT_ROWS = [
+  { seq: "0412", action: "payments.transfer", v: "ESCALATE" as Verdict, hash: "3fa9…c21e" },
+  { seq: "0413", action: "db.drop_table", v: "BLOCK" as Verdict, hash: "91d0…7b4a" },
+  { seq: "0414", action: "crm.read_ticket", v: "ALLOW" as Verdict, hash: "c7e2…05fd" },
+  { seq: "0415", action: "files.export", v: "ESCALATE" as Verdict, hash: "5b18…e9a3" },
+  { seq: "0416", action: "deploy.rollback", v: "ALLOW" as Verdict, hash: "a04c…12d8" },
+  { seq: "0417", action: "customers.delete", v: "BLOCK" as Verdict, hash: "e63f…88b0" },
+];
+
+const MODES: {
+  key: string;
+  verdict: Verdict | null;
+  name: string;
+  blurb: string;
+  title: string;
+  accent: string;
+  body: string;
+  flow: string[];
+}[] = [
+  {
+    key: "allow",
+    verdict: "ALLOW",
+    name: "Allow",
+    blurb: "The action matches a policy and runs. The decision is recorded.",
+    title: "Allow:",
+    accent: "Routine read",
+    body: "A support agent reads a ticket. It is in scope, so it runs immediately and leaves a record.",
+    flow: ["crm.read_ticket", "Policy match", "ALLOW: runs", "Evidence recorded"],
+  },
+  {
+    key: "escalate",
+    verdict: "ESCALATE",
+    name: "Escalate",
+    blurb: "Sensitive actions wait for a human approver before anything executes.",
+    title: "Escalate:",
+    accent: "Payment above the limit",
+    body: "A transfer above the approval limit is held. An approver decides, and the outcome is recorded next to the request.",
+    flow: ["payments.transfer $48,000", "Above approval limit", "Approver reviews", "Runs or is denied"],
+  },
+  {
+    key: "block",
+    verdict: "BLOCK",
+    name: "Block",
+    blurb: "Stopped at the boundary. Without a matching policy the default is BLOCK.",
+    title: "Block:",
+    accent: "Destructive change",
+    body: "A destructive database change has no policy that allows it. It never reaches the system, and the reason is on record.",
+    flow: ["db.drop_table users", "No policy allows it", "BLOCK: stopped", "Reason recorded"],
+  },
+  {
+    key: "verify",
+    verdict: null,
+    name: "Verify",
+    blurb: "Export the evidence chain and check it without trusting our servers.",
+    title: "Verify:",
+    accent: "Checked on your machine",
+    body: "Auditors export the chain and recompute every hash offline. The check uses only the Python standard library.",
+    flow: ["Export evidence", "verify_evidence.py", "Hashes recomputed", "Result on your machine"],
+  },
+];
+
+const SECURITY: { icon: LucideIcon; title: string; body: string }[] = [
+  { icon: Database, title: "Tenant isolation", body: "Postgres row-level security per workspace" },
+  { icon: Fingerprint, title: "MFA step-up", body: "AAL2 session for governance changes" },
+  { icon: Lock, title: "Role-based access", body: "Server-side on every request" },
+  { icon: FileCheck2, title: "Tamper-evident evidence", body: "Hash-chained, verifiable offline" },
+  { icon: Eye, title: "Full decision history", body: "Every ALLOW, BLOCK and ESCALATE" },
+];
+
+const CONTROLS = ["Default BLOCK", "Scoped API keys", "Per-key rate limits", "Key revocation", "Signed webhooks", "Offline verification"];
+
+const STEPS = [
+  { n: "01", title: "Apply", body: "Tell us about your agents and the scenarios you want to test." },
+  { n: "02", title: "Review", body: "We confirm scope and data handling together before anything starts." },
+  { n: "03", title: "Invite", body: "You receive a secure invitation into an isolated workspace." },
+  { n: "04", title: "Test", body: "Run the agreed scenarios against your own agents." },
+  { n: "05", title: "Report", body: "Get a report built from recorded events, reviewed together." },
+];
+
+const SNIPPET = `curl -X POST https://aegisora.org/api/v1/evaluate \\
+  -H "Authorization: Bearer aeg_live_..." \\
+  -H "Content-Type: application/json" \\
+  -d '{ "agent": "finance-agent",
+        "action": "payments.transfer",
+        "risk": 70,
+        "input": { "amount": 48000 } }'
+
+# -> e.g. { "effect": "ESCALATE", "approval_id": "<uuid>",
+#          "decision_id": "<uuid>", "evidence_hash": "<hash>" }`;
+
+/* ------------------------------------------------------------ small parts */
+
+function Pill({ children, tone, n }: { children: ReactNode; tone?: "bad" | "good"; n?: number }) {
   return (
-    <section id={id} className={"border-t border-border " + (alt ? "bg-surface-1" : "bg-background")}>
-      <div className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:py-28">{children}</div>
-    </section>
+    <span className={"zp-pill" + (tone ? ` zp-pill--${tone}` : "")}>
+      {n ? <i>{n}</i> : null}
+      {children}
+    </span>
   );
 }
 
-function Heading({ eyebrow, title, intro }: { eyebrow: string; title: string; intro?: string }) {
+function Seq({ items, tone }: { items: ReactNode[]; tone?: "bad" | "good" }) {
+  const reduce = useReducedMotion();
   return (
-    <motion.div {...fadeUp()} className="max-w-3xl">
-      <p className={EYEBROW}>{eyebrow}</p>
-      <h2 className="mt-4 text-4xl font-medium leading-[1.06] tracking-[-0.02em] text-foreground sm:text-5xl">{title}</h2>
-      {intro ? <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">{intro}</p> : null}
-    </motion.div>
+    <>
+      {items.map((it, i) => (
+        <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          {i > 0 ? <span className="zp-link-v" /> : null}
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.4, delay: i * 0.18 }}
+          >
+            <Pill tone={i === items.length - 1 ? tone : undefined} n={i + 1}>
+              {it}
+            </Pill>
+          </motion.div>
+        </div>
+      ))}
+    </>
   );
 }
 
@@ -88,320 +206,414 @@ function LiveConsole() {
   }, [reduce]);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-[var(--panel-shadow)]">
-      <div className="flex h-12 items-center justify-between border-b border-border px-4">
-        <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-          <Activity className="size-4 text-primary" />
-          Sample runtime decisions
-        </div>
-        <span className="rounded border border-border px-2 py-0.5 text-[11px] text-muted-foreground">Illustrative</span>
-      </div>
-      <ul className="h-[18.75rem] divide-y divide-border overflow-hidden">
+    <MockWindow title="Sample runtime decisions" tag="Illustrative">
+      <ul className="zp-mock-list">
         {items.map((e) => (
           <motion.li
             key={e.id}
-            initial={{ opacity: 0 }}
+            className="zp-mock-row"
+            initial={reduce ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4 }}
-            className="flex h-[3.75rem] items-center justify-between gap-3 px-4"
           >
-            <div className="min-w-0">
-              <p className="truncate font-mono text-sm text-foreground">{e.action}</p>
-              <p className="truncate text-xs text-muted-foreground">
+            <div style={{ minWidth: 0 }}>
+              <p className="zp-mock-act">{e.action}</p>
+              <p className="zp-mock-sub">
                 {e.agent} · {e.reason}
               </p>
             </div>
-            <span className={`shrink-0 rounded px-2 py-1 font-mono text-[11px] font-semibold ${VERDICT_STYLE[e.verdict]}`}>
-              {e.verdict}
-            </span>
+            <VerdictBadge v={e.verdict} />
           </motion.li>
         ))}
       </ul>
+    </MockWindow>
+  );
+}
+
+function AuditMock() {
+  return (
+    <MockWindow title="Evidence log" tag="Illustrative">
+      <div className="zp-mock-wrap">
+        <table className="zp-mock-table">
+          <thead>
+            <tr>
+              <th>Seq</th>
+              <th>Action</th>
+              <th>Decision</th>
+              <th>Hash</th>
+            </tr>
+          </thead>
+          <tbody>
+            {AUDIT_ROWS.map((r) => (
+              <tr key={r.seq}>
+                <td className="zp-mono">{r.seq}</td>
+                <td className="zp-mono">{r.action}</td>
+                <td>
+                  <VerdictBadge v={r.v} />
+                </td>
+                <td className="zp-mono">{r.hash}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="zp-mock-foot">Chain intact. Sequence numbers are gapless.</p>
+    </MockWindow>
+  );
+}
+
+function Modes() {
+  const [i, setI] = useState(0);
+  const m = MODES[i];
+  return (
+    <div>
+      <div className="zp-track" aria-hidden>
+        {MODES.map((x, k) => (
+          <span key={x.key} className="zp-track-dot" data-on={k <= i} style={{ left: `${(k + 0.5) * 25}%` }} />
+        ))}
+      </div>
+      <div className="zp-tabs" role="tablist" aria-label="Decision modes">
+        {MODES.map((x, k) => (
+          <button
+            key={x.key}
+            type="button"
+            role="tab"
+            id={`mode-tab-${x.key}`}
+            aria-selected={k === i}
+            aria-controls="mode-panel"
+            className="zp-tab"
+            onClick={() => setI(k)}
+          >
+            <b>
+              {x.name}
+              {x.verdict ? <VerdictBadge v={x.verdict} /> : <FileCheck2 size={14} aria-hidden />}
+            </b>
+            <span>{x.blurb}</span>
+          </button>
+        ))}
+      </div>
+      <div className="zp-mode" role="tabpanel" id="mode-panel" aria-labelledby={`mode-tab-${m.key}`}>
+        <div className="zp-art zp-art--flow">
+          <div className="zp-flow">
+            {m.flow.map((f, k) => (
+              <div key={f} style={{ display: "contents" }}>
+                {k > 0 ? <span className="zp-flow-line" /> : null}
+                <div className="zp-flow-box">{k === 0 ? <code>{f}</code> : f}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="zp-mode-text">
+          <h3>
+            {m.title} <span className="zp-em">{m.accent}</span>
+          </h3>
+          <p>{m.body}</p>
+        </div>
+      </div>
     </div>
   );
 }
 
-const PROOF = [
-  "Public runtime repository",
-  "Tenant isolation with Postgres RLS",
-  "MFA step-up for governance changes",
-  "Hash-chained evidence, verifiable offline",
-];
-
-const PROBLEMS = [
-  { title: "Agents call real systems", body: "Payments, databases, files and secrets are one tool call away from an autonomous agent." },
-  { title: "Prompts are not controls", body: "Instructions to a model can be ignored or overridden. A policy at the execution boundary cannot." },
-  { title: "Logs can be rewritten", body: "Ordinary audit tables are editable. Evidence should be able to prove its own integrity." },
-];
-
-const VERDICTS: { verdict: Verdict; icon: typeof ShieldCheck; title: string; body: string }[] = [
-  { verdict: "ALLOW", icon: ShieldCheck, title: "Runs", body: "The action matches a policy and proceeds, with the decision recorded." },
-  { verdict: "ESCALATE", icon: UserCheck, title: "Waits for a human", body: "Sensitive actions route to an approver before anything executes." },
-  { verdict: "BLOCK", icon: Lock, title: "Denied", body: "Stopped at the boundary. Without a matching policy the default is BLOCK." },
-];
-
-const FEATURES = [
-  { icon: ShieldCheck, title: "Policy engine", body: "Write policies once and enforce them on every agent action, with conditions and redaction built in." },
-  { icon: Users, title: "Role-based access", body: "Owner, Admin, Operator and Viewer roles enforced server-side on every request." },
-  { icon: Lock, title: "MFA step-up", body: "Governance changes require an AAL2 session. A password alone is never enough." },
-  { icon: ScrollText, title: "Tamper-evident evidence", body: "Decisions are written to a hash-chained evidence log you can verify independently." },
-  { icon: Webhook, title: "Signed webhooks", body: "Push decisions to your SIEM and ticketing with signed, retried deliveries." },
-  { icon: KeyRound, title: "Scoped API keys", body: "Hashed at rest, rate limited per key and per IP, revocable at any time." },
-];
-
-const SCENARIOS: { action: string; verdict: Verdict; title: string; body: string }[] = [
-  { action: "payments.transfer $48,000", verdict: "ESCALATE", title: "Payment above the limit", body: "Waits for a human approver before any money moves." },
-  { action: "secrets.export", verdict: "BLOCK", title: "Secret export", body: "Denied unless a policy explicitly allows it." },
-  { action: "db.drop_table users", verdict: "BLOCK", title: "Destructive database change", body: "Stopped at the boundary, with the reason recorded." },
-  { action: "files.export salary.csv", verdict: "ESCALATE", title: "Sensitive file export", body: "Routed to a reviewer because of the data class." },
-  { action: "customers.delete bulk", verdict: "BLOCK", title: "Bulk customer deletion", body: "No authorization, no execution." },
-  { action: "crm.read_ticket", verdict: "ALLOW", title: "Routine read access", body: "Within scope, so it runs and is logged." },
-];
-
-const STEPS = [
-  { n: "01", title: "Apply", body: "Tell us about your agents and the scenarios you want to test." },
-  { n: "02", title: "Review", body: "We confirm scope and data handling together before anything starts." },
-  { n: "03", title: "Invite", body: "You receive a secure invitation into an isolated workspace." },
-  { n: "04", title: "Test", body: "Run the agreed scenarios against your own agents." },
-  { n: "05", title: "Report", body: "Get a report built from recorded events, reviewed together." },
-];
-
-const EVIDENCE_SNIPPET = `GET /api/v1/workspace/evidence/export
-X-Workspace-Id: <workspace-id>
-
-python verify_evidence.py export.json --workspace <workspace-id>`;
-
-const SNIPPET = `curl -X POST https://aegisora.org/api/v1/evaluate \\
-  -H "Authorization: Bearer aeg_live_..." \\
-  -H "Content-Type: application/json" \\
-  -d '{ "agent": "finance-agent",
-        "action": "payments.transfer",
-        "risk": 70,
-        "input": { "amount": 48000 } }'
-
-# -> e.g. { "effect": "ESCALATE", "approval_id": "<uuid>", "decision_id": "<uuid>", "evidence_hash": "<hash>", ... }`;
+/* ------------------------------------------------------------------- page */
 
 export default function Home() {
+  const marquee = [...ACTIONS, ...ACTIONS];
   return (
-    <div className="overflow-x-clip bg-background text-foreground">
+    <div className="zp" style={{ overflowX: "clip" }}>
       {/* HERO */}
-      <section className="relative isolate overflow-hidden bg-background">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_55%_at_50%_0%,color-mix(in_srgb,var(--primary)_24%,transparent),transparent_72%)]"
-        />
-        <div className="mx-auto max-w-[1100px] px-4 pb-16 pt-16 text-center sm:px-6 md:pb-24 md:pt-24">
-          <p className={EYEBROW}>Runtime security for AI agents</p>
-          <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-medium leading-[1.05] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-7xl">
-            One decision point between every AI agent and the action it takes.
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Aegisora evaluates every sensitive agent action against your policy before it runs. ALLOW, BLOCK, or ESCALATE to a human, with an evidence record you can verify yourself.
+      <section className="zp-hero">
+        <div className="zp-container">
+          <Eyebrow plain>Runtime security for AI agents</Eyebrow>
+          <h1 className="zp-h2xl">Your control layer for the agentic era</h1>
+          <p className="zp-lead">
+            Aegisora evaluates every sensitive agent action against your policy before it runs. ALLOW, BLOCK, or
+            ESCALATE to a human, with an evidence record you can verify yourself.
           </p>
-          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/pilot" className={`${BTN_PRIMARY} w-full sm:w-auto`}>
-              Request a pilot
-            </Link>
-            <Link href="/docs" className={`${BTN_OUTLINE} w-full sm:w-auto`}>
-              Read the docs <ArrowRight className="size-4" />
-            </Link>
+          <div className="zp-btn-row zp-btn-row--center">
+            <Btn href="/pilot">Request a pilot</Btn>
+            <Btn href="/docs" kind="outline">
+              Read the docs <ArrowRight size={16} aria-hidden />
+            </Btn>
           </div>
-          <p className="mt-4 text-sm text-muted-foreground">
+          <p style={{ marginTop: 14, fontSize: 14 }} className="zp-muted">
             Or{" "}
-            <Link href="/signup" className="font-medium text-primary underline-offset-4 hover:underline">
+            <Link href="/signup" className="zp-textlink">
               create a test workspace
             </Link>
-            .
           </p>
-          <motion.div {...fadeUp(1)} className="mx-auto mt-14 max-w-3xl text-left md:mt-20">
-            <LiveConsole />
-          </motion.div>
-        </div>
-      </section>
 
-      {/* PROOF STRIP */}
-      <section className="border-t border-border bg-surface-1">
-        <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-3 px-4 py-6 sm:grid-cols-2 sm:px-6 lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-10">
-          {PROOF.map((t) => (
-            <span key={t} className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Check className="size-4 text-allow" /> {t}
-            </span>
-          ))}
-        </div>
-      </section>
+          <ul className="zp-caps">
+            {CAPS.map((c) => (
+              <li key={c.title} className="zp-cap">
+                <c.icon size={20} aria-hidden />
+                <b>{c.title}</b>
+                <span>{c.body}</span>
+              </li>
+            ))}
+          </ul>
 
-      {/* PROBLEM */}
-      <Section>
-        <Heading eyebrow="The problem" title="Agents are acting. Nothing decides what they may do." />
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {PROBLEMS.map((p, i) => (
-            <motion.div key={p.title} {...fadeUp(i)} className={CARD}>
-              <h3 className="text-xl font-medium text-foreground">{p.title}</h3>
-              <p className="mt-3 leading-relaxed text-muted-foreground">{p.body}</p>
-            </motion.div>
-          ))}
-        </div>
-      </Section>
-
-      {/* DECISIONS */}
-      <Section alt>
-        <Heading
-          eyebrow="Control"
-          title="Define exactly what runs."
-          intro="Every action returns one of three decisions, evaluated against context, policy, risk and authorization before it reaches a real system."
-        />
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {VERDICTS.map((v, i) => (
-            <motion.div key={v.verdict} {...fadeUp(i)} className={CARD}>
-              <div className="flex items-center justify-between">
-                <span className="inline-flex size-10 items-center justify-center rounded-lg bg-surface-3 text-primary">
-                  <v.icon className="size-5" />
-                </span>
-                <span className={`rounded px-2 py-1 font-mono text-[11px] font-semibold ${VERDICT_STYLE[v.verdict]}`}>
-                  {v.verdict}
-                </span>
-              </div>
-              <h3 className="mt-5 text-xl font-medium text-foreground">{v.title}</h3>
-              <p className="mt-2 leading-relaxed text-muted-foreground">{v.body}</p>
-            </motion.div>
-          ))}
-        </div>
-      </Section>
-
-      {/* EVIDENCE */}
-      <Section>
-        <div className="grid items-center gap-10 lg:grid-cols-2">
-          <motion.div {...fadeUp()}>
-            <p className={EYEBROW}>Evidence</p>
-            <h2 className="mt-4 text-4xl font-medium leading-[1.06] tracking-[-0.02em] text-foreground sm:text-5xl">
-              Evidence a customer can verify without trusting us.
-            </h2>
-            <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Every decision is written to a hash-chained log. Export the chain and check it offline with a standalone verifier that uses only the Python standard library.
-            </p>
-            <ul className="mt-6 space-y-3 text-sm text-muted-foreground">
-              {["SHA-256 hash chain with gapless sequence numbers", "Export contains every field needed to recompute each hash", "Verification runs on your machine, not on our servers"].map((t) => (
-                <li key={t} className="flex items-start gap-2">
-                  <FileCheck2 className="mt-0.5 size-4 shrink-0 text-primary" /> {t}
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-          <motion.div {...fadeUp(1)} className="overflow-hidden rounded-xl border border-border bg-card">
-            <div className="border-b border-border px-4 py-2.5 font-mono text-xs text-muted-foreground">export and verify</div>
-            <pre className="overflow-x-auto p-4 font-mono text-[12px] leading-relaxed text-foreground">{EVIDENCE_SNIPPET}</pre>
-          </motion.div>
-        </div>
-      </Section>
-
-      {/* PLATFORM */}
-      <Section alt>
-        <Heading
-          eyebrow="Platform"
-          title="Security built into the runtime."
-          intro="Built for security teams that need proof, not promises."
-        />
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((f, i) => (
-            <motion.div key={f.title} {...fadeUp(i)} className={`${CARD} transition hover:border-primary`}>
-              <span className="inline-flex size-10 items-center justify-center rounded-lg bg-surface-3 text-primary">
-                <f.icon className="size-5" />
-              </span>
-              <h3 className="mt-5 text-lg font-medium text-foreground">{f.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.body}</p>
-            </motion.div>
-          ))}
-        </div>
-        <div className="mt-8">
-          <Link href="/security" className={LINK}>
-            Read about security <ArrowRight className="size-4" />
-          </Link>
-        </div>
-      </Section>
-
-      {/* SCENARIOS */}
-      <Section>
-        <Heading
-          eyebrow="Scenarios"
-          title="What it looks like in practice."
-          intro="Illustrative scenarios. In your workspace, your policies decide the outcome."
-        />
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {SCENARIOS.map((s, i) => (
-            <motion.div key={s.action} {...fadeUp(i)} className={CARD}>
-              <div className="flex items-center justify-between gap-3">
-                <code className="truncate font-mono text-xs text-muted-foreground">{s.action}</code>
-                <span className={`shrink-0 rounded px-2 py-1 font-mono text-[11px] font-semibold ${VERDICT_STYLE[s.verdict]}`}>
-                  {s.verdict}
-                </span>
-              </div>
-              <h3 className="mt-4 text-lg font-medium text-foreground">{s.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
-            </motion.div>
-          ))}
-        </div>
-      </Section>
-
-      {/* PILOT */}
-      <Section alt>
-        <Heading
-          eyebrow="Enterprise pilot"
-          title="From first call to a report you can review."
-          intro="A scoped, time-boxed evaluation on your own agents, in an isolated workspace."
-        />
-        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          {STEPS.map((s, i) => (
-            <motion.div key={s.n} {...fadeUp(i)} className={CARD}>
-              <span className={EYEBROW}>{s.n}</span>
-              <h3 className="mt-3 text-xl font-medium text-foreground">{s.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
-            </motion.div>
-          ))}
-        </div>
-        <div className="mt-8">
-          <Link href="/pilot" className={LINK}>
-            Apply for the pilot <ArrowRight className="size-4" />
-          </Link>
-        </div>
-      </Section>
-
-      {/* FINAL CTA */}
-      <section
-        className="dark border-t border-border text-foreground"
-        style={{
-          background:
-            "radial-gradient(ellipse 45% 70% at 90% 100%, rgba(15,155,255,0.45) 0%, rgba(2,11,46,0) 70%), radial-gradient(ellipse 40% 60% at 5% 0%, rgba(21,153,255,0.35) 0%, rgba(2,11,46,0) 70%), #001a6e",
-        }}
-      >
-        <div className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:py-28">
-          <div className="grid items-center gap-10 lg:grid-cols-2">
-            <div>
-              <h2 className="text-4xl font-medium leading-[1.06] tracking-[-0.02em] sm:text-5xl">
-                Put a decision point in front of your agents.
-              </h2>
-              <p className="mt-5 max-w-lg leading-relaxed text-white/75">
-                Create a test workspace, send one request and read the decision. Without a matching policy the default is BLOCK.
-              </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link href="/pilot" className={BTN_PRIMARY}>
-                  Request a pilot
-                </Link>
-                <Link
-                  href="/signup"
-                  className="inline-flex h-12 items-center justify-center rounded-md border border-white/40 px-7 text-sm font-semibold text-white transition hover:bg-white/10"
-                >
-                  Test Aegisora
-                </Link>
+          <div className="zp-marquee-wrap">
+            <p className="zp-marquee-label">Illustrative actions evaluated at the execution boundary</p>
+            <div className="zp-marquee" aria-hidden>
+              <div className="zp-marquee-track">
+                {marquee.map((a, k) => (
+                  <span key={a + k}>{a}</span>
+                ))}
               </div>
             </div>
-            <div className="overflow-hidden rounded-xl border border-white/15 bg-[#030f3d]">
-              <div className="flex items-center gap-1.5 border-b border-white/10 px-4 py-2.5">
-                <span className="size-2.5 rounded-full bg-red-400/70" />
-                <span className="size-2.5 rounded-full bg-amber-400/70" />
-                <span className="size-2.5 rounded-full bg-emerald-400/70" />
-                <span className="ml-3 font-mono text-xs text-white/60">illustrative request</span>
+          </div>
+        </div>
+      </section>
+
+      {/* PROBLEM / COMPARISON */}
+      <section className="zp-section">
+        <div className="zp-container">
+          <Reveal className="zp-center" >
+            <h2 className="zp-hlg" style={{ maxWidth: "20ch", marginInline: "auto" }}>
+              Don’t let agents act on trust alone
+            </h2>
+            <p className="zp-lead" style={{ marginTop: 20 }}>
+              Teams give agents real tool access long before anyone can say what they may do. Aegisora puts one
+              decision point in front of every sensitive action, so moving fast does not mean losing control.
+            </p>
+          </Reveal>
+          <div className="zp-compare">
+            <div className="zp-compare-head">
+              <div>Without a decision point</div>
+              <div>With Aegisora</div>
+            </div>
+            <div className="zp-compare-body">
+              <div className="zp-compare-col">
+                <Seq
+                  tone="bad"
+                  items={[
+                    <code key="a" className="zp-mono">agent: payments.transfer</code>,
+                    "Tool executes immediately",
+                    "Found in the logs later",
+                  ]}
+                />
               </div>
-              <pre className="overflow-x-auto p-4 font-mono text-[12px] leading-relaxed text-sky-100">{SNIPPET}</pre>
+              <div className="zp-compare-col">
+                <Seq
+                  tone="good"
+                  items={[
+                    <code key="a" className="zp-mono">agent: payments.transfer</code>,
+                    "Policy evaluated",
+                    "ESCALATE to an approver",
+                    "Evidence hash recorded",
+                  ]}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CONTROL */}
+      <section className="zp-section zp-section--alt zp-section--line">
+        <div className="zp-container">
+          <div className="zp-feature">
+            <Reveal className="zp-feature-text">
+              <Eyebrow>Control</Eyebrow>
+              <h2 className="zp-hlg">Define exactly what runs</h2>
+              <p className="zp-lead">
+                Every action returns one of three decisions, evaluated against context, policy, risk and authorization
+                before it reaches a real system.
+              </p>
+              <Accordion items={POLICY_ITEMS} />
+              <div className="zp-btn-row">
+                <Btn href="/docs" kind="dark">
+                  Read the docs
+                </Btn>
+                <Btn href="/pilot" kind="outline">
+                  Request a pilot
+                </Btn>
+              </div>
+            </Reveal>
+            <Reveal i={1}>
+              <div className="zp-art">
+                <LiveConsole />
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* OBSERVE */}
+      <section className="zp-section zp-section--line">
+        <div className="zp-container">
+          <div className="zp-feature zp-feature--rev">
+            <Reveal className="zp-feature-text">
+              <Eyebrow>Observe</Eyebrow>
+              <h2 className="zp-hlg">Get full insight into every action</h2>
+              <p className="zp-lead">
+                Every decision becomes a tamper-evident record. Customers and auditors can verify the chain without
+                trusting us.
+              </p>
+              <Accordion items={EVIDENCE_ITEMS} />
+              <div className="zp-btn-row">
+                <Btn href="/security" kind="dark">
+                  Read about security
+                </Btn>
+              </div>
+            </Reveal>
+            <Reveal i={1}>
+              <div className="zp-art">
+                <AuditMock />
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* DECISION MODES */}
+      <section className="zp-section zp-section--alt zp-section--line">
+        <div className="zp-container">
+          <Reveal>
+            <Eyebrow>One decision per action</Eyebrow>
+            <h2 className="zp-hlg" style={{ marginTop: 16 }}>
+              The Aegisora difference
+            </h2>
+            <p className="zp-lead" style={{ marginTop: 16 }}>
+              Three outcomes and one record. Pick a mode to see how a request moves from the agent to a decision.
+            </p>
+          </Reveal>
+          <Modes />
+        </div>
+      </section>
+
+      {/* PRINCIPLE BAND */}
+      <section className="zp-band zp-section">
+        <div className="zp-container">
+          <div className="zp-quote-rule" style={{ background: "rgba(255,255,255,.22)" }} />
+          <div className="zp-quote">
+            <Reveal>
+              <blockquote>
+                Prompts are not controls. A policy at the execution boundary is.
+              </blockquote>
+              <cite>Why Aegisora sits between the agent and the action</cite>
+            </Reveal>
+            <Reveal i={1}>
+              <div className="zp-art">
+                <div className="zp-facts">
+                  {[
+                    ["Default BLOCK", "Without a matching policy, nothing runs."],
+                    ["Gapless evidence", "Hash-chained records with sequential numbers."],
+                    ["Verified offline", "A standalone verifier on your own machine."],
+                  ].map(([t, b]) => (
+                    <div key={t} className="zp-fact">
+                      <b>{t}</b>
+                      <span>{b}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* SECURITY */}
+      <section className="zp-section zp-section--alt">
+        <div className="zp-container">
+          <Reveal className="zp-center">
+            <Eyebrow plain>Security at scale</Eyebrow>
+            <h2 className="zp-hlg" style={{ marginTop: 16 }}>
+              Security built into <span className="zp-accent">every action</span>
+            </h2>
+          </Reveal>
+          <Reveal i={1}>
+            <div style={{ marginTop: 48 }}>
+              <div className="zp-lines zp-lines--5">
+                {SECURITY.map((s) => (
+                  <div key={s.title} className="zp-sec-cell">
+                    <s.icon size={18} aria-hidden />
+                    <h3>{s.title}</h3>
+                    <p>{s.body}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="zp-sec-join">
+                <span>
+                  <Plus size={14} aria-hidden />
+                </span>
+              </div>
+              <div className="zp-controls">
+                <p className="zp-controls-title">Platform controls</p>
+                <div className="zp-chips">
+                  {CONTROLS.map((c) => (
+                    <span key={c} className="zp-chip">
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <p style={{ marginTop: 20, textAlign: "center" }}>
+                <Link href="/security" className="zp-textlink">
+                  Read about security <ArrowRight size={14} aria-hidden />
+                </Link>
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* PILOT */}
+      <section className="zp-section zp-section--line">
+        <div className="zp-container">
+          <Reveal>
+            <Eyebrow>Enterprise pilot</Eyebrow>
+            <h2 className="zp-hlg" style={{ marginTop: 16, maxWidth: "18ch" }}>
+              From first call to a report you can review
+            </h2>
+            <p className="zp-lead" style={{ marginTop: 16 }}>
+              A scoped, time-boxed evaluation on your own agents, in an isolated workspace.
+            </p>
+          </Reveal>
+          <Reveal i={1}>
+            <div className="zp-lines zp-lines--5" style={{ marginTop: 48 }}>
+              {STEPS.map((s) => (
+                <div key={s.n} className="zp-step">
+                  <span className="zp-step-n">{s.n}</span>
+                  <h3 className="zp-hsm">{s.title}</h3>
+                  <p>{s.body}</p>
+                </div>
+              ))}
+            </div>
+            <p style={{ marginTop: 24 }}>
+              <Link href="/pilot" className="zp-textlink">
+                Apply for the pilot <ArrowRight size={14} aria-hidden />
+              </Link>
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="zp-band zp-cta zp-section">
+        <div className="zp-container">
+          <div className="zp-cta-grid">
+            <div>
+              <h2 className="zp-hxl">Go from agent demo to governed production</h2>
+              <p className="zp-lead">
+                Create a test workspace, send one request and read the decision. Without a matching policy the default
+                is BLOCK.
+              </p>
+              <div className="zp-btn-row">
+                <Btn href="/pilot">Request a pilot</Btn>
+                <Btn href="/signup" kind="outline">
+                  Test Aegisora
+                </Btn>
+              </div>
+            </div>
+            <div className="zp-code">
+              <div className="zp-code-bar">
+                <i style={{ background: "#f87171" }} />
+                <i style={{ background: "#fbbf24" }} />
+                <i style={{ background: "#34d399" }} />
+                <span style={{ marginLeft: 10 }}>illustrative request</span>
+              </div>
+              <pre>{SNIPPET}</pre>
             </div>
           </div>
         </div>
