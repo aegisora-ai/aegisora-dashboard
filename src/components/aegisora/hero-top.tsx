@@ -11,10 +11,10 @@ type Audience = "builder" | "leader";
 const CTA = {
   builder: {
     primary: { label: "Test Aegisora", href: "/signup" },
-    secondary: { label: "Quickstart", href: "/developers/quickstart" },
+    secondary: { label: "Apply for Enterprise Pilot", href: "/pilot" },
   },
   leader: {
-    primary: { label: "Talk to Enterprise", href: "/enterprise" },
+    primary: { label: "Apply for Enterprise Pilot", href: "/pilot" },
     secondary: { label: "Test Aegisora", href: "/signup" },
   },
 } as const;
@@ -64,7 +64,7 @@ export function HeroTop() {
             <p className="mt-3 max-w-xl text-base leading-relaxed text-[#c7d4ee]">
               Aegisora sits at the execution boundary of autonomous systems. Every sensitive action is evaluated against context, policy, risk and authorization before it reaches the real environment.
             </p>
-            <Link href="/developers/quickstart" className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-white transition hover:gap-2.5">
+            <Link href="/signup" className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-white transition hover:gap-2.5">
               Evaluate your first action <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -78,8 +78,8 @@ export function HeroTop() {
           <p className="mt-3 text-base leading-relaxed text-muted-foreground">
             Every request returns one of three decisions. Without a matching policy the workspace default applies, which is BLOCK.
           </p>
-          <Link href="/developers/quickstart" className={textLink}>
-            Read the quickstart <ArrowRight className="size-4" />
+          <Link href="/docs" className={textLink}>
+            Read the docs <ArrowRight className="size-4" />
           </Link>
         </div>
 
@@ -91,7 +91,7 @@ export function HeroTop() {
           <p className="mt-3 text-base leading-relaxed text-muted-foreground">
             Every decision returns an evidence hash you can verify later, so you can show what was decided and why.
           </p>
-          <Link href="/developers" className={textLink}>
+          <Link href="/docs/technical" className={textLink}>
             Developer docs <ArrowRight className="size-4" />
           </Link>
         </div>
