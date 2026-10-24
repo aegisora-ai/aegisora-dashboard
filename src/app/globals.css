@@ -431,3 +431,30 @@ a, button, summary, select, [role="button"], [role="tab"] {
   .aeg-sound-toggle { transition: none; }
 }
 /* <<< aegisora-v5 */
+
+/* >>> aegisora-v6 */
+@media (max-width: 767px) {
+  /* the shell keeps no column for the hidden sidebar: content gets the whole width */
+  *:has(> [data-app-main]),
+  *:has(> [data-app-sidebar]) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas: none !important;
+    column-gap: 0 !important;
+  }
+  [data-app-main] {
+    grid-area: auto !important;
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-inline: auto !important;
+    box-sizing: border-box !important;
+    padding-inline: 1rem !important;
+  }
+  /* wide tables scroll inside themselves instead of pushing the page sideways */
+  [data-app-main] :where(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+/* <<< aegisora-v6 */
