@@ -2,12 +2,12 @@
 
 import "@/styles/zp.css";
 import { useEffect, useState } from "react";
-import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Logo } from "@/components/aegisora/logo";
 import { ThemeToggle } from "@/components/aegisora/theme-toggle";
 import { SOCIALS } from "@/lib/socials";
-import { announcement, headerCtas, mainNav } from "@/lib/main-nav";
+import { headerCtas, mainNav } from "@/lib/main-nav";
 
 const GITHUB_URL = SOCIALS.find((s) => s.label === "GitHub")?.href ?? "";
 
@@ -41,15 +41,7 @@ export function ZpHeader() {
 
   return (
     <>
-      <div className="zp zp-announce">
-        <div className="zp-announce-in">
-          <span className="zp-announce-badge">{announcement.badge}</span>
-          <span>{announcement.text}</span>
-          <Link href={announcement.href}>
-            {announcement.label} <ArrowRight size={14} aria-hidden />
-          </Link>
-        </div>
-      </div>
+
 
       <header className="zp zp-header">
         <div className="zp-container zp-header-in">
@@ -103,6 +95,9 @@ export function ZpHeader() {
           </div>
 
           <div className="zp-header-r">
+            <Link href={headerCtas.primary.href} className="zp-btn zp-btn--primary zp-btn--sm zp-m-cta">
+              {headerCtas.primary.label}
+            </Link>
             <div className="zp-header-cta">
               <ThemeToggle />
               {GITHUB_URL ? (

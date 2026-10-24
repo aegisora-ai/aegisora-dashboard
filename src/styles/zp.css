@@ -288,3 +288,16 @@ html.dark .zp .zp-flow-line{background:#9db0dc}
 .zp-social{display:inline-flex;width:36px;height:36px;align-items:center;justify-content:center;border:1px solid var(--zp-line);border-radius:50%;color:var(--zp-muted);transition:border-color .15s,color .15s}
 a.zp-social:hover{border-color:var(--zp-brand);color:var(--zp-brand)}
 .zp-social--off{opacity:.4;cursor:not-allowed}
+
+/* zapier-header-v6 */
+.zp-announce { display: none !important; }
+.zp-m-cta { display: none; }
+.zp-header-r { display: flex; align-items: center; gap: 10px; }
+@media (max-width: 1023px) {
+  .zp-nav, .zp-header-cta { display: none !important; }
+  .zp-burger { display: inline-flex !important; align-items: center; justify-content: center; }
+  .zp-m-cta { display: inline-flex !important; }
+}
+@media (min-width: 1024px) {
+  .zp-burger { display: none !important; }
+}
