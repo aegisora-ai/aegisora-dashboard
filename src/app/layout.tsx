@@ -9,6 +9,8 @@ import "@fontsource/ibm-plex-mono/700.css";
 import "./globals.css";
 import { getLocale } from "next-intl/server";
 import { AegisoraSound } from '../components/aegisora-sound';
+import { ThemeBoot } from "@/components/aegisora/theme-boot";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
 const barlow = Barlow_Condensed({
   subsets: ["latin"],
@@ -40,10 +42,14 @@ export default async function RootLayout({
   const locale = await getLocale();
   return (
     <html lang={locale} className={barlow.variable + " dark"} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         {children}
         <PwaBoot />
         <AegisoraSound />
+        <ThemeBoot />
       </body>
     </html>
   );

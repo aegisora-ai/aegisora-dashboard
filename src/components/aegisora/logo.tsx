@@ -14,7 +14,7 @@ export function Logo({ className = '' }: { className?: string }) {
         width={420}
         height={89}
         alt="Aegisora Logo"
-        className="h-6 w-auto object-contain md:h-7"
+        className="h-6 w-auto object-contain brightness-0 md:h-7 dark:brightness-100"
       />
     </Link>
   );

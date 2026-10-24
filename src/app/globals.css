@@ -253,7 +253,7 @@ html.dark { scrollbar-color: rgba(255,255,255,0.28) transparent; }
 /* =========================================================
    AEGISORA BLUE LOCK: tum site sabit lacivert tema
    ========================================================= */
-:root, :root.dark, .dark {
+.dark {
   color-scheme: dark;
   --background: #020b2e;
   --surface-1: #031249;
@@ -291,17 +291,17 @@ html.dark { scrollbar-color: rgba(255,255,255,0.28) transparent; }
   --aeg-body: #b4c3e6;
 }
 
-html { background-color: #020b2e; }
-body {
+html.dark { background-color: #020b2e; }
+.dark body {
   background-image:
     radial-gradient(ellipse 45% 40% at 0% 0%, rgba(21,153,255,0.18) 0%, rgba(2,11,46,0) 70%),
     radial-gradient(ellipse 45% 40% at 100% 100%, rgba(15,155,255,0.16) 0%, rgba(2,11,46,0) 70%);
   background-attachment: fixed;
 }
 
-html { scrollbar-color: rgba(255,255,255,0.28) transparent; }
-::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.22); }
-::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
+html.dark { scrollbar-color: rgba(255,255,255,0.28) transparent; }
+.dark ::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.22); }
+.dark ::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
 
 /* AEG-POLISH:START */
 /* aegisora-upgrade.ps1 tarafindan yonetilir. Tekrar calistirinca bu blok yerinde guncellenir. */
