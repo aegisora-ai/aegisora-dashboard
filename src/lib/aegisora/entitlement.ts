@@ -1,4 +1,4 @@
-﻿import { admin } from "@/lib/aegisora/server";
+import { admin } from "@/lib/aegisora/server";
 
 export type ExecutionEntitlementResult = {
   allowed: boolean;
@@ -20,14 +20,22 @@ export async function evaluateWorkspaceExecutionEntitlement(
 ): Promise<ExecutionEntitlementResult> {
   const db = admin();
 
-  const result = await db
-    .from("workspace_entitlements")
-    .select("*")
-    .eq("workspace_id", workspaceId)
-    .limit(1)
-    .maybeSingle();
+  const [result, workspaceResult] = await Promise.all([
+    db
+      .from("workspace_entitlements")
+      .select("*")
+      .eq("workspace_id", workspaceId)
+      .limit(1)
+      .maybeSingle(),
+    db
+      .from("workspaces")
+      .select("account_type, pilot_ends_at")
+      .eq("id", workspaceId)
+      .limit(1)
+      .maybeSingle(),
+  ]);
 
-  if (result.error) {
+  if (result.error || workspaceResult.error) {
     return {
       allowed: false,
       status: null,
@@ -61,6 +69,41 @@ export async function evaluateWorkspaceExecutionEntitlement(
       planKey,
       reason: "Workspace execution entitlement is not active.",
     };
+  }
+
+  const workspace =
+    workspaceResult.data &&
+    typeof workspaceResult.data === "object"
+      ? (workspaceResult.data as Record<string, unknown>)
+      : null;
+
+  if (!workspace) {
+    return {
+      allowed: false,
+      status,
+      planKey,
+      reason: "Workspace could not be found; request failed closed.",
+    };
+  }
+
+  // Pilot workspaces have a hard end date. Paid workspaces are not affected.
+  const accountType =
+    normalizedString(workspace.account_type)?.toLowerCase() ?? "standard";
+
+  if (accountType === "pilot") {
+    const endsAt =
+      typeof workspace.pilot_ends_at === "string"
+        ? Date.parse(workspace.pilot_ends_at)
+        : Number.NaN;
+
+    if (!Number.isFinite(endsAt) || endsAt <= Date.now()) {
+      return {
+        allowed: false,
+        status,
+        planKey,
+        reason: "The pilot period for this workspace has ended.",
+      };
+    }
   }
 
   return {

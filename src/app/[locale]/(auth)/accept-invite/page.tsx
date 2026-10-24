@@ -15,7 +15,7 @@ export default function AcceptInvitePage() {
           { name: "password", label: "Password", type: "password", autoComplete: "new-password" },
         ]}
         submitLabel="Join workspace"
-        redirectTo="/onboarding"
+        redirectTo="/dashboard"
       />
     </div>
   );
