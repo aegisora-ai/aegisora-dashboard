@@ -15,26 +15,44 @@ export const headerCtas = {
 };
 
 export const mainNav: NavEntry[] = [
-  { label: "Platform", href: "/product" },
-  { label: "Solutions", href: "/solutions" },
   {
-    label: "Documentation",
-    href: "/docs",
+    label: "Products",
+    href: "/product",
+    items: [
+      { label: "Platform", href: "/product", desc: "The full execution-control model." },
+      { label: "Runtime", href: "/product/runtime", desc: "The execution boundary for agent actions." },
+      { label: "Policies", href: "/product/policies", desc: "Executable governance controls." },
+      { label: "Decisions", href: "/product/decisions", desc: "The decision inspector." },
+      { label: "Approvals", href: "/product/approvals", desc: "Human authorization at the boundary." },
+      { label: "Evidence", href: "/product/evidence", desc: "Connected, auditable records." },
+      { label: "Live proof", href: "/proof", desc: "Run the live runtime proof." },
+    ],
+  },
+  {
+    label: "Solutions",
+    href: "/solutions",
+    items: [
+      { label: "Solutions overview", href: "/solutions", desc: "How Aegisora governs agent actions." },
+      { label: "Runtime control", href: "/product/runtime", desc: "Control what agents are allowed to do." },
+      { label: "Human approvals", href: "/product/approvals", desc: "Escalate sensitive actions to people." },
+      { label: "Audit evidence", href: "/product/evidence", desc: "Evidence for every decision." },
+      { label: "Policy governance", href: "/product/policies", desc: "Versioned, enforceable policies." },
+    ],
+  },
+  {
+    label: "Resources",
+    href: "/resources",
     items: [
       { label: "Documentation", href: "/docs", desc: "Guides and reference." },
       { label: "Technical reference", href: "/docs/technical", desc: "Pipeline, identities, Continuity Seal, release history." },
+      { label: "Changelog", href: "/changelog", desc: "What each release includes." },
+      { label: "Security", href: "/security", desc: "How the execution boundary is protected." },
+      { label: "Trust center", href: "/trust", desc: "Privacy, subprocessors and terms." },
+      { label: "Blog", href: "/blog", desc: "Articles and updates." },
     ],
   },
-  { label: "Security", href: "/security" },
-  {
-    label: "Enterprise",
-    href: "/enterprise",
-    items: [
-      { label: "Enterprise", href: "/enterprise", desc: "Governance and audit at scale." },
-      { label: "Pilot Program", href: "/pilot", desc: "A scoped evaluation on your agents." },
-      { label: "Pricing", href: "/pricing", desc: "Plans from free to custom." },
-    ],
-  },
+  { label: "Enterprise", href: "/enterprise" },
+  { label: "Pricing", href: "/pricing" },
 ];
 
 export const footerGroups: FooterGroup[] = [
