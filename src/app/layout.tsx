@@ -8,6 +8,7 @@ import "@fontsource/ibm-plex-mono/600.css";
 import "@fontsource/ibm-plex-mono/700.css";
 import "./globals.css";
 import { getLocale } from "next-intl/server";
+import { AegisoraSound } from '../components/aegisora-sound';
 
 const barlow = Barlow_Condensed({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default async function RootLayout({
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         {children}
         <PwaBoot />
+        <AegisoraSound />
       </body>
     </html>
   );

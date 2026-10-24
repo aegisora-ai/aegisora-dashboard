@@ -98,7 +98,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <WorkspaceProvider>
       <div className="flex min-h-screen">
-        <aside className={cn("sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-surface-1", collapsed ? "lg:hidden" : "lg:flex")}>
+        <aside data-app-sidebar className={cn("sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-surface-1", collapsed ? "lg:hidden" : "lg:flex")}>
           <div className="border-b border-border px-5 py-4">
             <Logo />
             <div className="mt-1 pl-[32px] font-mono text-[10px] tracking-[0.25em] text-muted-foreground">CONTROL</div>
@@ -193,7 +193,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           {isDemo && (<div className="border-b border-escalate/30 bg-escalate-muted px-4 py-1.5 text-xs text-escalate md:px-6">Sample data. This section is not yet connected to live data.</div>)}
 
-          <main className="flex-1 px-4 py-8 md:px-6">{children}</main>
+          <main data-app-main className="flex-1 px-4 py-8 md:px-6">{children}</main>
         </div>
 
         <CommandPalette open={palette} onClose={() => setPalette(false)} />
