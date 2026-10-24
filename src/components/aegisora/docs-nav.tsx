@@ -14,6 +14,7 @@ export const NAV_TREE: NavGroup[] = [
     items: [
       { title: 'Introduction', href: '/docs' },
       { title: 'Policy Example', href: '/docs#example' },
+      { title: 'Quickstart', href: '/docs/quickstart' },
     ],
   },
   {
