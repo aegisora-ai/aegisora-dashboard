@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { btnPrimary } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
-export const selectCls = "h-9 w-full rounded-sm border border-border bg-surface-1 px-2 text-sm";
-export const btnGhost = "inline-flex h-8 items-center rounded-sm border border-border px-3 text-xs hover:bg-surface-3 disabled:opacity-50";
+export const selectCls = "h-9 w-full rounded-md border border-border bg-surface-1 px-2 text-sm";
+export const btnGhost = "inline-flex h-8 items-center rounded-md border border-border px-3 text-xs hover:bg-surface-3 disabled:opacity-50";
 
 export const fmt = (v: unknown) =>
   v ? new Date(String(v)).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }) : "-";
@@ -24,26 +24,26 @@ const tones: Record<string, string> = {
 export function Badge({ value }: { value: unknown }) {
   const v = String(value ?? "");
   return (
-    <span className={cn("rounded-sm border border-border bg-surface-3 px-2 py-0.5 font-mono text-[10px] tracking-wider", tones[v] ?? "text-muted-foreground")}>
-      {v.toUpperCase()}
+    <span className={cn("inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 font-mono text-[10px] tracking-wider", tones[v] ?? "text-muted-foreground")}>
+      <i aria-hidden="true" className="size-1.5 rounded-full bg-current" />{v.toUpperCase()}
     </span>
   );
 }
 
 export function PageHeader({ title, description, actions }: { title: string; description: string; actions?: ReactNode }) {
   return (
-    <header className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
+    <header className="relative flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{description}</p>
       </div>
-      {actions && <div className="flex items-center gap-2">{actions}</div>}
+      <span aria-hidden="true" className="absolute -bottom-px left-0 h-px w-24" style={{ backgroundImage: "var(--aeg-brand-grad)" }} />{actions && <div className="flex items-center gap-2">{actions}</div>}
     </header>
   );
 }
 
 export function Panel({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("rounded-lg border border-border bg-surface-1 p-5 [box-shadow:var(--panel-shadow)]", className)}>{children}</div>;
+  return <div className={cn("rounded-xl border border-[color:var(--aeg-card-line)] bg-surface-1 p-5 [box-shadow:var(--aeg-card-shadow)]", className)}>{children}</div>;
 }
 
 export function Notice({ ok, children }: { ok?: boolean; children: ReactNode }) {
