@@ -3,7 +3,7 @@ export const THEME_KEY = "aeg-theme";
 /** Pages already converted to both themes. Every other page stays on the navy theme. */
 export const LIGHT_READY: string[] = ["/", "/pilot", "/solutions", "/enterprise", "/security", "/product", "/trust", "/trust/privacy", "/trust/subprocessors", "/proof", "/terms", "/pricing", "/about"];
 
-export const LIGHT_PREFIXES: string[] = ["/dashboard", "/onboarding"];
+export const LIGHT_PREFIXES: string[] = ["/dashboard", "/onboarding", "/docs", "/blog"];
 
 export function stripLocale(path: string): string {
   const p = path.replace(/^\/[a-z]{2}(?:-[A-Za-z]+)?(?=\/|$)/, "") || "/";
