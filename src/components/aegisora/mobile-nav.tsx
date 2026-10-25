@@ -82,8 +82,9 @@ export function MobileNav() {
       const raw = localStorage.getItem(KEY);
       if (raw) p = sanitize(JSON.parse(raw));
     } catch { /* storage unavailable */ }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate prefs from localStorage after mount
     setPrefs(p);
-    document.documentElement.dataset.density = p.density;
+    applyDensity(p.density);
     try {
       const atRoot = window.location.pathname.replace(/^\/[a-z]{2}(?=\/)/, "") === "/dashboard";
       if (atRoot && p.home !== "overview" && !sessionStorage.getItem("aeg.dash.home")) {
@@ -97,7 +98,7 @@ export function MobileNav() {
 
   const save = (next: Prefs) => {
     setPrefs(next);
-    document.documentElement.dataset.density = next.density;
+    applyDensity(next.density);
     try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* storage unavailable */ }
   };
 
@@ -113,6 +114,7 @@ export function MobileNav() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async fetch, state set after await
     refresh();
     const t = setInterval(refresh, 60000);
     const onVis = () => { if (document.visibilityState === "visible") refresh(); };
@@ -120,7 +122,8 @@ export function MobileNav() {
     return () => { clearInterval(t); document.removeEventListener("visibilitychange", onVis); };
   }, [refresh, pathname]);
 
-  useEffect(() => { setSheet(null); }, [pathname]);
+  const [sheetPath, setSheetPath] = useState(pathname);
+  if (sheetPath !== pathname) { setSheetPath(pathname); setSheet(null); }
 
   useEffect(() => {
     if (!sheet) return undefined;
@@ -308,4 +311,8 @@ export function MobileNav() {
       )}
     </>
   );
+}
+
+function applyDensity(d: string) {
+  document.documentElement.dataset.density = d;
 }
