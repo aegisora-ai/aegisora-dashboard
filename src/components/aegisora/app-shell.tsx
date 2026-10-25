@@ -105,7 +105,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <WorkspaceProvider>
-      <div className="flex min-h-screen">
+      <div className="aeg-app flex min-h-screen">
         <aside data-app-sidebar className={cn("sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-surface-1", collapsed ? "lg:hidden" : "lg:flex")}>
           <div className="border-b border-border px-5 py-4">
             <Logo />
