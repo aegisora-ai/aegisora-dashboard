@@ -10,6 +10,7 @@ import { CommandPalette } from "@/components/aegisora/command-palette";
 import { Logo } from "@/components/aegisora/logo";
 
 import { UserMenu } from "@/components/aegisora/user-menu";
+import { TopbarActions } from "@/components/aegisora/topbar-actions";
 import { WelcomeTour } from "@/components/aegisora/welcome-tour";
 import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
 import { usePendingApprovals } from "@/lib/aegisora/use-pending-approvals";
@@ -159,15 +160,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 type="button"
                 onClick={() => setPalette(true)}
                 className={cn(
-                  "ml-auto flex h-9 items-center gap-2 rounded-sm border border-border bg-surface-1 px-3 text-sm text-muted-foreground hover:bg-surface-3 sm:ml-6 sm:w-72",
+                  "ml-auto flex h-9 min-w-0 flex-1 items-center gap-2 rounded-md border border-border bg-surface-1 px-3 text-sm text-muted-foreground hover:bg-surface-3 sm:ml-6 sm:max-w-2xl",
                   focusRing,
                 )}
               >
                 <Search className="size-4" />
-                <span className="hidden flex-1 text-left sm:inline">Search</span>
+                <span className="flex-1 truncate text-left">Search policies, agents, decisions, and more</span>
                 <kbd className="hidden rounded-sm border border-border px-1.5 font-mono text-[10px] sm:inline">Ctrl K</kbd>
               </button>
 
+              
               <div className="relative">
                 <button
                   type="button"
@@ -189,6 +191,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 )}
               </div>
 
+              <TopbarActions />
               <UserMenu />
             </div>
             <div className="border-t border-border/60 px-4 py-2 md:px-6">

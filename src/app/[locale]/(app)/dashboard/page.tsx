@@ -5,10 +5,11 @@ import { Check, ChevronDown, Circle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Workspace } from "@/lib/aegisora/use-workspace";
-import { Badge, PageHeader, Panel, Skeleton, WorkspaceGate, fmt } from "@/components/aegisora/live/ui";
+import { Badge, Panel, Skeleton, WorkspaceGate, fmt } from "@/components/aegisora/live/ui";
 import type { Row } from "@/components/aegisora/live/live-table";
 import { DecisionSplit, HourlyChart, type Bucket } from "@/components/aegisora/live/decision-charts";
 import { cn } from "@/lib/utils";
+import { HomeHero } from "@/components/aegisora/home-hero";
 
 type Stats = { agents: number; policies: number; keys: number; pending: number; incidents: number; allow: number; block: number; escalate: number };
 type Point = { created_at: string; decision: string | null };
@@ -82,7 +83,7 @@ function Overview({ ws }: { ws: Workspace }) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Overview" description={`${ws.name}: live governance state.`} />
+      <HomeHero workspaceName={ws.name} />
 
       {!steps.every((x) => x.done) && (
         <Panel>

@@ -8,12 +8,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { btnOutline, btnPrimary } from "@/lib/ui";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/aegisora/logo";
+import { OnboardingIntro, INTRO_KEY } from "@/components/aegisora/onboarding-intro";
 
 const steps = ["Workspace", "MFA", "Agent", "Policy", "Integrate"];
 type PolicyDecision = "ALLOW" | "BLOCK" | "ESCALATE";
 
 export function OnboardingFlow() {
   const [step, setStep] = useState(0);
+  const [introDone, setIntroDone] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      try { setIntroDone(window.localStorage.getItem(INTRO_KEY) === "done"); } catch { setIntroDone(false); }
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, []);
   const [workspace, setWorkspace] = useState("My workspace");
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
   const [agentName, setAgentName] = useState("finance-operator");
@@ -111,6 +121,9 @@ export function OnboardingFlow() {
     if (typeof result?.id === "string") setPolicyId(result.id);
   }
 
+  if (introDone === null) return null;
+  if (!introDone) return <OnboardingIntro onDone={() => setIntroDone(true)} />;
+
   const continueStep = () => {
     setError(null);
     if (step === 1 && aal !== "aal2") return;
@@ -118,11 +131,11 @@ export function OnboardingFlow() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-12">
+    <div className="mx-auto max-w-2xl px-6 py-12"><Logo className="mb-10" />
       <ol className="mb-10 grid grid-cols-5 gap-1">
         {steps.map((label, index) => (
           <li key={label} aria-current={index === step ? "step" : undefined}>
-            <div className={cn("h-0.5", index <= step ? "bg-cyan" : "bg-surface-4")} />
+            <div className={cn("h-0.5", index <= step ? "bg-primary" : "bg-surface-4")} />
             <div className={cn("mt-2 font-mono text-[10px] tracking-wider", index === step ? "text-foreground" : "text-muted-foreground")}>
               {String(index + 1).padStart(2, "0")}<span className="hidden sm:inline"> {label.toUpperCase()}</span>
             </div>
@@ -130,10 +143,10 @@ export function OnboardingFlow() {
         ))}
       </ol>
 
-      <section aria-labelledby="step-title" className="rounded-md border border-border bg-surface-2 p-6">
+      <section aria-labelledby="step-title" className="py-2">
         {step === 0 && (
           <>
-            <h1 id="step-title" className="text-xl font-semibold">Create your workspace</h1>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">Create your workspace</h1>
             <p className="mt-2 text-sm text-muted-foreground">This creates a real workspace and OWNER membership through the authenticated workspace-creation RPC.</p>
             <div className="mt-6 space-y-1.5"><Label htmlFor="workspace">Workspace name</Label><Input id="workspace" value={workspace} maxLength={120} onChange={(event) => setWorkspace(event.target.value)} /></div>
             <button type="button" onClick={() => void createWorkspace()} disabled={busy || !workspace.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? "Creating…" : "Create workspace"}</button>
@@ -142,7 +155,7 @@ export function OnboardingFlow() {
 
         {step === 1 && (
           <>
-            <h1 id="step-title" className="text-xl font-semibold">Secure workspace administration</h1>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">Secure workspace administration</h1>
             <p className="mt-2 text-sm text-muted-foreground">Agent and policy changes require a verified TOTP factor and an AAL2 session. This setup stops here until the session is stepped up.</p>
             <p role="status" className="mt-4 font-mono text-xs">CURRENT ASSURANCE: {aal?.toUpperCase() ?? "CHECKING"}</p>
             {aal !== "aal2" && <a className="mt-4 flex w-fit text-sm underline underline-offset-4" href="/dashboard/identity" target="_blank" rel="noreferrer">Open Identity in a new tab to enroll and verify MFA</a>}
@@ -152,7 +165,7 @@ export function OnboardingFlow() {
 
         {step === 2 && (
           <>
-            <h1 id="step-title" className="text-xl font-semibold">Register a real agent</h1>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">Register a real agent</h1>
             <p className="mt-2 text-sm text-muted-foreground">The agent is persisted in this workspace through the authenticated, AAL2-protected API.</p>
             <div className="mt-6 space-y-1.5"><Label htmlFor="agent">Agent name</Label><Input id="agent" value={agentName} maxLength={120} onChange={(event) => setAgentName(event.target.value)} disabled={Boolean(agentId)} /></div>
             {agentId ? <p className="mt-4 break-all font-mono text-xs text-allow">Registered agent ID: {agentId}</p> : <button type="button" onClick={() => void createAgent()} disabled={busy || !agentName.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? "Registering…" : "Register agent"}</button>}
@@ -161,7 +174,7 @@ export function OnboardingFlow() {
 
         {step === 3 && (
           <>
-            <h1 id="step-title" className="text-xl font-semibold">Create a persisted policy</h1>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">Create a persisted policy</h1>
             <p className="mt-2 text-sm text-muted-foreground">This rule applies only to the registered agent and the action/resource patterns below.</p>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5"><Label htmlFor="action-pattern">Action pattern</Label><Input id="action-pattern" value={actionPattern} maxLength={200} onChange={(event) => setActionPattern(event.target.value)} disabled={Boolean(policyId)} /></div>
@@ -181,7 +194,7 @@ export function OnboardingFlow() {
 
         {step === 4 && (
           <>
-            <h1 id="step-title" className="text-xl font-semibold">Connect your server-side integration</h1>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">Connect your server-side integration</h1>
             <p className="mt-2 text-sm text-muted-foreground">The workspace, agent, and policy below were saved. Create an API key and keep it in your server-side secret manager; this browser flow does not simulate a decision or execution.</p>
             <dl className="mt-5 divide-y divide-border/60 border-y border-border">
               <div className="py-3"><dt className="text-xs text-muted-foreground">Workspace ID</dt><dd className="mt-1 break-all font-mono text-xs">{workspaceId}</dd></div>
