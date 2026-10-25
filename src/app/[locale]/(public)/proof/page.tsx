@@ -55,7 +55,7 @@ export default function ProofPage() {
         title="Run it against your own action."
         body="Create a test workspace, send one request and read the verdict."
         primary={{ label: "Start a pilot", href: "/signup" }}
-        secondary={{ label: "Talk to our team", href: "/contact" }}
+        secondary={{ label: "Talk to our team", href: "/pilot" }}
       />
     </>
   );

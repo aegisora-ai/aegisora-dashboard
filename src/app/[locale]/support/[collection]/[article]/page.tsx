@@ -80,7 +80,7 @@ export default async function ArticlePage({ params }: Props) {
           <div className="mt-10 rounded-2xl bg-surface-3 p-6">
             <h2 className="text-lg font-semibold">Still need help?</h2>
             <p className="aeg-body-text mt-2 text-sm leading-6">Tell us what you were trying to do and what happened instead.</p>
-            <a href={MAIN_SITE + "/contact"} className="mt-4 inline-flex h-10 items-center rounded bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
+            <a href={MAIN_SITE + "/pilot"} className="mt-4 inline-flex h-10 items-center rounded bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
               Contact us
             </a>
           </div>

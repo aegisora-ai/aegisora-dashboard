@@ -29,7 +29,7 @@ const PLANS: Plan[] = [
     blurb: "For evaluating your first agent action in a test workspace.",
     meta: [["DECISIONS", "Allow, Block, Escalate"], ["DEFAULT", "BLOCK"], ["EVIDENCE", "Hash per decision"]],
     cta: { label: "Test Aegisora", href: "/signup" },
-    more: { label: "Read the quickstart", href: "/developers/quickstart" },
+    more: { label: "Read the quickstart", href: "/docs/quickstart" },
     featured: false,
   },
   {
@@ -40,7 +40,7 @@ const PLANS: Plan[] = [
     blurb: "For teams testing a policy decision before a consequential tool action.",
     meta: [["WORKFLOW", "Agreed"], ["ENVIRONMENT", "Agreed"], ["TERM", "Agreed"]],
     cta: { label: "Talk to Enterprise", href: "/enterprise" },
-    more: { label: "Review the API", href: "/developers" },
+    more: { label: "Review the API", href: "/docs" },
     featured: true,
   },
   {
@@ -50,7 +50,7 @@ const PLANS: Plan[] = [
     sub: "Hosting and service levels not verified",
     blurb: "Production hosting, customer SSO and full audit operations are not yet verified.",
     meta: [["HOSTING", "Not verified"], ["SSO", "Planned"], ["AUDIT OPS", "Not verified"]],
-    cta: { label: "Contact us", href: "/contact" },
+    cta: { label: "Contact us", href: "/pilot" },
     more: { label: "Trust center", href: "/trust" },
     featured: false,
   },
@@ -214,7 +214,7 @@ export default function PricingPage() {
             <Link href="/enterprise" className="inline-flex h-11 items-center rounded-md bg-white px-5 text-sm font-semibold text-[#0a2a7a] hover:bg-white/90">
               Pilot overview
             </Link>
-            <Link href="/developers" className="inline-flex h-11 items-center rounded-md border border-white/50 px-5 text-sm font-semibold text-white hover:bg-white/10">
+            <Link href="/docs" className="inline-flex h-11 items-center rounded-md border border-white/50 px-5 text-sm font-semibold text-white hover:bg-white/10">
               Review API docs
             </Link>
           </div>
@@ -303,7 +303,7 @@ export default function PricingPage() {
           ))}
           <p className="mt-8 text-sm text-white/70">
             Questions about pricing?{" "}
-            <Link href="/contact" className="font-semibold text-sky-300 underline underline-offset-4">Contact us</Link>{" "}
+            <Link href="/pilot" className="font-semibold text-sky-300 underline underline-offset-4">Contact us</Link>{" "}
             about pilot scope, security prerequisites and success criteria.
           </p>
         </div>

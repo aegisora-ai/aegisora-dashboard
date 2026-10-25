@@ -12,7 +12,7 @@ export default function EnterprisePage() {
         title="Scoped pilots for runtime control of AI agent actions."
         intro="Aegisora is seeking design partners to test a policy decision before a consequential tool action. Production hosting, customer SSO, and full audit operations are not yet verified."
         primary={{ label: "Create an account", href: "/signup" }}
-        secondary={{ label: "Review the API", href: "/developers" }}
+        secondary={{ label: "Review the API", href: "/docs" }}
         rows={[
           { action: "payments.transfer $48,000", meta: "finance-agent · Waiting for approver", v: "ESCALATE" },
           { action: "crm.read_ticket", meta: "support-agent · Within scope", v: "ALLOW" },
@@ -33,7 +33,7 @@ export default function EnterprisePage() {
       <CtaBand
         title="Talk about a scoped pilot."
         body="Any paid pilot is scoped and agreed in writing before customer data or production systems are connected."
-        primary={{ label: "Contact us", href: "/contact" }}
+        primary={{ label: "Contact us", href: "/pilot" }}
         secondary={{ label: "See pricing", href: "/pricing" }}
       />
     </PublicShell>

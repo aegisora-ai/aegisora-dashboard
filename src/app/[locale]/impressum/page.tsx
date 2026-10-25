@@ -22,7 +22,7 @@ export default function ImpressumPage() {
         <h2 className="mt-8 text-lg font-semibold">Contact</h2>
         <p className="mt-2 leading-relaxed">
           Email: <a className="underline" href="mailto:eray@aegisora.org">eray@aegisora.org</a><br />
-          Contact form: <Link className="underline" href="/contact">aegisora.org/contact</Link>
+          Contact form: <Link className="underline" href="/pilot">aegisora.org/pilot</Link>
         </p>
 
         <h2 className="mt-8 text-lg font-semibold">Responsible for content (§ 18 Abs. 2 MStV)</h2>

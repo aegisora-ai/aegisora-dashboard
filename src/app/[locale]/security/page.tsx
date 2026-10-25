@@ -34,7 +34,7 @@ export default function SecurityPage() {
         title="Review how the boundary is protected."
         body="Read the trust documents or talk to the team about a security review."
         primary={{ label: "Trust center", href: "/trust" }}
-        secondary={{ label: "Contact us", href: "/contact" }}
+        secondary={{ label: "Contact us", href: "/pilot" }}
       />
     </PublicShell>
   );

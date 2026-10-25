@@ -55,10 +55,10 @@ export function PlatformTabs({ features }: { features: readonly Feature[] }) {
           <h3 className="mt-5 text-3xl font-medium tracking-tight text-foreground sm:text-4xl">{f.title}</h3>
           <p className="mt-4 text-base leading-relaxed text-muted-foreground">{f.body}</p>
           <div className="mt-7 flex flex-wrap items-center gap-5">
-            <Link href="/developers/quickstart" className="inline-flex h-11 items-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover">
+            <Link href="/docs/quickstart" className="inline-flex h-11 items-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover">
               Learn more
             </Link>
-            <Link href="/developers" className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground transition hover:text-primary">
+            <Link href="/docs" className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground transition hover:text-primary">
               Documentation <ArrowRight className="size-4" />
             </Link>
           </div>

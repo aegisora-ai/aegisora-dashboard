@@ -38,15 +38,15 @@ export const MEGA_MENUS: MegaMenu[] = [
         {
           heading: "PLATFORM",
           items: [
-            { title: "Runtime", desc: "The execution boundary for agent actions", href: "/product/runtime", icon: ShieldCheck },
-            { title: "Policies", desc: "Executable governance controls", href: "/product/policies", icon: ScrollText },
+            { title: "Runtime", desc: "The execution boundary for agent actions", href: "/docs/technical#pipeline", icon: ShieldCheck },
+            { title: "Policies", desc: "Executable governance controls", href: "/docs/technical#authority", icon: ScrollText },
           ],
         },
         {
           heading: "DECISION CONTROL",
           items: [
-            { title: "Decisions", desc: "The decision inspector", href: "/product/decisions", icon: Scale },
-            { title: "Approvals", desc: "Human authorization at the boundary", href: "/product/approvals", icon: UserCheck },
+            { title: "Decisions", desc: "The decision inspector", href: "/docs/technical#decisions", icon: Scale },
+            { title: "Approvals", desc: "Human authorization at the boundary", href: "/docs/technical#approvals", icon: UserCheck },
           ],
         },
       ],
@@ -54,7 +54,7 @@ export const MEGA_MENUS: MegaMenu[] = [
         {
           heading: "EVIDENCE AND TRUST",
           items: [
-            { title: "Evidence", desc: "Connected, auditable records", href: "/product/evidence", icon: FileCheck2 },
+            { title: "Evidence", desc: "Connected, auditable records", href: "/docs/technical#evidence", icon: FileCheck2 },
             { title: "Security", desc: "How the execution boundary is protected", href: "/security", icon: Lock },
             { title: "Live proof", desc: "Run the live runtime proof", href: "/proof", icon: Activity },
           ],
@@ -62,7 +62,7 @@ export const MEGA_MENUS: MegaMenu[] = [
         {
           heading: "DEVELOP",
           items: [
-            { title: "Quickstart", desc: "Evaluate your first action", href: "/developers/quickstart", icon: Rocket },
+            { title: "Quickstart", desc: "Evaluate your first action", href: "/docs/quickstart", icon: Rocket },
             { title: "API reference", desc: "Endpoints and request format", href: "/docs#api", icon: Code },
           ],
         },
@@ -75,7 +75,7 @@ export const MEGA_MENUS: MegaMenu[] = [
     ],
     footer: [
       { title: "View all products", desc: "Explore the full execution-control model", href: "/product" },
-      { title: "Aegisora 4.0", desc: "See what this release includes", href: "/changelog" },
+      { title: "Aegisora 4.0", desc: "See what this release includes", href: "/docs/technical#releases" },
     ],
   },
   {
@@ -87,7 +87,7 @@ export const MEGA_MENUS: MegaMenu[] = [
         {
           items: [
             { title: "Documentation", desc: "Read the docs and the API reference", href: "/docs", icon: BookOpen },
-            { title: "Quickstart", desc: "Evaluate your first action", href: "/developers/quickstart", icon: Rocket },
+            { title: "Quickstart", desc: "Evaluate your first action", href: "/docs/quickstart", icon: Rocket },
             { title: "Blog", desc: "Articles and updates", href: "/blog", icon: Newspaper },
           ],
         },
@@ -95,14 +95,14 @@ export const MEGA_MENUS: MegaMenu[] = [
       [
         {
           items: [
-            { title: "Changelog", desc: "What each release includes", href: "/changelog", icon: History },
-            { title: "Resources", desc: "Guides and reference material", href: "/resources", icon: Library },
+            { title: "Changelog", desc: "What each release includes", href: "/docs/technical#releases", icon: History },
+            { title: "Resources", desc: "Guides and reference material", href: "/docs", icon: Library },
             { title: "Trust center", desc: "Privacy, subprocessors and terms", href: "/trust", icon: ShieldCheck },
           ],
         },
       ],
     ],
-    footer: [{ title: "Resources hub", desc: "Get help building with Aegisora", href: "/resources" }],
+    footer: [{ title: "Resources hub", desc: "Get help building with Aegisora", href: "/docs" }],
   },
   {
     id: "solutions",
@@ -113,10 +113,10 @@ export const MEGA_MENUS: MegaMenu[] = [
         {
           heading: "USE CASES",
           items: [
-            { title: "Runtime control", href: "/product/runtime" },
-            { title: "Human approvals", href: "/product/approvals" },
-            { title: "Audit evidence", href: "/product/evidence" },
-            { title: "Policy governance", href: "/product/policies" },
+            { title: "Runtime control", href: "/docs/technical#pipeline" },
+            { title: "Human approvals", href: "/docs/technical#approvals" },
+            { title: "Audit evidence", href: "/docs/technical#evidence" },
+            { title: "Policy governance", href: "/docs/technical#authority" },
           ],
         },
       ],
@@ -124,7 +124,7 @@ export const MEGA_MENUS: MegaMenu[] = [
         {
           heading: "AUDIENCES",
           items: [
-            { title: "Builders", href: "/developers/quickstart" },
+            { title: "Builders", href: "/docs/quickstart" },
             { title: "Security leaders", href: "/enterprise" },
             { title: "Design partners", href: "/enterprise" },
           ],
@@ -154,14 +154,14 @@ export const MEGA_MENUS: MegaMenu[] = [
       [
         {
           items: [
-            { title: "Contact", desc: "Reach the Aegisora team", href: "/contact" },
+            { title: "Contact", desc: "Reach the Aegisora team", href: "/pilot" },
             { title: "Trust", desc: "Privacy, subprocessors and terms", href: "/trust" },
           ],
         },
       ],
     ],
     rail: [
-      { title: "Contact us", desc: "Reach out to the team.", cta: "Get in touch", href: "/contact", style: "arrow" },
+      { title: "Contact us", desc: "Reach out to the team.", cta: "Get in touch", href: "/pilot", style: "arrow" },
       { title: "Enterprise", desc: "Talk about a scoped pilot.", cta: "Talk to Enterprise", href: "/enterprise", style: "arrow" },
     ],
     footer: [],

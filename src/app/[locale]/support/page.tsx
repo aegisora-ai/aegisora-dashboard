@@ -74,7 +74,7 @@ export default function SupportHome() {
             <h2 className="text-xl font-semibold">Can&apos;t find what you need?</h2>
             <p className="mt-2 text-sm text-[#a9bbdb]">Tell the team what you were trying to do and what happened instead.</p>
           </div>
-          <a href={MAIN_SITE + "/contact"} className="inline-flex h-11 items-center rounded bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
+          <a href={MAIN_SITE + "/pilot"} className="inline-flex h-11 items-center rounded bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
             Contact us
           </a>
         </div>

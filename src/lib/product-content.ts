@@ -66,7 +66,7 @@ export const PRODUCTS: Record<string, ProductData> = {
     intro:
       "Write a rule once and enforce it on every call. Policies decide what each agent may do, under which conditions, and what has to be redacted.",
     primary: START,
-    secondary: { label: "Read the quickstart", href: "/developers/quickstart" },
+    secondary: { label: "Read the quickstart", href: "/docs/quickstart" },
     rows: [
       { action: "payments.transfer $4,200", meta: "finance-agent · Under approval limit", v: "ALLOW" },
       { action: "files.export salary.csv", meta: "hr-agent · Sensitive data class", v: "ESCALATE" },

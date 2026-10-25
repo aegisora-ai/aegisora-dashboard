@@ -30,7 +30,7 @@ export default function BlogIndex() {
         title="Try it in a test workspace."
         body="Send one request and read the decision."
         primary={{ label: "Test Aegisora", href: "/signup" }}
-        secondary={{ label: "Read the quickstart", href: "/developers/quickstart" }}
+        secondary={{ label: "Read the quickstart", href: "/docs/quickstart" }}
       />
     </>
   );

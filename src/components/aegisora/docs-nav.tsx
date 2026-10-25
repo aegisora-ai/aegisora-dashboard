@@ -13,26 +13,25 @@ export const NAV_TREE: NavGroup[] = [
     title: 'Getting Started',
     items: [
       { title: 'Introduction', href: '/docs' },
-      { title: 'Policy Example', href: '/docs#example' },
       { title: 'Quickstart', href: '/docs/quickstart' },
+      { title: 'Policy Example', href: '/docs#example' },
+      { title: 'Technical reference', href: '/docs/technical' },
     ],
   },
   {
     title: 'Architecture',
     items: [
       { title: 'Runtime Pipeline', href: '/docs#v3' },
-      { title: 'Policy Engine', href: '/product/policies' },
-      { title: 'Decisions', href: '/product/decisions' },
-      { title: 'Evidence', href: '/product/evidence' },
+      { title: 'Policies, decisions and evidence', href: '/docs/technical' },
     ],
   },
   {
     title: 'Version History',
     items: [
-      { title: '1.0 — Foundation', href: '/docs#v1' },
-      { title: '2.0 — Context & Risk', href: '/docs#v2' },
-      { title: '3.0 — Enterprise Runtime', href: '/docs#v3' },
-      { title: '4.0 — Current', href: '/docs#v4' },
+      { title: '1.0 - Foundation', href: '/docs#v1' },
+      { title: '2.0 - Context & Risk', href: '/docs#v2' },
+      { title: '3.0 - Enterprise Runtime', href: '/docs#v3' },
+      { title: '4.0 - Current', href: '/docs#v4' },
     ],
   },
   {
@@ -51,6 +50,8 @@ function NavGroupBlock({ group, defaultOpen }: { group: NavGroup; defaultOpen: b
   return (
     <div className="border-b border-border/60 pb-1 last:border-0">
       <button
+        type="button"
+        aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between py-2.5 text-left transition-colors hover:text-foreground"
       >
@@ -59,6 +60,7 @@ function NavGroupBlock({ group, defaultOpen }: { group: NavGroup; defaultOpen: b
         </span>
         <ChevronRight
           size={14}
+          aria-hidden
           className={cn(
             'shrink-0 text-muted-foreground transition-transform duration-300 ease-out',
             open && 'rotate-90'
@@ -75,12 +77,13 @@ function NavGroupBlock({ group, defaultOpen }: { group: NavGroup; defaultOpen: b
         <div className="overflow-hidden">
           <ul className="flex flex-col gap-0.5 pb-3 pl-1">
             {group.items.map((item) => {
-              const [base] = item.href.split('#');
-              const active = pathname === base;
+              // Sadece sayfanin kendisi aktif sayilir; #anchor linkleri aktif olmaz.
+              const active = !item.href.includes('#') && pathname === item.href;
               return (
-                <li key={item.href}>
+                <li key={item.title}>
                   <Link
                     href={item.href}
+                    aria-current={active ? 'page' : undefined}
                     className={cn(
                       'block rounded-md px-3 py-1.5 text-sm transition-colors',
                       active
@@ -102,7 +105,7 @@ function NavGroupBlock({ group, defaultOpen }: { group: NavGroup; defaultOpen: b
 
 export function DocsNav() {
   return (
-    <nav className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pr-2">
+    <nav aria-label="Documentation" className="max-h-[calc(100vh-7rem)] overflow-y-auto pr-2">
       {NAV_TREE.map((group, i) => (
         <NavGroupBlock key={group.title} group={group} defaultOpen={i < 2} />
       ))}

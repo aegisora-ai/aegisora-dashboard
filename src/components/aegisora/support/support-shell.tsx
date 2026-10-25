@@ -14,9 +14,9 @@ export function SupportShell({ children }: { children: React.ReactNode }) {
             <span className="hidden text-sm font-semibold text-white/70 sm:inline">Support</span>
           </div>
           <nav aria-label="Support" className="flex items-center gap-5 text-sm font-medium">
-            <a href={MAIN_SITE + "/docs"} className="hidden text-white/80 hover:text-white sm:inline">API docs</a>
-            <a href={MAIN_SITE + "/changelog"} className="hidden text-white/80 hover:text-white sm:inline">Release notes</a>
-            <a href={MAIN_SITE + "/contact"} className="text-white/80 hover:text-white">Contact</a>
+            <a href={MAIN_SITE + "/docs"} className="hidden text-white/80 hover:text-white sm:inline">Docs</a>
+            <a href={MAIN_SITE + "/docs/technical"} className="hidden text-white/80 hover:text-white sm:inline">Technical docs</a>
+            <a href={MAIN_SITE + "/pilot"} className="text-white/80 hover:text-white">Contact</a>
             <a
               href={MAIN_SITE + "/signup"}
               className="inline-flex h-9 items-center rounded-md bg-white px-4 font-semibold text-[#0a2a7a] hover:bg-white/90"

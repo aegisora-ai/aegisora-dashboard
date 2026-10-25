@@ -190,7 +190,7 @@ export function OnboardingFlow() {
             </dl>
             <div className="mt-5 space-y-3 text-sm">
               <Link href="/dashboard/api-keys" className="block underline underline-offset-4">Create a workspace API key</Link>
-              <Link href="/developers" className="block underline underline-offset-4">Open API quickstart</Link>
+              <Link href="/docs" className="block underline underline-offset-4">Open API quickstart</Link>
               <p className="text-xs leading-5 text-muted-foreground">Send evaluations from your backend to <code>POST /api/v1/evaluate</code>. Continue your customer-owned action only on ALLOW; stop on BLOCK; pause for human review on ESCALATE. Aegisora records the governance result and does not execute your external action.</p>
             </div>
           </>
