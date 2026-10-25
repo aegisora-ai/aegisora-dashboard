@@ -3,7 +3,7 @@ import { SiteFooter } from "@/components/aegisora/site-footer";
 
 export function PublicShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="aeg-page flex min-h-screen flex-col">
+    <div className="zp flex min-h-screen flex-col">
       <SiteHeader />
       <main className="flex-1">{children}</main>
       <SiteFooter />

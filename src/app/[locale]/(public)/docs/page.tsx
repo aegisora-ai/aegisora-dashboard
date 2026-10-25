@@ -84,18 +84,18 @@ decision:    ESCALATE`}
         </ul>
       </div>
 
-      <div id="v3" className="mt-8 scroll-mt-24 aeg-panel p-6 md:p-8 border-primary/30">
+      <div id="v3" className="mt-8 scroll-mt-24 aeg-panel p-6 md:p-8">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <div>
-            <Eyebrow accent>VERSION 3.0 &middot; CURRENT</Eyebrow>
+            <Eyebrow accent>VERSION 3.0 &middot; ENTERPRISE GOVERNANCE RUNTIME</Eyebrow>
             <h3 className="mt-2 text-xl font-medium">The full runtime</h3>
           </div>
-          <span className="rounded-full border border-allow bg-allow-muted px-3 py-1 font-mono text-[11px] font-semibold text-allow">
-            CURRENT
+          <span className="rounded-full border border-border px-3 py-1 font-mono text-[11px] font-semibold text-muted-foreground">
+            PREVIOUS
           </span>
         </div>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          The current product is a closed-loop control plane. Eight stages carry every request from intent
+          Version 3.0 introduced the closed-loop control plane. Eight stages carry every request from intent
           to consequence, and every decision writes durable, queryable evidence that feeds back into risk.
         </p>
         <div className="mt-6 overflow-x-auto"><V3Canvas /></div>
@@ -109,19 +109,46 @@ decision:    ESCALATE`}
         </ul>
       </div>
 
+      <div id="v4" className="mt-8 scroll-mt-24 aeg-panel p-6 md:p-8 border-primary/30">
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <div>
+            <Eyebrow accent>VERSION 4.0 &middot; CURRENT</Eyebrow>
+            <h3 className="mt-2 text-xl font-medium">Continuity Seal</h3>
+          </div>
+          <span className="rounded-full border border-allow bg-allow-muted px-3 py-1 font-mono text-[11px] font-semibold text-allow">
+            CURRENT
+          </span>
+        </div>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Continuity Seal extends runtime governance from authorization into the integrity of the execution
+          itself. The execution must remain the execution that was authorized.
+        </p>
+        <ul className="mt-6 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
+          <li>&bull; Deterministic execution sealing with immutable seal identity</li>
+          <li>&bull; Authority-state fingerprinting and drift detection</li>
+          <li>&bull; Fail-closed execution when authority changes</li>
+          <li>&bull; Tool execution bound to its authorization receipt</li>
+          <li>&bull; sealId correlation across the evidence layer</li>
+          <li>&bull; Blocked execution and effect reconciliation evidence</li>
+        </ul>
+      </div>
+
       <h2 id="capability" className="mt-20 scroll-mt-24 text-2xl font-medium">Capability by version</h2>
       <div className="mt-6">
         <DataTable
-          head={["Capability", "1.0", "2.0", "3.0"]}
+          head={["Capability", "1.0", "2.0", "3.0", "4.0"]}
           rows={[
-            ["Rule-based matching", "Yes", "Yes", "Yes"],
-            ["Context resolution", "—", "Yes", "Yes"],
-            ["Risk input", "—", "Yes", "Caller-supplied score (0-100), usable in policy conditions"],
-            ["Decision outcomes", "Allow / Deny", "Allow / Block / Escalate", "Allow / Block / Escalate"],
-            ["Decision point", "—", "Advisory only", "Decision API at the execution boundary"],
-            ["Evidence store", "—", "Non-durable log", "Durable, queryable"],
-            ["Evidence hash per decision", "—", "—", "Yes"],
-            ["Workspace / role model", "—", "—", "Yes"],
+            ["Rule-based matching", "Yes", "Yes", "Yes", "Yes"],
+            ["Context resolution", "—", "Yes", "Yes", "Yes"],
+            ["Risk input", "—", "Yes", "Caller-supplied score (0-100), usable in policy conditions", "Unchanged from 3.0"],
+            ["Decision outcomes", "Allow / Deny", "Allow / Block / Escalate", "Allow / Block / Escalate", "Allow / Block / Escalate"],
+            ["Decision point", "—", "Advisory only", "Decision API at the execution boundary", "Unchanged from 3.0"],
+            ["Evidence store", "—", "Non-durable log", "Durable, queryable", "Durable, queryable"],
+            ["Evidence hash per decision", "—", "—", "Yes", "Yes"],
+            ["Workspace / role model", "—", "—", "Yes", "Yes"],
+            ["Execution sealing (Continuity Seal)", "—", "—", "—", "Yes"],
+            ["Authority drift detection", "—", "—", "—", "Yes"],
+            ["Fail-closed on sealed-state change", "—", "—", "—", "Yes"],
           ]}
         />
       </div>

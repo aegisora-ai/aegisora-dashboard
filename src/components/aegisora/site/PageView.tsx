@@ -1,5 +1,5 @@
 import Link from "next/link";
-import styles from "./site.module.css";
+import "@/styles/zp.css";
 import PilotForm from "./PilotForm";
 import { PLANS, type Cta, type PageData, type Section } from "./content";
 
@@ -9,12 +9,12 @@ function to(locale: string, href: string): string {
 
 function Buttons({ ctas, locale }: { ctas: Cta[]; locale: string }) {
   return (
-    <div className={styles.ctaRow}>
+    <div className="zpk-actions">
       {ctas.map((c) => (
         <Link
           key={c.label}
           href={to(locale, c.href)}
-          className={c.variant === "ghost" ? styles.btnGhost : styles.btnPrimary}
+          className={"zp-btn " + (c.variant === "ghost" ? "zp-btn--outline" : "zp-btn--primary")}
         >
           {c.label}
         </Link>
@@ -23,39 +23,42 @@ function Buttons({ ctas, locale }: { ctas: Cta[]; locale: string }) {
   );
 }
 
+function Head({ title, intro, id }: { title: string; intro?: string; id?: string }) {
+  return (
+    <div className="zpk-head">
+      <h2 id={id} className="zpk-h2">{title}</h2>
+      {intro ? <p className="zpk-sub">{intro}</p> : null}
+    </div>
+  );
+}
+
 function SectionView({ s, locale }: { s: Section; locale: string }) {
   switch (s.kind) {
-    case "cards": {
-      const colClass = s.cols === 2 ? styles.grid2 : s.cols === 4 ? styles.grid4 : styles.grid3;
+    case "cards":
       return (
         <>
-          <h2 className={styles.h2}>{s.title}</h2>
-          {s.intro ? <p className={styles.intro}>{s.intro}</p> : null}
-          <div className={colClass}>
+          <Head title={s.title} intro={s.intro} />
+          <div className={"zpk-grid zpk-grid--" + (s.cols ?? 3)}>
             {s.items.map((it) => (
-              <div key={it.title} className={styles.card}>
-                {it.tag ? <span className={styles.tag}>{it.tag}</span> : null}
-                <h3 className={styles.h3}>{it.title}</h3>
-                <p className={styles.body}>{it.body}</p>
+              <div key={it.title} className="zpk-card">
+                {it.tag ? <span className="zpk-tag">{it.tag}</span> : null}
+                <h3>{it.title}</h3>
+                <p>{it.body}</p>
               </div>
             ))}
           </div>
         </>
       );
-    }
     case "steps":
       return (
         <>
-          <h2 className={styles.h2}>{s.title}</h2>
-          {s.intro ? <p className={styles.intro}>{s.intro}</p> : null}
-          <ol className={styles.steps}>
+          <Head title={s.title} intro={s.intro} />
+          <ol className="zpk-grid zpk-grid--2 zpk-steps">
             {s.items.map((it, i) => (
-              <li key={it.title} className={styles.step}>
-                <span className={styles.stepNum}>{i + 1}</span>
-                <div>
-                  <h3 className={styles.h3}>{it.title}</h3>
-                  <p className={styles.body}>{it.body}</p>
-                </div>
+              <li key={it.title} className="zpk-card">
+                <span className="zpk-n">{String(i + 1).padStart(2, "0")}</span>
+                <h3>{it.title}</h3>
+                <p>{it.body}</p>
               </li>
             ))}
           </ol>
@@ -64,10 +67,9 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
     case "table":
       return (
         <>
-          <h2 className={styles.h2}>{s.title}</h2>
-          {s.intro ? <p className={styles.intro}>{s.intro}</p> : null}
-          <div className={styles.tableWrap}>
-            <table className={styles.table}>
+          <Head title={s.title} intro={s.intro} />
+          <div className="zpk-tablewrap">
+            <table className="zpk-table">
               <thead>
                 <tr>
                   {s.columns.map((c) => (
@@ -79,7 +81,7 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
                 {s.rows.map((r, i) => (
                   <tr key={i}>
                     {r.map((cell, j) => (
-                      <td key={j}>{cell}</td>
+                      <td key={j} className={j === 0 ? "zpk-td-first" : undefined}>{cell}</td>
                     ))}
                   </tr>
                 ))}
@@ -91,17 +93,16 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
     case "plans":
       return (
         <>
-          <h2 className={styles.h2}>{s.title}</h2>
-          {s.intro ? <p className={styles.intro}>{s.intro}</p> : null}
-          <div className={styles.plans}>
+          <Head title={s.title} intro={s.intro} />
+          <div className="zpk-plans">
             {PLANS.map((p) => (
-              <div key={p.name} className={p.highlight ? styles.planHi : styles.plan}>
-                <h3 className={styles.h3}>{p.name}</h3>
-                <p className={styles.price}>
-                  {p.price} <span className={styles.period}>{p.period}</span>
-                </p>
-                <p className={styles.body}>{p.blurb}</p>
-                <ul className={styles.features}>
+              <div key={p.name} className={"zpk-card zpk-plan" + (p.highlight ? " zpk-plan--hi" : "")}>
+                <h3>{p.name}</h3>
+                <div className="zpk-price">
+                  {p.price} <span>{p.period}</span>
+                </div>
+                <p>{p.blurb}</p>
+                <ul className="zpk-features">
                   {p.features.map((f) => (
                     <li key={f}>{f}</li>
                   ))}
@@ -115,12 +116,12 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
     case "faq":
       return (
         <>
-          <h2 className={styles.h2}>{s.title}</h2>
-          <div className={styles.faq}>
+          <Head title={s.title} />
+          <div className="zpk-faq">
             {s.items.map((it) => (
-              <details key={it.title} className={styles.details}>
+              <details key={it.title}>
                 <summary>{it.title}</summary>
-                <p className={styles.body}>{it.body}</p>
+                <p>{it.body}</p>
               </details>
             ))}
           </div>
@@ -129,29 +130,28 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
     case "prose":
       return (
         <>
-          <h2 className={styles.h2}>{s.title}</h2>
-          {s.paragraphs.map((p, i) => (
-            <p key={i} className={styles.proseP}>
-              {p}
-            </p>
-          ))}
+          <Head title={s.title} />
+          <div className="zpk-prose">
+            {s.paragraphs.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </div>
         </>
       );
     case "pilotform":
       return (
         <>
-          <h2 id="apply" className={styles.h2}>
-            {s.title}
-          </h2>
-          {s.intro ? <p className={styles.intro}>{s.intro}</p> : null}
-          <PilotForm locale={locale} />
+          <Head id="apply" title={s.title} intro={s.intro} />
+          <div className="dark zpk-darkpanel">
+            <PilotForm locale={locale} />
+          </div>
         </>
       );
     case "cta":
       return (
-        <div className={styles.ctaBox}>
-          <h2 className={styles.h2}>{s.title}</h2>
-          <p className={styles.intro}>{s.body}</p>
+        <div className="zpk-ctabox">
+          <h2 className="zpk-h2">{s.title}</h2>
+          <p className="zpk-sub">{s.body}</p>
           <Buttons ctas={s.ctas} locale={locale} />
         </div>
       );
@@ -162,22 +162,24 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
 
 export default function PageView({ page, locale }: { page: PageData; locale: string }) {
   return (
-    <div className={styles.root}>
-      <div className={styles.hero}>
-        <div className={styles.wrap}>
-          <p className={styles.eyebrow}>{page.eyebrow}</p>
-          <h1 className={styles.h1}>{page.title}</h1>
-          <p className={styles.lead}>{page.lead}</p>
-          {page.ctas ? <Buttons ctas={page.ctas} locale={locale} /> : null}
-          {page.notice ? <p className={styles.notice}>{page.notice}</p> : null}
-        </div>
-      </div>
-      {page.sections.map((s, i) => (
-        <div key={i} className={styles.section}>
-          <div className={styles.wrap}>
-            <SectionView s={s} locale={locale} />
+    <div className="zp zpk-page">
+      <section className="zpk-hero">
+        <div className="zpk-wrap">
+          <div className="zpk-hero-text">
+            <p className="zp-eyebrow">{page.eyebrow}</p>
+            <h1 className="zpk-h1">{page.title}</h1>
+            <p className="zpk-lead">{page.lead}</p>
+            {page.ctas ? <Buttons ctas={page.ctas} locale={locale} /> : null}
+            {page.notice ? <p className="zpk-notice">{page.notice}</p> : null}
           </div>
         </div>
+      </section>
+      {page.sections.map((s, i) => (
+        <section key={i} className={"zpk-section" + (i % 2 === 1 ? " zpk-section--alt" : "")}>
+          <div className="zpk-wrap">
+            <SectionView s={s} locale={locale} />
+          </div>
+        </section>
       ))}
     </div>
   );

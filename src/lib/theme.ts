@@ -1,7 +1,7 @@
 export const THEME_KEY = "aeg-theme";
 
 /** Pages already converted to both themes. Every other page stays on the navy theme. */
-export const LIGHT_READY: string[] = ["/"];
+export const LIGHT_READY: string[] = ["/", "/pilot", "/solutions", "/enterprise", "/security", "/product"];
 
 export function stripLocale(path: string): string {
   const p = path.replace(/^\/[a-z]{2}(?:-[A-Za-z]+)?(?=\/|$)/, "") || "/";

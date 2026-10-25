@@ -31,7 +31,8 @@ export const NAV_TREE: NavGroup[] = [
     items: [
       { title: '1.0 — Foundation', href: '/docs#v1' },
       { title: '2.0 — Context & Risk', href: '/docs#v2' },
-      { title: '3.0 — Current', href: '/docs#v3' },
+      { title: '3.0 — Enterprise Runtime', href: '/docs#v3' },
+      { title: '4.0 — Current', href: '/docs#v4' },
     ],
   },
   {

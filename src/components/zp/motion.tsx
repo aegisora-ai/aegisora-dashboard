@@ -4,13 +4,14 @@ import { useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { usePathname } from "@/i18n/navigation";
+import { supportsLight, THEME_KEY } from "@/lib/theme";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const HERO_SEL = ".zp-hero .zp-eyebrow, .zp-hero h1, .zp-hero .zp-hxl, .zp-hero .zp-h2xl, .zp-hero .zp-lead, .zp-hero .zp-btn-row";
-const HEAD_SEL = ".zp-h2xl, .zp-hlg, .zp-eyebrow, .zp-lead, .zp-quote blockquote";
-const CELL_SEL = ".zp-lines > *, .zp-cap, .zp-step, .zp-sec-cell, .zp-tab, .zp-acc-item, .zp-chip, .zp-mock-row, .zp-footer-grid > *";
-const BLOCK_SEL = ".zp-compare, .zp-controls, .zp-mock, .zp-code, .zp-cta .zp-btn-row";
+const HERO_SEL = ".zp-hero .zp-eyebrow, .zp-hero h1, .zp-hero .zp-hxl, .zp-hero .zp-h2xl, .zp-hero .zp-lead, .zp-hero .zp-btn-row, .zpk-hero .zp-eyebrow, .zpk-hero h1, .zpk-hero .zpk-typed, .zpk-hero .zpk-lead, .zpk-hero .zpk-actions, .zpk-hero .zpk-art";
+const HEAD_SEL = ".zp-h2xl, .zp-hlg, .zp-eyebrow, .zp-lead, .zp-quote blockquote, .zpk-h2, .zpk-sub";
+const CELL_SEL = ".zp-lines > *, .zp-cap, .zp-step, .zp-sec-cell, .zp-tab, .zp-acc-item, .zp-chip, .zp-mock-row, .zp-footer-grid > *, .zpk-card, .zpk-tablewrap, .zpk-faq details, .zpk-darkpanel";
+const BLOCK_SEL = ".zp-compare, .zp-controls, .zp-mock, .zp-code, .zp-cta .zp-btn-row, .zpk-cta .zpk-actions, .zpk-ctabox";
 
 function pick(sel: string, exclude?: Set<Element>): HTMLElement[] {
   return gsap.utils.toArray<HTMLElement>(sel).filter((el) => !exclude || !exclude.has(el));
@@ -21,6 +22,12 @@ export function ZpMotion() {
   const pathname = usePathname();
 
   useLayoutEffect(() => {
+    try {
+      const ok = supportsLight(pathname);
+      const s = localStorage.getItem(THEME_KEY);
+      document.documentElement.classList.toggle("dark", !(ok && s === "light"));
+    } catch { /* storage unavailable */ }
+
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {

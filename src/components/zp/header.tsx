@@ -6,6 +6,7 @@ import { ChevronDown, Menu, X } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Logo } from "@/components/aegisora/logo";
 import { ZpMotion } from "@/components/zp/motion";
+import { supportsLight } from "@/lib/theme";
 import { ThemeToggle } from "@/components/aegisora/theme-toggle";
 import { SOCIALS } from "@/lib/socials";
 import { headerCtas, mainNav } from "@/lib/main-nav";
@@ -18,6 +19,7 @@ function isActive(pathname: string, href: string): boolean {
 
 export function ZpHeader() {
   const pathname = usePathname();
+  const lightOk = supportsLight(pathname);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
@@ -101,7 +103,7 @@ export function ZpHeader() {
               {headerCtas.primary.label}
             </Link>
             <div className="zp-header-cta">
-              <ThemeToggle />
+              {lightOk ? <ThemeToggle /> : null}
               {GITHUB_URL ? (
                 <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="zp-gh">
                   GitHub
@@ -153,7 +155,7 @@ export function ZpHeader() {
               </Link>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 14 }}>
                 <span className="zp-muted">Theme</span>
-                <ThemeToggle />
+                {lightOk ? <ThemeToggle /> : null}
               </div>
             </div>
           </nav>
