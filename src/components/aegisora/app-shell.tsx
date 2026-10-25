@@ -16,11 +16,16 @@ import { usePendingApprovals } from "@/lib/aegisora/use-pending-approvals";
 import { focusRing } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
-const idLike = /^(dec|apr|evd|aud|trc|exe)_/;
+const idLike = /^(dec|apr|evd|aud|trc|exe)_|^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const CRUMB_LABELS: Record<string, string> = {
+  "api-keys": "API Keys",
+  activity: "Live Activity",
+};
 
 function Crumbs() {
   const pathname = usePathname();
-  const segs = pathname.split("/").filter(Boolean).slice(1);
+  const all = pathname.split("/").filter(Boolean);
+  const segs = all.slice(all.indexOf("dashboard") + 1);
   const crumbs = segs.map((s, i) => ({
     label: s,
     href: "/dashboard/" + segs.slice(0, i + 1).join("/"),
@@ -31,7 +36,7 @@ function Crumbs() {
       <Link href="/dashboard" className="hover:text-foreground">Control</Link>
       {crumbs.map((c, i) => {
         const last = i === crumbs.length - 1;
-        const pretty = idLike.test(c.label) ? c.label : c.label.charAt(0).toUpperCase() + c.label.slice(1);
+        const pretty = idLike.test(c.label) ? (c.label.length > 20 ? c.label.slice(0, 8) : c.label) : (CRUMB_LABELS[c.label] ?? c.label.charAt(0).toUpperCase() + c.label.slice(1));
         return (
           <span key={c.href} className="flex items-center gap-2">
             <span aria-hidden="true">/</span>
@@ -68,7 +73,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       return next;
     });
   }
-  const pending = usePendingApprovals(); const isDemo = false;
+  const pending = usePendingApprovals();
 
   // Route change intentionally resets transient shell UI state.
   useEffect(() => {
@@ -177,8 +182,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 {notif && (
                   <div className="aeg-panel absolute right-0 top-full z-40 mt-2 w-72 p-2">
                     <Link href="/dashboard/approvals" className="block rounded-sm px-3 py-2.5 hover:bg-surface-3">
-                      <span className="block text-sm font-medium">{pending} approval waiting</span>
-                      <span className="block text-xs text-muted-foreground">Execution is paused until it is resolved.</span>
+                      <span className="block text-sm font-medium">{pending === 0 ? "Nothing is waiting" : pending === 1 ? "1 approval waiting" : pending + " approvals waiting"}</span>
+                      <span className="block text-xs text-muted-foreground">{pending === 0 ? "No actions need a decision." : "Execution is paused until a person decides."}</span>
                     </Link>
                   </div>
                 )}
@@ -191,7 +196,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          {isDemo && (<div className="border-b border-escalate/30 bg-escalate-muted px-4 py-1.5 text-xs text-escalate md:px-6">Sample data. This section is not yet connected to live data.</div>)}
+          
 
           <main data-app-main className="flex-1 px-4 py-8 md:px-6">{children}</main>
         </div>

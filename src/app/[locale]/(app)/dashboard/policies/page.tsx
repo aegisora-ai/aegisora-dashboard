@@ -52,7 +52,15 @@ function PolicyTools({ ws, reload }: { ws: Workspace; reload: () => void }) {
   }
 
   async function starters() {
-    const { error } = await createClient().from("policies").insert(STARTERS.map((s) => ({ ...s, workspace_id: ws.id })));
+    const sb = createClient();
+    const { data: existing } = await sb.from("policies").select("name").eq("workspace_id", ws.id);
+    const have = new Set((existing ?? []).map((p: { name: string }) => p.name));
+    const fresh = STARTERS.filter((s) => !have.has(s.name));
+    if (fresh.length === 0) {
+      setMsg({ ok: true, text: "Starter policies are already loaded." });
+      return;
+    }
+    const { error } = await sb.from("policies").insert(fresh.map((s) => ({ ...s, workspace_id: ws.id })));
     setMsg(error ? { ok: false, text: error.message } : { ok: true, text: "Starter policies added." });
     reload();
   }

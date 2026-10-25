@@ -2,8 +2,8 @@
 
 import type { ComponentType } from "react";
 import {
-  Activity, Bot, ClipboardList, FileSearch, KeyRound, LayoutDashboard,
-  Route, Scale, ScrollText, Settings, TriangleAlert, UserCheck, Webhook,
+  Activity, Bot, ClipboardList, CreditCard, FileSearch, KeyRound, LayoutDashboard,
+  Route, Scale, ScrollText, Settings, ShieldCheck, TriangleAlert, UserCheck, Users, Webhook,
 } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { focusRing } from "@/lib/ui";
@@ -39,11 +39,20 @@ const sections: Section[] = [
     ],
   },
   {
-    id: "settings",
-    title: "Settings",
+    id: "platform",
+    title: "Platform",
     items: [
       { label: "Webhooks", href: "/dashboard/webhooks", icon: Webhook },
       { label: "API Keys", href: "/dashboard/api-keys", icon: KeyRound },
+    ],
+  },
+  {
+    id: "organization",
+    title: "Organization",
+    items: [
+      { label: "Team", href: "/dashboard/team", icon: Users },
+      { label: "Billing", href: "/dashboard/billing", icon: CreditCard },
+      { label: "Identity", href: "/dashboard/identity", icon: ShieldCheck },
       { label: "Settings", href: "/dashboard/settings", icon: Settings },
     ],
   },
@@ -75,7 +84,7 @@ export function SidebarNav() {
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex items-center gap-2.5 rounded-sm px-3 py-1.5 text-[13px] transition-colors",
+                      "flex items-center gap-2.5 rounded-md px-3 py-2 text-[13px] transition-colors",
                       focusRing,
                       active
                         ? "bg-surface-4 font-medium text-foreground"

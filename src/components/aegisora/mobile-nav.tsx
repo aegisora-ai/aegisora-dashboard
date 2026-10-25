@@ -6,7 +6,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   Activity, Bot, Check, ClipboardList, Ellipsis, FileCheck, GitBranch, KeyRound,
   LayoutDashboard, Scale, ScrollText, Settings, SlidersHorizontal, TriangleAlert,
-  UserCheck, Webhook, X,
+  UserCheck, Users, CreditCard, ShieldCheck, Webhook, X,
 } from "lucide-react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -30,13 +30,17 @@ const ITEMS: Item[] = [
   { id: "webhooks", href: "/dashboard/webhooks", label: "Webhooks", icon: Webhook },
   { id: "api-keys", href: "/dashboard/api-keys", label: "API Keys", icon: KeyRound },
   { id: "settings", href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { id: "team", href: "/dashboard/team", label: "Team", icon: Users },
+  { id: "billing", href: "/dashboard/billing", label: "Billing", icon: CreditCard },
+  { id: "identity", href: "/dashboard/identity", label: "Identity", icon: ShieldCheck },
 ];
 
 const GROUPS = [
-  { title: "Runtime", ids: ["overview", "activity", "agents", "policies"] },
-  { title: "Governance", ids: ["decisions", "approvals", "incidents", "evidence", "audit", "traces"] },
+  { title: "Overview", ids: ["overview"] },
+  { title: "Runtime", ids: ["activity", "decisions", "approvals", "traces", "incidents"] },
+  { title: "Governance", ids: ["agents", "policies", "evidence", "audit"] },
   { title: "Platform", ids: ["webhooks", "api-keys"] },
-  { title: "Organization", ids: ["settings"] },
+  { title: "Organization", ids: ["team", "billing", "identity", "settings"] },
 ];
 
 const DEFAULTS: Prefs = {

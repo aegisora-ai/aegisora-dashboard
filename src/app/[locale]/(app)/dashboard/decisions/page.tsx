@@ -9,7 +9,7 @@ export default function DecisionsPage() {
     <LiveTable
       table="decisions"
       title="Decisions"
-      description="Every action your agents attempted and what governance decided. Click a row for the full record."
+      description="Every action your agents attempted and what governance decided. Use Open for the full record."
       limit={200}
       columns={[
         { label: "Time", render: (r) => fmt(r.created_at) },
