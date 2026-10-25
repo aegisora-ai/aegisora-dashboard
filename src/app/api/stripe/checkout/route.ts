@@ -99,6 +99,25 @@ export async function POST(
       }
     }
 
+    if (BILLING_PLANS[plan].mode === "payment") { // ACTIVE_SUB_GUARD_PAYMENT
+      const { data: subForPilot } = await getAdminClient()
+        .from("billing_subscriptions")
+        .select("stripe_subscription_id")
+        .eq("workspace_id", auth.workspaceId)
+        .in("status", ["active", "trialing", "past_due", "unpaid"])
+        .limit(1)
+        .maybeSingle();
+
+      if (subForPilot) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "This workspace already has an active subscription. A one-time pilot cannot replace it.",
+          },
+          { status: 409 },
+        );
+      }
+    }
     const customerId = await ensureStripeCustomer({
         workspaceId:
           auth.workspaceId,
