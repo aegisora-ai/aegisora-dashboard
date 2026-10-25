@@ -301,3 +301,26 @@ a.zp-social:hover{border-color:var(--zp-brand);color:var(--zp-brand)}
 @media (min-width: 1024px) {
   .zp-burger { display: none !important; }
 }
+/* zapier-polish-v8 */
+html .zp { --zp-line-strong: #cbd5ea; }
+html.dark .zp { --zp-line-strong: rgba(150,180,255,.26); --zp-line: rgba(150,180,255,.16); }
+
+html .zp-lines > * { align-self: stretch !important; box-sizing: border-box; transition: background .2s; }
+html .zp-lines > *:hover { background: color-mix(in srgb, var(--zp-brand) 5%, transparent); }
+
+html .zp-compare, html .zp-controls { border-radius: 14px; overflow: hidden; }
+html .zp-compare { box-shadow: 0 1px 2px rgba(10,20,49,.04), 0 12px 32px rgba(10,20,49,.06); }
+html.dark .zp-compare { box-shadow: 0 12px 40px rgba(0,0,0,.35); }
+
+html .zp-btn { border-radius: 8px; }
+html .zp-btn--outline { border-color: color-mix(in srgb, var(--zp-ink) 28%, transparent); }
+html .zp-btn--outline:hover { border-color: var(--zp-ink); }
+
+html .zp-chip { border-radius: 999px; padding: 6px 14px; }
+html .zp-tab { border-radius: 10px; }
+html .zp-tab[aria-selected="true"] { border-color: var(--zp-brand); }
+html .zp-art, html .zp-mock { border-radius: 12px; }
+
+html .zp-pill { box-shadow: none; border-color: var(--zp-line-strong); }
+html .zp-pill--bad { border-color: var(--zp-block); }
+html .zp-pill--good { border-color: var(--zp-brand); }

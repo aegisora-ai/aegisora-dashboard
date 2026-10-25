@@ -6,6 +6,9 @@ import { Logo } from "@/components/aegisora/logo";
 import { SocialIcon } from "@/components/aegisora/social-icon";
 import { SOCIALS } from "@/lib/socials";
 import { footerGroups } from "@/lib/main-nav";
+import { RELEASES } from "@/lib/releases";
+
+const SITE_VERSION = RELEASES[0].version.split(".").slice(0, 2).join(".");
 
 export function ZpFooter() {
   return (
@@ -41,7 +44,7 @@ export function ZpFooter() {
 
       <div className="zp-footer-bar">
         <div className="zp-container zp-footer-bar-in">
-          <span>Aegisora 4.0. Examples on this site use illustrative sample data.</span>
+          <span>Aegisora {SITE_VERSION}. Examples on this site use illustrative sample data.</span>
           <span className="zp-footer-legal">
             <Link href="/trust/privacy">Privacy</Link>
             <Link href="/terms">Terms</Link>
