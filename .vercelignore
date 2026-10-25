@@ -15,3 +15,11 @@ _foundation/
 _notes/
 
 docs/evidence
+.next.bak-*
+.next.prod-aside
+audit-out/
+.enterprise-backup-*/
+_audit/
+test-results/
+playwright-report/
+.env.production.local.stale-staging
