@@ -1,5 +1,7 @@
 "use client";
 
+import { AuroraCanvas } from "@/components/aegisora/aurora-canvas";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -132,7 +134,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         )}
 
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="relative isolate flex min-w-0 flex-1 flex-col">
+          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[640px] overflow-hidden"><AuroraCanvas intensity={0.8} /></div>
           <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
             <div className="flex h-14 items-center gap-3 px-4 md:px-6">
               <button
