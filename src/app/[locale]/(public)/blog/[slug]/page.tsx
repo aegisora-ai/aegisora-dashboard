@@ -27,11 +27,11 @@ export default async function BlogPost({ params }: Props) {
       />
       <article className="mx-auto max-w-3xl px-4 py-14 sm:px-6 lg:py-20">
         {post.body.map((b, i) => {
-          if (b.t === "h2") return <h2 key={i} className="mt-10 text-2xl font-medium tracking-[-0.01em] text-white">{b.text}</h2>;
-          if (b.t === "p") return <p key={i} className="mt-4 text-base leading-relaxed text-white/75 sm:text-lg">{b.text}</p>;
+          if (b.t === "h2") return <h2 key={i} className="mt-10 text-2xl font-medium tracking-[-0.01em] text-foreground">{b.text}</h2>;
+          if (b.t === "p") return <p key={i} className="mt-4 text-base leading-relaxed text-foreground/75 sm:text-lg">{b.text}</p>;
           if (b.t === "ul")
             return (
-              <ul key={i} className="mt-4 list-disc space-y-2 pl-6 text-base leading-relaxed text-white/75 sm:text-lg marker:text-sky-300">
+              <ul key={i} className="mt-4 list-disc space-y-2 pl-6 text-base leading-relaxed text-foreground/75 sm:text-lg marker:text-primary">
                 {b.items.map((it) => <li key={it}>{it}</li>)}
               </ul>
             );

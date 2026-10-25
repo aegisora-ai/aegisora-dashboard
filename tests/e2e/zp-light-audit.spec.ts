@@ -15,6 +15,7 @@ const PAGES = [
   { name: "about", url: "/about" },
   { name: "proof", url: "/proof" },
   { name: "blog", url: "/blog" },
+  { name: "blog-post", url: "/blog/why-every-agent-action-needs-a-decision-point" },
   { name: "terms", url: "/terms" },
 ];
 
@@ -119,6 +120,7 @@ test.describe("zp light audit", () => {
           await page.waitForTimeout(1500);
           const rej = page.getByRole("button", { name: /^reject$/i }).first();
           if (await rej.isVisible().catch(() => false)) await rej.click({ timeout: 3000 }).catch(() => {});
+          await page.evaluate(() => document.querySelectorAll("details").forEach((d) => { d.open = true; }));
           await page.evaluate(() => document.documentElement.classList.remove("dark"));
           await page.waitForTimeout(500);
           const info = await page.evaluate(() => ({
