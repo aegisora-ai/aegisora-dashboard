@@ -1,6 +1,7 @@
 import { AppShell } from "@/components/aegisora/app-shell";
 import { MobileNav } from "@/components/aegisora/mobile-nav";
 import { MobileTableCards } from "@/components/aegisora/mobile-table-cards";
+import { FeedbackHost } from "@/components/aegisora/live/feedback";
 
 export default function AppLayout({
   children,
@@ -12,6 +13,7 @@ export default function AppLayout({
       </AppShell>
       <MobileNav />
       <MobileTableCards />
+      <FeedbackHost />
     </>
   );
 }

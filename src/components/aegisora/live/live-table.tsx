@@ -27,6 +27,26 @@ type Props = {
   headerActions?: (ws: Workspace, reload: () => void) => ReactNode;
 };
 
+function DetailGrid({ value }: { value: unknown }) {
+  const entries = value && typeof value === "object" ? Object.entries(value as Record<string, unknown>) : [];
+  const show = (v: unknown) => {
+    if (v === null || v === undefined || v === "") return "-";
+    if (typeof v === "boolean") return v ? "Yes" : "No";
+    if (typeof v === "object") return JSON.stringify(v);
+    return String(v);
+  };
+  return (
+    <dl className="grid gap-x-6 gap-y-3 text-xs sm:grid-cols-2">
+      {entries.map(([k, v]) => (
+        <div key={k} className="min-w-0">
+          <dt className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{k.replace(/_/g, " ")}</dt>
+          <dd className="mt-0.5 max-h-32 overflow-auto break-words font-mono">{show(v)}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 export function LiveTable(props: Props) {
   return <WorkspaceGate>{(ws) => <Inner key={ws.id} ws={ws} {...props} />}</WorkspaceGate>;
 }
@@ -116,7 +136,7 @@ function Inner({ ws, table, title, description, columns, empty, select = "*", or
                   {open === r.id && (
                     <tr className="border-b border-border/60">
                       <td colSpan={columns.length + (actions ? 1 : 0)} className="bg-surface-3 px-4 py-3">
-                        <pre className="overflow-x-auto font-mono text-[11px] text-muted-foreground">{JSON.stringify(detail ? detail(r) : r, null, 2)}</pre>
+                        <DetailGrid value={detail ? detail(r) : r} />
                       </td>
                     </tr>
                   )}

@@ -9,6 +9,7 @@ import type { Workspace } from "@/lib/aegisora/use-workspace";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { btnPrimary } from "@/lib/ui";
+import { confirmDialog, notify } from "@/components/aegisora/live/feedback";
 
 function KeyTools({ ws, reload }: { ws: Workspace; reload: () => void }) {
   const [name, setName] = useState("");
@@ -78,7 +79,7 @@ export default function ApiKeysPage() {
       ]}
       actions={(r, reload) =>
         r.revoked_at ? null : (
-          <button className={btnGhost} onClick={async () => { if (!confirm(`Revoke "${r.name}"? Agents using it stop working immediately.`)) return; const { error } = await createClient().from("api_keys").update({ revoked_at: new Date().toISOString() }).eq("id", r.id); if (error) alert(error.message); reload(); }}>
+          <button className={btnGhost} onClick={async () => { if (!(await confirmDialog({ title: `Revoke "${r.name}"?`, body: "Agents using this key stop working immediately.", confirmLabel: "Revoke key", danger: true }))) return; const { error } = await createClient().from("api_keys").update({ revoked_at: new Date().toISOString() }).eq("id", r.id); if (error) notify(error.message, false); reload(); }}>
             Revoke
           </button>
         )

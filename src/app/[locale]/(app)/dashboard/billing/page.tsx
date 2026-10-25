@@ -264,7 +264,7 @@ export default function BillingPage() {
         null;
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 py-10 lg:px-10">
+    <div className="mx-auto w-full max-w-7xl">
       <div className="flex flex-col gap-6 border-b border-border pb-8 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
@@ -423,6 +423,6 @@ export default function BillingPage() {
           )}
         </div>
       </section>
-    </main>
+    </div>
   );
 }

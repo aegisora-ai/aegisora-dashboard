@@ -1,0 +1,24 @@
+===== ISLEM LOGU =====
+YAZILDI  src\components\aegisora\live\feedback.tsx
+YAZILDI  src\app\[locale]\(app)\layout.tsx
+GUNCELLENDI  src\app\[locale]\(app)\dashboard\agents\page.tsx
+GUNCELLENDI  src\app\[locale]\(app)\dashboard\policies\page.tsx
+GUNCELLENDI  src\app\[locale]\(app)\dashboard\webhooks\page.tsx
+GUNCELLENDI  src\app\[locale]\(app)\dashboard\api-keys\page.tsx
+GUNCELLENDI  src\app\[locale]\(app)\dashboard\incidents\page.tsx
+GUNCELLENDI  src\app\[locale]\(app)\dashboard\team\page.tsx
+GUNCELLENDI  src\app\[locale]\(app)\dashboard\billing\page.tsx
+YAZILDI  src\app\[locale]\(app)\dashboard\risk\page.tsx
+GUNCELLENDI  src\components\aegisora\command-palette.tsx
+YAZILDI  src\app\[locale]\(app)\dashboard\identity\page.tsx
+YAZILDI  src\components\aegisora\welcome-tour.tsx
+GUNCELLENDI  src\components\aegisora\live\live-table.tsx
+
+===== KALAN alert/confirm =====
+(yok)
+
+===== risk sayfasina kalan link =====
+(yok)
+
+===== TSC =====
+HATA YOK

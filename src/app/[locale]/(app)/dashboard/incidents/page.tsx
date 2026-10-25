@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { LiveTable } from "@/components/aegisora/live/live-table";
 import { Badge, btnGhost, fmt } from "@/components/aegisora/live/ui";
+import { confirmDialog, notify } from "@/components/aegisora/live/feedback";
 
 export default function IncidentsPage() {
   return (
@@ -23,7 +24,7 @@ export default function IncidentsPage() {
             className={btnGhost}
             onClick={async () => {
               const { error } = await createClient().from("incidents").update({ status: "resolved", resolved_at: new Date().toISOString() }).eq("id", r.id);
-              if (error) alert(error.message);
+              if (error) notify(error.message, false); else notify("Incident resolved.");
               reload();
             }}
           >

@@ -8,6 +8,7 @@ import type { Workspace } from "@/lib/aegisora/use-workspace";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { btnPrimary } from "@/lib/ui";
+import { confirmDialog, notify } from "@/components/aegisora/live/feedback";
 
 const STARTERS = [
   { name: "Safe start: block secrets access", action_pattern: "secrets.*", decision: "BLOCK", priority: 10 },
@@ -121,10 +122,10 @@ export default function PoliciesPage() {
       ]}
       actions={(r, reload) => (
         <div className="flex justify-end gap-2">
-          <button className={btnGhost} onClick={async () => { const { error } = await createClient().from("policies").update({ enabled: !r.enabled }).eq("id", r.id); if (error) alert(error.message); reload(); }}>
+          <button className={btnGhost} onClick={async () => { const { error } = await createClient().from("policies").update({ enabled: !r.enabled }).eq("id", r.id); if (error) notify(error.message, false); reload(); }}>
             {r.enabled ? "Disable" : "Enable"}
           </button>
-          <button className={btnGhost} onClick={async () => { if (!confirm(`Delete policy "${r.name}"?`)) return; const { error } = await createClient().from("policies").delete().eq("id", r.id); if (error) alert(error.message); reload(); }}>
+          <button className={btnGhost} onClick={async () => { if (!(await confirmDialog({ title: `Delete policy "${r.name}"?`, body: "Agents are no longer governed by it. This cannot be undone.", confirmLabel: "Delete policy", danger: true }))) return; const { error } = await createClient().from("policies").delete().eq("id", r.id); if (error) notify(error.message, false); reload(); }}>
             Delete
           </button>
         </div>
