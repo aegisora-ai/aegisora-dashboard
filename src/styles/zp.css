@@ -324,3 +324,14 @@ html .zp-art, html .zp-mock { border-radius: 12px; }
 html .zp-pill { box-shadow: none; border-color: var(--zp-line-strong); }
 html .zp-pill--bad { border-color: var(--zp-block); }
 html .zp-pill--good { border-color: var(--zp-brand); }
+/* zapier-motion-v9 */
+html .zp-header { transition: box-shadow .25s, background .25s; }
+html .zp-header.is-scrolled { box-shadow: 0 8px 24px rgba(10,20,49,.08); }
+html.dark .zp-header.is-scrolled { box-shadow: 0 8px 28px rgba(0,0,0,.45); }
+html .zp-tab, html .zp-mega-item, html .zp-cap, html .zp-step { transition: transform .2s, background .2s, border-color .2s, box-shadow .2s; }
+html .zp-tab:hover, html .zp-cap:hover { transform: translateY(-3px); }
+html .zp-btn--primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px color-mix(in srgb, var(--zp-brand) 35%, transparent); }
+html .zp-btn:active { transform: translateY(1px); box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  html .zp-tab:hover, html .zp-cap:hover, html .zp-btn--primary:hover { transform: none; }
+}

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Logo } from "@/components/aegisora/logo";
+import { ZpMotion } from "@/components/zp/motion";
 import { ThemeToggle } from "@/components/aegisora/theme-toggle";
 import { SOCIALS } from "@/lib/socials";
 import { headerCtas, mainNav } from "@/lib/main-nav";
@@ -41,6 +42,7 @@ export function ZpHeader() {
 
   return (
     <>
+      <ZpMotion />
 
 
       <header className="zp zp-header">
