@@ -86,7 +86,12 @@ async function audit(page: Page) {
       const layers: number[][] = [];
       let n: Element | null = el;
       while (n) {
-        const bg = rgba(getComputedStyle(n).backgroundColor);
+        const st = getComputedStyle(n);
+        let bg = rgba(st.backgroundColor);
+        if (bg[3] === 0 && st.backgroundImage.includes("gradient")) {
+          const stops = (st.backgroundImage.match(/rgba?\([^)]*\)/g) || []).map((c) => rgba(c));
+          if (stops.length) bg = stops.reduce((a, b) => (lum(a[0], a[1], a[2]) >= lum(b[0], b[1], b[2]) ? a : b));
+        }
         if (bg[3] > 0) layers.push(bg);
         if (bg[3] >= 0.99) break;
         n = n.parentElement;
