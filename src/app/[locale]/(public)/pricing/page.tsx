@@ -128,8 +128,8 @@ const FAQ: [string, string][] = [
 
 function CellView({ v }: { v: string }) {
   if (v === "yes") return <Check className="mx-auto size-5 text-emerald-400" aria-label="Included" />;
-  if (v === "no") return <Minus className="mx-auto size-5 text-white/30" aria-label="Not offered" />;
-  return <span className="text-xs font-medium text-white/60">{v}</span>;
+  if (v === "no") return <Minus className="mx-auto size-5 text-foreground/30" aria-label="Not offered" />;
+  return <span className="text-xs font-medium text-foreground/60">{v}</span>;
 }
 
 const COLS = "grid grid-cols-[1.7fr_1fr_1fr_1fr] items-center gap-2";
@@ -157,14 +157,14 @@ export default function PricingPage() {
               key={p.name}
               className={
                 "relative flex flex-col rounded-2xl border p-6 md:p-7 " +
-                (p.featured ? "border-sky-400/60 bg-white/[0.08]" : "border-white/10 bg-white/[0.04]")
+                (p.featured ? "border-primary/60 bg-surface-3" : "border-border bg-surface-1")
               }
             >
               {p.badge ? (
                 <span
                   className={
                     "absolute -top-3 right-6 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide " +
-                    (p.featured ? "bg-white text-[#0a2a7a]" : "bg-white/15 text-white/80")
+                    (p.featured ? "bg-primary text-primary-foreground" : "bg-surface-3 text-foreground/80")
                   }
                 >
                   {p.badge.toUpperCase()}
@@ -172,12 +172,12 @@ export default function PricingPage() {
               ) : null}
               <h3 className="text-lg font-semibold">{p.name}</h3>
               <p className="mt-4 text-4xl font-medium tracking-[-0.02em]">{p.price}</p>
-              <p className="mt-1 text-xs font-medium text-sky-300">{p.sub}</p>
-              <p className="mt-4 min-h-[3.5rem] text-sm leading-relaxed text-white/70">{p.blurb}</p>
-              <dl className="mt-5 grid grid-cols-3 gap-2 border-t border-white/10 pt-4">
+              <p className="mt-1 text-xs font-medium text-primary">{p.sub}</p>
+              <p className="mt-4 min-h-[3.5rem] text-sm leading-relaxed text-foreground/70">{p.blurb}</p>
+              <dl className="mt-5 grid grid-cols-3 gap-2 border-t border-border pt-4">
                 {p.meta.map(([k, v]) => (
                   <div key={k}>
-                    <dt className="text-[10px] font-semibold tracking-wider text-white/50">{k}</dt>
+                    <dt className="text-[10px] font-semibold tracking-wider text-foreground/50">{k}</dt>
                     <dd className="mt-1 text-xs font-medium">{v}</dd>
                   </div>
                 ))}
@@ -187,34 +187,34 @@ export default function PricingPage() {
                 className={
                   "mt-6 inline-flex h-11 items-center justify-center rounded-md text-sm font-semibold transition " +
                   (p.featured
-                    ? "bg-white text-[#0a2a7a] hover:bg-white/90"
-                    : "border border-white/40 text-white hover:bg-white/10")
+                    ? "bg-primary text-primary-foreground hover:bg-primary-hover"
+                    : "border border-border text-foreground hover:bg-surface-3")
                 }
               >
                 {p.cta.label}
               </Link>
-              <Link href={p.more.href} className="mt-4 inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-sky-300 hover:text-sky-200">
+              <Link href={p.more.href} className="mt-4 inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-hover">
                 {p.more.label} <ArrowRight className="size-4" />
               </Link>
             </div>
           ))}
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-6 rounded-2xl border border-white/10 bg-white/[0.04] p-6 md:p-8">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-6 rounded-2xl border border-border bg-surface-1 p-6 md:p-8">
           <div className="max-w-3xl">
             <h3 className="text-xl font-semibold">Pilot commercial scope</h3>
-            <p className="mt-3 text-sm leading-6 text-white/70">
+            <p className="mt-3 text-sm leading-6 text-foreground/70">
               Any paid pilot must be scoped and agreed in writing before customer data or production systems are connected. The proposal should specify workflow, environment, term, support boundaries, retention, security prerequisites, success criteria, and rollback.
             </p>
-            <p className="mt-3 text-sm leading-6 text-white/70">
+            <p className="mt-3 text-sm leading-6 text-foreground/70">
               Price, tax treatment, hosting, service levels, and production availability are not published or represented as established offers. There is no Stripe checkout or automated subscription billing today.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/enterprise" className="inline-flex h-11 items-center rounded-md bg-white px-5 text-sm font-semibold text-[#0a2a7a] hover:bg-white/90">
+            <Link href="/enterprise" className="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
               Pilot overview
             </Link>
-            <Link href="/docs" className="inline-flex h-11 items-center rounded-md border border-white/50 px-5 text-sm font-semibold text-white hover:bg-white/10">
+            <Link href="/docs" className="inline-flex h-11 items-center rounded-md border border-border px-5 text-sm font-semibold text-foreground hover:bg-surface-3">
               Review API docs
             </Link>
           </div>
@@ -235,19 +235,19 @@ export default function PricingPage() {
       >
         <div className="space-y-3 md:hidden">
           {GROUPS.map((g, gi) => (
-            <details key={g.title} open={gi === 0} className="group rounded-xl border border-white/10 bg-white/[0.04]">
+            <details key={g.title} open={gi === 0} className="group rounded-xl border border-border bg-surface-1">
               <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-4 text-base font-semibold [&::-webkit-details-marker]:hidden">
                 {g.title}
                 <ChevronDown className="size-5 transition-transform group-open:rotate-180" />
               </summary>
-              <div className="divide-y divide-white/10 border-t border-white/10">
+              <div className="divide-y divide-border border-t border-border">
                 {g.rows.map((r) => (
                   <div key={r[0]} className="px-4 py-3">
                     <p className="text-sm font-medium">{r[0]}</p>
                     <dl className="mt-2 space-y-1.5">
                       {PLANS.map((p, pi) => (
                         <div key={p.name} className="flex items-center justify-between gap-3 text-xs">
-                          <dt className="text-white/60">{p.name}</dt>
+                          <dt className="text-foreground/60">{p.name}</dt>
                           <dd><CellView v={r[pi + 1]} /></dd>
                         </div>
                       ))}
@@ -268,14 +268,14 @@ export default function PricingPage() {
               ))}
             </div>
             {GROUPS.map((g, gi) => (
-              <details key={g.title} open={gi === 0} className="group border-t-2 border-white/20">
+              <details key={g.title} open={gi === 0} className="group border-t-2 border-border">
                 <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-lg font-semibold [&::-webkit-details-marker]:hidden">
                   {g.title}
                   <ChevronDown className="size-5 transition-transform group-open:rotate-180" />
                 </summary>
                 <div className="pb-3">
                   {g.rows.map((r) => (
-                    <div key={r[0]} className={COLS + " border-t border-white/10 py-3 text-sm"}>
+                    <div key={r[0]} className={COLS + " border-t border-border py-3 text-sm"}>
                       <span className="font-medium">{r[0]}</span>
                       <span className="text-center"><CellView v={r[1]} /></span>
                       <span className="text-center"><CellView v={r[2]} /></span>
@@ -285,7 +285,7 @@ export default function PricingPage() {
                 </div>
               </details>
             ))}
-            <div className="border-t-2 border-white/20" />
+            <div className="border-t-2 border-border" />
           </div>
         </div>
       </Section>
@@ -293,17 +293,17 @@ export default function PricingPage() {
       <Section title="FAQ">
         <div className="max-w-4xl">
           {FAQ.map(([q, a]) => (
-            <details key={q} className="group border-t border-white/10 last:border-b">
+            <details key={q} className="group border-t border-border last:border-b">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-base font-semibold [&::-webkit-details-marker]:hidden">
                 {q}
                 <span className="text-2xl font-light leading-none transition-transform group-open:rotate-45" aria-hidden>+</span>
               </summary>
-              <p className="pb-5 text-sm leading-relaxed text-white/70">{a}</p>
+              <p className="pb-5 text-sm leading-relaxed text-foreground/70">{a}</p>
             </details>
           ))}
-          <p className="mt-8 text-sm text-white/70">
+          <p className="mt-8 text-sm text-foreground/70">
             Questions about pricing?{" "}
-            <Link href="/pilot" className="font-semibold text-sky-300 underline underline-offset-4">Contact us</Link>{" "}
+            <Link href="/pilot" className="font-semibold text-primary underline underline-offset-4">Contact us</Link>{" "}
             about pilot scope, security prerequisites and success criteria.
           </p>
         </div>

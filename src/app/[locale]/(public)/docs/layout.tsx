@@ -6,7 +6,7 @@ export default function DocsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto max-w-[1280px] px-4 py-10 text-white sm:px-6 md:py-20">
+    <div className="mx-auto max-w-[1280px] px-4 py-10 text-foreground sm:px-6 md:py-20">
       <details className="mb-8 rounded-xl border border-border bg-surface-1 px-4 py-3 lg:hidden">
         <summary className="cursor-pointer text-sm font-semibold">Documentation menu</summary>
         <div className="mt-3">

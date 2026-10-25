@@ -36,11 +36,11 @@ export default function AboutPage() {
       </Section>
 
       <Section eyebrow="Our position" title="Reasoning is not authority.">
-        <div className="max-w-2xl space-y-4 text-white/75">
+        <div className="max-w-2xl space-y-4 text-foreground/75">
           <p className="text-base leading-relaxed sm:text-lg">
             AI agents should not receive unrestricted execution authority simply because they can reason or generate an action.
           </p>
-          <p className="font-mono text-sm tracking-wide text-sky-300">
+          <p className="font-mono text-sm tracking-wide text-primary">
             Execution should be governed. Execution should be enforceable. Execution should be auditable.
           </p>
         </div>
