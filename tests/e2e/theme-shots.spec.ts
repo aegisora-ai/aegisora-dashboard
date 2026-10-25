@@ -16,7 +16,12 @@ const PAGES = [
 async function login(page: Page) {
   await page.goto("/login", { waitUntil: "domcontentloaded" });
   const submit = page.locator('button[type="submit"]');
-  await page.locator('input[name="email"]').fill(email!);
+  await page.waitForLoadState("networkidle", { timeout: 15_000 }).catch(() => {});
+  await page.waitForTimeout(1500);
+  await dismissOverlays(page);
+  const em = page.locator('input[name="email"]');
+  await em.click();
+  await em.pressSequentially(email!, { delay: 15 });
   await expect(submit).toBeEnabled();
   await submit.click();
   const pw = page.locator('input[name="password"]');
