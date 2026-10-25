@@ -22,11 +22,14 @@ export function ZpMotion() {
   const pathname = usePathname();
 
   useLayoutEffect(() => {
+    // Tema: destekli sayfada kayitli tercih, digerlerinde koyu.
     try {
       const ok = supportsLight(pathname);
       const s = localStorage.getItem(THEME_KEY);
       document.documentElement.classList.toggle("dark", !(ok && s === "light"));
-    } catch { /* storage unavailable */ }
+    } catch {
+      /* storage unavailable */
+    }
 
     const mm = gsap.matchMedia();
 
