@@ -1,6 +1,7 @@
 import Link from "next/link";
 import "@/styles/zp.css";
 import PilotForm from "./PilotForm";
+import styles from "./site.module.css";
 import { PLANS, type Cta, type PageData, type Section } from "./content";
 
 function to(locale: string, href: string): string {
@@ -142,7 +143,7 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
       return (
         <>
           <Head id="apply" title={s.title} intro={s.intro} />
-          <div className="dark zpk-darkpanel">
+          <div className={"dark zpk-darkpanel " + styles.root}>
             <PilotForm locale={locale} />
           </div>
         </>
