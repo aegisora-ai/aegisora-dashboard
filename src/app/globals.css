@@ -458,3 +458,39 @@ a, button, summary, select, [role="button"], [role="tab"] {
   }
 }
 /* <<< aegisora-v6 */
+
+/* >>> aegisora-brand-v1: gradient brand tokens, additive. Remove this block to undo. */
+:root {
+  --aeg-brand-grad: linear-gradient(135deg, #0a5fe8 0%, #2d9bff 100%);
+  --aeg-brand-grad-hover: linear-gradient(135deg, #084dc0 0%, #1d88ee 100%);
+  --aeg-glow-a: rgba(120, 180, 255, 0.26);
+  --aeg-glow-b: rgba(45, 108, 240, 0.24);
+  --aeg-card-line: rgba(10, 20, 49, 0.1);
+  --aeg-card-shadow: 0 1px 2px rgba(10, 20, 49, 0.04), 0 8px 24px -12px rgba(10, 20, 49, 0.12);
+}
+.dark {
+  --aeg-brand-grad: linear-gradient(135deg, #0d5ef0 0%, #3aa8ff 100%);
+  --aeg-brand-grad-hover: linear-gradient(135deg, #2a74ff 0%, #68bdff 100%);
+  --aeg-glow-a: rgba(21, 153, 255, 0.36);
+  --aeg-glow-b: rgba(10, 95, 232, 0.5);
+  --aeg-card-line: rgba(150, 200, 255, 0.14);
+  --aeg-card-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+}
+.aeg-backdrop { position: relative; isolation: isolate; }
+.aeg-backdrop::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 14% 8%, var(--aeg-glow-a), transparent 70%),
+    radial-gradient(55% 50% at 88% 92%, var(--aeg-glow-b), transparent 72%);
+}
+.aeg-btn-brand {
+  background-image: var(--aeg-brand-grad); color: #fff; border: 0;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+.aeg-btn-brand:hover { background-image: var(--aeg-brand-grad-hover); }
+.aeg-btn-brand:active { transform: translateY(1px); }
+.aeg-card {
+  border: 1px solid var(--aeg-card-line); border-radius: 14px; box-shadow: var(--aeg-card-shadow);
+  background: var(--surface-2);
+}
+/* <<< aegisora-brand-v1 */
