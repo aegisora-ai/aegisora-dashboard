@@ -99,7 +99,7 @@ export function AegisoraSound() {
   const [active, setActive] = useState(false);
   const enabled = useSyncExternalStore(subscribeSound, isSoundEnabled, () => true);
   const lastInput = useRef(0);
-  const quietUntil = useRef(Date.now() + QUIET_MS);
+  const quietUntil = useRef(0);
 
   /* active only inside the dashboard shell */
   useEffect(() => {

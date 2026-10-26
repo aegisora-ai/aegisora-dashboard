@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 type Item = { id: string; href: string; label: string; icon: LucideIcon };
 type Density = "compact" | "standard" | "large";
 type Prefs = { tabs: string[]; density: Density; home: string };
+type Sheet = null | "more" | "customize";
 
 const ITEMS: Item[] = [
   { id: "overview", href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -66,34 +67,68 @@ export function MobileNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [prefs, setPrefs] = useState<Prefs>(DEFAULTS);
-  const [sheet, setSheet] = useState<null | "more" | "customize">(null);
+  const [sheetState, setSheetState] = useState<{ pathname: string; value: Sheet }>({
+    pathname,
+    value: null,
+  });
+  const sheet = sheetState.pathname === pathname ? sheetState.value : null;
+  const setSheet = useCallback((value: Sheet) => {
+    setSheetState({ pathname, value });
+  }, [pathname]);
   const [counts, setCounts] = useState({ approvals: 0, incidents: 0 });
   const sheetRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const drag = useRef<{ y: number; dy: number } | null>(null);
 
   useEffect(() => {
-    let p = DEFAULTS;
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) p = sanitize(JSON.parse(raw));
-    } catch { /* storage unavailable */ }
-    setPrefs(p);
-    document.documentElement.dataset.density = p.density;
+    let cancelled = false;
+
+    const loadTimer = window.setTimeout(() => {
+      let stored = DEFAULTS;
+      try {
+        const raw = window.localStorage.getItem(KEY);
+        if (raw) stored = sanitize(JSON.parse(raw));
+      } catch { /* storage unavailable */ }
+
+      if (!cancelled) setPrefs(stored);
+    }, 0);
+
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== KEY) return;
+
+      let stored = DEFAULTS;
+      try {
+        if (event.newValue) stored = sanitize(JSON.parse(event.newValue));
+      } catch { /* storage unavailable */ }
+
+      setPrefs(stored);
+    };
+
+    window.addEventListener("storage", onStorage);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(loadTimer);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.density = prefs.density;
+  }, [prefs.density]);
+
+  useEffect(() => {
     try {
       const atRoot = window.location.pathname.replace(/^\/[a-z]{2}(?=\/)/, "") === "/dashboard";
-      if (atRoot && p.home !== "overview" && !sessionStorage.getItem("aeg.dash.home")) {
+      if (atRoot && prefs.home !== "overview" && !sessionStorage.getItem("aeg.dash.home")) {
         sessionStorage.setItem("aeg.dash.home", "1");
-        const it = byId(p.home);
+        const it = byId(prefs.home);
         if (it && window.matchMedia("(max-width: 767px)").matches) router.replace(it.href);
       }
     } catch { /* storage unavailable */ }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [pathname, prefs.home, router]);
 
   const save = (next: Prefs) => {
     setPrefs(next);
-    document.documentElement.dataset.density = next.density;
     try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* storage unavailable */ }
   };
 
@@ -109,14 +144,18 @@ export function MobileNav() {
   }, []);
 
   useEffect(() => {
-    refresh();
-    const t = setInterval(refresh, 60000);
-    const onVis = () => { if (document.visibilityState === "visible") refresh(); };
+    const initial = window.setTimeout(() => { void refresh(); }, 0);
+    const t = window.setInterval(() => { void refresh(); }, 60000);
+    const onVis = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
     document.addEventListener("visibilitychange", onVis);
-    return () => { clearInterval(t); document.removeEventListener("visibilitychange", onVis); };
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(t);
+      document.removeEventListener("visibilitychange", onVis);
+    };
   }, [refresh, pathname]);
-
-  useEffect(() => { setSheet(null); }, [pathname]);
 
   useEffect(() => {
     if (!sheet) return undefined;
@@ -126,7 +165,7 @@ export function MobileNav() {
     document.body.style.overflow = "hidden";
     document.addEventListener("keydown", onKey);
     return () => { document.body.style.overflow = prev; document.removeEventListener("keydown", onKey); };
-  }, [sheet]);
+  }, [sheet, setSheet]);
 
   const onTouchStart = (e: ReactTouchEvent) => {
     const t = e.touches[0];
