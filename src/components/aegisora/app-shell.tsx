@@ -109,7 +109,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <aside data-app-sidebar className={cn("sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-surface-1", collapsed ? "lg:hidden" : "lg:flex")}>
           <div className="border-b border-border px-5 py-4">
             <Logo />
-            <div className="mt-1 pl-[32px] font-mono text-[10px] tracking-[0.25em] text-muted-foreground">CONTROL</div>
+            <div className="mt-1 pl-[32px] text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">Control</div>
           </div>
           <div className="flex-1 overflow-y-auto">
             <SidebarNav />
@@ -135,7 +135,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
 
         <div className="relative isolate flex min-w-0 flex-1 flex-col">
-          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[640px] overflow-hidden"><AuroraCanvas intensity={0.8} /></div>
+          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[640px] overflow-hidden"><AuroraCanvas intensity={0.35} /></div>
           <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
             <div className="flex h-14 items-center gap-3 px-4 md:px-6">
               <button
@@ -204,7 +204,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           
 
-          <main data-app-main className="flex-1 px-4 py-8 md:px-6">{children}</main>
+          <main data-app-main className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-8 md:px-8">{children}</main>
         </div>
 
         <CommandPalette open={palette} onClose={() => setPalette(false)} />

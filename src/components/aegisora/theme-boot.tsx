@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { THEME_KEY, supportsLight } from "@/lib/theme";
+import { THEME_KEY, isDarkTheme } from "@/lib/theme";
 
 /** Applies the saved theme on pages that support light mode, navy everywhere else. */
 export function ThemeBoot() {
@@ -12,7 +12,7 @@ export function ThemeBoot() {
     try {
       stored = localStorage.getItem(THEME_KEY);
     } catch {}
-    const dark = !(supportsLight(pathname) && stored === "light");
+    const dark = isDarkTheme(pathname, stored);
     document.documentElement.classList.toggle("dark", dark);
   }, [pathname]);
   return null;

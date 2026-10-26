@@ -20,7 +20,7 @@ const barlow = Barlow_Condensed({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#020b2e",
+  themeColor: "#ffffff",
   viewportFit: "cover",
 };
 
@@ -41,7 +41,7 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const locale = await getLocale();
   return (
-    <html lang={locale} className={barlow.variable + " dark"} suppressHydrationWarning>
+    <html lang={locale} className={barlow.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>

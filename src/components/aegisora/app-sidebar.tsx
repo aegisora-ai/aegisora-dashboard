@@ -132,7 +132,7 @@ export function SidebarNav() {
                         "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                         focusRing,
                         active
-                          ? "bg-primary/10 font-medium text-foreground"
+                          ? "bg-primary/10 font-semibold text-primary"
                           : "text-muted-foreground hover:bg-surface-3 hover:text-foreground",
                       )}
                     >

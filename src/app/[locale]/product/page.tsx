@@ -25,11 +25,11 @@ export default function ProductIndex() {
         <CardGrid
           cols={3}
           items={[
-            { icon: "Workflow", title: "Runtime", body: "The eight-stage pipeline every action passes through, from request to evidence.", href: "/docs/technical" },
-            { icon: "ShieldCheck", title: "Policies", body: "Rules with conditions and redaction, enforced on every call and versioned.", href: "/docs/technical" },
-            { icon: "Gauge", title: "Decisions", body: "ALLOW, BLOCK or ESCALATE with a reason, a decision id and an evidence hash.", href: "/docs/technical" },
-            { icon: "UserCheck", title: "Approvals", body: "Human review for the narrow set of actions that need it.", href: "/docs/technical" },
-            { icon: "ScrollText", title: "Evidence", body: "A SHA-256 hash-chained log you can verify independently.", href: "/docs/technical" },
+            { icon: "Workflow", title: "Runtime", body: "The eight-stage pipeline every action passes through, from request to evidence.", href: "/docs/technical#pipeline" },
+            { icon: "ShieldCheck", title: "Policies", body: "Rules with conditions and redaction, enforced on every call and versioned.", href: "/docs/technical#authority" },
+            { icon: "Gauge", title: "Decisions", body: "ALLOW, BLOCK or ESCALATE with a reason, a decision id and an evidence hash.", href: "/docs/technical#decisions" },
+            { icon: "UserCheck", title: "Approvals", body: "Human review for the narrow set of actions that need it.", href: "/docs/technical#approvals" },
+            { icon: "ScrollText", title: "Evidence", body: "A SHA-256 hash-chained log you can verify independently.", href: "/docs/technical#evidence" },
           ]}
         />
       </Section>

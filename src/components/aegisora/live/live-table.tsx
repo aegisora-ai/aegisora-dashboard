@@ -110,12 +110,12 @@ function Inner({ ws, table, title, description, columns, empty, select = "*", or
         </Panel>
       )}
       {rows !== null && rows.length > 0 && (
-        <div className="overflow-x-auto rounded-md border border-border bg-surface-1">
+        <div className="overflow-x-auto rounded-xl border border-[color:var(--aeg-card-line)] bg-card [box-shadow:var(--aeg-card-shadow)]">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border">
                 {columns.map((c) => (
-                  <th key={c.label} className="px-4 py-2.5 font-mono text-[10px] font-normal tracking-wider text-muted-foreground">{c.label.toUpperCase()}</th>
+                  <th key={c.label} className="bg-surface-1 px-4 py-3 text-xs font-medium text-muted-foreground">{c.label}</th>
                 ))}
                 {actions && <th className="px-4 py-2.5" />}
               </tr>
@@ -123,9 +123,9 @@ function Inner({ ws, table, title, description, columns, empty, select = "*", or
             <tbody>
               {rows.map((r) => (
                 <Fragment key={r.id}>
-                  <tr className="cursor-pointer border-b border-border/60 hover:bg-surface-3" onClick={() => setOpen(open === r.id ? null : r.id)}>
+                  <tr className="cursor-pointer border-b border-border/60 transition-colors hover:bg-surface-1" onClick={() => setOpen(open === r.id ? null : r.id)}>
                     {columns.map((c) => (
-                      <td key={c.label} className="px-4 py-2.5 align-top">{c.render(r)}</td>
+                      <td key={c.label} className="px-4 py-3 align-top">{c.render(r)}</td>
                     ))}
                     {actions && (
                       <td className="px-4 py-2.5 text-right" onClick={(e) => e.stopPropagation()}>

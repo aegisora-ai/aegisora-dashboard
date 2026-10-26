@@ -505,3 +505,14 @@ a, button, summary, select, [role="button"], [role="tab"] {
   font-family: var(--font-sans);
 }
 /* <<< aegisora-font-v1 */
+
+/* AEGISORA-LIGHT-BLUE */
+:root:not(.dark){--background:#ffffff;--foreground:#0a2540;--primary:#1d6bff;--primary-foreground:#ffffff;--ring:#1d6bff;--sidebar-primary:#1d6bff;--sidebar-primary-foreground:#ffffff;--chart-1:#1d6bff;--chart-2:#38bdf8;--chart-3:#0b4fd6;--chart-4:#7dd3fc;--chart-5:#1e3a8a}
+
+/* AEG-V14:START */
+/* Dashboard polish. Managed by script; remove this block to undo. */
+.aeg-app main h1 { letter-spacing: -0.02em; }
+.aeg-app table tbody tr:last-child { border-bottom: 0; }
+.aeg-app ::selection { background: color-mix(in srgb, var(--primary) 25%, transparent); }
+.aeg-app :where(a, button, [role="button"]) { transition: color .15s ease, background-color .15s ease, border-color .15s ease; }
+/* AEG-V14:END */

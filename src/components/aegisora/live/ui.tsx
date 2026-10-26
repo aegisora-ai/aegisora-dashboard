@@ -9,7 +9,7 @@ import { btnPrimary } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export const selectCls = "h-9 w-full rounded-md border border-border bg-surface-1 px-2 text-sm";
-export const btnGhost = "inline-flex h-8 items-center rounded-md border border-border px-3 text-xs hover:bg-surface-3 disabled:opacity-50";
+export const btnGhost = "inline-flex h-8 items-center rounded-md border border-border bg-background px-3 text-xs font-medium shadow-sm transition-colors hover:bg-surface-3 disabled:opacity-50";
 
 export const fmt = (v: unknown) =>
   v ? new Date(String(v)).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }) : "-";
@@ -24,7 +24,7 @@ const tones: Record<string, string> = {
 export function Badge({ value }: { value: unknown }) {
   const v = String(value ?? "");
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 font-mono text-[10px] tracking-wider", tones[v] ?? "text-muted-foreground")}>
+    <span className={cn("inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 text-[11px] font-semibold tracking-wide", tones[v] ?? "text-muted-foreground")}>
       <i aria-hidden="true" className="size-1.5 rounded-full bg-current" />{v.toUpperCase()}
     </span>
   );
@@ -48,7 +48,7 @@ export function Panel({ children, className }: { children: ReactNode; className?
 
 export function Notice({ ok, children }: { ok?: boolean; children: ReactNode }) {
   return (
-    <p role={ok ? "status" : "alert"} className={cn("rounded-sm border px-3 py-2 text-xs", ok ? "border-allow/30 bg-surface-3 text-allow" : "border-block/30 bg-block-muted text-block")}>
+    <p role={ok ? "status" : "alert"} className={cn("rounded-md border px-3 py-2.5 text-sm", ok ? "border-allow/30 bg-surface-3 text-allow" : "border-block/30 bg-block-muted text-block")}>
       {children}
     </p>
   );

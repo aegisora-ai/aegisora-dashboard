@@ -4,7 +4,7 @@ import { useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { usePathname } from "@/i18n/navigation";
-import { supportsLight, THEME_KEY } from "@/lib/theme";
+import { isDarkTheme, THEME_KEY } from "@/lib/theme";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -24,9 +24,8 @@ export function ZpMotion() {
   useLayoutEffect(() => {
     // Tema: destekli sayfada kayitli tercih, digerlerinde koyu.
     try {
-      const ok = supportsLight(pathname);
       const s = localStorage.getItem(THEME_KEY);
-      document.documentElement.classList.toggle("dark", !(ok && s === "light"));
+      document.documentElement.classList.toggle("dark", isDarkTheme(pathname, s));
     } catch {
       /* storage unavailable */
     }

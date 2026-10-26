@@ -397,3 +397,125 @@ html.dark a.zpk-card:hover{box-shadow:0 12px 28px rgba(0,0,0,.4)}
 .zpk-eb--accent{color:var(--primary)}
 .zpk-code{overflow-x:auto;margin:0;padding:20px;border-radius:12px;border:1px solid rgba(150,180,255,.2);background:#04103a;color:#d6eaff;font-family:var(--zp-mono,ui-monospace,monospace);font-size:13px;line-height:1.65}
 .zpk-caption{margin-top:8px;font-size:12px;color:color-mix(in srgb,var(--foreground) 55%,transparent)}
+
+/* STRIPE-V11:START */
+/* Stripe-style tokens and polish. Remove this block (or restore zp.css.bak-stripe) to undo. */
+html .zp, html .zp-mock {
+  --zp-bg:#ffffff; --zp-bg-alt:#f6f9fc; --zp-card:#ffffff;
+  --zp-ink:#0a2540; --zp-ink-2:#425466; --zp-muted:#727f96;
+  --zp-line:#e5edf5; --zp-line-strong:#d5dfeb;
+  --zp-brand:#5b9fff; --zp-brand-hover:#3a8bfd; --zp-brand-soft:#eef5ff; --zp-on-brand:#ffffff;
+  --zp-allow:#0e9f6e; --zp-block:#e5484d; --zp-escalate:#d97706;
+  --zp-allow-bg:rgba(14,159,110,.12); --zp-block-bg:rgba(229,72,77,.12); --zp-escalate-bg:rgba(217,119,6,.14);
+  --zp-art:radial-gradient(55% 60% at 12% 18%,rgba(144,224,255,.9),transparent 70%),radial-gradient(50% 55% at 55% 8%,rgba(96,155,238,.75),transparent 70%),radial-gradient(45% 55% at 92% 40%,rgba(255,203,87,.8),transparent 70%),radial-gradient(50% 60% at 70% 100%,rgba(255,51,61,.5),transparent 70%),#f0f6ff;
+  --zp-shadow:0 50px 100px -20px rgba(50,68,93,.25),0 30px 60px -30px rgba(0,0,0,.3);
+  --zp-shadow-s:0 13px 27px -5px rgba(50,68,93,.15),0 8px 16px -8px rgba(0,0,0,.2);
+}
+html.dark .zp, html .zp-band {
+  --zp-brand:#73adff; --zp-brand-hover:#92bfff; --zp-brand-soft:rgba(91,159,255,.22); --zp-on-brand:#ffffff;
+  --zp-shadow:0 50px 100px -20px rgba(0,0,0,.6),0 30px 60px -30px rgba(0,0,0,.6);
+  --zp-shadow-s:0 13px 27px -5px rgba(0,0,0,.45);
+}
+html.dark .zp { --zp-art:radial-gradient(55% 60% at 12% 18%,rgba(90,170,255,.4),transparent 70%),radial-gradient(50% 55% at 60% 8%,rgba(90,148,230,.5),transparent 70%),radial-gradient(50% 60% at 80% 100%,rgba(91,159,255,.55),transparent 70%),#0b1a4a; }
+html .zp-band { background:#0a2540; }
+
+/* typography: light, large, tight */
+html .zp-h2xl, html .zp-hxl, html .zp-hlg, html .zp-mega-title, html .zp-mode-text h3, html .zpk-h1, html .zpk-h2, html .zpk-price {
+  font-weight:300; letter-spacing:-.03em;
+}
+html .zp-h2xl { font-size:clamp(2.75rem,6.2vw,4.75rem); line-height:1.04; }
+html .zp-hxl  { font-size:clamp(2.25rem,4.6vw,3.5rem); line-height:1.07; }
+html .zp-hlg  { font-size:clamp(2rem,3.8vw,3rem); line-height:1.1; }
+html .zp-hmd, html .zp-hsm, html .zpk-card h3 { font-weight:500; }
+html .zp-lead { font-size:1.125rem; line-height:1.55; color:var(--zp-ink-2); }
+html .zp-eyebrow { color:var(--zp-brand); font-weight:600; letter-spacing:.08em; }
+html .zp-eyebrow::before { display:none; }
+html .zp-em { font-family:inherit; font-style:normal; color:var(--zp-brand); }
+html .zp-quote blockquote { font-family:var(--zp-display); font-weight:300; letter-spacing:-.025em; }
+
+/* buttons: pills */
+html .zp-btn { border-radius:999px; height:44px; padding:8px 22px; font-weight:500; }
+html .zp-btn--sm { height:36px; padding:6px 16px; }
+html .zp-btn--outline { border-color:var(--zp-line-strong); background:transparent; }
+html .zp-btn--outline:hover { background:var(--zp-bg-alt); color:var(--zp-ink); border-color:var(--zp-ink-2); }
+html .zp-btn--primary:hover { box-shadow:0 6px 16px color-mix(in srgb,var(--zp-brand) 35%,transparent); }
+html .zp-chip { border-color:var(--zp-line-strong); }
+
+/* header + mega menu */
+html .zp-header { border-bottom-color:var(--zp-line); background:color-mix(in srgb,var(--zp-bg) 88%,transparent); }
+html .zp-nav-link { font-weight:400; color:var(--zp-ink); }
+html .zp-nav-link:hover { opacity:.65; }
+html .zp-mega { box-shadow:var(--zp-shadow-s); border-bottom:0; }
+html .zp-mega-item { border-radius:10px; }
+
+/* hero: skewed gradient band */
+html .zp-hero { position:relative; overflow:hidden; isolation:isolate; }
+html .zp-hero::before {
+  content:""; position:absolute; inset:-35% -10% auto; height:135%; z-index:-1;
+  transform:skewY(-8deg); transform-origin:top left; pointer-events:none;
+  background:radial-gradient(40% 50% at 14% 30%,rgba(144,224,255,.7),transparent 70%),radial-gradient(35% 45% at 45% 14%,rgba(96,155,238,.5),transparent 70%),radial-gradient(35% 45% at 76% 34%,rgba(255,51,61,.26),transparent 70%),radial-gradient(35% 40% at 94% 20%,rgba(255,203,87,.55),transparent 70%);
+}
+html.dark .zp-hero::before { opacity:.4; }
+html .zpk-hero { background:var(--zp-bg); position:relative; isolation:isolate; }
+html .zpk-hero::before { content:""; position:absolute; inset:-40% -10% auto; height:140%; z-index:-1; transform:skewY(-8deg); transform-origin:top left; pointer-events:none;
+  background:radial-gradient(40% 50% at 14% 30%,rgba(144,224,255,.55),transparent 70%),radial-gradient(35% 45% at 50% 12%,rgba(96,155,238,.4),transparent 70%),radial-gradient(35% 40% at 92% 20%,rgba(255,203,87,.45),transparent 70%); }
+html.dark .zpk-hero::before { opacity:.35; }
+
+/* surfaces: soft cards, Stripe shadows */
+html .zp-art, html .zp-mock, html .zpk-art { border-radius:14px; }
+html .zp-mock { box-shadow:var(--zp-shadow); border-color:var(--zp-line); }
+html .zp-compare, html .zp-controls { border-radius:14px; border-color:var(--zp-line); box-shadow:var(--zp-shadow-s); }
+html .zp-lines { border-color:var(--zp-line); }
+html .zp-lines > * { border-color:var(--zp-line); }
+html .zp-tab { border-radius:12px; background:var(--zp-bg-alt); }
+html .zp-tab[aria-selected="true"] { border-color:var(--zp-brand); background:var(--zp-card); box-shadow:var(--zp-shadow-s); }
+html .zpk-card { border-radius:14px; border-color:var(--zp-line); }
+html a.zpk-card:hover { box-shadow:var(--zp-shadow-s); border-color:var(--zp-line-strong); }
+html .zpk-plan--hi { box-shadow:var(--zp-shadow-s); }
+html .zp-section { padding-top:88px; padding-bottom:88px; }
+
+/* dark bands + code: Stripe navy to indigo */
+html .zp-cta, html .zpk-cta, html .zpk-ctabox {
+  background:radial-gradient(60% 90% at 95% 120%,rgba(91,159,255,.7),transparent 70%),radial-gradient(45% 70% at 0% 0%,rgba(0,212,255,.18),transparent 70%),#0a2540;
+}
+html .zp-code, html .zpk-code, html .zpk-darkpanel { background:#0a2540; border-color:rgba(255,255,255,.12); }
+html .zp-code { box-shadow:var(--zp-shadow); }
+
+/* footer */
+html .zp-footer { background:var(--zp-bg-alt); border-top-color:var(--zp-line); }
+html .zp-footer-bar { border-top-color:var(--zp-line); }
+html .zp-footer-links a:hover { color:var(--zp-brand); }
+/* STRIPE-V11:END */
+
+/* STRIPE-V12:START */
+html .zp-hero { text-align:left; padding-top:72px; }
+html .zp-hero-grid { display:grid; gap:48px; align-items:center; }
+@media (min-width:1024px) { html .zp-hero-grid { grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:64px; } }
+html .zp-hero h1 { margin:20px 0 0; max-width:14ch; }
+html .zp-hero .zp-lead { margin:22px 0 0; max-width:34rem; }
+html .zp-hero .zp-btn-row--center { justify-content:flex-start; }
+html .zp-hero-art { min-width:0; }
+html .zp-hero-art .zp-mock-list { height:300px; }
+/* STRIPE-V12:END */
+
+/* AEG-V13:START */
+/* Brand unification, contrast and dark-mode button fix. Managed by script; remove this block to undo. */
+html .zp, html .zp-mock {
+  --zp-brand:#1d6bff; --zp-brand-hover:#0b55d9; --zp-brand-soft:#eaf1ff; --zp-brand-ink:#0b4fd6;
+  --zp-on-brand:#ffffff; --zp-muted:#5b6b82; --zp-line:#e3e8ef; --zp-line-strong:#cfd7e6;
+}
+html.dark .zp, html .zp-band {
+  --zp-brand:#5aa2ff; --zp-brand-hover:#82b8ff; --zp-brand-soft:rgba(90,162,255,.18); --zp-brand-ink:#8dbfff;
+  --zp-on-brand:#04143a; --zp-muted:#9db0dc;
+}
+html .zp-eyebrow, html .zpk-typed, html .zpk-more, html .zpk-n, html .zpk-tag,
+html .zp-accent, html .zp-em, html .zp-textlink { color:var(--zp-brand-ink); }
+html .zp-btn--primary { background:var(--zp-brand); border-color:var(--zp-brand); color:var(--zp-on-brand); }
+html .zp-btn--primary:hover { background:var(--zp-brand-hover); border-color:var(--zp-brand-hover); }
+html .zp-h2xl, html .zp-hxl, html .zp-hlg, html .zpk-h1, html .zpk-h2, html .zpk-price,
+html .zp-quote blockquote { font-weight:400; }
+html .zp-mega-title, html .zp-mode-text h3 { font-weight:600; }
+html .zpk-cta .zpk-h2, html .zpk-ctabox .zpk-h2 { color:#ffffff; }
+html .zpk-cta .zp-btn--primary, html .zpk-ctabox .zp-btn--primary { background:#ffffff; border-color:#ffffff; color:#0a2540; }
+html .zpk-cta .zp-btn--primary:hover, html .zpk-ctabox .zp-btn--primary:hover { background:#e6efff; border-color:#e6efff; }
+/* AEG-V13:END */
