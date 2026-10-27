@@ -74,7 +74,15 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
       setNotice(t("signup.checkInbox"));
       setLoading(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("common.genericError"));
+      const raw = err instanceof Error ? err.message : "";
+      if (/database error saving new user/i.test(raw)) {
+        const de = document.documentElement.lang === "de";
+        setError(de
+          ? "Aegisora ist derzeit nur für freigegebene Pilotnutzer geöffnet. Bitte bewirb dich über die Pilot-Seite."
+          : "Aegisora is currently open to approved pilot users only. Please apply on the pilot page.");
+      } else {
+        setError(raw || t("common.genericError"));
+      }
       setLoading(false);
     }
   }

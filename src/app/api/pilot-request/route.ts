@@ -89,5 +89,36 @@ export async function POST(req: Request) {
     return Response.json({ error: "Could not save your application. Please email us." }, { status: 502 });
   }
 
+  // Best-effort owner notification. The application is already saved above.
+  try {
+    const rk = process.env.RESEND_API_KEY;
+    const from = process.env.NOTIFY_FROM;
+    if (rk && from) {
+      const safe = (s: string) => s.replace(/[\r\n]+/g, " ");
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + rk, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from,
+          to: ["eray@aegisora.org"],
+          reply_to: row.work_email,
+          subject: "New pilot application: " + safe(row.company),
+          text: [
+            "Name: " + row.full_name,
+            "Email: " + row.work_email,
+            "Company: " + row.company,
+            "Role: " + (row.role_title ?? "-"),
+            "Size: " + (row.company_size ?? "-"),
+            "Environment: " + (row.environment ?? "-"),
+            "Goal: " + row.use_case,
+            "",
+            "Approve: Supabase > pilot_requests > set status to approved",
+          ].join("\n"),
+        }),
+      });
+    }
+  } catch (err) {
+    console.error("pilot-request: notify error", err);
+  }
   return Response.json({ ok: true }, { status: 201 });
 }
