@@ -1,3 +1,4 @@
+import { approveUrl, esc, logFetch } from "../../../lib/pilot-approve";
 export const runtime = "nodejs";
 
 const WINDOW_MS = 60 * 60 * 1000;
@@ -69,6 +70,7 @@ export async function POST(req: Request) {
     return Response.json({ error: "Applications are temporarily unavailable. Please email us." }, { status: 503 });
   }
 
+  let savedId = "";
   try {
     const res = await fetch(url + "/rest/v1/pilot_requests", {
       method: "POST",
@@ -76,7 +78,7 @@ export async function POST(req: Request) {
         apikey: key,
         Authorization: "Bearer " + key,
         "Content-Type": "application/json",
-        Prefer: "return=minimal",
+        Prefer: "return=representation",
       },
       body: JSON.stringify(row),
     });
@@ -84,6 +86,8 @@ export async function POST(req: Request) {
       console.error("pilot-request: insert failed", res.status);
       return Response.json({ error: "Could not save your application. Please email us." }, { status: 502 });
     }
+    const saved: unknown = await res.json();
+    if (Array.isArray(saved) && saved[0] && typeof saved[0].id === "string") savedId = saved[0].id;
   } catch (err) {
     console.error("pilot-request: insert error", err);
     return Response.json({ error: "Could not save your application. Please email us." }, { status: 502 });
@@ -95,7 +99,25 @@ export async function POST(req: Request) {
     const from = process.env.NOTIFY_FROM;
     if (rk && from) {
       const safe = (s: string) => s.replace(/[\r\n]+/g, " ");
-      await fetch("https://api.resend.com/emails", {
+      const link = approveUrl(savedId);
+      const approveLine = link ? "Approve: " + link : "Approve: Supabase > pilot_requests > set status to approved";
+      const fields: [string, string][] = [
+        ["Name", row.full_name],
+        ["Email", row.work_email],
+        ["Company", row.company],
+        ["Role", row.role_title ?? "-"],
+        ["Size", row.company_size ?? "-"],
+        ["Environment", row.environment ?? "-"],
+        ["Goal", row.use_case],
+      ];
+      const html =
+        '<div style="font-family:Arial,sans-serif;font-size:14px">' +
+        fields.map(([k, v]) => '<p style="margin:4px 0"><b>' + k + ":</b> " + esc(v) + "</p>").join("") +
+        (link
+          ? '<p style="margin:20px 0"><a href="' + link + '" style="background:#1a8cff;color:#fff;padding:12px 22px;border-radius:999px;text-decoration:none;font-weight:bold">Approve</a></p>'
+          : "") +
+        "</div>";
+      await logFetch("https://api.resend.com/emails", {
         method: "POST",
         headers: { Authorization: "Bearer " + rk, "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -112,8 +134,9 @@ export async function POST(req: Request) {
             "Environment: " + (row.environment ?? "-"),
             "Goal: " + row.use_case,
             "",
-            "Approve: Supabase > pilot_requests > set status to approved",
+            approveLine,
           ].join("\n"),
+          html,
         }),
       });
     }
