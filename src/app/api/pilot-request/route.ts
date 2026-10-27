@@ -100,7 +100,7 @@ export async function POST(req: Request) {
         headers: { Authorization: "Bearer " + rk, "Content-Type": "application/json" },
         body: JSON.stringify({
           from,
-          to: ["eray@aegisora.org"],
+          to: ["ozereray44@gmail.com"],
           reply_to: row.work_email,
           subject: "New pilot application: " + safe(row.company),
           text: [
