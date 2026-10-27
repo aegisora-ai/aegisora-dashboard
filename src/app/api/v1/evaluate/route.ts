@@ -6,6 +6,7 @@ import { maskSensitiveData, maskSensitiveText } from "@/lib/aegisora/redaction";
 import { decidePolicy, type Effect } from "@/lib/aegisora/policy-evaluator";
 import { evaluateWorkspaceExecutionEntitlement } from "@/lib/aegisora/entitlement";
 import { evaluateMonthlyQuota } from "@/lib/aegisora/quota";
+import { notifyDecision } from "@/lib/aegisora/notify";
 
 export const runtime = "nodejs";
 export const preferredRegion = "fra1";
@@ -182,8 +183,10 @@ export async function POST(req: Request) {
         .select("id")
         .single();
       if (!ap.error) approvalId = ap.data.id as string;
+      after(() => notifyDecision({ workspaceId: ws, effect: "ESCALATE", agent: safeAgentName, action: safeAction, resource: safeResource, reason, risk, decisionId }));
     }
     if (effect === "BLOCK" && settings.alert_on_block) {
+      after(() => notifyDecision({ workspaceId: ws, effect: "BLOCK", agent: safeAgentName, action: safeAction, resource: safeResource, reason, risk, decisionId }));
       await db.from("incidents").insert({ workspace_id: ws, decision_id: decisionId, severity: risk >= 70 ? "high" : "medium", title: `Blocked: ${safeAgentName} -> ${safeAction}` });
     }
     await db.from("audit_events").insert({

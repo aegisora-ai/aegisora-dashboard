@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -78,7 +78,21 @@ export default function ApiKeysPage() {
         { label: "Status", render: (r) => <Badge value={r.revoked_at ? "suspended" : "active"} /> },
       ]}
       actions={(r, reload) =>
-        r.revoked_at ? null : (
+        r.revoked_at ? (
+          <button
+            className={btnGhost}
+            onClick={async () => {
+              if (!(await confirmDialog({ title: `Delete "${r.name}"?`, body: "This revoked key is removed from the list permanently. Audit records are kept.", confirmLabel: "Delete key", danger: true }))) return;
+              const { data, error } = await createClient().from("api_keys").delete().eq("id", r.id).not("revoked_at", "is", null).select("id");
+              if (error) notify(error.message, false);
+              else if (!data || data.length === 0) notify("Delete not permitted. Only workspace owners and admins can delete keys.", false);
+              else notify("Key deleted.");
+              reload();
+            }}
+          >
+            Delete
+          </button>
+        ) : (
           <button className={btnGhost} onClick={async () => { if (!(await confirmDialog({ title: `Revoke "${r.name}"?`, body: "Agents using this key stop working immediately.", confirmLabel: "Revoke key", danger: true }))) return; const { error } = await createClient().from("api_keys").update({ revoked_at: new Date().toISOString() }).eq("id", r.id); if (error) notify(error.message, false); reload(); }}>
             Revoke
           </button>
