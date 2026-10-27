@@ -10,9 +10,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return meta(t("metaTitle"), t("metaDesc"));
 }
 
-const mail = (addr: string) => (chunks: React.ReactNode) => (
-  <a href={"mailto:" + addr} className="underline underline-offset-4">{chunks}</a>
-);
+const mail = (addr: string) => {
+  const MailLink = (chunks: React.ReactNode) => (
+    <a href={"mailto:" + addr} className="underline underline-offset-4">{chunks}</a>
+  );
+  return MailLink;
+};
 
 export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

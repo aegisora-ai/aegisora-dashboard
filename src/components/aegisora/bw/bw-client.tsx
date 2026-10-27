@@ -112,6 +112,7 @@ export function PlatformTabs() {
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAuto(!reduce);
   }, []);
 
