@@ -126,3 +126,11 @@ docs/site-audit.txt
 /_audit/
 /_logs/
 /docs/backups/
+.bak-step19/
+
+_audit/
+step*.ps1
+step*-*.txt
+paket*.ps1
+.eski-step*/
+*.bak

@@ -1,0 +1,23 @@
+/* Auth pages in the bw design. Loaded after bw.css, scoped to .bw-authpage. */
+.bw-authpage { min-height: 100vh; display: flex; flex-direction: column; background: var(--bw-bg); }
+.bw-authpage .bw-auth { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: clamp(32px, 8vh, 88px) 20px 80px; }
+.bw-authpage .bw-auth__card {
+  width: 100%; max-width: 448px; background: var(--bw-card); border: 1px solid var(--bw-line);
+  border-radius: 18px; box-shadow: var(--bw-shadow); padding: 32px;
+}
+@media (max-width: 480px) { .bw-authpage .bw-auth__card { padding: 24px 20px; } }
+.bw-authpage .bw-auth__h1 {
+  font-family: var(--bw-display); font-weight: 600; font-size: 30px; line-height: 1.1;
+  letter-spacing: -0.03em; color: var(--bw-ink);
+}
+.bw-authpage .bw-auth__card input[data-slot="input"] {
+  height: 44px; border-radius: 10px; background: var(--bw-card); color: var(--bw-ink);
+  border: 1px solid var(--bw-line-2); font-size: 15px; padding: 0 12px;
+}
+.bw-authpage .bw-auth__card input[data-slot="input"]:focus-visible { border-color: var(--bw-blue); outline: 2px solid var(--bw-blue-soft); }
+.bw-authpage .bw-auth__card label { color: var(--bw-ink); font-weight: 600; font-size: 14px; }
+.bw-authpage .bw-auth__card button.aeg-btn-brand {
+  height: 46px; border-radius: 10px; border: 0; background: var(--bw-blue); color: #ffffff;
+  font-weight: 600; font-size: 15px; background-image: none; box-shadow: none;
+}
+.bw-authpage .bw-auth__card button.aeg-btn-brand:hover:not(:disabled) { background: var(--bw-blue-2); background-image: none; }

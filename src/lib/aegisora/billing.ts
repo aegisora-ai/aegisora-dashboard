@@ -82,7 +82,7 @@ export function getAdminClient() {
 export function getBaseUrl(): string {
   return (
     process.env.NEXT_PUBLIC_BASE_URL ??
-    "https://www.aegisora.org"
+    "https://aegisora.org"
   ).replace(/\/+$/, "");
 }
 

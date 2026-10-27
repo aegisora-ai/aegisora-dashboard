@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowRight, Check, Search } from "lucide-react";
 import { Logo } from "@/components/aegisora/logo";
 import { createClient } from "@/lib/supabase/client";
@@ -9,9 +10,11 @@ import { cn } from "@/lib/utils";
 
 export const INTRO_KEY = "aegisora:onboarding-intro:v1";
 
+// Gespeicherte Werte bleiben englisch (Datenbank), nur die Anzeige wird uebersetzt.
 const SIZES = ["1-49", "50-249", "250-999", "1,000-4,999", "5,000+"];
 const ROLES = ["Engineering", "Platform / DevOps", "Security", "Data / ML", "Product", "Compliance / Risk", "Founder / Executive", "Other"];
-const STACK: { id: string; name: string; mark: string }[] = [
+type Tile = { id: string; name?: string; nameKey?: "stackMcp" | "stackCustom"; mark: string };
+const STACK: Tile[] = [
   { id: "openai", name: "OpenAI", mark: "OA" },
   { id: "anthropic", name: "Anthropic", mark: "An" },
   { id: "gemini", name: "Google Gemini", mark: "Ge" },
@@ -22,8 +25,8 @@ const STACK: { id: string; name: string; mark: string }[] = [
   { id: "crewai", name: "CrewAI", mark: "Cr" },
   { id: "autogen", name: "AutoGen", mark: "Ag" },
   { id: "vercel-ai", name: "Vercel AI SDK", mark: "Vx" },
-  { id: "mcp", name: "MCP servers", mark: "MC" },
-  { id: "custom", name: "In-house agents", mark: "In" },
+  { id: "mcp", nameKey: "stackMcp", mark: "MC" },
+  { id: "custom", nameKey: "stackCustom", mark: "In" },
 ];
 
 type Answers = { companySize: string | null; role: string | null; stack: string[] };
@@ -58,12 +61,15 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
 }
 
 export function OnboardingIntro({ onDone }: { onDone: () => void }) {
+  const t = useTranslations("OnboardingIntro");
   const total = 3;
   const [step, setStep] = useState(0);
   const [a, setA] = useState<Answers>({ companySize: null, role: null, stack: [] });
   const [q, setQ] = useState("");
   const [saving, setSaving] = useState(false);
   const timer = useRef<number | null>(null);
+
+  const label = (s: Tile) => (s.nameKey ? t(s.nameKey) : (s.name ?? s.id));
 
   function pick(key: "companySize" | "role", value: string) {
     setA((cur) => ({ ...cur, [key]: value }));
@@ -79,7 +85,7 @@ export function OnboardingIntro({ onDone }: { onDone: () => void }) {
     onDone();
   }
 
-  const tiles = STACK.filter((t) => t.name.toLowerCase().includes(q.trim().toLowerCase()));
+  const tiles = STACK.filter((s) => label(s).toLowerCase().includes(q.trim().toLowerCase()));
 
   return (
     <div className="min-h-screen bg-background">
@@ -97,8 +103,8 @@ export function OnboardingIntro({ onDone }: { onDone: () => void }) {
 
         {step === 0 && (
           <section aria-labelledby="intro-title">
-            <h1 id="intro-title" className="mt-10 text-3xl font-semibold tracking-tight sm:text-4xl">{"What's your company size?"}</h1>
-            <p className="mt-3 max-w-xl text-sm text-muted-foreground">This helps us recommend the right policies, limits and setup for your team.</p>
+            <h1 id="intro-title" className="mt-10 text-3xl font-semibold tracking-tight sm:text-4xl">{t("sizeTitle")}</h1>
+            <p className="mt-3 max-w-xl text-sm text-muted-foreground">{t("sizeDesc")}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               {SIZES.map((s) => <Chip key={s} label={s} active={a.companySize === s} onClick={() => pick("companySize", s)} />)}
             </div>
@@ -107,49 +113,49 @@ export function OnboardingIntro({ onDone }: { onDone: () => void }) {
 
         {step === 1 && (
           <section aria-labelledby="intro-title">
-            <h1 id="intro-title" className="mt-10 text-3xl font-semibold tracking-tight sm:text-4xl">What best describes your role?</h1>
-            <p className="mt-3 max-w-xl text-sm text-muted-foreground">We tailor the dashboard and the first recommendations to how you work.</p>
+            <h1 id="intro-title" className="mt-10 text-3xl font-semibold tracking-tight sm:text-4xl">{t("roleTitle")}</h1>
+            <p className="mt-3 max-w-xl text-sm text-muted-foreground">{t("roleDesc")}</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              {ROLES.map((r) => <Chip key={r} label={r} active={a.role === r} onClick={() => pick("role", r)} />)}
+              {ROLES.map((r, i) => <Chip key={r} label={t("roles.r" + i)} active={a.role === r} onClick={() => pick("role", r)} />)}
             </div>
           </section>
         )}
 
         {step === 2 && (
           <section aria-labelledby="intro-title">
-            <h1 id="intro-title" className="mt-10 text-3xl font-semibold tracking-tight sm:text-4xl">Which agent stack do you run?</h1>
-            <p className="mt-3 max-w-xl text-sm text-muted-foreground">Select everything your agents use today. We use it to suggest policies and integrations.</p>
+            <h1 id="intro-title" className="mt-10 text-3xl font-semibold tracking-tight sm:text-4xl">{t("stackTitle")}</h1>
+            <p className="mt-3 max-w-xl text-sm text-muted-foreground">{t("stackDesc")}</p>
             <div className="mt-6 flex h-11 max-w-lg items-center gap-2 rounded-md border border-border bg-card px-3 focus-within:border-primary">
               <Search className="size-4 text-muted-foreground" aria-hidden="true" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Search frameworks and providers"
-                aria-label="Search frameworks and providers"
+                placeholder={t("search")}
+                aria-label={t("search")}
                 className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
               />
             </div>
             <div className="mt-4 max-h-[26rem] overflow-y-auto rounded-xl border border-border p-4">
               {tiles.length === 0 ? (
-                <p className="py-6 text-center text-sm text-muted-foreground">No match. Pick In-house agents or skip for now.</p>
+                <p className="py-6 text-center text-sm text-muted-foreground">{t("noMatch")}</p>
               ) : (
                 <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                  {tiles.map((t) => {
-                    const on = a.stack.includes(t.id);
+                  {tiles.map((tile) => {
+                    const on = a.stack.includes(tile.id);
                     return (
-                      <li key={t.id}>
+                      <li key={tile.id}>
                         <button
                           type="button"
                           aria-pressed={on}
-                          onClick={() => toggle(t.id)}
+                          onClick={() => toggle(tile.id)}
                           className={cn(
                             "relative flex w-full flex-col items-center gap-2 rounded-lg border p-4 text-center text-xs font-medium transition",
                             focusRing,
                             on ? "border-primary bg-primary/5" : "border-border bg-card hover:border-foreground/30",
                           )}
                         >
-                          <span className="grid size-12 place-items-center rounded-lg bg-primary/10 font-mono text-sm font-semibold text-primary">{t.mark}</span>
-                          {t.name}
+                          <span className="grid size-12 place-items-center rounded-lg bg-primary/10 font-mono text-sm font-semibold text-primary">{tile.mark}</span>
+                          {label(tile)}
                           {on && (
                             <span className="absolute right-2 top-2 grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
                               <Check className="size-3" aria-hidden="true" />
@@ -164,7 +170,7 @@ export function OnboardingIntro({ onDone }: { onDone: () => void }) {
             </div>
             <div className="mt-6">
               <button type="button" onClick={() => void finish()} disabled={saving} className={`${btnPrimary} gap-2 disabled:opacity-50`}>
-                {saving ? "Saving..." : a.stack.length ? "Continue (" + a.stack.length + ")" : "Continue"}
+                {saving ? t("saving") : a.stack.length ? t("contN", { n: a.stack.length }) : t("cont")}
                 <ArrowRight className="size-4" aria-hidden="true" />
               </button>
             </div>
@@ -173,9 +179,9 @@ export function OnboardingIntro({ onDone }: { onDone: () => void }) {
 
         <div className="mt-10 flex items-center gap-6 text-sm text-muted-foreground">
           {step > 0 && (
-            <button type="button" onClick={() => setStep((s) => Math.max(0, s - 1))} className={cn("underline-offset-4 hover:text-foreground hover:underline", focusRing)}>Back</button>
+            <button type="button" onClick={() => setStep((s) => Math.max(0, s - 1))} className={cn("underline-offset-4 hover:text-foreground hover:underline", focusRing)}>{t("back")}</button>
           )}
-          <button type="button" onClick={() => void finish()} className={cn("underline-offset-4 hover:text-foreground hover:underline", focusRing)}>Skip for now</button>
+          <button type="button" onClick={() => void finish()} className={cn("underline-offset-4 hover:text-foreground hover:underline", focusRing)}>{t("skip")}</button>
         </div>
       </main>
     </div>

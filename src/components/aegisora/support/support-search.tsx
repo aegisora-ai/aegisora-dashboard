@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { FileText, Search } from "lucide-react";
 
 type Item = { title: string; summary: string; collection: string; href: string };
 
 export function SupportSearch({ items }: { items: Item[] }) {
+  const t = useTranslations("HelpCenter");
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
   const ref = useRef<HTMLInputElement>(null);
@@ -56,8 +58,8 @@ export function SupportSearch({ items }: { items: Item[] }) {
             setActive(0);
           }}
           onKeyDown={onKeyDown}
-          placeholder="Search for articles..."
-          aria-label="Search for articles"
+          placeholder={t("searchPh")}
+          aria-label={t("searchAria")}
           className="h-full min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
         />
         <kbd className="hidden rounded border border-border px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground sm:inline">Ctrl K</kbd>
@@ -65,7 +67,7 @@ export function SupportSearch({ items }: { items: Item[] }) {
       {q.trim().length >= 2 ? (
         <div className="absolute left-0 right-0 top-full z-20 mt-2 overflow-hidden rounded-2xl border border-border bg-surface-1 shadow-lg">
           {results.length === 0 ? (
-            <p className="px-5 py-4 text-sm text-muted-foreground">No articles found. Try a different word.</p>
+            <p className="px-5 py-4 text-sm text-muted-foreground">{t("noResults")}</p>
           ) : (
             <ul>
               {results.map((r, i) => (

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegisora/page-kit";
 
-export const metadata: Metadata = {
-  title: "Runtime Proof | Aegisora",
-  description:
-    "See how Aegisora evaluates an AI agent action at runtime: policy decision, risk context and tamper-evident evidence.",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgProof" });
+  return { title: t("metaTitle"), description: t("metaDesc") };
+}
 
 const EXAMPLE = [
   "{",
@@ -16,46 +17,45 @@ const EXAMPLE = [
   "}",
 ].join("\n");
 
-export default function ProofPage() {
+export default async function ProofPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgProof" });
+  const dot = " \u00b7 ";
   return (
     <>
       <PageHero
-        eyebrow="Runtime Proof"
-        title="From agent action to auditable decision"
-        intro="Aegisora sits between your AI agents and the systems they touch. Each action is evaluated before it runs and leaves verifiable evidence behind."
-        primary={{ label: "Start a pilot", href: "/signup" }}
-        secondary={{ label: "Read the docs", href: "/docs" }}
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        intro={t("intro")}
+        primary={{ label: t("primary"), href: "/signup" }}
+        secondary={{ label: t("secondary"), href: "/docs" }}
         rows={[
-          { action: "crm.read_ticket", meta: "support-agent · Within scope", v: "ALLOW" },
-          { action: "payments.transfer $48,000", meta: "finance-agent · Above approval limit", v: "ESCALATE" },
-          { action: "db.drop_table users", meta: "code-agent · Destructive action denied", v: "BLOCK" },
+          { action: "crm.read_ticket", meta: "support-agent" + dot + t("r1"), v: "ALLOW" },
+          { action: "payments.transfer $48,000", meta: "finance-agent" + dot + t("r2"), v: "ESCALATE" },
+          { action: "db.drop_table users", meta: "code-agent" + dot + t("r3"), v: "BLOCK" },
         ]}
       />
-      <Section eyebrow="How it works" title="Four steps from request to evidence." tone="alt">
+      <Section eyebrow={t("howEyebrow")} title={t("howTitle")} tone="alt">
         <CardGrid
           cols={4}
           items={[
-            { n: "01", title: "Agent action", body: "An agent requests a tool call or data access through the Aegisora API." },
-            { n: "02", title: "Context and risk", body: "Aegisora resolves the workspace from your API key and reads the agent, action, resource and the risk value you send." },
-            { n: "03", title: "Policy decision", body: "Policies return ALLOW, BLOCK or ESCALATE, with sensitive data masked." },
-            { n: "04", title: "Evidence", body: "Every decision is written to a hash-chained evidence record for audit." },
+            { n: "01", title: t("s1t"), body: t("s1b") },
+            { n: "02", title: t("s2t"), body: t("s2b") },
+            { n: "03", title: t("s3t"), body: t("s3b") },
+            { n: "04", title: t("s4t"), body: t("s4b") },
           ]}
         />
       </Section>
-      <Section
-        eyebrow="Response"
-        title="Illustrative decision"
-        intro="Shape of a real response, values abbreviated. The request format is in the quickstart."
-      >
-        <pre className="overflow-x-auto rounded-xl border border-white/10 bg-[#030f3d] p-5 font-mono text-sm text-sky-100">
+      <Section eyebrow={t("respEyebrow")} title={t("respTitle")} intro={t("respIntro")}>
+        <pre className="overflow-x-auto rounded-xl border border-border bg-surface-1 p-5 font-mono text-sm text-foreground">
           <code>{EXAMPLE}</code>
         </pre>
       </Section>
       <CtaBand
-        title="Run it against your own action."
-        body="Create a test workspace, send one request and read the verdict."
-        primary={{ label: "Start a pilot", href: "/signup" }}
-        secondary={{ label: "Talk to our team", href: "/pilot" }}
+        title={t("ctaTitle")}
+        body={t("ctaBody")}
+        primary={{ label: t("ctaPrimary"), href: "/signup" }}
+        secondary={{ label: t("ctaSecondary"), href: "/pilot" }}
       />
     </>
   );

@@ -1,8 +1,7 @@
-"use client";
+import { BwHeader } from "./bw/bw-header";
 
-import { ZpHeader } from "@/components/zp/header";
-
-/** Tum sayfalarda yeni (Zapier duzenli) header. Eski header dosyasi yedek olarak duruyor. */
-export function SiteHeader() {
-  return <ZpHeader />;
+/* Accepts any props so the existing layout keeps compiling. */
+export function SiteHeader(_props: { [key: string]: unknown }) {
+  return <BwHeader />;
 }
+export default SiteHeader;

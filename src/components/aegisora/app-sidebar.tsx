@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { ComponentType } from "react";
 import {
-  Activity, Bot, ClipboardList, CreditCard, FileSearch, KeyRound, LayoutDashboard, Plug, Plus,
+  Activity, Bot, ClipboardList, CreditCard, FileSearch, KeyRound, LayoutDashboard, Plus,
   Route, Scale, ScrollText, Settings, ShieldCheck, TriangleAlert, UserCheck, Users, Webhook,
 } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -18,7 +18,7 @@ const CREATE: Item[] = [
   { label: "Agent", href: "/dashboard/agents", icon: Bot },
   { label: "API key", href: "/dashboard/api-keys", icon: KeyRound },
   { label: "Webhook", href: "/dashboard/webhooks", icon: Webhook },
-  { label: "Integration", href: "/dashboard/integrations", icon: Plug },
+  
 ];
 
 const sections: Section[] = [
@@ -51,7 +51,7 @@ const sections: Section[] = [
     id: "platform",
     title: "Platform",
     items: [
-      { label: "Integrations", href: "/dashboard/integrations", icon: Plug },
+      
       { label: "Webhooks", href: "/dashboard/webhooks", icon: Webhook },
       { label: "API Keys", href: "/dashboard/api-keys", icon: KeyRound },
     ],

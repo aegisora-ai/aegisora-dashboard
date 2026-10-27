@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { meta } from "@/lib/seo";
 import { SupportShell } from "@/components/aegisora/support/support-shell";
@@ -9,27 +10,28 @@ import { articleHref, findCollection, readMinutes } from "@/lib/support-content"
 type Props = { params: Promise<{ locale: string; collection: string }> };
 
 export async function generateMetadata({ params }: Props) {
-  const { collection } = await params;
-  const c = findCollection(collection);
+  const { locale, collection } = await params;
+  const c = findCollection(collection, locale);
   return meta(c ? c.title + " | Support" : "Support", c ? c.desc : "Aegisora help center");
 }
 
 export default async function CollectionPage({ params }: Props) {
-  const { collection } = await params;
-  const c = findCollection(collection);
+  const { locale, collection } = await params;
+  const t = await getTranslations({ locale, namespace: "HelpCenter" });
+  const c = findCollection(collection, locale);
   if (!c) notFound();
   const Icon = c.icon;
   return (
-    <SupportShell>
+    <SupportShell locale={locale}>
       <div className="mx-auto grid max-w-[1100px] gap-10 px-4 pt-12 sm:px-6 lg:grid-cols-[250px_minmax(0,1fr)]">
         <aside className="hidden lg:block">
           <div className="sticky top-8">
-            <SupportSidebar collection={c.slug} />
+            <SupportSidebar collection={c.slug} locale={locale} />
           </div>
         </aside>
         <section>
-          <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
-            <Link href="/support" className="hover:text-primary">Support</Link>
+          <nav aria-label={t("breadcrumb")} className="text-sm text-muted-foreground">
+            <Link href="/support" className="hover:text-primary">{t("label")}</Link>
             <span className="mx-2">/</span>
             <span>{c.title}</span>
           </nav>
@@ -39,11 +41,11 @@ export default async function CollectionPage({ params }: Props) {
           <ul className="mt-10 border-t border-border">
             {c.articles.map((a) => (
               <li key={a.slug} className="border-b border-border">
-                <a href={articleHref(c.slug, a.slug)} className="group flex items-center justify-between gap-4 py-5">
+                <a href={articleHref(c.slug, a.slug, locale)} className="group flex items-center justify-between gap-4 py-5">
                   <span>
                     <span className="block text-base font-semibold group-hover:text-primary">{a.title}</span>
                     <span className="aeg-body-text mt-1 block text-sm">{a.summary}</span>
-                    <span className="mt-1 block text-xs text-muted-foreground">{readMinutes(a)} min read</span>
+                    <span className="mt-1 block text-xs text-muted-foreground">{t("minRead", { n: readMinutes(a) })}</span>
                   </span>
                   <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
                 </a>

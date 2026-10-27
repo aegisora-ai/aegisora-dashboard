@@ -41,7 +41,7 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const locale = await getLocale();
   return (
-    <html lang={locale} className={barlow.variable} suppressHydrationWarning>
+    <html data-scroll-behavior="smooth" lang={locale} className={barlow.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>

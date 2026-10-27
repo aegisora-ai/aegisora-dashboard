@@ -1,7 +1,7 @@
 export const THEME_KEY = "aeg-theme-v2";
 
 /** Pages already converted to both themes. Every other page stays on the navy theme. */
-export const LIGHT_READY: string[] = ["/", "/pilot", "/solutions", "/enterprise", "/security", "/product", "/trust", "/trust/privacy", "/trust/subprocessors", "/proof", "/terms", "/pricing", "/about"];
+export const LIGHT_READY: string[] = ["/", "/pilot", "/solutions", "/enterprise", "/security", "/product", "/trust", "/trust/privacy", "/trust/subprocessors", "/proof", "/terms", "/pricing", "/about", "/docs", "/docs/quickstart", "/docs/technical", "/demo", "/blog", "/changelog", "/contact", "/legal/dpa", "/resources", "/developers", "/developers/quickstart", "/impressum"];
 
 export const LIGHT_PREFIXES: string[] = ["/dashboard", "/onboarding", "/docs", "/blog", "/product", "/developers", "/support"];
 

@@ -1,4 +1,4 @@
-import { FaGithub, FaInstagram, FaLinkedinIn, FaXTwitter, FaYoutube } from "react-icons/fa6";
+import { FaDiscord, FaGithub, FaInstagram, FaLinkedinIn, FaXTwitter, FaYoutube } from "react-icons/fa6";
 import { cn } from "@/lib/utils";
 
 export const SOCIAL = {
@@ -6,7 +6,7 @@ export const SOCIAL = {
   linkedin: "https://de.linkedin.com/company/aegisora",
   youtube: "https://www.youtube.com/@Aegisora",
   x: "https://x.com/aegisora_ai",
-  instagram: "https://www.instagram.com/aegisora/",
+  instagram: "https://www.instagram.com/aegisora/", discord: "https://discord.gg/8CM3PpQRT5",
 };
 
 const ITEMS = [
@@ -14,7 +14,7 @@ const ITEMS = [
   { key: "linkedin", label: "LinkedIn", Icon: FaLinkedinIn },
   { key: "youtube", label: "YouTube", Icon: FaYoutube },
   { key: "x", label: "X", Icon: FaXTwitter },
-  { key: "instagram", label: "Instagram", Icon: FaInstagram },
+  { key: "instagram", label: "Instagram", Icon: FaInstagram }, { key: "discord", label: "Discord", Icon: FaDiscord },
 ] as const;
 
 export function SocialLinks({ className }: { className?: string }) {

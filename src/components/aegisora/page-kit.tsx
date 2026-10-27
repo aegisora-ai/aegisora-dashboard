@@ -1,7 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
-import "@/styles/zp.css";
+import { useMemo, type ReactNode } from "react"; import { useTranslations } from "next-intl";
+import "@/styles/zp.css"; import "@/components/aegisora/bw/aeg-chrome.css";
 import { TypedLine } from "@/components/aegisora/typed-line";
 import { VerdictBadge } from "@/components/zp/ui";
 import { Link } from "@/i18n/navigation";
@@ -21,7 +21,7 @@ export type Cta = { label: string; href: string };
 export type Row = { action: string; meta: string; v: "ALLOW" | "ESCALATE" | "BLOCK" };
 export type CardItem = { icon?: IconName; n?: string; title: string; body: string; href?: string };
 
-const DEFAULT_PHRASES = ["Decide before it runs.", "Evidence you can verify.", "Fail closed by default.", "Built for security teams."];
+
 
 export function PageHero({
   eyebrow, title, phrases, intro, lead, primary, secondary, rows, children,
@@ -36,7 +36,7 @@ export function PageHero({
   rows?: Row[];
   children?: ReactNode;
 }) {
-  const text = intro ?? lead;
+  const text = intro ?? lead; const t = useTranslations("Kit"); const defaultPhrases = useMemo(() => [t("p1"), t("p2"), t("p3"), t("p4")], [t]);
   return (
     <section className="zp zpk-hero">
       <div className={"zpk-wrap zpk-hero-in" + (rows ? " zpk-hero-in--split" : "")}>
@@ -44,7 +44,7 @@ export function PageHero({
           <p className="zp-eyebrow">{eyebrow}</p>
           <h1 className="zpk-h1">{title}</h1>
           <p className="zpk-typed">
-            <TypedLine decorative phrases={phrases?.length ? phrases : DEFAULT_PHRASES} />
+            <TypedLine decorative phrases={phrases?.length ? phrases : defaultPhrases} />
           </p>
           {text ? <p className="zpk-lead">{text}</p> : null}
           {primary || secondary ? (
@@ -68,8 +68,8 @@ export function PageHero({
           <div className="zpk-art">
             <div className="zp-mock">
               <div className="zp-mock-bar">
-                <b>Runtime decisions</b>
-                <span className="zp-tag">Live</span>
+                <b>{t("runtimeDecisions")}</b>
+                <span className="zp-tag">{t("live")}</span>
               </div>
               {rows.map((r) => (
                 <div key={r.action} className="zp-mock-row">
@@ -116,7 +116,7 @@ export function Section({
   );
 }
 
-export function CardGrid({ items, cols = 3 }: { items: CardItem[]; cols?: 2 | 3 | 4 }) {
+export function CardGrid({ items, cols = 3 }: { items: CardItem[]; cols?: 2 | 3 | 4 }) { const t = useTranslations("Kit");
   return (
     <div className={"zpk-grid zpk-grid--" + cols}>
       {items.map((it) => {
@@ -133,7 +133,7 @@ export function CardGrid({ items, cols = 3 }: { items: CardItem[]; cols?: 2 | 3 
             <p>{it.body}</p>
             {it.href ? (
               <span className="zpk-more">
-                Learn more <ArrowRight size={14} aria-hidden />
+                {t("learnMore")} <ArrowRight size={14} aria-hidden />
               </span>
             ) : null}
           </>
@@ -153,19 +153,23 @@ export function CardGrid({ items, cols = 3 }: { items: CardItem[]; cols?: 2 | 3 
 }
 
 export function CtaBand({
-  title, body, primary, secondary,
+  title,
+  body,
+  primary,
+  secondary,
 }: {
   title: string;
   body: string;
   primary: Cta;
   secondary?: Cta;
+  [extra: string]: unknown;
 }) {
   return (
-    <section className="zp zpk-cta">
-      <div className="zpk-wrap">
-        <h2 className="zpk-h2">{title}</h2>
-        <p className="zpk-sub">{body}</p>
-        <div className="zpk-actions">
+    <section className="zp aegx-cta">
+      <div className="aegx-cta__in">
+        <h2 className="aegx-cta__title">{title}</h2>
+        <p className="aegx-cta__body">{body}</p>
+        <div className="aegx-cta__actions">
           <Link href={primary.href} className="zp-btn zp-btn--primary">
             {primary.label}
           </Link>
@@ -180,9 +184,6 @@ export function CtaBand({
     </section>
   );
 }
-
-/* ---------- Geriye uyumlu bilesenler (docs, legal sayfalar) ---------- */
-
 export function Eyebrow({ children, accent }: { children: ReactNode; accent?: boolean }) {
   return <p className={"zpk-eb" + (accent ? " zpk-eb--accent" : "")}>{children}</p>;
 }

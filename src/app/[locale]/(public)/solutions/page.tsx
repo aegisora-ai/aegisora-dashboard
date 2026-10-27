@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
 import PageView from "../../../../components/aegisora/site/PageView";
-import { PAGES } from "../../../../components/aegisora/site/content";
+import { PAGES, PAGES_DE } from "../../../../components/aegisora/site/content";
 
-const page = PAGES.solutions;
-
-export const metadata: Metadata = {
-  title: page.metaTitle,
-  description: page.metaDescription,
-  robots: page.noindex ? { index: false, follow: false } : undefined,
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const page = locale === "de" ? PAGES_DE.solutions : PAGES.solutions;
+  return {
+    title: page.metaTitle,
+    description: page.metaDescription,
+    robots: page.noindex ? { index: false, follow: false } : undefined,
+  };
+}
 
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const page = locale === "de" ? PAGES_DE.solutions : PAGES.solutions;
   return <PageView page={page} locale={locale} />;
 }

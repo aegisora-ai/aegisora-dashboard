@@ -82,7 +82,6 @@ export const footerGroups: FooterGroup[] = [
       { label: "Trust center", href: "/trust" },
       { label: "Privacy", href: "/trust/privacy" },
       { label: "Subprocessors", href: "/trust/subprocessors" },
-      { label: "Data processing", href: "/legal/dpa" },
     ],
   },
   {

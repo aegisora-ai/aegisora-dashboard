@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,7 @@ function Rule({ ok, children }: { ok: boolean; children: React.ReactNode }) {
 }
 
 export function SignupForm({ redirectTo }: { redirectTo: string }) {
+  const t = useTranslations("Auth");
   const [email, setEmail] = useState("");
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
@@ -63,26 +65,26 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
       });
       if (err) throw err;
       if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
-        throw new Error("An account with this email already exists. Log in instead.");
+        throw new Error(t("signup.exists"));
       }
       if (data.session) {
         window.location.href = redirectTo;
         return;
       }
-      setNotice("Check your inbox to confirm your email, then log in.");
+      setNotice(t("signup.checkInbox"));
       setLoading(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Try again.");
+      setError(err instanceof Error ? err.message : t("common.genericError"));
       setLoading(false);
     }
   }
 
   return (
     <div>
-      <h1 className="aeg-display text-4xl">Create your Aegisora account</h1>
+      <h1 className="bw-auth__h1">{t("signup.title")}</h1>
       <p className="mt-3 text-sm">
-        <span className="text-muted-foreground">Already have an account? </span>
-        <Link href="/login" className="font-semibold text-primary underline-offset-4 hover:underline">Log in</Link>
+        <span className="text-muted-foreground">{t("signup.have")} </span>
+        <Link href="/login" className="font-semibold text-primary underline-offset-4 hover:underline">{t("signup.logIn")}</Link>
       </p>
 
       <div className="mt-8">
@@ -102,24 +104,24 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
 
       <form className="mt-5 space-y-4" onSubmit={onSubmit} noValidate>
         <div className="space-y-1.5">
-          <Label htmlFor="email">Email address</Label>
-          <p className="text-xs text-muted-foreground">We recommend using your work email.</p>
+          <Label htmlFor="email">{t("common.email")}</Label>
+          <p className="text-xs text-muted-foreground">{t("signup.emailHint")}</p>
           <Input id="email" name="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="first">First name</Label>
+            <Label htmlFor="first">{t("signup.first")}</Label>
             <Input id="first" name="first" type="text" autoComplete="given-name" value={first} onChange={(e) => setFirst(e.target.value)} />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="last">Last name</Label>
+            <Label htmlFor="last">{t("signup.last")}</Label>
             <Input id="last" name="last" type="text" autoComplete="family-name" value={last} onChange={(e) => setLast(e.target.value)} />
           </div>
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">{t("common.password")}</Label>
           <div className="relative">
             <Input
               id="password"
@@ -133,35 +135,39 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
             <button
               type="button"
               onClick={() => setShow((v) => !v)}
-              aria-label={show ? "Hide password" : "Show password"}
+              aria-label={show ? t("common.hide") : t("common.show")}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
               {show ? <EyeOff className="size-4" aria-hidden /> : <Eye className="size-4" aria-hidden />}
             </button>
           </div>
           <ul className="space-y-1 pt-1">
-            <Rule ok={longEnough}>Must be at least 8 characters</Rule>
-            <Rule ok={noEmail}>Does not contain your email address</Rule>
+            <Rule ok={longEnough}>{t("signup.ruleLen")}</Rule>
+            <Rule ok={noEmail}>{t("signup.ruleEmail")}</Rule>
           </ul>
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="company">Company name <span className="text-xs font-normal text-muted-foreground">(optional)</span></Label>
+          <Label htmlFor="company">{t("signup.companyLabel")} <span className="text-xs font-normal text-muted-foreground">{t("signup.optional")}</span></Label>
           <Input id="company" name="company" type="text" autoComplete="organization" value={company} onChange={(e) => setCompany(e.target.value)} />
         </div>
 
         <label className="flex items-start gap-3 text-sm leading-5">
           <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5 size-4 accent-primary" />
           <span>
-            I accept the{" "}
-            <Link href="/trust/privacy" target="_blank" className="text-primary underline-offset-4 hover:underline">Privacy Policy</Link>{" "}
-            and the{" "}
-            <Link href="/terms" target="_blank" className="text-primary underline-offset-4 hover:underline">Terms of Service</Link>
+            {t.rich("signup.accept", {
+              privacy: (chunks) => (
+                <Link href="/trust/privacy" target="_blank" className="text-primary underline-offset-4 hover:underline">{chunks}</Link>
+              ),
+              terms: (chunks) => (
+                <Link href="/terms" target="_blank" className="text-primary underline-offset-4 hover:underline">{chunks}</Link>
+              ),
+            })}
           </span>
         </label>
 
         <button type="submit" disabled={loading || !valid} className={`${btnPrimary} w-full disabled:opacity-60`}>
-          {loading ? "Please wait..." : "Create account"}
+          {loading ? t("common.wait") : t("signup.create")}
         </button>
       </form>
     </div>

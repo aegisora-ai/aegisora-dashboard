@@ -1,34 +1,41 @@
+import { getTranslations } from "next-intl/server";
 import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegisora/page-kit";
 import { meta } from "@/lib/seo";
 
-export const metadata = meta("Trust", "Privacy, subprocessors, and terms for Aegisora.");
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgTrust" });
+  return meta(t("eyebrow"), t("metaDesc"));
+}
 
-export default function TrustPage() {
+export default async function TrustPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgTrust" });
   return (
     <>
       <PageHero
-        eyebrow="Trust"
-        title="What we process, and who helps."
-        intro="Plain statements about data handling. Documents marked Draft are pending legal review."
-        primary={{ label: "Contact us", href: "/pilot" }}
-        secondary={{ label: "Security", href: "/security" }}
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        intro={t("intro")}
+        primary={{ label: t("primary"), href: "/pilot" }}
+        secondary={{ label: t("secondary"), href: "/security" }}
       />
-      <Section title="Trust documents" tone="alt">
+      <Section title={t("secTitle")} tone="alt">
         <CardGrid
           cols={2}
           items={[
-            { icon: "Eye", title: "Privacy", body: "What data Aegisora processes and why.", href: "/trust/privacy" },
-            { icon: "Users", title: "Subprocessors", body: "Providers that process data on our behalf.", href: "/trust/subprocessors" },
-            { icon: "FileText", title: "Terms", body: "How pilots and the service are governed.", href: "/terms" },
-            { icon: "ShieldCheck", title: "Security", body: "How the execution boundary is protected.", href: "/security" },
+            { icon: "Eye", title: t("c1t"), body: t("c1b"), href: "/trust/privacy" },
+            { icon: "Users", title: t("c2t"), body: t("c2b"), href: "/trust/subprocessors" },
+            { icon: "FileText", title: t("c3t"), body: t("c3b"), href: "/terms" },
+            { icon: "ShieldCheck", title: t("c4t"), body: t("c4b"), href: "/security" },
           ]}
         />
       </Section>
       <CtaBand
-        title="Questions about data handling?"
-        body="Talk to the team about security reviews and pilot prerequisites."
-        primary={{ label: "Contact us", href: "/pilot" }}
-        secondary={{ label: "Run live runtime proof", href: "/proof" }}
+        title={t("ctaTitle")}
+        body={t("ctaBody")}
+        primary={{ label: t("ctaPrimary"), href: "/pilot" }}
+        secondary={{ label: t("ctaSecondary"), href: "/proof" }}
       />
     </>
   );

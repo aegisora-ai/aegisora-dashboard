@@ -27,6 +27,19 @@ type Props = {
   headerActions?: (ws: Workspace, reload: () => void) => ReactNode;
 };
 
+// step27: row cache. The last result per table stays in memory, so coming back to a page paints
+// immediately and the fresh query runs in the background (no skeleton flash on every navigation).
+const rowCache = new Map<string, Row[]>();
+const ROW_CACHE_MAX = 40;
+function rowCacheSet(key: string, value: Row[]) {
+  rowCache.delete(key);
+  rowCache.set(key, value);
+  if (rowCache.size > ROW_CACHE_MAX) {
+    const oldest = rowCache.keys().next().value;
+    if (oldest !== undefined) rowCache.delete(oldest);
+  }
+}
+
 function DetailGrid({ value }: { value: unknown }) {
   const entries = value && typeof value === "object" ? Object.entries(value as Record<string, unknown>) : [];
   const show = (v: unknown) => {
@@ -52,7 +65,8 @@ export function LiveTable(props: Props) {
 }
 
 function Inner({ ws, table, title, description, columns, empty, select = "*", orderBy = "created_at", ascending = false, limit = 100, realtime = false, actions, detail, above, headerActions }: Props & { ws: Workspace }) {
-  const [rows, setRows] = useState<Row[] | null>(null);
+  const cacheKey = [ws.id, table, select, orderBy, String(ascending), String(limit)].join("|");
+  const [rows, setRows] = useState<Row[] | null>(() => rowCache.get(cacheKey) ?? null);
   const [err, setErr] = useState<string | null>(null);
   const [open, setOpen] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -62,19 +76,21 @@ function Inner({ ws, table, title, description, columns, empty, select = "*", or
     const { data, error } = await supabase.from(table).select(select).eq("workspace_id", ws.id).order(orderBy, { ascending }).limit(limit);
     if (error) setErr(error.message);
     else {
+      const list = (data ?? []) as unknown as Row[];
+      rowCacheSet(cacheKey, list);
       setErr(null);
-      setRows((data ?? []) as unknown as Row[]);
+      setRows(list);
     }
-  }, [table, select, orderBy, ascending, limit, ws.id]);
+  }, [cacheKey, table, select, orderBy, ascending, limit, ws.id]);
 
   // Initial async table hydration intentionally starts from an effect.
   useEffect(() => {
-  const timer = window.setTimeout(() => {
-    void load();
-  }, 0);
+    const timer = window.setTimeout(() => {
+      void load();
+    }, 0);
 
-  return () => window.clearTimeout(timer);
-}, [load]);
+    return () => window.clearTimeout(timer);
+  }, [load]);
 
   useEffect(() => {
     if (!realtime) return;
@@ -123,7 +139,7 @@ function Inner({ ws, table, title, description, columns, empty, select = "*", or
             <tbody>
               {rows.map((r) => (
                 <Fragment key={r.id}>
-                  <tr className="cursor-pointer border-b border-border/60 transition-colors hover:bg-surface-1" onClick={() => setOpen(open === r.id ? null : r.id)}>
+                  <tr tabIndex={0} aria-expanded={open === r.id} className="cursor-pointer border-b border-border/60 transition-colors hover:bg-surface-1 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring" onClick={() => setOpen(open === r.id ? null : r.id)} onKeyDown={(e) => { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); setOpen(open === r.id ? null : r.id); } }}>
                     {columns.map((c) => (
                       <td key={c.label} className="px-4 py-3 align-top">{c.render(r)}</td>
                     ))}
@@ -149,7 +165,3 @@ function Inner({ ws, table, title, description, columns, empty, select = "*", or
     </div>
   );
 }
-
-
-
-

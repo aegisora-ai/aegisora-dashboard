@@ -1,23 +1,30 @@
+import { getTranslations } from "next-intl/server";
 import { PageHero, Section, DataTable } from "@/components/aegisora/page-kit";
 import { DraftNotice } from "@/components/aegisora/draft-notice";
 import { meta } from "@/lib/seo";
 
-export const metadata = meta("Subprocessors", "Providers that process data on behalf of Aegisora. Draft, pending verification.");
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgSub" });
+  return meta(t("metaTitle"), t("metaDesc"));
+}
 
-export default function SubprocessorsPage() {
+export default async function SubprocessorsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgSub" });
+  const tbc = t("tbc");
   return (
     <>
-      <PageHero eyebrow="SUBPROCESSORS" title="Who processes data for us." lead="Providers used to run the service." />
+      <PageHero eyebrow={t("eyebrow")} title={t("title")} lead={t("lead")} />
       <Section>
-        <DraftNotice>Draft. Hosting regions for Supabase, Vercel and Sentry are verified. Contract status and the Stripe region are being verified and are marked to be confirmed.</DraftNotice>
+        <DraftNotice>{t("draft")}</DraftNotice>
         <DataTable
-          head={["Provider", "Purpose", "Data", "Region", "Contract status"]}
+          head={[t("h1"), t("h2"), t("h3"), t("h4"), t("h5")]}
           rows={[
-            ["Supabase", "Authentication and database", "Account, workspace, and product data", "Frankfurt, Germany (eu-central-1)", "To be confirmed"],
-            ["Vercel", "Hosting and deployment", "Web and request metadata", "Functions in Frankfurt, Germany (fra1); global edge network", "To be confirmed"],
-            ["Sentry", "Error monitoring", "Error reports, IP address, browser details", "EU region", "To be confirmed"],
-            ["Stripe", "Payment processing", "Billing details, customer and subscription identifiers", "To be confirmed", "To be confirmed"],
-            
+            ["Supabase", t("sb1"), t("sb2"), t("sb3"), tbc],
+            ["Vercel", t("vc1"), t("vc2"), t("vc3"), tbc],
+            ["Sentry", t("se1"), t("se2"), t("se3"), tbc],
+            ["Stripe", t("st1"), t("st2"), tbc, tbc],
           ]}
         />
       </Section>

@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { WORKSPACE_STORAGE_KEY } from "@/components/aegisora/workspace-provider";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -11,18 +12,20 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/aegisora/logo";
 import { OnboardingIntro, INTRO_KEY } from "@/components/aegisora/onboarding-intro";
 
-const steps = ["Workspace", "MFA", "Agent", "Policy", "Integrate"];
+const STEP_KEYS = ["s0", "s1", "s2", "s3", "s4"];
 type PolicyDecision = "ALLOW" | "BLOCK" | "ESCALATE";
 
 export function OnboardingFlow() {
+  const t = useTranslations("Onboarding");
+  const steps = STEP_KEYS.map((k) => t("steps." + k));
   const [step, setStep] = useState(0);
   const [introDone, setIntroDone] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       try { setIntroDone(window.localStorage.getItem(INTRO_KEY) === "done"); } catch { setIntroDone(false); }
     }, 0);
-    return () => window.clearTimeout(t);
+    return () => window.clearTimeout(timer);
   }, []);
   const [workspace, setWorkspace] = useState("My workspace");
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
@@ -42,10 +45,11 @@ export function OnboardingFlow() {
     void createClient().auth.mfa.getAuthenticatorAssuranceLevel().then(({ data, error: mfaError }) => {
       if (!cancelled) {
         setAal(mfaError ? null : data.currentLevel);
-        if (mfaError) setError("Unable to verify the current MFA assurance level.");
+        if (mfaError) setError(t("err.mfa"));
       }
     });
     return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   async function checkMfa() {
@@ -53,7 +57,7 @@ export function OnboardingFlow() {
     setError(null);
     const { data, error: mfaError } = await createClient().auth.mfa.getAuthenticatorAssuranceLevel();
     setBusy(false);
-    if (mfaError) { setError("Unable to verify the current MFA assurance level."); return; }
+    if (mfaError) { setError(t("err.mfa")); return; }
     setAal(data.currentLevel);
   }
 
@@ -65,7 +69,7 @@ export function OnboardingFlow() {
     });
     setBusy(false);
     if (createError || typeof data !== "string") {
-      setError(createError?.message ?? "Workspace creation did not return a workspace ID.");
+      setError(createError?.message ?? t("err.noId"));
       return;
     }
     setWorkspaceId(data);
@@ -74,12 +78,12 @@ export function OnboardingFlow() {
   }
 
   async function postWorkspaceMutation(path: string, body: Record<string, unknown>) {
-    if (!workspaceId) { setError("Create a workspace before continuing."); return null; }
+    if (!workspaceId) { setError(t("err.needWs")); return null; }
     setBusy(true);
     setError(null);
     try {
       const { data: { session } } = await createClient().auth.getSession();
-      if (!session?.access_token) throw new Error("Sign in again to continue onboarding.");
+      if (!session?.access_token) throw new Error(t("err.signIn"));
       const response = await fetch(path, {
         method: "POST",
         headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" },
@@ -88,13 +92,13 @@ export function OnboardingFlow() {
       });
       const result = await response.json().catch(() => null);
       if (!response.ok) {
-        const message = result?.error?.message ?? "The workspace setup request failed.";
+        const message = result?.error?.message ?? t("err.failed");
         if (result?.error?.code === "mfa_required") setAal("aal1");
         throw new Error(message);
       }
       return result as Record<string, unknown>;
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "The workspace setup request failed.");
+      setError(cause instanceof Error ? cause.message : t("err.failed"));
       return null;
     } finally {
       setBusy(false);
@@ -127,7 +131,7 @@ export function OnboardingFlow() {
   const continueStep = () => {
     setError(null);
     if (step === 1 && aal !== "aal2") return;
-    setStep((current) => Math.min(current + 1, steps.length - 1));
+    setStep((current) => Math.min(current + 1, STEP_KEYS.length - 1));
   };
 
   return (
@@ -146,65 +150,65 @@ export function OnboardingFlow() {
       <section aria-labelledby="step-title" className="py-2">
         {step === 0 && (
           <>
-            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">Create your workspace</h1>
-            <p className="mt-2 text-sm text-muted-foreground">This creates a real workspace and OWNER membership through the authenticated workspace-creation RPC.</p>
-            <div className="mt-6 space-y-1.5"><Label htmlFor="workspace">Workspace name</Label><Input id="workspace" value={workspace} maxLength={120} onChange={(event) => setWorkspace(event.target.value)} /></div>
-            <button type="button" onClick={() => void createWorkspace()} disabled={busy || !workspace.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? "Creating…" : "Create workspace"}</button>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("s0.title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("s0.desc")}</p>
+            <div className="mt-6 space-y-1.5"><Label htmlFor="workspace">{t("s0.label")}</Label><Input id="workspace" value={workspace} maxLength={120} onChange={(event) => setWorkspace(event.target.value)} /></div>
+            <button type="button" onClick={() => void createWorkspace()} disabled={busy || !workspace.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? t("s0.busy") : t("s0.btn")}</button>
           </>
         )}
 
         {step === 1 && (
           <>
-            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">Secure workspace administration</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Agent and policy changes require a verified TOTP factor and an AAL2 session. This setup stops here until the session is stepped up.</p>
-            <p role="status" className="mt-4 font-mono text-xs">CURRENT ASSURANCE: {aal?.toUpperCase() ?? "CHECKING"}</p>
-            {aal !== "aal2" && <a className="mt-4 flex w-fit text-sm underline underline-offset-4" href="/dashboard/identity" target="_blank" rel="noreferrer">Open Identity in a new tab to enroll and verify MFA</a>}
-            <button type="button" onClick={() => void checkMfa()} disabled={busy} className={`${btnOutline} mt-5 disabled:opacity-50`}>{busy ? "Checking…" : "Check MFA again"}</button>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("s1.title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("s1.desc")}</p>
+            <p role="status" className="mt-4 font-mono text-xs">{t("s1.assurance")}: {aal?.toUpperCase() ?? t("s1.checking")}</p>
+            {aal !== "aal2" && <Link className="mt-4 flex w-fit text-sm underline underline-offset-4" href="/dashboard/identity" target="_blank" rel="noreferrer">{t("s1.open")}</Link>}
+            <button type="button" onClick={() => void checkMfa()} disabled={busy} className={`${btnOutline} mt-5 disabled:opacity-50`}>{busy ? t("s1.busy") : t("s1.btn")}</button>
           </>
         )}
 
         {step === 2 && (
           <>
-            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">Register a real agent</h1>
-            <p className="mt-2 text-sm text-muted-foreground">The agent is persisted in this workspace through the authenticated, AAL2-protected API.</p>
-            <div className="mt-6 space-y-1.5"><Label htmlFor="agent">Agent name</Label><Input id="agent" value={agentName} maxLength={120} onChange={(event) => setAgentName(event.target.value)} disabled={Boolean(agentId)} /></div>
-            {agentId ? <p className="mt-4 break-all font-mono text-xs text-allow">Registered agent ID: {agentId}</p> : <button type="button" onClick={() => void createAgent()} disabled={busy || !agentName.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? "Registering…" : "Register agent"}</button>}
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("s2.title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("s2.desc")}</p>
+            <div className="mt-6 space-y-1.5"><Label htmlFor="agent">{t("s2.label")}</Label><Input id="agent" value={agentName} maxLength={120} onChange={(event) => setAgentName(event.target.value)} disabled={Boolean(agentId)} /></div>
+            {agentId ? <p className="mt-4 break-all font-mono text-xs text-allow">{t("s2.registered")} {agentId}</p> : <button type="button" onClick={() => void createAgent()} disabled={busy || !agentName.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? t("s2.busy") : t("s2.btn")}</button>}
           </>
         )}
 
         {step === 3 && (
           <>
-            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">Create a persisted policy</h1>
-            <p className="mt-2 text-sm text-muted-foreground">This rule applies only to the registered agent and the action/resource patterns below.</p>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("s3.title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("s3.desc")}</p>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5"><Label htmlFor="action-pattern">Action pattern</Label><Input id="action-pattern" value={actionPattern} maxLength={200} onChange={(event) => setActionPattern(event.target.value)} disabled={Boolean(policyId)} /></div>
-              <div className="space-y-1.5"><Label htmlFor="resource-pattern">Resource pattern</Label><Input id="resource-pattern" value={resourcePattern} maxLength={500} onChange={(event) => setResourcePattern(event.target.value)} disabled={Boolean(policyId)} /></div>
+              <div className="space-y-1.5"><Label htmlFor="action-pattern">{t("s3.action")}</Label><Input id="action-pattern" value={actionPattern} maxLength={200} onChange={(event) => setActionPattern(event.target.value)} disabled={Boolean(policyId)} /></div>
+              <div className="space-y-1.5"><Label htmlFor="resource-pattern">{t("s3.resource")}</Label><Input id="resource-pattern" value={resourcePattern} maxLength={500} onChange={(event) => setResourcePattern(event.target.value)} disabled={Boolean(policyId)} /></div>
             </div>
-            <fieldset className="mt-5 space-y-2"><legend className="mb-2 text-sm font-medium">Policy outcome</legend>
+            <fieldset className="mt-5 space-y-2"><legend className="mb-2 text-sm font-medium">{t("s3.outcome")}</legend>
               {(["ESCALATE", "BLOCK", "ALLOW"] as const).map((effect) => (
                 <label key={effect} className="flex cursor-pointer items-start gap-3 rounded-sm border border-border p-3 text-sm">
                   <input type="radio" name="decision" value={effect} checked={decision === effect} disabled={Boolean(policyId)} onChange={() => setDecision(effect)} className="mt-1" />
-                  <span><span className="font-mono text-xs font-semibold">{effect}</span><span className="block text-muted-foreground">{effect === "ESCALATE" ? "Pause and require human review." : effect === "BLOCK" ? "Deny the matching action." : "Permit the matching action."}</span></span>
+                  <span><span className="font-mono text-xs font-semibold">{effect}</span><span className="block text-muted-foreground">{effect === "ESCALATE" ? t("s3.escalate") : effect === "BLOCK" ? t("s3.block") : t("s3.allow")}</span></span>
                 </label>
               ))}
             </fieldset>
-            {policyId ? <p className="mt-4 break-all font-mono text-xs text-allow">Persisted policy ID: {policyId}</p> : <button type="button" onClick={() => void createPolicy()} disabled={busy || !actionPattern.trim() || !resourcePattern.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? "Saving…" : "Create policy"}</button>}
+            {policyId ? <p className="mt-4 break-all font-mono text-xs text-allow">{t("s3.persisted")} {policyId}</p> : <button type="button" onClick={() => void createPolicy()} disabled={busy || !actionPattern.trim() || !resourcePattern.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? t("s3.busy") : t("s3.btn")}</button>}
           </>
         )}
 
         {step === 4 && (
           <>
-            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">Connect your server-side integration</h1>
-            <p className="mt-2 text-sm text-muted-foreground">The workspace, agent, and policy below were saved. Create an API key and keep it in your server-side secret manager; this browser flow does not simulate a decision or execution.</p>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("s4.title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("s4.desc")}</p>
             <dl className="mt-5 divide-y divide-border/60 border-y border-border">
-              <div className="py-3"><dt className="text-xs text-muted-foreground">Workspace ID</dt><dd className="mt-1 break-all font-mono text-xs">{workspaceId}</dd></div>
-              <div className="py-3"><dt className="text-xs text-muted-foreground">Agent ID</dt><dd className="mt-1 break-all font-mono text-xs">{agentId}</dd></div>
-              <div className="py-3"><dt className="text-xs text-muted-foreground">Policy ID / outcome</dt><dd className="mt-1 break-all font-mono text-xs">{policyId} / {decision}</dd></div>
+              <div className="py-3"><dt className="text-xs text-muted-foreground">{t("s4.ws")}</dt><dd className="mt-1 break-all font-mono text-xs">{workspaceId}</dd></div>
+              <div className="py-3"><dt className="text-xs text-muted-foreground">{t("s4.agent")}</dt><dd className="mt-1 break-all font-mono text-xs">{agentId}</dd></div>
+              <div className="py-3"><dt className="text-xs text-muted-foreground">{t("s4.policy")}</dt><dd className="mt-1 break-all font-mono text-xs">{policyId} / {decision}</dd></div>
             </dl>
             <div className="mt-5 space-y-3 text-sm">
-              <Link href="/dashboard/api-keys" className="block underline underline-offset-4">Create a workspace API key</Link>
-              <Link href="/docs" className="block underline underline-offset-4">Open API quickstart</Link>
-              <p className="text-xs leading-5 text-muted-foreground">Send evaluations from your backend to <code>POST /api/v1/evaluate</code>. Continue your customer-owned action only on ALLOW; stop on BLOCK; pause for human review on ESCALATE. Aegisora records the governance result and does not execute your external action.</p>
+              <Link href="/dashboard/api-keys" className="block underline underline-offset-4">{t("s4.key")}</Link>
+              <Link href="/docs" className="block underline underline-offset-4">{t("s4.quickstart")}</Link>
+              <p className="text-xs leading-5 text-muted-foreground">{t.rich("s4.note", { code: (chunks) => <code>{chunks}</code> })}</p>
             </div>
           </>
         )}
@@ -215,10 +219,10 @@ export function OnboardingFlow() {
       <div className="mt-6 flex justify-between">
         {step < 4 ? (
           <>
-            <button type="button" onClick={() => { setError(null); setStep((current) => Math.max(0, current - 1)); }} disabled={step === 0 || busy} className={`${btnOutline} disabled:opacity-40`}>Back</button>
-            {step === 0 ? <span /> : <button type="button" onClick={continueStep} disabled={busy || (step === 1 && aal !== "aal2") || (step === 2 && !agentId) || (step === 3 && !policyId)} className={`${btnPrimary} disabled:opacity-40`}>Continue</button>}
+            <button type="button" onClick={() => { setError(null); setStep((current) => Math.max(0, current - 1)); }} disabled={step === 0 || busy} className={`${btnOutline} disabled:opacity-40`}>{t("back")}</button>
+            {step === 0 ? <span /> : <button type="button" onClick={continueStep} disabled={busy || (step === 1 && aal !== "aal2") || (step === 2 && !agentId) || (step === 3 && !policyId)} className={`${btnPrimary} disabled:opacity-40`}>{t("next")}</button>}
           </>
-        ) : <Link href="/dashboard" className={btnPrimary}>Open Aegisora Control</Link>}
+        ) : <Link href="/dashboard" className={btnPrimary}>{t("open")}</Link>}
       </div>
     </div>
   );

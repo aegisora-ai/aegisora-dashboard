@@ -1,13 +1,15 @@
+import { getTranslations } from "next-intl/server";
 import { AlertTriangle, Info, Lightbulb } from "lucide-react";
 import { slugify, type Block } from "@/lib/support-content";
 
-const CALL = {
-  note: { Icon: Info, label: "Note", cls: "border-border bg-surface-3" },
-  tip: { Icon: Lightbulb, label: "Tip", cls: "border-border bg-surface-3" },
-  warn: { Icon: AlertTriangle, label: "Important", cls: "border-[#f0b429]/50 bg-[#f0b429]/10" },
-} as const;
+export async function ArticleBody({ blocks, locale }: { blocks: Block[]; locale: string }) {
+  const t = await getTranslations({ locale, namespace: "HelpCenter" });
+  const CALL = {
+    note: { Icon: Info, label: t("note"), cls: "border-border bg-surface-3" },
+    tip: { Icon: Lightbulb, label: t("tip"), cls: "border-border bg-surface-3" },
+    warn: { Icon: AlertTriangle, label: t("warn"), cls: "border-[#f0b429]/50 bg-[#f0b429]/10" },
+  } as const;
 
-export function ArticleBody({ blocks }: { blocks: Block[] }) {
   return (
     <div className="space-y-5">
       {blocks.map((b, i) => {

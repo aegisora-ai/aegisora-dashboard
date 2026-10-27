@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Check, Copy } from "lucide-react";
 
 export function CopyPage({ text }: { text: string }) {
+  const t = useTranslations("HelpCenter");
   const [done, setDone] = useState(false);
   async function copy() {
     try {
@@ -21,7 +23,7 @@ export function CopyPage({ text }: { text: string }) {
       className="inline-flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold transition hover:bg-surface-3"
     >
       {done ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
-      {done ? "Copied" : "Copy page"}
+      {done ? t("copied") : t("copy")}
     </button>
   );
 }

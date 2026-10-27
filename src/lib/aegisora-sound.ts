@@ -26,7 +26,7 @@ type Prefs = { enabled: boolean; volume: number };
 
 const STORE_KEY = 'aegisora:sound:v1';
 
-let prefs: Prefs = { enabled: true, volume: 0.7 };
+let prefs: Prefs = { enabled: false, volume: 0.7 };
 let loaded = false;
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;

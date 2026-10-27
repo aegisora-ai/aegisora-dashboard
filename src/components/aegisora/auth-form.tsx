@@ -1,7 +1,8 @@
-﻿"use client";
+"use client";
 
-import Link from "next/link";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,19 +21,19 @@ type Props = {
   links?: { text: string; label: string; href: string }[];
 };
 
-const companyField: Field = { name: "company", label: "Company", type: "text", autoComplete: "organization" };
-
-function withCompany(mode: Mode, fields: Field[]): Field[] {
+function withCompany(mode: Mode, fields: Field[], label: string): Field[] {
   if (mode !== "signup" || fields.some((f) => f.name === "company")) return fields;
+  const companyField: Field = { name: "company", label, type: "text", autoComplete: "organization" };
   const i = fields.findIndex((f) => f.name === "password");
   return i === -1 ? [...fields, companyField] : [...fields.slice(0, i), companyField, ...fields.slice(i)];
 }
 
 export function AuthForm({ mode, title, description, fields, submitLabel, redirectTo, links }: Props) {
+  const t = useTranslations("Auth");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const allFields = withCompany(mode, fields);
+  const allFields = withCompany(mode, fields, t("common.company"));
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -57,8 +58,6 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
       }
 
       if (mode === "signup") {
-        // Workspace, veritabanindaki handle_new_user tetikleyicisi tarafindan
-        // company bilgisinden olusturulur (e-posta onayi olsa da calisir).
         const { data, error: err } = await supabase.auth.signUp({
           email,
           password,
@@ -68,7 +67,7 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
         if (data.session) {
           window.location.href = redirectTo;
         } else {
-          setNotice("Check your inbox to confirm your email, then log in.");
+          setNotice(t("signup.checkInbox"));
         }
         return;
       }
@@ -78,7 +77,7 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
           redirectTo: `${window.location.origin}/reset-password`,
         });
         if (err) throw err;
-        setNotice("If an account exists for that email, a reset link is on its way.");
+        setNotice(t("forgot.sent"));
         return;
       }
 
@@ -92,7 +91,7 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
         return;
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Try again.");
+      setError(err instanceof Error ? err.message : t("common.genericError"));
     } finally {
       setLoading(false);
     }
@@ -100,8 +99,8 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
 
   return (
     <div className="w-full max-w-sm">
-      <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-      <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+      <h1 className="bw-auth__h1">{title}</h1>
+      <p className="mt-3 text-sm text-muted-foreground">{description}</p>
 
       {error && (
         <p role="alert" className="mt-6 rounded-sm border border-block/30 bg-block-muted px-3 py-2 text-xs text-block">
@@ -122,7 +121,7 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
           </div>
         ))}
         <button type="submit" disabled={loading} className={`${btnPrimary} w-full disabled:opacity-60`}>
-          {loading ? "Please wait..." : submitLabel}
+          {loading ? t("common.wait") : submitLabel}
         </button>
       </form>
 
@@ -131,7 +130,7 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
           {links.map((l) => (
             <li key={l.href}>
               {l.text}{" "}
-              <Link href={l.href} className="text-cyan underline-offset-4 hover:underline">
+              <Link href={l.href} className="text-primary underline-offset-4 hover:underline">
                 {l.label}
               </Link>
             </li>
@@ -141,6 +140,3 @@ export function AuthForm({ mode, title, description, fields, submitLabel, redire
     </div>
   );
 }
-
-
-

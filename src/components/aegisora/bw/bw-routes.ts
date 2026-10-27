@@ -1,0 +1,2 @@
+/* Maintained by hand (step21). Pages that exist under src/app/[locale]. Order = order in the All Pages menu. */
+export const BW_ROUTES: string[] = ["/product", "/solutions", "/demo", "/proof", "/pricing", "/enterprise", "/pilot", "/security", "/trust", "/docs", "/docs/quickstart", "/docs/technical", "/developers", "/support", "/blog", "/changelog", "/resources", "/about", "/contact", "/legal/dpa", "/terms", "/impressum", "/login", "/signup"];

@@ -97,7 +97,7 @@ function SpeakerIcon({ on }: { on: boolean }) {
 export function AegisoraSound() {
   const pathname = usePathname() ?? '';
   const [active, setActive] = useState(false);
-  const enabled = useSyncExternalStore(subscribeSound, isSoundEnabled, () => true);
+  const enabled = useSyncExternalStore(subscribeSound, isSoundEnabled, () => false);
   const lastInput = useRef(0);
   const quietUntil = useRef(Infinity); // real value is set in the effect below
 

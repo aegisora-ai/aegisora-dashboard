@@ -1,24 +1,16 @@
-import Link from "next/link";
-import "@/styles/zp.css";
+import "./page-bw.css";
 import PilotForm from "./PilotForm";
-import styles from "./site.module.css";
 import { PLANS, type Cta, type PageData, type Section } from "./content";
+import { bwFontVars } from "../bw/bw-font-vars";
+import { BwBtn, BwSection } from "../bw/bw-ui";
 
-function to(locale: string, href: string): string {
-  return href.startsWith("/") ? "/" + locale + href : href;
-}
-
-function Buttons({ ctas, locale }: { ctas: Cta[]; locale: string }) {
+function Buttons({ ctas }: { ctas: Cta[] }) {
   return (
-    <div className="zpk-actions">
+    <div className="pv-actions">
       {ctas.map((c) => (
-        <Link
-          key={c.label}
-          href={to(locale, c.href)}
-          className={"zp-btn " + (c.variant === "ghost" ? "zp-btn--outline" : "zp-btn--primary")}
-        >
+        <BwBtn key={c.label} href={c.href} tone={c.variant === "ghost" ? "light" : "blue"} size="md">
           {c.label}
-        </Link>
+        </BwBtn>
       ))}
     </div>
   );
@@ -26,10 +18,10 @@ function Buttons({ ctas, locale }: { ctas: Cta[]; locale: string }) {
 
 function Head({ title, intro, id }: { title: string; intro?: string; id?: string }) {
   return (
-    <div className="zpk-head">
-      <h2 id={id} className="zpk-h2">{title}</h2>
-      {intro ? <p className="zpk-sub">{intro}</p> : null}
-    </div>
+    <header className="pv-head">
+      <h2 id={id} className="bw-h2">{title}</h2>
+      {intro ? <p className="bw-lead">{intro}</p> : null}
+    </header>
   );
 }
 
@@ -39,10 +31,10 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
       return (
         <>
           <Head title={s.title} intro={s.intro} />
-          <div className={"zpk-grid zpk-grid--" + (s.cols ?? 3)}>
+          <div className="pv-grid">
             {s.items.map((it) => (
-              <div key={it.title} className="zpk-card">
-                {it.tag ? <span className="zpk-tag">{it.tag}</span> : null}
+              <div key={it.title} className="pv-card">
+                {it.tag ? <span className="pv-tag">{it.tag}</span> : null}
                 <h3>{it.title}</h3>
                 <p>{it.body}</p>
               </div>
@@ -54,10 +46,10 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
       return (
         <>
           <Head title={s.title} intro={s.intro} />
-          <ol className="zpk-grid zpk-grid--2 zpk-steps">
+          <ol className="pv-grid pv-steps">
             {s.items.map((it, i) => (
-              <li key={it.title} className="zpk-card">
-                <span className="zpk-n">{String(i + 1).padStart(2, "0")}</span>
+              <li key={it.title} className="pv-card">
+                <span className="pv-n">{i + 1}</span>
                 <h3>{it.title}</h3>
                 <p>{it.body}</p>
               </li>
@@ -69,20 +61,16 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
       return (
         <>
           <Head title={s.title} intro={s.intro} />
-          <div className="zpk-tablewrap">
-            <table className="zpk-table">
+          <div className="pv-tablewrap">
+            <table className="pv-table">
               <thead>
-                <tr>
-                  {s.columns.map((c) => (
-                    <th key={c}>{c}</th>
-                  ))}
-                </tr>
+                <tr>{s.columns.map((c) => (<th key={c}>{c}</th>))}</tr>
               </thead>
               <tbody>
                 {s.rows.map((r, i) => (
                   <tr key={i}>
                     {r.map((cell, j) => (
-                      <td key={j} className={j === 0 ? "zpk-td-first" : undefined}>{cell}</td>
+                      <td key={j} className={j === 0 ? "pv-first" : undefined}>{cell}</td>
                     ))}
                   </tr>
                 ))}
@@ -95,20 +83,16 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
       return (
         <>
           <Head title={s.title} intro={s.intro} />
-          <div className="zpk-plans">
+          <div className="pv-grid pv-plans">
             {PLANS.map((p) => (
-              <div key={p.name} className={"zpk-card zpk-plan" + (p.highlight ? " zpk-plan--hi" : "")}>
+              <div key={p.name} className={"pv-card pv-plan" + (p.highlight ? " pv-plan--hi" : "")}>
                 <h3>{p.name}</h3>
-                <div className="zpk-price">
-                  {p.price} <span>{p.period}</span>
-                </div>
+                <div className="pv-price">{p.price} <span>{p.period}</span></div>
                 <p>{p.blurb}</p>
-                <ul className="zpk-features">
-                  {p.features.map((f) => (
-                    <li key={f}>{f}</li>
-                  ))}
+                <ul className="pv-list">
+                  {p.features.map((f) => (<li key={f}>{f}</li>))}
                 </ul>
-                <Buttons ctas={[p.cta]} locale={locale} />
+                <Buttons ctas={[p.cta]} />
               </div>
             ))}
           </div>
@@ -118,7 +102,7 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
       return (
         <>
           <Head title={s.title} />
-          <div className="zpk-faq">
+          <div className="pv-faq">
             {s.items.map((it) => (
               <details key={it.title}>
                 <summary>{it.title}</summary>
@@ -132,10 +116,8 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
       return (
         <>
           <Head title={s.title} />
-          <div className="zpk-prose">
-            {s.paragraphs.map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
+          <div className="pv-prose">
+            {s.paragraphs.map((p, i) => (<p key={i}>{p}</p>))}
           </div>
         </>
       );
@@ -143,17 +125,17 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
       return (
         <>
           <Head id="apply" title={s.title} intro={s.intro} />
-          <div className={"dark zpk-darkpanel " + styles.root}>
+          <div className="pv-formcard">
             <PilotForm locale={locale} />
           </div>
         </>
       );
     case "cta":
       return (
-        <div className="zpk-ctabox">
-          <h2 className="zpk-h2">{s.title}</h2>
-          <p className="zpk-sub">{s.body}</p>
-          <Buttons ctas={s.ctas} locale={locale} />
+        <div className="pv-ctabox">
+          <h2 className="bw-h2">{s.title}</h2>
+          <p className="bw-lead">{s.body}</p>
+          <Buttons ctas={s.ctas} />
         </div>
       );
     default:
@@ -163,24 +145,22 @@ function SectionView({ s, locale }: { s: Section; locale: string }) {
 
 export default function PageView({ page, locale }: { page: PageData; locale: string }) {
   return (
-    <div className="zp zpk-page">
-      <section className="zpk-hero">
-        <div className="zpk-wrap">
-          <div className="zpk-hero-text">
-            <p className="zp-eyebrow">{page.eyebrow}</p>
-            <h1 className="zpk-h1">{page.title}</h1>
-            <p className="zpk-lead">{page.lead}</p>
-            {page.ctas ? <Buttons ctas={page.ctas} locale={locale} /> : null}
-            {page.notice ? <p className="zpk-notice">{page.notice}</p> : null}
-          </div>
+    <div className={"bw-root bw-page pv-page " + bwFontVars}>
+      <BwSection>
+        <div className="bw-pad pv-hero">
+          <p className="bw-eyebrow">{page.eyebrow}</p>
+          <h1 className="pv-h1">{page.title}</h1>
+          <p className="bw-lead pv-herolead">{page.lead}</p>
+          {page.ctas ? <Buttons ctas={page.ctas} /> : null}
+          {page.notice ? <p className="pv-notice">{page.notice}</p> : null}
         </div>
-      </section>
+      </BwSection>
       {page.sections.map((s, i) => (
-        <section key={i} className={"zpk-section" + (i % 2 === 1 ? " zpk-section--alt" : "")}>
-          <div className="zpk-wrap">
+        <BwSection key={i} className={i % 2 === 0 ? "bw-sec--soft" : undefined}>
+          <div className="bw-pad pv-sec">
             <SectionView s={s} locale={locale} />
           </div>
-        </section>
+        </BwSection>
       ))}
     </div>
   );

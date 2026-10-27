@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import {
   authenticateUser,
   normalizeRole,
@@ -85,6 +85,7 @@ async function listMembers(workspaceId: string) {
 
 export async function GET(req: Request) {
   try {
+    await authenticateUser(req);
     const workspaceId = workspaceIdFrom(req);
 
     if (!workspaceId) {
@@ -135,6 +136,7 @@ export async function GET(req: Request) {
 
 export async function PATCH(req: Request) {
   try {
+    await authenticateUser(req);
     const workspaceId = workspaceIdFrom(req);
 
     if (!workspaceId) {
@@ -286,6 +288,7 @@ export async function PATCH(req: Request) {
 export async function POST(req: Request) {
   let inviteStage = "request";
   try {
+    await authenticateUser(req);
     const workspaceId = workspaceIdFrom(req);
     if (!workspaceId) {
       return errorResponse(400, "invalid_workspace", "X-Workspace-Id header is required.");
@@ -386,6 +389,7 @@ export async function POST(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    await authenticateUser(req);
     const workspaceId = workspaceIdFrom(req);
     if (!workspaceId) {
       return errorResponse(400, "invalid_workspace", "X-Workspace-Id header is required.");
@@ -435,3 +439,4 @@ export async function DELETE(req: Request) {
     return errorResponse(500, "internal_error", "Unable to remove workspace member.");
   }
 }
+

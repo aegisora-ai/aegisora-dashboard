@@ -6,7 +6,11 @@ const PATHS = [
   "",
   "/about",
   "/blog",
+  "/changelog",
+  "/contact",
+  "/demo",
   "/docs",
+  "/docs/quickstart",
   "/docs/technical",
   "/enterprise",
   "/impressum",
@@ -25,6 +29,7 @@ const PATHS = [
 export default function sitemap(): MetadataRoute.Sitemap {
   return PATHS.map((p) => ({
     url: BASE + p,
+    alternates: { languages: { en: BASE + p, de: BASE + "/de" + p } },
     changeFrequency: "monthly" as const,
     priority: p === "" ? 1 : 0.7,
   }));

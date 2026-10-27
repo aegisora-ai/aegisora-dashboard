@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-
-type Verdict = "ALLOW" | "ESCALATE" | "BLOCK";
+import { Card, CardContent } from "@/components/ui/card";
+import { VerdictPill, type VerdictName } from "@/components/aegisora/verdict-pill";
 
 type Sample = {
   id: string;
@@ -10,7 +10,7 @@ type Sample = {
   agent: string;
   context: string;
   policy: string | null;
-  verdict: Verdict;
+  verdict: VerdictName;
   reason: string;
   evidence: string;
 };
@@ -62,57 +62,49 @@ const SAMPLES: Sample[] = [
 export function DecisionDemo() {
   const [selectedId, setSelectedId] = useState<string>(SAMPLES[0].id);
   const active = SAMPLES.find((s) => s.id === selectedId) ?? SAMPLES[0];
-  const tone = active.verdict.toLowerCase();
+
+  const rows: [string, string, boolean][] = [
+    ["Action", active.action, true],
+    ["Agent", active.agent, false],
+    ["Context", active.context, false],
+    ["Matched policy", active.policy ?? "None", true],
+    ["Reason", active.reason, false],
+    ["Evidence hash", active.evidence, true],
+  ];
 
   return (
-    <div className="hm-demo">
-      <div className="hm-demo-list" role="group" aria-label="Sample actions">
+    <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+      <div role="group" aria-label="Sample actions" className="grid content-start gap-3">
         {SAMPLES.map((s) => (
           <button
             key={s.id}
             type="button"
-            className="hm-demo-item"
             aria-pressed={s.id === active.id}
             onClick={() => setSelectedId(s.id)}
+            className="grid gap-1 rounded-xl border bg-card p-4 text-left transition-colors hover:border-primary/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring aria-pressed:border-primary aria-pressed:bg-accent"
           >
-            <span className="hm-demo-action">{s.action}</span>
-            <span className="hm-demo-agent">{s.agent}</span>
+            <span className="font-mono text-sm font-medium break-all text-foreground">{s.action}</span>
+            <span className="text-sm text-muted-foreground">{s.agent}</span>
           </button>
         ))}
       </div>
 
-      <div className="hm-demo-panel" aria-live="polite">
-        <div className="hm-demo-head">
-          <span className={"hm-verdict hm-verdict--" + tone}>{active.verdict}</span>
-          <span className="hm-demo-note">Sample decision</span>
-        </div>
-        <dl className="hm-demo-dl">
-          <div>
-            <dt>Action</dt>
-            <dd>{active.action}</dd>
+      <Card aria-live="polite" className="p-0">
+        <CardContent className="p-6">
+          <div className="mb-5 flex items-center justify-between gap-3">
+            <VerdictPill verdict={active.verdict} />
+            <span className="text-xs text-muted-foreground">Sample decision</span>
           </div>
-          <div>
-            <dt>Agent</dt>
-            <dd>{active.agent}</dd>
-          </div>
-          <div>
-            <dt>Context</dt>
-            <dd>{active.context}</dd>
-          </div>
-          <div>
-            <dt>Matched policy</dt>
-            <dd>{active.policy ?? "None"}</dd>
-          </div>
-          <div>
-            <dt>Reason</dt>
-            <dd>{active.reason}</dd>
-          </div>
-          <div>
-            <dt>Evidence hash</dt>
-            <dd className="hm-demo-hash">{active.evidence}</dd>
-          </div>
-        </dl>
-      </div>
+          <dl className="grid gap-4">
+            {rows.map(([label, value, mono]) => (
+              <div key={label} className="grid gap-1 border-b pb-4 last:border-0 last:pb-0 sm:grid-cols-[9rem_1fr] sm:gap-4">
+                <dt className="text-sm text-muted-foreground">{label}</dt>
+                <dd className={"text-sm break-words text-foreground" + (mono ? " font-mono" : "")}>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -1,10 +1,15 @@
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { CodeBlock, Steps } from "@/components/aegisora/page-kit";
 import { meta } from "@/lib/seo";
 
-export const metadata = meta(
-  "Quickstart",
-  "Send your first agent action to Aegisora and read the decision.",
-);
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "DocsQuick" });
+  return meta(t("metaTitle"), t("metaDesc"));
+}
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "https://YOUR-AEGISORA-HOST";
 
@@ -36,60 +41,53 @@ const result = await aegisora.guard(
   async (decision) => doTransfer(decision.decision_id)
 );`;
 
-export default function QuickstartPage() {
+export default async function QuickstartPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("DocsQuick");
+
   return (
     <div>
-      <h1 className="text-4xl font-light tracking-tight">Quickstart</h1>
-      <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
-        Send one agent action to Aegisora and read the decision. Evaluation requires a workspace with an
-        active execution entitlement. Without a matching policy the workspace default applies, which is
-        BLOCK unless you change it.
-      </p>
+      <h1 className="text-4xl font-light tracking-tight">{t("h1")}</h1>
+      <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{t("lead")}</p>
 
-      <h2 id="access" className="mt-12 scroll-mt-24 text-2xl font-medium">Pilot access</h2>
-      <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
-        Pilot workspaces are set up by Aegisora. You receive an invitation by email; accept it to join your
-        workspace, then open API keys in the dashboard. Keys look like aeg_live_ followed by 48 hex
-        characters and are shown once.
-      </p>
+      <h2 id="access" className="mt-12 scroll-mt-24 text-2xl font-medium">{t("accessTitle")}</h2>
+      <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">{t("accessP")}</p>
 
-      <h2 id="request" className="mt-16 scroll-mt-24 text-2xl font-medium">Send an action</h2>
+      <h2 id="request" className="mt-16 scroll-mt-24 text-2xl font-medium">{t("sendTitle")}</h2>
       <div className="mt-6">
         <CodeBlock code={curlExample} />
       </div>
 
-      <h2 id="decision" className="mt-16 scroll-mt-24 text-2xl font-medium">Read the decision</h2>
+      <h2 id="decision" className="mt-16 scroll-mt-24 text-2xl font-medium">{t("decisionTitle")}</h2>
       <div className="mt-6">
         <CodeBlock code={responseExample} />
       </div>
-      <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-        effect is ALLOW, BLOCK or ESCALATE. ESCALATE creates an approval and returns approval_id. Every
-        decision returns an evidence_hash you can verify later.
-      </p>
+      <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">{t("decisionP")}</p>
 
-      <h2 id="sdk" className="mt-16 scroll-mt-24 text-2xl font-medium">Node helper (optional)</h2>
+      <h2 id="sdk" className="mt-16 scroll-mt-24 text-2xl font-medium">{t("sdkTitle")}</h2>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
         <a
           href="/sdk/aegisora.mjs"
           download
           className="font-semibold text-primary underline underline-offset-4"
         >
-          Download aegisora.mjs
+          {t("sdkLink")}
         </a>
-        . A single file with no dependencies.
+        {t("sdkTail")}
       </p>
       <div className="mt-6">
         <CodeBlock code={nodeExample} />
       </div>
 
-      <h2 className="mt-16 text-2xl font-medium">What to expect</h2>
+      <h2 className="mt-16 text-2xl font-medium">{t("expectTitle")}</h2>
       <div className="mt-6">
         <Steps
           cols={3}
           items={[
-            ["Send", "Your agent calls the evaluate endpoint before it executes an action."],
-            ["Decide", "Aegisora returns ALLOW, BLOCK or ESCALATE. Your code continues only on ALLOW."],
-            ["Verify", "Each decision writes an evidence record you can check later."],
+            [t("s1t"), t("s1b")],
+            [t("s2t"), t("s2b")],
+            [t("s3t"), t("s3b")],
           ]}
         />
       </div>

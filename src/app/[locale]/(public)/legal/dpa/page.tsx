@@ -1,16 +1,8 @@
-import type { Metadata } from "next";
-import PageView from "../../../../../components/aegisora/site/PageView";
-import { PAGES } from "../../../../../components/aegisora/site/content";
+import { redirect } from "next/navigation";
 
-const page = PAGES.legalDpa;
-
-export const metadata: Metadata = {
-  title: page.metaTitle,
-  description: page.metaDescription,
-  robots: page.noindex ? { index: false, follow: false } : undefined,
-};
-
+// The DPA draft still has open fields (controller, regions, measures).
+// It is not shown publicly until it is complete; visitors go to the trust center instead.
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  return <PageView page={page} locale={locale} />;
+  redirect(locale === "en" ? "/trust" : "/" + locale + "/trust");
 }

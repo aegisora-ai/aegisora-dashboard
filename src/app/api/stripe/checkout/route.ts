@@ -15,6 +15,13 @@ export async function POST(
   request: Request,
 ) {
   try {
+    if (process.env.NEXT_PUBLIC_BILLING_SELF_SERVE !== "true") {
+      return NextResponse.json(
+        { success: false, error: "Self-service checkout is not enabled. Please contact us." },
+        { status: 503 },
+      );
+    }
+
     const body =
       (await request.json().catch(() => ({}))) as {
         plan?: unknown;

@@ -1,36 +1,43 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegisora/page-kit";
-import { POSTS, formatDate } from "@/lib/blog-posts";
+import { POSTS } from "@/lib/blog-posts";
 
-export const metadata: Metadata = {
-  title: "Blog",
-  description: "Notes on securing autonomous AI agents at runtime.",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Blog" });
+  return { title: t("metaTitle"), description: t("metaDesc") };
+}
 
-export default function BlogIndex() {
+export default async function BlogIndex({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Blog" });
+  const fmt = (iso: string) =>
+    new Date(iso + "T00:00:00Z").toLocaleDateString(locale === "de" ? "de-DE" : "en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    });
   return (
     <>
-      <PageHero
-        eyebrow="Blog"
-        title="Notes on securing AI agents at runtime."
-        intro="How to put a decision point in front of autonomous agents, what to record, and where humans belong in the loop."
-      />
-      <Section title="Latest posts" tone="alt">
+      <PageHero eyebrow={t("metaTitle")} title={t("title")} intro={t("intro")} />
+      <Section title={t("latest")} tone="alt">
         <CardGrid
           cols={3}
           items={POSTS.map((p) => ({
-            n: p.category + " · " + formatDate(p.date),
+            n: p.category + " \u00b7 " + fmt(p.date),
             title: p.title,
-            body: p.excerpt + " (" + p.readMinutes + " min read)",
+            body: p.excerpt + " (" + t("minRead", { n: p.readMinutes }) + ")",
             href: "/blog/" + p.slug,
           }))}
         />
       </Section>
       <CtaBand
-        title="Try it in a test workspace."
-        body="Send one request and read the decision."
-        primary={{ label: "Test Aegisora", href: "/signup" }}
-        secondary={{ label: "Read the quickstart", href: "/docs/quickstart" }}
+        title={t("ctaTitle")}
+        body={t("ctaBody")}
+        primary={{ label: t("test"), href: "/signup" }}
+        secondary={{ label: t("quick"), href: "/docs/quickstart" }}
       />
     </>
   );
