@@ -244,6 +244,18 @@ export function AegisoraSound() {
     };
   }, [active, pathname]);
 
+  useEffect(() => {
+    if (!active) return;
+    let done = false;
+    try { done = !!sessionStorage.getItem('aeg:session-played'); } catch {}
+    if (done) return;
+    const t = window.setTimeout(() => {
+      try { sessionStorage.setItem('aeg:session-played', '1'); } catch {}
+      playSound('session');
+    }, 900);
+    return () => window.clearTimeout(t);
+  }, [active]);
+
   if (!active) return null;
 
   return (
@@ -258,7 +270,14 @@ export function AegisoraSound() {
         setSoundEnabled(next);
         if (next) {
           unlockAudio();
-          window.setTimeout(() => playSound('boot'), 80);
+          window.setTimeout(() => {
+            let first = false;
+            try {
+              first = !sessionStorage.getItem('aeg:brand-played');
+              if (first) sessionStorage.setItem('aeg:brand-played', '1');
+            } catch {}
+            playSound(first ? 'brand' : 'boot');
+          }, 80);
         }
       }}
     >
