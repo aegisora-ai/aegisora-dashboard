@@ -10,7 +10,9 @@ export type SoundName =
   | 'error'
   | 'notify'
   | 'tick'
-  | 'boot';
+  | 'boot'
+  | 'brand'
+  | 'session';
 
 type Note = {
   at: number; // start offset in seconds
@@ -116,6 +118,8 @@ const SOUNDS: Record<SoundName, Note[]> = {
   ],
   /* rising two-tone siren: needs a human decision */
   escalate: sirenNotes(),
+  brand: [],
+  session: [],
   /* three sharp beeps: critical */
   alert: [
     { at: 0.0, dur: 0.07, freq: 1480, type: 'square', gain: 0.15, lp: 3200 },
@@ -188,7 +192,7 @@ export function unlockAudio(): void {
   if (c && c.state === 'suspended') void c.resume().catch(() => undefined);
 }
 
-export function playSound(name: SoundName): void {
+function playSynth(name: SoundName): void {
   load();
   if (!prefs.enabled || typeof window === 'undefined') return;
   const now = Date.now();
@@ -231,4 +235,46 @@ export function subscribeSound(cb: () => void): () => void {
   return () => {
     listeners.delete(cb);
   };
+}
+
+/* ---- Aegisora sonic identity: recorded files override the synthesized sounds ---- */
+const FILE_SOUNDS: Partial<Record<SoundName, string>> = {
+  block: '/sounds/threat-blocked.mp3',
+  approve: '/sounds/policy-verified.mp3',
+  success: '/sounds/policy-verified.mp3',
+  boot: '/sounds/dashboard-startup.mp3',
+  notify: '/sounds/agent-connected.mp3',
+  brand: '/sounds/brand-logo.mp3',
+  session: '/sounds/secure-session.mp3',
+};
+const fileCache = new Map<string, HTMLAudioElement>();
+const fileLast = new Map<string, number>();
+const NOOP = undefined as unknown as ReturnType<typeof playSynth>;
+
+export function playSound(...args: Parameters<typeof playSynth>): ReturnType<typeof playSynth> {
+  const url = FILE_SOUNDS[args[0] as SoundName];
+  if (url && typeof window !== 'undefined') {
+    load();
+    if (!prefs.enabled) return NOOP;
+    const now = Date.now();
+    if (now - (fileLast.get(url) ?? 0) < 600) return NOOP;
+    fileLast.set(url, now);
+    try {
+      let a = fileCache.get(url);
+      if (!a) {
+        a = new Audio(url);
+        a.preload = 'auto';
+        fileCache.set(url, a);
+      }
+      a.volume = prefs.volume;
+      a.currentTime = 0;
+      void a.play().catch(() => {
+        playSynth(...args);
+      });
+      return NOOP;
+    } catch {
+      /* fall through to the synthesized sound */
+    }
+  }
+  return playSynth(...args);
 }
