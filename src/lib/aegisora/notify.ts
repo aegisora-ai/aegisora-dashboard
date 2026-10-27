@@ -1,4 +1,4 @@
-﻿import { admin } from "@/lib/aegisora/server";
+import { admin } from "@/lib/aegisora/server";
 
 export type NotifyInput = {
   workspaceId: string;
@@ -21,7 +21,7 @@ async function recipients(ws: string): Promise<string[]> {
   const out = new Set<string>();
   try {
     const db = admin();
-    const { data, error } = await db.from("workspace_members").select("user_id,role").eq("workspace_id", ws).in("role", ["owner", "admin"]);
+    const { data, error } = await db.from("workspace_members").select("user_id,role").eq("workspace_id", ws).eq("status", "active").in("role", ["OWNER", "ADMIN"]);
     if (error) console.error("notify: members query failed", error.message);
     for (const m of data ?? []) {
       const { data: u } = await db.auth.admin.getUserById(String(m.user_id));
