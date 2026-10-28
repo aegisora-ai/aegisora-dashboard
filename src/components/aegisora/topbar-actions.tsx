@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CircleHelp, Moon, Sun } from "lucide-react";
+import { CircleHelp, Moon, Sun, Volume2, VolumeX } from "lucide-react";
 import { THEME_KEY } from "@/lib/theme";
+import { play, setSoundEnabled, soundEnabled } from "@/lib/aegisora/sound";
 import { focusRing } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -11,9 +12,10 @@ const btn = "inline-flex size-9 items-center justify-center rounded-sm border bo
 
 export function TopbarActions() {
   const [dark, setDark] = useState(true);
+  const [snd, setSnd] = useState(true);
 
   useEffect(() => {
-    const t = window.setTimeout(() => setDark(document.documentElement.classList.contains("dark")), 0);
+    const t = window.setTimeout(() => { setDark(document.documentElement.classList.contains("dark")); setSnd(soundEnabled()); }, 0);
     return () => window.clearTimeout(t);
   }, []);
 
@@ -31,6 +33,16 @@ export function TopbarActions() {
           <CircleHelp className="size-4" />
         </Link>
       </span>
+      <button
+        type="button"
+        data-sound="off"
+        onClick={() => { const next = !snd; setSoundEnabled(next); setSnd(next); if (next) play("on"); }}
+        aria-label={snd ? "Mute interface sounds" : "Unmute interface sounds"}
+        aria-pressed={!snd}
+        className={cn(btn, focusRing)}
+      >
+        {snd ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+      </button>
       <button
         type="button"
         onClick={toggle}

@@ -3,6 +3,7 @@
 import { LiveTable } from "@/components/aegisora/live/live-table";
 import Link from "next/link";
 import { Badge, btnGhost, fmt } from "@/components/aegisora/live/ui";
+import { DecisionCharts } from "@/components/aegisora/live/page-charts";
 
 export default function DecisionsPage() {
   return (
@@ -11,6 +12,7 @@ export default function DecisionsPage() {
       title="Decisions"
       description="Every action your agents attempted and what governance decided. Use Open for the full record."
       limit={200}
+      above={(ws) => <DecisionCharts wsId={ws.id} />}
       columns={[
         { label: "Time", render: (r) => fmt(r.created_at) },
         { label: "Agent", render: (r) => r.agent_name },
