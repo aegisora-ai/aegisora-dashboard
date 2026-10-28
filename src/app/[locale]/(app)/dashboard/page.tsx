@@ -8,6 +8,7 @@ import type { Workspace } from "@/lib/aegisora/use-workspace";
 import { Badge, Notice, PageHeader, Panel, Skeleton, WorkspaceGate, btnGhost, fmt } from "@/components/aegisora/live/ui";
 import type { Row } from "@/components/aegisora/live/live-table";
 import { DecisionSplit, HourlyChart, type Bucket } from "@/components/aegisora/live/decision-charts";
+import { OverviewInsights } from "@/components/aegisora/live/overview-insights";
 import { cn } from "@/lib/utils";
 
 // null = the query failed (unknown), never "0".
@@ -166,6 +167,8 @@ function Overview({ ws }: { ws: Workspace }) {
           )}
         </Panel>
       </div>
+
+      <OverviewInsights wsId={ws.id} />
 
       <Panel>
         <h2 className="text-sm font-semibold">Recent activity</h2>
