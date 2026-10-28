@@ -33,6 +33,7 @@ export function WelcomeTour() {
         const supabase = createClient();
         const { data: auth } = await supabase.auth.getUser();
         if (!auth.user || !alive) return;
+        try { if (localStorage.getItem(KEY)) return; } catch { /* ignore */ }
         const { data, error } = await supabase
           .from("profiles").select("onboarded_at").eq("id", auth.user.id).maybeSingle();
         if (!alive) return;
