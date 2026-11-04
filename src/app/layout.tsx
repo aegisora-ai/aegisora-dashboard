@@ -1,3 +1,4 @@
+import Script from "next/script";
 import PwaBoot from "@/components/pwa-boot";
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed } from "next/font/google";
@@ -43,7 +44,7 @@ export default async function RootLayout({
   return (
     <html data-scroll-behavior="smooth" lang={locale} className={barlow.variable} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <Script id="theme-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         {children}

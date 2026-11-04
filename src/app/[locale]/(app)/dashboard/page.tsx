@@ -1,23 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, ChevronDown, Circle } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Circle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Workspace } from "@/lib/aegisora/use-workspace";
-import { Badge, Notice, PageHeader, Panel, Skeleton, WorkspaceGate, btnGhost, fmt } from "@/components/aegisora/live/ui";
+import { Badge, Notice, PageHeader, Panel, Skeleton, WorkspaceGate, fmt } from "@/components/aegisora/live/ui";
 import type { Row } from "@/components/aegisora/live/live-table";
 import { DecisionSplit, HourlyChart, type Bucket } from "@/components/aegisora/live/decision-charts";
 import { OverviewInsights } from "@/components/aegisora/live/overview-insights";
+import { focusRing } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 // null = the query failed (unknown), never "0".
 type Stats = { agents: number | null; policies: number | null; keys: number | null; pending: number | null; incidents: number | null; allow: number | null; block: number | null; escalate: number | null };
 type Point = { created_at: string; decision: string | null };
+type Pending = { id: string; agent_name: string | null; action: string | null; requested_at: string; expires_at: string };
 
 const HOUR = 36e5;
 const SERIES_LIMIT = 1000;
 const NONE: Stats = { agents: null, policies: null, keys: null, pending: null, incidents: null, allow: null, block: null, escalate: null };
+const btnPrimary = "inline-flex items-center justify-center gap-2 rounded-md bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover";
+const btnOutline = "inline-flex items-center justify-center gap-2 rounded-md border border-border bg-surface-2 px-3.5 py-2 text-sm font-medium transition-colors hover:bg-surface-3";
 
 function bucketize(points: Point[]): { buckets: Bucket[]; labels: string[] } {
   const now = Date.now();
@@ -33,12 +37,21 @@ function bucketize(points: Point[]): { buckets: Bucket[]; labels: string[] } {
   return { buckets, labels };
 }
 
+function timeLeft(iso: string) {
+  const mins = Math.round((Date.parse(iso) - Date.now()) / 6e4);
+  if (mins < 1) return "expires now";
+  if (mins < 60) return mins + "m left";
+  return Math.round(mins / 60) + "h left";
+}
+
 function Overview({ ws }: { ws: Workspace }) {
   const [s, setS] = useState<Stats | null>(null);
   const [failed, setFailed] = useState<string[]>([]);
   const [recent, setRecent] = useState<Row[]>([]);
   const [points, setPoints] = useState<Point[]>([]);
+  const [attention, setAttention] = useState<Pending[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -47,17 +60,19 @@ function Overview({ ws }: { ws: Workspace }) {
         const supabase = createClient();
         const c = (t: string) => supabase.from(t).select("id", { count: "exact", head: true }).eq("workspace_id", ws.id);
         const since = new Date(Date.now() - 864e5).toISOString();
-        const [agents, policies, keys, pending, incidents, allow, block, esc, rec, series] = await Promise.all([
+        const nowIso = new Date().toISOString();
+        const [agents, policies, keys, pending, incidents, allow, block, esc, rec, series, att] = await Promise.all([
           c("agents"),
           c("policies").eq("enabled", true),
           c("api_keys").is("revoked_at", null),
-          c("approvals").eq("status", "pending"),
+          c("approvals").eq("status", "pending").gt("expires_at", nowIso),
           c("incidents").eq("status", "open"),
           c("decisions").eq("decision", "ALLOW").gte("created_at", since),
           c("decisions").eq("decision", "BLOCK").gte("created_at", since),
           c("decisions").eq("decision", "ESCALATE").gte("created_at", since),
           supabase.from("decisions").select("id,created_at,decision,agent_id,agents(name),evidence(action)").eq("workspace_id", ws.id).order("created_at", { ascending: false }).limit(8),
           supabase.from("decisions").select("created_at,decision").eq("workspace_id", ws.id).gte("created_at", since).order("created_at", { ascending: false }).limit(SERIES_LIMIT),
+          supabase.from("approvals").select("id,agent_name,action,requested_at,expires_at").eq("workspace_id", ws.id).eq("status", "pending").gt("expires_at", nowIso).order("requested_at", { ascending: false }).limit(5),
         ]);
         if (!alive) return;
         const bad: string[] = [];
@@ -72,8 +87,10 @@ function Overview({ ws }: { ws: Workspace }) {
         });
         if (rec.error) bad.push("recent activity");
         if (series.error) bad.push("hourly chart");
+        if (att.error) bad.push("approval list");
         setRecent(rec.error ? [] : ((rec.data ?? []) as Row[]));
         setPoints(series.error ? [] : ((series.data ?? []) as Point[]));
+        setAttention(att.error ? [] : ((att.data ?? []) as Pending[]));
         setFailed(Array.from(new Set(bad)));
       } catch {
         if (!alive) return;
@@ -92,25 +109,24 @@ function Overview({ ws }: { ws: Workspace }) {
   const setupKnown = s.keys !== null && s.policies !== null && s.agents !== null;
   const { buckets, labels } = bucketize(points);
   const steps = [
-    { done: (s.keys ?? 0) > 0, label: "Create an API key", href: "/dashboard/api-keys" },
-    { done: (s.policies ?? 0) > 0, label: "Add a policy (or load the starter policies)", href: "/dashboard/policies" },
-    { done: (s.agents ?? 0) > 0, label: "Connect or import your agents", href: "/dashboard/agents" },
-    { done: total24 > 0 || recent.length > 0, label: "Send your first test action", href: "/dashboard/decisions" },
+    { done: (s.keys ?? 0) > 0, label: "Create an API key", cta: "Create an API key", href: "/dashboard/api-keys" },
+    { done: (s.policies ?? 0) > 0, label: "Add a policy (or load the starter policies)", cta: "Add a policy", href: "/dashboard/policies" },
+    { done: (s.agents ?? 0) > 0, label: "Connect or import your agents", cta: "Connect an agent", href: "/dashboard/agents" },
+    { done: total24 > 0 || recent.length > 0, label: "Send your first test action", cta: "Send a test action", href: "/dashboard/decisions" },
   ];
+  const nextStep = steps.find((x) => !x.done);
+  const doneCount = steps.filter((x) => x.done).length;
   const tiles = [
-    { label: "Agents", value: dash(s.agents), href: "/dashboard/agents", warn: false },
-    { label: "Active policies", value: dash(s.policies), href: "/dashboard/policies", warn: false },
-    { label: "Pending approvals", value: dash(s.pending), href: "/dashboard/approvals", warn: (s.pending ?? 0) > 0 },
+    { label: "Actions governed (24h)", value: decisionsKnown ? String(total24) : "-", href: "/dashboard/activity", warn: false },
+    { label: "Blocked (24h)", value: dash(s.block), href: "/dashboard/decisions", warn: false },
+    { label: "Awaiting approval", value: dash(s.pending), href: "/dashboard/approvals", warn: (s.pending ?? 0) > 0 },
     { label: "Open incidents", value: dash(s.incidents), href: "/dashboard/incidents", warn: (s.incidents ?? 0) > 0 },
   ];
+  const subtitle = ws.name + " - " + dash(s.agents) + " agents, " + dash(s.policies) + " active policies";
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Overview"
-        description={"Runtime decisions and governance status for " + ws.name + "."}
-        actions={(s.pending ?? 0) > 0 ? <Link href="/dashboard/approvals" className={btnGhost}>{"Review approvals (" + s.pending + ")"}</Link> : undefined}
-      />
+      <PageHeader title="Overview" description={subtitle} />
 
       {failed.length > 0 && (
         <Notice>
@@ -118,10 +134,19 @@ function Overview({ ws }: { ws: Workspace }) {
         </Notice>
       )}
 
-      {setupKnown && !steps.every((x) => x.done) && (
+      {setupKnown && nextStep && (
         <Panel>
-          <h2 className="text-sm font-semibold">Get started</h2>
-          <ul className="mt-3 space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold">Finish setup ({doneCount} of {steps.length})</h2>
+              <p className="mt-1 text-xs text-muted-foreground">Next: {nextStep.label}</p>
+            </div>
+            <Link href={nextStep.href} className={cn(btnPrimary, focusRing)}>
+              {nextStep.cta}
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          </div>
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
             {steps.map((x) => (
               <li key={x.label}>
                 <Link href={x.href} className="flex items-center gap-2.5 text-sm hover:underline">
@@ -134,6 +159,45 @@ function Overview({ ws }: { ws: Workspace }) {
         </Panel>
       )}
 
+      <Panel>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-sm font-semibold">Needs your attention</h2>
+          {(s.pending ?? 0) > 0 && (
+            <Link href="/dashboard/approvals" className={cn(btnPrimary, focusRing)}>{"Review approvals (" + s.pending + ")"}</Link>
+          )}
+        </div>
+        {s.pending === null ? (
+          <p className="mt-2 text-sm text-muted-foreground">Approvals could not be loaded.</p>
+        ) : attention.length > 0 ? (
+          <ul className="mt-3 divide-y divide-border/60">
+            {attention.map((a) => (
+              <li key={a.id}>
+                <Link href="/dashboard/approvals" className={cn("flex min-h-12 flex-wrap items-center gap-x-3 gap-y-1 py-2 text-sm hover:bg-surface-3/60", focusRing)}>
+                  <span className="font-mono text-xs">{a.action ?? "-"}</span>
+                  <span className="text-muted-foreground">{a.agent_name ?? "Unknown agent"}</span>
+                  <span className="ml-auto text-xs text-escalate">{timeLeft(a.expires_at)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : s.pending > 0 ? (
+          <p className="mt-2 text-sm text-muted-foreground">{s.pending + " approval(s) are waiting for a decision."}</p>
+        ) : (
+          <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+            <Check className="size-4 text-allow" aria-hidden="true" />
+            All clear. No action is waiting for a decision.
+          </p>
+        )}
+        {(s.incidents ?? 0) > 0 && (
+          <p className="mt-3 border-t border-border/60 pt-3 text-sm">
+            <Link href="/dashboard/incidents" className="font-medium text-primary hover:underline">
+              {s.incidents === 1 ? "1 open incident" : s.incidents + " open incidents"}
+            </Link>
+            <span className="text-muted-foreground"> to review.</span>
+          </p>
+        )}
+      </Panel>
+
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {tiles.map((t) => (
           <Link key={t.label} href={t.href} className="rounded-xl border border-border bg-surface-1 p-4 transition hover:border-primary/60 active:scale-[0.98] sm:p-5">
@@ -145,21 +209,59 @@ function Overview({ ws }: { ws: Workspace }) {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <Panel>
-          <h2 className="text-sm font-semibold">Decisions per hour</h2>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {points.length >= SERIES_LIMIT ? "Showing the latest 1,000 decisions of the last 24 hours." : "Last 24 hours. Hover a bar for the exact counts."}
-          </p>
-          {failed.includes("hourly chart") ? (
-            <p className="mt-4 text-sm text-muted-foreground">The chart could not be loaded.</p>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-sm font-semibold">Recent decisions</h2>
+            <Link href="/dashboard/activity" className="text-xs font-medium text-primary hover:underline">View all</Link>
+          </div>
+          {failed.includes("recent activity") ? (
+            <p className="mt-2 text-sm text-muted-foreground">Recent decisions could not be loaded.</p>
+          ) : recent.length === 0 ? (
+            <div className="mt-3 space-y-3">
+              <p className="text-sm text-muted-foreground">No decisions yet. They appear here the moment an agent calls the API.</p>
+              <div className="flex flex-wrap gap-2">
+                <Link href="/docs/quickstart" className={cn(btnPrimary, focusRing)}>Open the quickstart</Link>
+                <Link href="/demo" className={cn(btnOutline, focusRing)}>Try the sandbox</Link>
+              </div>
+            </div>
           ) : (
-            <HourlyChart buckets={buckets} labels={labels} />
+            <ul className="mt-3 divide-y divide-border/60">
+              {recent.map((r) => {
+                const open = openId === r.id;
+                return (
+                  <li key={r.id}>
+                    <button
+                      type="button"
+                      aria-expanded={open}
+                      onClick={() => setOpenId(open ? null : r.id)}
+                      className="flex min-h-12 w-full flex-wrap items-center gap-x-3 gap-y-1 py-2 text-left text-sm hover:bg-surface-3/60"
+                    >
+                      <Badge value={r.decision} />
+                      <span className="font-mono text-xs">{r.evidence?.[0]?.action ?? "-"}</span>
+                      <span className="text-muted-foreground">{r.agents?.name ?? "Unknown agent"}</span>
+                      <span className="ml-auto text-xs text-muted-foreground">{fmt(r.created_at)}</span>
+                      <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")} />
+                    </button>
+                    {open && (
+                      <dl className="grid gap-3 rounded-lg bg-surface-1 p-4 text-xs sm:grid-cols-4">
+                        <div><dt className="text-muted-foreground">Decision ID</dt><dd className="mt-1 font-mono">{String(r.id).slice(0, 12)}</dd></div>
+                        <div><dt className="text-muted-foreground">Agent</dt><dd className="mt-1">{r.agents?.name ?? "Unknown agent"}</dd></div>
+                        <div><dt className="text-muted-foreground">Action</dt><dd className="mt-1 font-mono">{r.evidence?.[0]?.action ?? "-"}</dd></div>
+                        <div className="flex items-end">
+                          <Link href={`/dashboard/decisions/${r.id}`} className="font-medium text-primary hover:underline">Open full decision</Link>
+                        </div>
+                      </dl>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           )}
         </Panel>
         <Panel>
-          <h2 className="text-sm font-semibold">Outcome split</h2>
+          <h2 className="text-sm font-semibold">Last 24 hours</h2>
           {decisionsKnown ? (
             <>
-              <p className="mt-1 text-xs text-muted-foreground">{total24} decisions in the last 24 hours.</p>
+              <p className="mt-1 text-xs text-muted-foreground">{total24} decisions governed.</p>
               <DecisionSplit allow={s.allow ?? 0} escalate={s.escalate ?? 0} block={s.block ?? 0} />
             </>
           ) : (
@@ -168,48 +270,32 @@ function Overview({ ws }: { ws: Workspace }) {
         </Panel>
       </div>
 
-      <OverviewInsights wsId={ws.id} />
+      <button
+        type="button"
+        aria-expanded={showAnalytics}
+        onClick={() => setShowAnalytics((v) => !v)}
+        className={cn(btnOutline, "w-full justify-between", focusRing)}
+      >
+        <span>{showAnalytics ? "Hide analytics" : "Show 14-day analytics"}</span>
+        <ChevronDown className={cn("size-4 transition-transform", showAnalytics && "rotate-180")} aria-hidden="true" />
+      </button>
 
-      <Panel>
-        <h2 className="text-sm font-semibold">Recent activity</h2>
-        {failed.includes("recent activity") ? (
-          <p className="mt-2 text-sm text-muted-foreground">Recent activity could not be loaded.</p>
-        ) : recent.length === 0 ? (
-          <p className="mt-2 text-sm text-muted-foreground">Nothing yet. Decisions appear here the moment an agent calls the API.</p>
-        ) : (
-          <ul className="mt-3 divide-y divide-border/60">
-            {recent.map((r) => {
-              const open = openId === r.id;
-              return (
-                <li key={r.id}>
-                  <button
-                    type="button"
-                    aria-expanded={open}
-                    onClick={() => setOpenId(open ? null : r.id)}
-                    className="flex min-h-12 w-full flex-wrap items-center gap-x-3 gap-y-1 py-2 text-left text-sm hover:bg-surface-3/60"
-                  >
-                    <Badge value={r.decision} />
-                    <span className="font-mono text-xs">{r.evidence?.[0]?.action ?? "-"}</span>
-                    <span className="text-muted-foreground">{r.agents?.name ?? "Unknown agent"}</span>
-                    <span className="ml-auto text-xs text-muted-foreground">{fmt(r.created_at)}</span>
-                    <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")} />
-                  </button>
-                  {open && (
-                    <dl className="grid gap-3 rounded-lg bg-surface-1 p-4 text-xs sm:grid-cols-4">
-                      <div><dt className="text-muted-foreground">Decision ID</dt><dd className="mt-1 font-mono">{String(r.id).slice(0, 12)}</dd></div>
-                      <div><dt className="text-muted-foreground">Agent</dt><dd className="mt-1">{r.agents?.name ?? "Unknown agent"}</dd></div>
-                      <div><dt className="text-muted-foreground">Action</dt><dd className="mt-1 font-mono">{r.evidence?.[0]?.action ?? "-"}</dd></div>
-                      <div className="flex items-end">
-                        <Link href={`/dashboard/decisions/${r.id}`} className="font-medium text-primary hover:underline">Open full decision</Link>
-                      </div>
-                    </dl>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </Panel>
+      {showAnalytics && (
+        <>
+          <Panel>
+            <h2 className="text-sm font-semibold">Decisions per hour</h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {points.length >= SERIES_LIMIT ? "Showing the latest 1,000 decisions of the last 24 hours." : "Last 24 hours. Hover a bar for the exact counts."}
+            </p>
+            {failed.includes("hourly chart") ? (
+              <p className="mt-4 text-sm text-muted-foreground">The chart could not be loaded.</p>
+            ) : (
+              <HourlyChart buckets={buckets} labels={labels} />
+            )}
+          </Panel>
+          <OverviewInsights wsId={ws.id} />
+        </>
+      )}
     </div>
   );
 }

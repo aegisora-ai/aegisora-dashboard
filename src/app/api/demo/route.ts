@@ -1,18 +1,51 @@
 import { NextResponse } from "next/server";
-import { randomUUID } from "node:crypto";
+import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { conditionsMet, decidePolicy, type Effect } from "@/lib/aegisora/policy-evaluator";
 import { maskSensitiveData, maskSensitiveText } from "@/lib/aegisora/redaction";
 import { buildRecord, pgJsonbText, utcStamp, verifyV2, type EvidenceRecordV2 } from "@/lib/evidence-v2";
 
 // Public sandbox. Same decidePolicy, conditionsMet and redaction modules as /api/v1/evaluate, a fixed policy set,
 // and evidence hashed with the v2 algorithm (src/lib/evidence-v2.ts). No database, no authentication, nothing is stored.
+// Approvals are bound to one action: an HMAC-signed ticket carries decision id, action+input hash, requester and expiry.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const WS = "demo-sandbox";
-const MAX_BODY = 60_000;
+const MAX_BODY = 120_000;
 const MAX_CHAIN = 40;
 const HEX64 = /^[0-9a-f]{64}$/;
+const APPROVAL_TTL_MS = 10 * 60_000;
+// Set DEMO_TICKET_SECRET in the environment (16+ chars). Without it each server instance uses its own random secret.
+const TICKET_SECRET =
+  process.env.DEMO_TICKET_SECRET && process.env.DEMO_TICKET_SECRET.length >= 16
+    ? process.env.DEMO_TICKET_SECRET
+    : randomBytes(32).toString("hex");
+
+type Ticket = { d: string; a: string; h: string; r: string; e: number };
+
+function signTicket(t: Ticket): string {
+  const body = Buffer.from(JSON.stringify(t), "utf8").toString("base64url");
+  const mac = createHmac("sha256", TICKET_SECRET).update(body).digest("hex");
+  return body + "." + mac;
+}
+
+function readTicket(token: string): Ticket | null {
+  const i = token.indexOf(".");
+  if (i < 1) return null;
+  const body = token.slice(0, i);
+  const mac = token.slice(i + 1);
+  const expected = createHmac("sha256", TICKET_SECRET).update(body).digest("hex");
+  const a = Buffer.from(mac, "utf8");
+  const e = Buffer.from(expected, "utf8");
+  if (a.length !== e.length || !timingSafeEqual(a, e)) return null;
+  try {
+    const t = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as Partial<Ticket>;
+    if (typeof t.d !== "string" || typeof t.a !== "string" || typeof t.h !== "string" || typeof t.r !== "string" || typeof t.e !== "number") return null;
+    return { d: t.d, a: t.a, h: t.h, r: t.r, e: t.e };
+  } catch {
+    return null;
+  }
+}
 
 const POLICIES: { id: string; name: string; decision: Effect; action: RegExp; conditions: unknown }[] = [
   { id: "pol_read", name: "support-read-scope", decision: "ALLOW", action: /^crm\.read_/, conditions: null },
@@ -30,7 +63,7 @@ function limited(ip: string): boolean {
   const e = hits.get(ip);
   if (!e || e.reset < now) { hits.set(ip, { n: 1, reset: now + 60_000 }); return false; }
   e.n += 1;
-  return e.n > 40;
+  return e.n > 60;
 }
 
 function bad(status: number, code: string, message: string) {
@@ -47,6 +80,33 @@ function link(b: Record<string, unknown>): { seq: number; prev: string } | null 
   if (typeof seq !== "number" || !Number.isInteger(seq) || seq < 1 || seq > MAX_CHAIN) return null;
   if (typeof prev !== "string" || (prev !== "GENESIS" && !HEX64.test(prev))) return null;
   return { seq, prev };
+}
+
+function cleanChain(chain: unknown): EvidenceRecordV2[] | null {
+  if (!Array.isArray(chain) || chain.length < 1 || chain.length > MAX_CHAIN) return null;
+  const out: EvidenceRecordV2[] = [];
+  for (const raw of chain) {
+    const r = raw as Record<string, unknown> | null;
+    if (!r || typeof r !== "object" || typeof r.seq !== "number" || !Number.isInteger(r.seq) || typeof r.hash_version !== "number") return null;
+    for (const k of ["id", "workspace_id", "decision_id", "action", "decision", "trace_id", "prev_hash", "hash", "created_at_utc", "payload_text"]) {
+      if (typeof r[k] !== "string") return null;
+    }
+    out.push({
+      seq: r.seq,
+      id: r.id as string,
+      workspace_id: r.workspace_id as string,
+      decision_id: r.decision_id as string,
+      action: r.action as string,
+      decision: r.decision as string,
+      trace_id: r.trace_id as string,
+      prev_hash: r.prev_hash as string,
+      hash: r.hash as string,
+      hash_version: r.hash_version,
+      created_at_utc: r.created_at_utc as string,
+      payload_text: r.payload_text as string,
+    });
+  }
+  return out;
 }
 
 export async function POST(req: Request) {
@@ -87,12 +147,20 @@ export async function POST(req: Request) {
     const safeInput = maskSensitiveData(input);
     const safeAction = maskSensitiveText(action);
     const reason = maskSensitiveText(d.reason);
-    const payload = { agent_name: agent, action: safeAction, decision: d.effect, reason, policy_id: d.policyId, risk_score: r, input: safeInput };
+    const escalate = d.effect === "ESCALATE";
+    const decisionId = randomUUID();
+    const expiresAtMs = Date.now() + APPROVAL_TTL_MS;
+    const argsHash = createHash("sha256").update(pgJsonbText({ action: safeAction, input: safeInput }), "utf8").digest("hex");
+    const payload: Record<string, unknown> = { agent_name: agent, action: safeAction, decision: d.effect, reason, policy_id: d.policyId, risk_score: r, input: safeInput };
+    if (escalate) {
+      payload.args_hash = argsHash;
+      payload.approval_expires_at = new Date(expiresAtMs).toISOString();
+    }
     const record = buildRecord({
       seq: l.seq,
       id: randomUUID(),
       workspace_id: WS,
-      decision_id: randomUUID(),
+      decision_id: decisionId,
       action: safeAction,
       decision: d.effect,
       trace_id: randomUUID(),
@@ -104,8 +172,16 @@ export async function POST(req: Request) {
       effect: d.effect,
       reason,
       policy_id: d.policyId,
-      approval_required: d.effect === "ESCALATE",
+      approval_required: escalate,
       redacted: JSON.stringify(safeInput) !== JSON.stringify(input),
+      approval: escalate
+        ? {
+            ticket: signTicket({ d: decisionId, a: safeAction, h: argsHash, r: agent, e: expiresAtMs }),
+            args_hash: argsHash,
+            expires_at: new Date(expiresAtMs).toISOString(),
+            requester: agent,
+          }
+        : null,
       record,
     });
   }
@@ -113,50 +189,46 @@ export async function POST(req: Request) {
   if (b.op === "resolve") {
     const l = link(b);
     const decisionId = str(b.decisionId, 64);
-    const traceId = str(b.traceId, 64);
-    const action = str(b.action, 200);
-    if (!l || !decisionId || !traceId || !action) return bad(400, "invalid_request", "Missing or invalid fields.");
+    const approver = str(b.approver, 120);
+    const token = str(b.ticket, 2000);
+    const chain = cleanChain(b.chain);
+    if (!l || !decisionId || !approver || !token || !chain) return bad(400, "invalid_request", "Missing or invalid fields.");
+
+    const t = readTicket(token);
+    if (!t || t.d !== decisionId) return bad(403, "invalid_ticket", "Blocked: this approval ticket is not valid for this request.");
+    if (Date.now() > t.e) return bad(403, "approval_expired", "Blocked: this approval request has expired.");
+    if (approver.toLowerCase() === t.r.toLowerCase()) return bad(403, "separation_of_duties", "Blocked: the requester cannot approve its own request.");
+
+    const check = verifyV2(chain);
+    if (check.broken > 0) return bad(409, "chain_broken", "Blocked: the evidence chain failed verification, so nothing can be recorded on it.");
+    const sorted = [...chain].sort((x, y) => x.seq - y.seq);
+    const tip = sorted[sorted.length - 1];
+    if (l.seq !== sorted.length + 1 || l.prev !== tip.hash) return bad(409, "chain_position", "The evidence chain position does not match.");
+
+    const esc = sorted.find((r) => r.decision_id === decisionId && r.decision === "ESCALATE");
+    if (!esc || esc.action !== t.a) return bad(403, "invalid_ticket", "Blocked: no matching escalation exists for this approval.");
+    const used = sorted.some((r) => r.decision_id === decisionId && (r.decision === "APPROVED" || r.decision === "REJECTED"));
+    if (used) return bad(409, "already_resolved", "Blocked: this approval was already used. Approvals are single-use.");
+
     const verdict = b.approve === true ? "APPROVED" : "REJECTED";
     const record = buildRecord({
       seq: l.seq,
       id: randomUUID(),
       workspace_id: WS,
       decision_id: decisionId,
-      action: maskSensitiveText(action),
+      action: esc.action,
       decision: verdict,
-      trace_id: traceId,
+      trace_id: esc.trace_id,
       prev_hash: l.prev,
       created_at_utc: utcStamp(),
-      payload_text: pgJsonbText({ resolves: decisionId, approver: "demo-reviewer" }),
+      payload_text: pgJsonbText({ resolves: decisionId, approver, requester: t.r, args_hash: t.h }),
     });
     return NextResponse.json({ record });
   }
 
   if (b.op === "verify") {
-    const chain = b.chain;
-    if (!Array.isArray(chain) || chain.length < 1 || chain.length > MAX_CHAIN) return bad(400, "invalid_request", "'chain' must hold 1 to " + MAX_CHAIN + " records.");
-    const clean: EvidenceRecordV2[] = [];
-    for (const raw of chain) {
-      const r = raw as Record<string, unknown> | null;
-      if (!r || typeof r !== "object" || typeof r.seq !== "number" || !Number.isInteger(r.seq) || typeof r.hash_version !== "number") return bad(400, "invalid_request", "Malformed record.");
-      for (const k of ["id", "workspace_id", "decision_id", "action", "decision", "trace_id", "prev_hash", "hash", "created_at_utc", "payload_text"]) {
-        if (typeof r[k] !== "string") return bad(400, "invalid_request", "Malformed record.");
-      }
-      clean.push({
-        seq: r.seq,
-        id: r.id as string,
-        workspace_id: r.workspace_id as string,
-        decision_id: r.decision_id as string,
-        action: r.action as string,
-        decision: r.decision as string,
-        trace_id: r.trace_id as string,
-        prev_hash: r.prev_hash as string,
-        hash: r.hash as string,
-        hash_version: r.hash_version,
-        created_at_utc: r.created_at_utc as string,
-        payload_text: r.payload_text as string,
-      });
-    }
+    const clean = cleanChain(b.chain);
+    if (!clean) return bad(400, "invalid_request", "'chain' must hold 1 to " + MAX_CHAIN + " valid records.");
     return NextResponse.json(verifyV2(clean));
   }
 

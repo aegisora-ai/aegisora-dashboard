@@ -37,10 +37,10 @@ const ITEMS: Item[] = [
 
 const GROUPS = [
   { title: "Overview", ids: ["overview"] },
-  { title: "Runtime", ids: ["activity", "decisions", "approvals", "traces", "incidents"] },
-  { title: "Governance", ids: ["agents", "policies", "evidence", "audit"] },
-  { title: "Platform", ids: ["webhooks", "api-keys"] },
-  { title: "Organization", ids: ["team", "billing", "identity", "settings"] },
+  { title: "Monitor", ids: ["approvals", "activity", "incidents"] },
+  { title: "Govern", ids: ["agents", "policies", "evidence"] },
+  { title: "Workspace", ids: ["api-keys", "webhooks", "team", "billing", "settings"] },
+  { title: "Advanced", ids: ["decisions", "traces", "audit", "identity"] },
 ];
 
 const DEFAULTS: Prefs = {

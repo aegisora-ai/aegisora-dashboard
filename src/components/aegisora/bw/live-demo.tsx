@@ -9,11 +9,15 @@ type Rec = {
   id: string; workspace_id: string; seq: number; decision_id: string; hash_version: number; created_at_utc: string;
   action: string; decision: string; trace_id: string; payload_text: string; prev_hash: string; hash: string;
 };
+type Approval = { ticket: string; args_hash: string; expires_at: string; requester: string };
 type Item = {
   decisionId: string; traceId: string; agent: string; action: string; effect: VerdictName; reason: string;
   policyId: string | null; redacted: boolean; status: "final" | "pending" | "approved" | "rejected";
+  approval: Approval | null; resolvedBy: string | null;
 };
 type Check = { total: number; broken: number; details: { seq: number; reason: string }[] };
+
+const REVIEWER = "demo-reviewer";
 
 const PRESETS = [
   { label: "Read a ticket", agent: "support-agent", action: "crm.read_ticket", risk: 10, amount: "" },
@@ -44,7 +48,7 @@ export function LiveDemo() {
   const tip = chain.length ? chain[chain.length - 1] : null;
   const full = chain.length >= 36;
   const last = items.length ? items[items.length - 1] : null;
-  const pending = items.filter((i) => i.status === "pending");
+  const approvals = items.filter((i) => i.status !== "final");
 
   async function send(body: object) {
     setBusy(true);
@@ -77,16 +81,20 @@ export function LiveDemo() {
     setItems((i) => [...i, {
       decisionId: rec.decision_id, traceId: rec.trace_id, agent, action: rec.action, effect: data.effect as VerdictName,
       reason: data.reason, policyId: data.policy_id, redacted: data.redacted, status: data.approval_required ? "pending" : "final",
+      approval: (data.approval as Approval | null) ?? null, resolvedBy: null,
     }]);
     setCheck(null);
   }
 
-  async function resolve(it: Item, approve: boolean) {
-    if (!tip) return;
-    const data = await send({ op: "resolve", approve, decisionId: it.decisionId, traceId: it.traceId, action: it.action, seq: chain.length + 1, prevHash: tip.hash });
+  async function resolve(it: Item, approve: boolean, approver: string) {
+    if (!tip || !it.approval) return;
+    const data = await send({
+      op: "resolve", approve, approver, decisionId: it.decisionId, ticket: it.approval.ticket,
+      chain, seq: chain.length + 1, prevHash: tip.hash,
+    });
     if (!data) return;
     setChain((c) => [...c, data.record as Rec]);
-    setItems((l) => l.map((x) => (x.decisionId === it.decisionId ? { ...x, status: approve ? "approved" : "rejected" } : x)));
+    setItems((l) => l.map((x) => (x.decisionId === it.decisionId ? { ...x, status: approve ? "approved" : "rejected", resolvedBy: approver } : x)));
     setCheck(null);
   }
 
@@ -146,7 +154,6 @@ export function LiveDemo() {
             </button>
             {backup ? <p className="text-sm text-muted-foreground">{t("restoreFirst")}</p> : null}
             {full ? <p className="text-sm text-muted-foreground">{t("full")}</p> : null}
-            {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
           </CardContent>
         </Card>
         <p className="text-sm text-muted-foreground">
@@ -155,6 +162,10 @@ export function LiveDemo() {
       </div>
 
       <div className="grid content-start gap-4" aria-live="polite">
+        {error ? (
+          <div role="alert" className="rounded-lg border border-destructive p-3 text-sm font-medium text-destructive">{error}</div>
+        ) : null}
+
         <Card className="p-0">
           <CardContent className="grid gap-3 p-6">
             <h2 className="text-lg font-semibold text-foreground">{t("step2")}</h2>
@@ -173,17 +184,33 @@ export function LiveDemo() {
           </CardContent>
         </Card>
 
-        {pending.length ? (
+        {approvals.length ? (
           <Card className="p-0">
             <CardContent className="grid gap-3 p-6">
               <h2 className="text-lg font-semibold text-foreground">{t("step3")}</h2>
-              {pending.map((it) => (
+              <p className="text-sm text-muted-foreground">
+                Each approval is bound to one exact action, single-use and time-limited. Try the self-approval and replay buttons: Aegisora should refuse both.
+              </p>
+              {approvals.map((it) => (
                 <div key={it.decisionId} className="grid gap-2 rounded-lg border p-3">
                   <span className="font-mono text-sm break-all text-foreground">{it.agent}: {it.action}</span>
-                  <div className="flex gap-2">
-                    <button type="button" disabled={busy} onClick={() => resolve(it, true)} className={btn}>{t("approve")}</button>
-                    <button type="button" disabled={busy} onClick={() => resolve(it, false)} className={btn}>{t("reject")}</button>
-                  </div>
+                  {it.approval ? (
+                    <span className="font-mono text-xs break-all text-muted-foreground">
+                      bound to args {short(it.approval.args_hash)} / single-use / expires {new Date(it.approval.expires_at).toLocaleTimeString()}
+                    </span>
+                  ) : null}
+                  {it.status === "pending" ? (
+                    <div className="flex flex-wrap gap-2">
+                      <button type="button" disabled={busy} onClick={() => resolve(it, true, REVIEWER)} className={btn}>{t("approve")}</button>
+                      <button type="button" disabled={busy} onClick={() => resolve(it, false, REVIEWER)} className={btn}>{t("reject")}</button>
+                      <button type="button" disabled={busy} onClick={() => resolve(it, true, it.agent)} className={btn}>Try self-approval</button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm text-foreground">{it.status === "approved" ? "Approved" : "Rejected"} by {it.resolvedBy}</span>
+                      <button type="button" disabled={busy} onClick={() => resolve(it, true, REVIEWER)} className={btn}>Replay used approval</button>
+                    </div>
+                  )}
                 </div>
               ))}
             </CardContent>
