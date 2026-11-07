@@ -96,7 +96,7 @@ function Inner({ ws, table, title, description, columns, empty, select = "*", or
     if (!realtime) return;
     const supabase = createClient();
     const ch = supabase
-      .channel(`live-${table}-${ws.id}`)
+      .channel(`live-${table}-${ws.id}-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table, filter: `workspace_id=eq.${ws.id}` }, () => { void load(); })
       .subscribe();
     return () => { void supabase.removeChannel(ch); };

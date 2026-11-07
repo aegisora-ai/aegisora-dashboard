@@ -22,7 +22,7 @@ export function usePendingApprovals(): number {
     };
     void load();
     const ch = supabase
-      .channel(`pending-${ws.id}`)
+      .channel(`pending-${ws.id}-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "approvals", filter: `workspace_id=eq.${ws.id}` }, () => { void load(); })
       .subscribe();
     return () => {
