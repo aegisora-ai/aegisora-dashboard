@@ -4,7 +4,7 @@ let chromium;
 try { ({ chromium } = await import('playwright')); }
 catch { ({ chromium } = await import('@playwright/test')); }
 
-const BASE = 'https://aegisora.org';
+const BASE = process.env.AUDIT_BASE || 'https://aegisora.org';
 const PUBLIC = ['/', '/about', '/blog', '/changelog', '/contact', '/demo', '/developers', '/developers/quickstart',
   '/docs', '/docs/quickstart', '/docs/technical', '/enterprise', '/evidence', '/impressum', '/legal/dpa', '/pilot',
   '/pricing', '/product', '/product/approvals', '/product/decisions', '/product/evidence', '/product/policies',
@@ -45,24 +45,46 @@ async function check(page, path) {
   console.log((flags.length || errs.length ? 'PROBLEM ' : 'ok      ') + path);
 }
 
-const browser = await chromium.launch({ headless: false });
-const ctx = await browser.newContext({ viewport: { width: 1366, height: 850 } });
-const page = await ctx.newPage();
+const ctx = await chromium.launchPersistentContext('scripts/.aeg-profile', {
+  headless: false,
+  viewport: { width: 1366, height: 850 },
+});
+const page = ctx.pages()[0] || (await ctx.newPage());
 
-for (const loc of ['', '/de']) {
-  for (const p of PUBLIC) await check(page, loc + (p === '/' ? (loc ? '' : '/') : p));
-}
-
-console.log('\n>>> Simdi acilan pencerede aegisora.org/login ekraninda GIRIS YAP (5 dk suren var).');
-await page.goto(BASE + '/login');
-await page.waitForURL(/dashboard/, { timeout: 300000 });
+await page.goto(BASE + '/dashboard', { waitUntil: 'domcontentloaded' }).catch(() => {});
 await page.waitForTimeout(3000);
-
-for (const loc of ['', '/de']) {
-  for (const p of DASH) await check(page, loc + p);
+if (!/dashboard/.test(page.url())) {
+  console.log('\n>>> Acilan pencerede giris yap (5 dk suren var). Bir daha sormayacak.');
+  await page.goto(BASE + '/login');
+  await page.waitForURL(/dashboard/, { timeout: 300000 });
+  await page.waitForTimeout(3000);
 }
 
-await browser.close();
+for (const loc of ['', '/de']) for (const p of DASH) await check(page, loc + p);
+
+fs.mkdirSync('scripts/shots', { recursive: true });
+const SHOTS = [['overview', '/dashboard'], ['approvals', '/dashboard/approvals'], ['billing', '/dashboard/billing'],
+  ['onboarding', '/onboarding'], ['home', '/'], ['pricing', '/pricing']];
+for (const [name, p] of SHOTS) {
+  await page.goto(BASE + p, { waitUntil: 'domcontentloaded' }).catch(() => {});
+  await page.waitForTimeout(4000);
+  for (const theme of ['dark', 'light']) {
+    await page.evaluate((t) => document.documentElement.classList.toggle('dark', t === 'dark'), theme);
+    await page.waitForTimeout(700);
+    await page.screenshot({ path: 'scripts/shots/' + name + '-' + theme + '.png' });
+    if (name === 'overview') {
+      const v = await page.evaluate(() => {
+        const s = getComputedStyle(document.querySelector('main') || document.body);
+        return s.getPropertyValue('--surface-1') + ' | ' + s.getPropertyValue('--primary');
+      });
+      console.log('TOKEN(' + theme + '): ' + v);
+    }
+  }
+}
+
+for (const loc of ['', '/de']) for (const p of PUBLIC) await check(page, loc + (p === '/' ? (loc ? '' : '/') : p));
+
+await ctx.close();
 
 const bad = results.filter((r) => r.flags.length || r.errs.length);
 let report = 'TOPLAM ' + results.length + ' sayfa, SORUNLU ' + bad.length + '\n\n';

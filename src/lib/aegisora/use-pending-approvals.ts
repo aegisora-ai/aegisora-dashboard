@@ -17,7 +17,8 @@ export function usePendingApprovals(): number {
         .from("approvals")
         .select("id", { count: "exact", head: true })
         .eq("workspace_id", ws.id)
-        .eq("status", "pending");
+        .eq("status", "pending")
+        .gt("expires_at", new Date().toISOString());
       if (alive) setN(count ?? 0);
     };
     void load();

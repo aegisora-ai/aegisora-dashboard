@@ -1021,7 +1021,7 @@
     },
     "s0": {
       "title": "Create your workspace",
-      "desc": "This creates a real workspace and OWNER membership through the authenticated workspace-creation RPC.",
+      "desc": "Your workspace holds your agents, policies and evidence. You can invite your team later.",
       "label": "Workspace name",
       "btn": "Create workspace",
       "busy": "Creating…"
