@@ -3,6 +3,8 @@ import { Activity, ArrowRight, FileCheck, KeyRound, ShieldCheck, UserCheck, User
 import { Link } from "@/i18n/navigation";
 import { HeroDemo } from "./calm/hero-demo";
 import { DecisionFeed } from "./calm/decision-feed";
+import { LiquidBackdrop } from "./calm/liquid-backdrop";
+import { LiquidMark } from "./calm/liquid-mark";
 
 const FEATURES = [
   { k: "f1", Icon: ShieldCheck },
@@ -27,12 +29,12 @@ export default function HomePage() {
   return (
     <div className="vc">
       <section className="vc-hero" aria-labelledby="vc-title">
-        <div aria-hidden="true" className="vc-grid" />
+        <LiquidBackdrop /><div aria-hidden="true" className="vc-grid" />
         <div aria-hidden="true" className="vc-orb vc-orb--a" />
         <div aria-hidden="true" className="vc-orb vc-orb--b" />
         <div aria-hidden="true" className="vc-orb vc-orb--c" />
         <div className="vc-wrap vc-hero__inner">
-          <p className="vc-badge"><span>{t("hero.badge")}</span><b>{t("hero.early")}</b></p>
+          <LiquidMark /><p className="vc-badge"><span>{t("hero.badge")}</span><b>{t("hero.early")}</b></p>
           <h1 id="vc-title" className="vc-h1">
             <span>{t("hero.title1")}</span>
             <span className="vc-accent">{t("hero.title2")}</span>

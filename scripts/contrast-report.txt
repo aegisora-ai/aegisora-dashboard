@@ -3,7 +3,7 @@
 
 [light] /dashboard  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/approvals  (YEDEK(sinif))  axe sorun: 0
+[dark] /dashboard/approvals  (gercek-dugme)  axe sorun: 0
 
 [light] /dashboard/approvals  (gercek-dugme)  axe sorun: 0
 
@@ -43,51 +43,22 @@
 
 [light] /onboarding  (YEDEK(sinif))  axe sorun: 0
 
-[dark] /  (gercek-dugme)  axe sorun: 2
-   3.28/4.5:1  fg #886b37  bg #231f17  .bw-mini--low > .bw-mini__row > .bw-pill--escalate.bw-pill--xs.bw-pill  <span class="bw-pill bw-pill--escalate bw-pill--xs"><i aria-hidden="true"></i>ESCALATE</span>
-   1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
+[dark] /  (gercek-dugme)  axe sorun: 0
 
-[light] /  (gercek-dugme)  axe sorun: 18
-   1.05/4.5:1  fg #ffffff  bg #f7f9fb  .aegh__btn--ghost  <a class="aegh__btn aegh__btn--ghost aegh__hide-md" href="/enterprise">Contact us</a>
-   2.3/4.5:1  fg #bba071  bg #fbf5e7  .bw-mini--low > .bw-mini__row > .bw-pill--escalate.bw-pill--xs.bw-pill  <span class="bw-pill bw-pill--escalate bw-pill--xs"><i aria-hidden="true"></i>ESCALATE</span>
-   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-feat--phone.bw-feat.bw-rv--in:nth-child(1) > .bw-phone[aria-hidden="true"] > .bw-phone__screen > .bw-verdi  <small>support-read-scope</small>
-   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-feat--phone.bw-feat.bw-rv--in:nth-child(2) > .bw-phone[aria-hidden="true"] > .bw-phone__screen > .bw-verdi  <small>transfer-approval-limit</small>
-   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-feat--phone.bw-feat.bw-rv--in:nth-child(3) > .bw-phone[aria-hidden="true"] > .bw-phone__screen > .bw-verdi  <small>deny-destructive-sql</small>
-   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(1) > code  <code>payments.transfer</code>
-   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(2) > code  <code>db.drop_table</code>
-   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(3) > code  <code>email.send</code>
-   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(4) > code  <code>crm.read_ticket</code>
-   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(5) > code  <code>files.export</code>
-   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(6) > code  <code>code.execute</code>
-   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(7) > code  <code>browser.navigate</code>
+[light] /  (gercek-dugme)  axe sorun: 0
 
-[dark] /pricing  (gercek-dugme)  axe sorun: 1
-   1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
+[dark] /pricing  (gercek-dugme)  axe sorun: 0
 
-[light] /pricing  (gercek-dugme)  axe sorun: 5
-   1.05/4.5:1  fg #ffffff  bg #f7f9fb  .aegh__btn--ghost  <a class="aegh__btn aegh__btn--ghost aegh__hide-md" href="/enterprise">Contact us</a>
-   4.3/4.5:1  fg #757677  bg #f6f9fc  .border-t-2[open=""] > .pb-3 > .grid-cols-\[1\.7fr_1fr_1fr_1fr\].grid.gap-2:nth-child(1) > .text-center:nth-ch  <span class="text-xs font-medium text-foreground/60">Planned</span>
-   4.3/4.5:1  fg #757677  bg #f6f9fc  .border-t-2[open=""] > .pb-3 > .grid-cols-\[1\.7fr_1fr_1fr_1fr\].grid.gap-2:nth-child(2) > .text-center:nth-ch  <span class="text-xs font-medium text-foreground/60">Planned</span>
-   4.3/4.5:1  fg #757677  bg #f6f9fc  .border-t-2[open=""] > .pb-3 > .grid-cols-\[1\.7fr_1fr_1fr_1fr\].grid.gap-2:nth-child(3) > .text-center:nth-ch  <span class="text-xs font-medium text-foreground/60">Planned</span>
-   1.11/3:1  fg #dde7f5  bg #eef3f9  .aegf__word > span  <span>Aegisora</span>
+[light] /pricing  (gercek-dugme)  axe sorun: 0
 
-[dark] /product  (gercek-dugme)  axe sorun: 1
-   1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
+[dark] /product  (gercek-dugme)  axe sorun: 0
 
-[light] /product  (gercek-dugme)  axe sorun: 2
-   1.05/4.5:1  fg #ffffff  bg #f7f9fb  .aegh__btn--ghost  <a class="aegh__btn aegh__btn--ghost aegh__hide-md" href="/enterprise">Contact us</a>
-   1.11/3:1  fg #dde7f5  bg #eef3f9  .aegf__word > span  <span>Aegisora</span>
+[light] /product  (gercek-dugme)  axe sorun: 0
 
-[dark] /docs  (gercek-dugme)  axe sorun: 1
-   1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
+[dark] /docs  (gercek-dugme)  axe sorun: 0
 
-[light] /docs  (gercek-dugme)  axe sorun: 2
-   1.05/4.5:1  fg #ffffff  bg #f7f9fb  .aegh__btn--ghost  <a class="aegh__btn aegh__btn--ghost aegh__hide-md" href="/enterprise">Contact us</a>
-   1.11/3:1  fg #dde7f5  bg #eef3f9  .aegf__word > span  <span>Aegisora</span>
+[light] /docs  (gercek-dugme)  axe sorun: 0
 
-[dark] /enterprise  (gercek-dugme)  axe sorun: 1
-   1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
+[dark] /enterprise  (gercek-dugme)  axe sorun: 0
 
-[light] /enterprise  (gercek-dugme)  axe sorun: 2
-   1.05/4.5:1  fg #ffffff  bg #f7f9fb  .aegh__btn--ghost  <a class="aegh__btn aegh__btn--ghost aegh__hide-md" href="/enterprise">Contact us</a>
-   1.11/3:1  fg #dde7f5  bg #eef3f9  .aegf__word > span  <span>Aegisora</span>
+[light] /enterprise  (gercek-dugme)  axe sorun: 0

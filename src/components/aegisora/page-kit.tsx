@@ -1,4 +1,6 @@
 "use client";
+import "@/styles/aeg-calm-kit.css";
+import { LiquidBackdrop } from "@/components/aegisora/calm/liquid-backdrop";
 
 import { useMemo, type ReactNode } from "react"; import { useTranslations } from "next-intl";
 import "@/styles/zp.css"; import "@/components/aegisora/bw/aeg-chrome.css";
@@ -38,7 +40,7 @@ export function PageHero({
 }) {
   const text = intro ?? lead; const t = useTranslations("Kit"); const defaultPhrases = useMemo(() => [t("p1"), t("p2"), t("p3"), t("p4")], [t]);
   return (
-    <section className="zp zpk-hero">
+    <section className="zp zpk-hero"><LiquidBackdrop />
       <div className={"zpk-wrap zpk-hero-in" + (rows ? " zpk-hero-in--split" : "")}>
         <div className="zpk-hero-text">
           <p className="zp-eyebrow">{eyebrow}</p>
