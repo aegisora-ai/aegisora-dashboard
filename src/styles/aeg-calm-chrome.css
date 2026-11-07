@@ -1,0 +1,54 @@
+/* aeg-calm-chrome: calm glass header, drawer and footer (restyle only, structure unchanged) */
+
+/* ---------- header ---------- */
+.aeg-public .aegh { background: color-mix(in srgb, var(--background) 72%, transparent) !important; -webkit-backdrop-filter: blur(18px) saturate(1.6); backdrop-filter: blur(18px) saturate(1.6); border-bottom: 1px solid var(--vc-line) !important; box-shadow: none !important; }
+.aeg-public .aegh__link { color: var(--muted-foreground) !important; font-weight: 500; border-radius: 999px; padding: 7px 14px; transition: color 0.2s ease, background-color 0.2s ease; }
+.aeg-public .aegh__link:hover { color: var(--foreground) !important; background: color-mix(in srgb, var(--primary) 8%, transparent); }
+.aeg-public .aegh__link.is-active { color: var(--foreground) !important; background: color-mix(in srgb, var(--primary) 12%, transparent); }
+.aeg-public .aegh__chev, .aeg-public .aegh__icon { color: var(--muted-foreground) !important; border-radius: 999px; transition: color 0.2s ease, background-color 0.2s ease; }
+.aeg-public .aegh__chev:hover, .aeg-public .aegh__icon:hover { color: var(--foreground) !important; background: color-mix(in srgb, var(--primary) 8%, transparent); }
+.aeg-public .aegh__menu-in { background: color-mix(in srgb, var(--popover) 90%, transparent) !important; -webkit-backdrop-filter: blur(20px) saturate(1.5); backdrop-filter: blur(20px) saturate(1.5); border: 1px solid var(--vc-line) !important; border-radius: 18px !important; box-shadow: var(--vc-shadow) !important; }
+.aeg-public .aegh__mi { border-radius: 12px !important; transition: background-color 0.2s ease; }
+.aeg-public .aegh__mi:hover { background: color-mix(in srgb, var(--primary) 9%, transparent) !important; }
+.aeg-public .aegh__mi b { color: var(--foreground) !important; font-weight: 600; }
+.aeg-public .aegh__mi span { color: var(--muted-foreground) !important; }
+.aeg-public .aegh__btn { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 16px; border-radius: 999px !important; font-size: 14px; font-weight: 600; text-decoration: none; transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease; }
+.aeg-public .aegh__btn:not(.aegh__btn--ghost) { background: var(--vc-btn) !important; color: #ffffff !important; border: 0 !important; }
+.aeg-public .aegh__btn:not(.aegh__btn--ghost):hover { background: var(--vc-btn-hover) !important; transform: translateY(-1px); }
+.aeg-public .aegh__btn--ghost { background: var(--vc-glass) !important; color: var(--foreground) !important; border: 1px solid var(--vc-line) !important; }
+.aeg-public .aegh__btn--ghost:hover { border-color: color-mix(in srgb, var(--primary) 45%, var(--vc-line)) !important; transform: translateY(-1px); }
+.aeg-public .aegh a:focus-visible, .aeg-public .aegh button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* ---------- mobile drawer (rendered in <body>, outside .aeg-public: own tokens) ---------- */
+.aegd { --d-bg: #f8faff; --d-fg: #0a1530; --d-muted: #55637f; --d-line: rgb(14 42 110 / 0.12); --d-btn: #1457e6; --d-btn-hover: #0f47c2; --d-tint: rgb(20 87 230 / 0.1); }
+:root.dark .aegd { --d-bg: #050b1c; --d-fg: #eef3ff; --d-muted: #9db0d8; --d-line: rgb(150 180 255 / 0.18); --d-btn: #2467f0; --d-btn-hover: #1f58d6; --d-tint: rgb(111 168 255 / 0.14); }
+html .aegd { background: color-mix(in srgb, var(--d-bg) 94%, transparent) !important; -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); color: var(--d-fg) !important; }
+html .aegd .aegd__top { border-bottom: 1px solid var(--d-line) !important; }
+html .aegd .aegd__link, html .aegd .aegd__sublink { color: var(--d-fg) !important; border-radius: 12px; }
+html .aegd .aegd__sublink { color: var(--d-muted) !important; }
+html .aegd .aegd__link.is-active { background: var(--d-tint) !important; }
+html .aegd .aegd__chev, html .aegd .aegd__icon { color: var(--d-muted) !important; }
+html .aegd .aegd__btn { display: flex; align-items: center; justify-content: center; height: 46px; border-radius: 999px !important; font-weight: 600; text-decoration: none; background: var(--d-btn) !important; color: #ffffff !important; border: 0 !important; }
+html .aegd .aegd__btn:hover { background: var(--d-btn-hover) !important; }
+html .aegd .aegd__btn--ghost { background: transparent !important; color: var(--d-fg) !important; border: 1px solid var(--d-line) !important; }
+
+/* ---------- footer ---------- */
+.aeg-public .aegf { background: transparent !important; border-top: 1px solid var(--vc-line) !important; color: var(--muted-foreground); }
+.aeg-public .aegf__word { display: none !important; }
+.aeg-public .aegf__tag { color: var(--muted-foreground) !important; line-height: 1.6; }
+.aeg-public .aegf__col h2 { font-size: 12px !important; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted-foreground) !important; }
+.aeg-public .aegf__col a { color: var(--muted-foreground) !important; text-decoration: none; transition: color 0.2s ease; }
+.aeg-public .aegf__col a:hover { color: var(--foreground) !important; }
+.aeg-public .aegf__btn { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 18px; border-radius: 999px !important; font-weight: 600; text-decoration: none; background: var(--vc-btn) !important; color: #ffffff !important; border: 0 !important; transition: transform 0.2s ease, background-color 0.2s ease; }
+.aeg-public .aegf__btn:hover { background: var(--vc-btn-hover) !important; transform: translateY(-1px); }
+.aeg-public .aegf__note { color: var(--muted-foreground) !important; }
+.aeg-public .aegf__legal { border-top: 1px solid var(--vc-line) !important; background: transparent !important; }
+.aeg-public .aegf__legalin, .aeg-public .aegf__legalin > span { color: var(--muted-foreground) !important; }
+.aeg-public .aegf__legalin a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.aeg-public .aegf__legalin a:hover { color: var(--foreground); }
+.aeg-public .aegf a:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .aeg-public .aegh__link, .aeg-public .aegh__btn, .aeg-public .aegf__btn, .aeg-public .aegf__col a, .aeg-public .aegh__mi { transition: none; }
+  .aeg-public .aegh__btn:hover, .aeg-public .aegf__btn:hover { transform: none; }
+}

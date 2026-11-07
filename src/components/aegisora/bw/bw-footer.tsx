@@ -81,7 +81,7 @@ export function BwFooter() {
       <div className="aegf__legal">
         <div className="aegf__legalin">
           <span>&copy; {new Date().getFullYear()} Aegisora. {t("rights")}</span>
-          <span>{t("sample")}</span>
+          <span>{t("sample")} &middot; <a href="https://shaders.paper.design" target="_blank" rel="noopener noreferrer">Shaders: Paper</a></span>
         </div>
       </div>
       <div className="aegf__word" aria-hidden="true">
