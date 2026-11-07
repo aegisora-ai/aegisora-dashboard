@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import AxeBuilder from '@axe-core/playwright';
 
 let chromium;
 try { ({ chromium } = await import('playwright')); }
@@ -16,9 +17,7 @@ const DASH = ['/dashboard', '/dashboard/activity', '/dashboard/agents', '/dashbo
   '/dashboard/webhooks', '/dashboard/workspace'];
 const PROBE = ['/dashboard', '/dashboard/approvals', '/dashboard/billing', '/dashboard/agents', '/dashboard/policies',
   '/dashboard/evidence', '/dashboard/team', '/dashboard/settings', '/dashboard/api-keys', '/dashboard/webhooks',
-  '/onboarding', '/', '/pricing', '/product', '/docs', '/enterprise', '/login'];
-const SHOT_NAMES = { '/dashboard': 'overview', '/dashboard/approvals': 'approvals', '/dashboard/billing': 'billing',
-  '/onboarding': 'onboarding', '/': 'home', '/pricing': 'pricing' };
+  '/onboarding', '/', '/pricing', '/product', '/docs', '/enterprise'];
 
 const results = [];
 
@@ -51,7 +50,7 @@ async function check(page, path) {
 }
 
 async function setTheme(page, theme) {
-  const isDark = () => page.evaluate(() => document.documentElement.classList.contains('dark') || document.documentElement.dataset.theme === 'dark');
+  const isDark = () => page.evaluate(() => document.documentElement.classList.contains('dark'));
   if ((await isDark()) !== (theme === 'dark')) {
     const btn = page.locator('button[aria-label*="theme" i], button[aria-label*="mode" i], button[aria-label*="dark" i], button[aria-label*="light" i], button[aria-label*="tema" i]').first();
     if (await btn.count()) { await btn.click({ timeout: 3000 }).catch(() => {}); await page.waitForTimeout(700); }
@@ -59,68 +58,38 @@ async function setTheme(page, theme) {
   let how = 'gercek-dugme';
   if ((await isDark()) !== (theme === 'dark')) {
     how = 'YEDEK(sinif)';
-    await page.evaluate((t) => {
-      const d = document.documentElement;
-      d.classList.toggle('dark', t === 'dark'); d.dataset.theme = t; d.style.colorScheme = t;
-    }, theme);
+    await page.evaluate((t) => document.documentElement.classList.toggle('dark', t === 'dark'), theme);
   }
-  const attrs = await page.evaluate(() => {
-    const d = document.documentElement;
-    return 'class="' + d.className + '" data-theme=' + d.dataset.theme;
-  });
-  return how + ' ' + attrs;
+  return how;
 }
 
-function probeContrast() {
-  const cv = document.createElement('canvas'); cv.width = 1; cv.height = 1;
-  const cx = cv.getContext('2d', { willReadFrequently: true });
-  const norm = (c) => {
-    cx.clearRect(0, 0, 1, 1); cx.fillStyle = '#000'; cx.fillStyle = c; cx.fillRect(0, 0, 1, 1);
-    const d = cx.getImageData(0, 0, 1, 1).data; return [d[0], d[1], d[2], d[3] / 255];
-  };
-  const lum = (c) => {
-    const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
-    return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]);
-  };
-  const mix = (t, b) => { const a = t[3]; return [t[0] * a + b[0] * (1 - a), t[1] * a + b[1] * (1 - a), t[2] * a + b[2] * (1 - a), 1]; };
-  const bgOf = (el) => {
-    const layers = [];
-    for (let n = el; n; n = n.parentElement) {
-      const cs = getComputedStyle(n);
-      const top = n === document.body || n === document.documentElement;
-      if (!top && cs.backgroundImage && cs.backgroundImage !== 'none') return null;
-      const c = norm(cs.backgroundColor);
-      if (c[3] > 0) { layers.push(c); if (c[3] >= 0.99) break; }
-    }
-    let base = getComputedStyle(document.documentElement).colorScheme.indexOf('dark') >= 0 ? [10, 10, 14, 1] : [255, 255, 255, 1];
-    for (let i = layers.length - 1; i >= 0; i--) base = mix(layers[i], base);
-    return base;
-  };
+async function settle(page) {
+  await page.evaluate(async () => {
+    const h = document.documentElement.scrollHeight;
+    for (let y = 0; y < h; y += 500) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); }
+    window.scrollTo(0, 0);
+    await new Promise((r) => setTimeout(r, 700));
+    await Promise.race([
+      Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))),
+      new Promise((r) => setTimeout(r, 3000)),
+    ]);
+  }).catch(() => {});
+}
+
+async function axeCheck(page) {
+  const res = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
   const out = [];
   const seen = new Set();
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-  while (walker.nextNode()) {
-    const t = walker.currentNode; const txt = (t.nodeValue || '').trim();
-    if (txt.length < 2) continue;
-    const el = t.parentElement;
-    if (!el || seen.has(el)) continue;
-    if (['SCRIPT', 'STYLE', 'NOSCRIPT'].indexOf(el.tagName) >= 0) continue;
-    const r = el.getBoundingClientRect();
-    if (r.width < 2 || r.height < 2) continue;
-    const cs = getComputedStyle(el);
-    if (cs.visibility === 'hidden' || cs.display === 'none') continue;
-    seen.add(el);
-    let op = 1;
-    for (let n = el; n; n = n.parentElement) op *= parseFloat(getComputedStyle(n).opacity);
-    if (op < 0.2) continue;
-    const bg = bgOf(el); if (!bg) continue;
-    const fg = norm(cs.color); const fa = fg[3] * op;
-    if (fa < 0.05) continue;
-    const eff = mix([fg[0], fg[1], fg[2], fa], bg);
-    const l1 = lum(eff), l2 = lum(bg);
-    const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
-    if (ratio < 3) out.push({ tag: el.tagName.toLowerCase(), cls: (el.getAttribute('class') || '').slice(0, 90), txt: txt.slice(0, 32), ratio: Math.round(ratio * 10) / 10 });
-    if (out.length >= 25) break;
+  for (const v of res.violations) for (const n of v.nodes) {
+    const d = (n.any && n.any[0] && n.any[0].data) || {};
+    const key = String(n.target[0]) + d.contrastRatio;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({
+      ratio: d.contrastRatio, need: d.expectedContrastRatio, fg: d.fgColor, bg: d.bgColor,
+      sel: String(n.target[0]).slice(0, 110),
+      html: String(n.html).replace(/\s+/g, ' ').slice(0, 110),
+    });
   }
   return out;
 }
@@ -146,22 +115,16 @@ fs.mkdirSync('scripts/shots', { recursive: true });
 let cr = '';
 for (const p of PROBE) {
   await page.goto(BASE + p, { waitUntil: 'domcontentloaded' }).catch(() => {});
-  await page.waitForTimeout(3500);
+  await page.waitForTimeout(3000);
   for (const theme of ['dark', 'light']) {
     const how = await setTheme(page, theme);
     await page.waitForTimeout(900);
-    const name = SHOT_NAMES[p];
-    if (name) await page.screenshot({ path: 'scripts/shots/' + name + '-' + theme + '.png' });
-    const low = await page.evaluate(probeContrast).catch(() => []);
-    cr += '\n[' + theme + '] ' + p + '  (' + how + ')  dusuk kontrast: ' + low.length + '\n';
-    for (const x of low) cr += '   ' + x.ratio + '  <' + x.tag + '> "' + x.txt + '"  class="' + x.cls + '"\n';
-    if (p === '/dashboard') {
-      const v = await page.evaluate(() => {
-        const s = getComputedStyle(document.querySelector('main') || document.body);
-        return s.getPropertyValue('--surface-1') + ' | ' + s.getPropertyValue('--primary');
-      });
-      console.log('TOKEN(' + theme + '): ' + v);
-    }
+    await settle(page);
+    const slug = p === '/' ? 'home' : p.replace(/^\//, '').replace(/\//g, '-');
+    await page.screenshot({ path: 'scripts/shots/' + slug + '-' + theme + '.png' });
+    const low = await axeCheck(page).catch((e) => [{ ratio: 0, need: 0, fg: '', bg: '', sel: 'axe hata', html: String(e.message).slice(0, 100) }]);
+    cr += '\n[' + theme + '] ' + p + '  (' + how + ')  axe sorun: ' + low.length + '\n';
+    for (const x of low.slice(0, 12)) cr += '   ' + x.ratio + '/' + x.need + '  fg ' + x.fg + '  bg ' + x.bg + '  ' + x.sel + '  ' + x.html + '\n';
   }
   console.log('olculdu: ' + p);
 }
