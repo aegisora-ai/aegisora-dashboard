@@ -53,7 +53,7 @@
 
 [dark] /product  (gercek-dugme)  axe sorun: 0
 
-[light] /product  (YEDEK(sinif))  axe sorun: 0
+[light] /product  (gercek-dugme)  axe sorun: 0
 
 [dark] /docs  (gercek-dugme)  axe sorun: 0
 

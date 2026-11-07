@@ -1,0 +1,21 @@
+/* aeg-auth-glass: auth pages as a centered glass card over the liquid backdrop. Restyle only. */
+html .bw-authpage { position: relative; isolation: isolate; background-image: radial-gradient(60% 45% at 50% 0%, var(--bw-blue-soft), transparent 72%); }
+html .bw-authpage .bw-auth { align-items: center; padding-top: clamp(32px, 6vh, 72px); }
+html .bw-authpage .bw-auth__card {
+  background: color-mix(in srgb, var(--bw-card) 78%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6); backdrop-filter: blur(22px) saturate(1.6);
+  border: 1px solid var(--bw-line); border-radius: 24px; box-shadow: var(--bw-shadow); padding: 36px;
+}
+@media (max-width: 480px) { html .bw-authpage .bw-auth__card { padding: 26px 20px; border-radius: 20px; } }
+html .bw-authpage .bw-auth__card input[data-slot="input"] {
+  background: color-mix(in srgb, var(--bw-card) 85%, transparent); border-radius: 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+html .bw-authpage .bw-auth__card input[data-slot="input"]:focus-visible { border-color: var(--bw-blue); outline: 2px solid var(--bw-blue-soft); outline-offset: 1px; }
+html .bw-authpage .bw-auth__card button.aeg-btn-brand { border-radius: 999px; transition: transform 0.2s ease, background-color 0.2s ease; }
+html .bw-authpage .bw-auth__card button.aeg-btn-brand:hover:not(:disabled) { transform: translateY(-1px); }
+html .bw-authpage .bw-auth__card a:focus-visible, html .bw-authpage .bw-auth__card button:focus-visible { outline: 2px solid var(--bw-blue); outline-offset: 2px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) {
+  html .bw-authpage .bw-auth__card button.aeg-btn-brand, html .bw-authpage .bw-auth__card input[data-slot="input"] { transition: none; }
+  html .bw-authpage .bw-auth__card button.aeg-btn-brand:hover:not(:disabled) { transform: none; }
+}
