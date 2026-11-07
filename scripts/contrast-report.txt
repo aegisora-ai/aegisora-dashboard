@@ -1,67 +1,43 @@
 
 [dark] /dashboard  (gercek-dugme)  axe sorun: 0
 
-[light] /dashboard  (gercek-dugme)  axe sorun: 8
-   2.62/4.5:1  fg #b42318  bg #141c1f  .text-block  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .last\:border-0:nth-child(2) > td[data-label="Decision"] > .bg-surface-3.py-0\.5.tracking-wide  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .last\:border-0:nth-child(3) > td[data-label="Decision"] > .bg-surface-3.py-0\.5.tracking-wide  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .last\:border-0:nth-child(4) > td[data-label="Decision"] > .bg-surface-3.py-0\.5.tracking-wide  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .last\:border-0:nth-child(5) > td[data-label="Decision"] > .bg-surface-3.py-0\.5.tracking-wide  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .last\:border-0:nth-child(6) > td[data-label="Decision"] > .bg-surface-3.py-0\.5.tracking-wide  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .last\:border-0:nth-child(7) > td[data-label="Decision"] > .bg-surface-3.py-0\.5.tracking-wide  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .last\:border-0:nth-child(8) > td[data-label="Decision"] > .bg-surface-3.py-0\.5.tracking-wide  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
+[light] /dashboard  (YEDEK(sinif))  axe sorun: 0
 
 [dark] /dashboard/approvals  (gercek-dugme)  axe sorun: 0
 
-[light] /dashboard/approvals  (gercek-dugme)  axe sorun: 3
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .cursor-pointer.border-border\/60.hover\:bg-surface-1:nth-child(5) > .align-top.py-3[data-label="Status"] > .t  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .cursor-pointer.border-border\/60.hover\:bg-surface-1:nth-child(6) > .align-top.py-3[data-label="Status"] > .t  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .cursor-pointer.border-border\/60.hover\:bg-surface-1:nth-child(7) > .align-top.py-3[data-label="Status"] > .t  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
+[light] /dashboard/approvals  (YEDEK(sinif))  axe sorun: 0
 
 [dark] /dashboard/billing  (gercek-dugme)  axe sorun: 0
 
-[light] /dashboard/billing  (gercek-dugme)  axe sorun: 2
-   3.13/4.5:1  fg #007a55  bg #0a211d  .tracking-wide  <span class="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text
-   3.13/4.5:1  fg #007a55  bg #0a211d  .bg-emerald-500\/10.px-2.text-emerald-700  <span class="rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase text-emerald-700 dar
+[light] /dashboard/billing  (YEDEK(sinif))  axe sorun: 0
 
 [dark] /dashboard/agents  (gercek-dugme)  axe sorun: 0
 
-[light] /dashboard/agents  (gercek-dugme)  axe sorun: 0
+[light] /dashboard/agents  (YEDEK(sinif))  axe sorun: 0
 
 [dark] /dashboard/policies  (gercek-dugme)  axe sorun: 0
 
-[light] /dashboard/policies  (gercek-dugme)  axe sorun: 10
-   2.76/4.5:1  fg #875600  bg #141c1f  .cursor-pointer.border-border\/60.hover\:bg-surface-1:nth-child(1) > .align-top[data-label="Effect"] > .text-e  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .cursor-pointer.border-border\/60.hover\:bg-surface-1:nth-child(1) > .align-top[data-label="State"] > .text-al  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   2.76/4.5:1  fg #875600  bg #141c1f  .cursor-pointer.border-border\/60.hover\:bg-surface-1:nth-child(2) > .align-top[data-label="Effect"] > .text-e  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .cursor-pointer.border-border\/60.hover\:bg-surface-1:nth-child(2) > .align-top[data-label="State"] > .text-al  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   2.62/4.5:1  fg #b42318  bg #141c1f  .text-block  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .cursor-pointer.border-border\/60.hover\:bg-surface-1:nth-child(3) > .align-top[data-label="State"] > .text-al  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .cursor-pointer.border-border\/60.hover\:bg-surface-1:nth-child(4) > .align-top[data-label="Effect"] > .text-a  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .cursor-pointer.border-border\/60.hover\:bg-surface-1:nth-child(4) > .align-top[data-label="State"] > .text-al  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .cursor-pointer.border-border\/60.hover\:bg-surface-1:nth-child(5) > .align-top[data-label="Effect"] > .text-a  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   3.26/4.5:1  fg #0f7b4f  bg #141c1f  .cursor-pointer.border-border\/60.hover\:bg-surface-1:nth-child(5) > .align-top[data-label="State"] > .text-al  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
+[light] /dashboard/policies  (YEDEK(sinif))  axe sorun: 0
 
 [dark] /dashboard/evidence  (gercek-dugme)  axe sorun: 0
 
-[light] /dashboard/evidence  (gercek-dugme)  axe sorun: 0
+[light] /dashboard/evidence  (YEDEK(sinif))  axe sorun: 0
 
 [dark] /dashboard/team  (gercek-dugme)  axe sorun: 0
 
-[light] /dashboard/team  (gercek-dugme)  axe sorun: 0
+[light] /dashboard/team  (YEDEK(sinif))  axe sorun: 0
 
 [dark] /dashboard/settings  (gercek-dugme)  axe sorun: 0
 
-[light] /dashboard/settings  (gercek-dugme)  axe sorun: 0
+[light] /dashboard/settings  (YEDEK(sinif))  axe sorun: 0
 
 [dark] /dashboard/api-keys  (gercek-dugme)  axe sorun: 0
 
-[light] /dashboard/api-keys  (gercek-dugme)  axe sorun: 0
+[light] /dashboard/api-keys  (YEDEK(sinif))  axe sorun: 0
 
 [dark] /dashboard/webhooks  (gercek-dugme)  axe sorun: 0
 
-[light] /dashboard/webhooks  (gercek-dugme)  axe sorun: 1
-   3.47/4.5:1  fg #0f7b4f  bg #0f1517  .tracking-wider  <span class="font-mono text-[11px] tracking-wider text-allow">AUTHENTICATOR ENROLLED</span>
+[light] /dashboard/webhooks  (YEDEK(sinif))  axe sorun: 0
 
 [dark] /onboarding  (YEDEK(sinif))  axe sorun: 0
 
