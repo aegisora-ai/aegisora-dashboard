@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowRight, Check, ChevronDown, Circle } from "lucide-react";
+import { ArrowRight, Check, Circle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Workspace } from "@/lib/aegisora/use-workspace";
 import { Badge, Notice, PageHeader, Panel, Skeleton, WorkspaceGate, fmt } from "@/components/aegisora/live/ui";
 import type { Row } from "@/components/aegisora/live/live-table";
-import { DecisionSplit, HourlyChart, type Bucket } from "@/components/aegisora/live/decision-charts";
-import { OverviewInsights } from "@/components/aegisora/live/overview-insights";
+import type { Bucket } from "@/components/aegisora/live/decision-charts";
+import { HourlyBars, StatCard } from "@/components/aegisora/live/overview-v2";
 import { focusRing } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -20,8 +20,10 @@ type Pending = { id: string; agent_name: string | null; action: string | null; r
 const HOUR = 36e5;
 const SERIES_LIMIT = 1000;
 const NONE: Stats = { agents: null, policies: null, keys: null, pending: null, incidents: null, allow: null, block: null, escalate: null };
-const btnPrimary = "inline-flex items-center justify-center gap-2 rounded-md bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover";
-const btnOutline = "inline-flex items-center justify-center gap-2 rounded-md border border-border bg-surface-2 px-3.5 py-2 text-sm font-medium transition-colors hover:bg-surface-3";
+const btnPrimary = "inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover";
+
+const pick = (v: unknown): Record<string, unknown> | null =>
+  Array.isArray(v) ? ((v[0] as Record<string, unknown> | undefined) ?? null) : ((v as Record<string, unknown> | null) ?? null);
 
 function bucketize(points: Point[]): { buckets: Bucket[]; labels: string[] } {
   const now = Date.now();
@@ -50,8 +52,6 @@ function Overview({ ws }: { ws: Workspace }) {
   const [recent, setRecent] = useState<Row[]>([]);
   const [points, setPoints] = useState<Point[]>([]);
   const [attention, setAttention] = useState<Pending[]>([]);
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [showAnalytics, setShowAnalytics] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -88,7 +88,7 @@ function Overview({ ws }: { ws: Workspace }) {
         if (rec.error) bad.push("recent activity");
         if (series.error) bad.push("hourly chart");
         if (att.error) bad.push("approval list");
-        setRecent(rec.error ? [] : ((rec.data ?? []) as Row[]));
+        setRecent(rec.error ? [] : ((rec.data ?? []) as unknown as Row[]));
         setPoints(series.error ? [] : ((series.data ?? []) as Point[]));
         setAttention(att.error ? [] : ((att.data ?? []) as Pending[]));
         setFailed(Array.from(new Set(bad)));
@@ -159,147 +159,113 @@ function Overview({ ws }: { ws: Workspace }) {
         </Panel>
       )}
 
-      <Panel>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold">Needs your attention</h2>
-          {(s.pending ?? 0) > 0 && (
-            <Link href="/dashboard/approvals" className={cn(btnPrimary, focusRing)}>{"Review approvals (" + s.pending + ")"}</Link>
-          )}
-        </div>
-        {s.pending === null ? (
-          <p className="mt-2 text-sm text-muted-foreground">Approvals could not be loaded.</p>
-        ) : attention.length > 0 ? (
-          <ul className="mt-3 divide-y divide-border/60">
-            {attention.map((a) => (
-              <li key={a.id}>
-                <Link href="/dashboard/approvals" className={cn("flex min-h-12 flex-wrap items-center gap-x-3 gap-y-1 py-2 text-sm hover:bg-surface-3/60", focusRing)}>
-                  <span className="font-mono text-xs">{a.action ?? "-"}</span>
-                  <span className="text-muted-foreground">{a.agent_name ?? "Unknown agent"}</span>
-                  <span className="ml-auto text-xs text-escalate">{timeLeft(a.expires_at)}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : s.pending > 0 ? (
-          <p className="mt-2 text-sm text-muted-foreground">{s.pending + " approval(s) are waiting for a decision."}</p>
-        ) : (
-          <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-            <Check className="size-4 text-allow" aria-hidden="true" />
-            All clear. No action is waiting for a decision.
-          </p>
-        )}
-        {(s.incidents ?? 0) > 0 && (
-          <p className="mt-3 border-t border-border/60 pt-3 text-sm">
-            <Link href="/dashboard/incidents" className="font-medium text-primary hover:underline">
-              {s.incidents === 1 ? "1 open incident" : s.incidents + " open incidents"}
-            </Link>
-            <span className="text-muted-foreground"> to review.</span>
-          </p>
-        )}
-      </Panel>
-
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {tiles.map((t) => (
-          <Link key={t.label} href={t.href} className="rounded-xl border border-border bg-surface-1 p-4 transition hover:border-primary/60 active:scale-[0.98] sm:p-5">
-            <div className="text-xs font-medium text-muted-foreground">{t.label}</div>
-            <div className={cn("mt-2 text-3xl font-semibold tracking-tight sm:text-4xl", t.warn && "text-escalate")}>{t.value}</div>
-          </Link>
+          <StatCard key={t.label} label={t.label} value={t.value} href={t.href} warn={t.warn} />
         ))}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <Panel>
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-sm font-semibold">Recent decisions</h2>
-            <Link href="/dashboard/activity" className="text-xs font-medium text-primary hover:underline">View all</Link>
-          </div>
-          {failed.includes("recent activity") ? (
-            <p className="mt-2 text-sm text-muted-foreground">Recent decisions could not be loaded.</p>
-          ) : recent.length === 0 ? (
-            <div className="mt-3 space-y-3">
-              <p className="text-sm text-muted-foreground">No decisions yet. They appear here the moment an agent calls the API.</p>
-              <div className="flex flex-wrap gap-2">
-                <Link href="/docs/quickstart" className={cn(btnPrimary, focusRing)}>Open the quickstart</Link>
-                <Link href="/demo" className={cn(btnOutline, focusRing)}>Try the sandbox</Link>
-              </div>
-            </div>
+      <Panel>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold">Decisions per hour</h2>
+          <p className="text-xs text-muted-foreground">
+            Last 24 hours
+            {decisionsKnown ? " - " + total24 + " total" : ""}
+          </p>
+        </div>
+        <div className="mt-5">
+          {points.length === 0 ? (
+            <p className="py-12 text-center text-sm text-muted-foreground">No decisions in the last 24 hours.</p>
           ) : (
-            <ul className="mt-3 divide-y divide-border/60">
-              {recent.map((r) => {
-                const open = openId === r.id;
-                return (
-                  <li key={r.id}>
-                    <button
-                      type="button"
-                      aria-expanded={open}
-                      onClick={() => setOpenId(open ? null : r.id)}
-                      className="flex min-h-12 w-full flex-wrap items-center gap-x-3 gap-y-1 py-2 text-left text-sm hover:bg-surface-3/60"
-                    >
-                      <Badge value={r.decision} />
-                      <span className="font-mono text-xs">{r.evidence?.[0]?.action ?? "-"}</span>
-                      <span className="text-muted-foreground">{r.agents?.name ?? "Unknown agent"}</span>
-                      <span className="ml-auto text-xs text-muted-foreground">{fmt(r.created_at)}</span>
-                      <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")} />
-                    </button>
-                    {open && (
-                      <dl className="grid gap-3 rounded-lg bg-surface-1 p-4 text-xs sm:grid-cols-4">
-                        <div><dt className="text-muted-foreground">Decision ID</dt><dd className="mt-1 font-mono">{String(r.id).slice(0, 12)}</dd></div>
-                        <div><dt className="text-muted-foreground">Agent</dt><dd className="mt-1">{r.agents?.name ?? "Unknown agent"}</dd></div>
-                        <div><dt className="text-muted-foreground">Action</dt><dd className="mt-1 font-mono">{r.evidence?.[0]?.action ?? "-"}</dd></div>
-                        <div className="flex items-end">
-                          <Link href={`/dashboard/decisions/${r.id}`} className="font-medium text-primary hover:underline">Open full decision</Link>
-                        </div>
-                      </dl>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+            <HourlyBars buckets={buckets} labels={labels} />
+          )}
+        </div>
+        {decisionsKnown && total24 > 0 && (
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-xs">
+            <span className="text-allow">{s.allow} allowed</span>
+            <span className="text-escalate">{s.escalate} escalated</span>
+            <span className="text-block">{s.block} blocked</span>
+          </div>
+        )}
+      </Panel>
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <Panel className="overflow-hidden p-0">
+          <div className="flex items-center justify-between px-5 py-4">
+            <h2 className="text-sm font-semibold">Recent decisions</h2>
+            <Link href="/dashboard/decisions" className="text-xs font-medium text-primary hover:underline">View all</Link>
+          </div>
+          {recent.length === 0 ? (
+            <p className="px-5 pb-5 text-sm text-muted-foreground">No decisions yet. Send a test action from your agent or with curl and it will appear here.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="border-y border-border text-xs text-muted-foreground">
+                    <th className="px-5 py-2.5 font-medium">Time</th>
+                    <th className="px-5 py-2.5 font-medium">Agent</th>
+                    <th className="px-5 py-2.5 font-medium">Action</th>
+                    <th className="px-5 py-2.5 font-medium">Decision</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recent.map((r) => (
+                    <tr key={String(r.id)} className="border-b border-border/60 last:border-0">
+                      <td className="whitespace-nowrap px-5 py-3 text-muted-foreground">{fmt(r.created_at)}</td>
+                      <td className="px-5 py-3">{String(pick(r.agents)?.name ?? "-")}</td>
+                      <td className="px-5 py-3 font-mono text-xs">{String(pick(r.evidence)?.action ?? "-")}</td>
+                      <td className="px-5 py-3"><Badge value={r.decision} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </Panel>
+
         <Panel>
-          <h2 className="text-sm font-semibold">Last 24 hours</h2>
-          {decisionsKnown ? (
-            <>
-              <p className="mt-1 text-xs text-muted-foreground">{total24} decisions governed.</p>
-              <DecisionSplit allow={s.allow ?? 0} escalate={s.escalate ?? 0} block={s.block ?? 0} />
-            </>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-sm font-semibold">Needs your attention</h2>
+            {(s.pending ?? 0) > 0 && (
+              <Link href="/dashboard/approvals" className={cn(btnPrimary, focusRing)}>{"Review (" + s.pending + ")"}</Link>
+            )}
+          </div>
+          {s.pending === null ? (
+            <p className="mt-2 text-sm text-muted-foreground">Approvals could not be loaded.</p>
+          ) : attention.length > 0 ? (
+            <ul className="mt-3 divide-y divide-border/60">
+              {attention.map((a) => (
+                <li key={a.id}>
+                  <Link href="/dashboard/approvals" className={cn("flex min-h-12 flex-wrap items-center gap-x-3 gap-y-1 py-2 text-sm hover:bg-surface-3/60", focusRing)}>
+                    <span className="font-mono text-xs">{a.action ?? "-"}</span>
+                    <span className="text-muted-foreground">{a.agent_name ?? "Unknown agent"}</span>
+                    <span className="ml-auto text-xs text-escalate">{timeLeft(a.expires_at)}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : s.pending > 0 ? (
+            <p className="mt-2 text-sm text-muted-foreground">{s.pending + " approval(s) are waiting for a decision."}</p>
           ) : (
-            <p className="mt-2 text-sm text-muted-foreground">The decision counts could not be loaded.</p>
+            <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+              <Check className="size-4 text-allow" aria-hidden="true" />
+              All clear. No action is waiting for a decision.
+            </p>
+          )}
+          {(s.incidents ?? 0) > 0 && (
+            <p className="mt-3 border-t border-border/60 pt-3 text-sm">
+              <Link href="/dashboard/incidents" className="font-medium text-primary hover:underline">
+                {s.incidents === 1 ? "1 open incident" : s.incidents + " open incidents"}
+              </Link>
+              <span className="text-muted-foreground"> to review.</span>
+            </p>
           )}
         </Panel>
       </div>
-
-      <button
-        type="button"
-        aria-expanded={showAnalytics}
-        onClick={() => setShowAnalytics((v) => !v)}
-        className={cn(btnOutline, "w-full justify-between", focusRing)}
-      >
-        <span>{showAnalytics ? "Hide analytics" : "Show 14-day analytics"}</span>
-        <ChevronDown className={cn("size-4 transition-transform", showAnalytics && "rotate-180")} aria-hidden="true" />
-      </button>
-
-      {showAnalytics && (
-        <>
-          <Panel>
-            <h2 className="text-sm font-semibold">Decisions per hour</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {points.length >= SERIES_LIMIT ? "Showing the latest 1,000 decisions of the last 24 hours." : "Last 24 hours. Hover a bar for the exact counts."}
-            </p>
-            {failed.includes("hourly chart") ? (
-              <p className="mt-4 text-sm text-muted-foreground">The chart could not be loaded.</p>
-            ) : (
-              <HourlyChart buckets={buckets} labels={labels} />
-            )}
-          </Panel>
-          <OverviewInsights wsId={ws.id} />
-        </>
-      )}
     </div>
   );
 }
 
-export default function OverviewPage() {
-  return <WorkspaceGate>{(ws) => <Overview key={ws.id} ws={ws} />}</WorkspaceGate>;
+export default function DashboardPage() {
+  return <WorkspaceGate>{(ws) => <Overview ws={ws} />}</WorkspaceGate>;
 }
