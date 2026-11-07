@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { ApiError, admin, authenticate, fail, readJson } from "@/lib/aegisora/server";
 import { normalizeAgentInput } from "@/lib/aegisora/agent-input";
+import { assertAgentImportWithinLimit } from "@/lib/aegisora/plan-limits";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,6 +20,7 @@ export async function POST(req: Request) {
       map.set(normalized.row.name, normalized.row);
     }
     if (map.size === 0) throw new ApiError(400, "invalid_request", "No valid agents found (each needs a 'name').");
+    await assertAgentImportWithinLimit(auth.workspaceId, [...map.keys()]);
     const { error } = await admin().from("agents").upsert([...map.values()], { onConflict: "workspace_id,name" });
     if (error) throw error;
     return NextResponse.json({ imported: map.size });

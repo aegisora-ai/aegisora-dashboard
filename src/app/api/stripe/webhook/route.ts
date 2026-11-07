@@ -240,8 +240,8 @@ async function persistSubscription(
       raw.status ?? "unknown",
     );
 
-  const cancelAtPeriodEnd =
-    raw.cancel_at_period_end === true;
+  const cancelAtPeriodEnd = raw.cancel_at_period_end === true;
+  const lapsed = eventType === "customer.subscription.deleted" || status === "canceled" || status === "incomplete_expired";
 
   const { error } =
     await admin
@@ -293,14 +293,7 @@ async function persistSubscription(
       {
         workspace_id:
           workspaceId,
-        plan_key:
-          planKey,
-        status:
-          entitlementStatus(
-            status,
-          ),
-        billing_mode:
-          "subscription",
+        plan_key: lapsed ? "free" : planKey, status: lapsed ? "active" : entitlementStatus(status), billing_mode: lapsed ? "free" : "subscription",
         stripe_customer_id:
           customerId,
         stripe_subscription_id:

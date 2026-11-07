@@ -9,6 +9,7 @@ import {
 } from "@/lib/supabase/server";
 
 export type BillingPlan =
+  | "pro"
   | "founder_pilot"
   | "pilot"
   | "team"
@@ -22,6 +23,7 @@ export const BILLING_PLANS: Record<
     mode: "payment" | "subscription";
   }
 > = {
+  pro: { envKey: "STRIPE_PRICE_PRO", mode: "subscription" },
   founder_pilot: {
     envKey: "STRIPE_PRICE_FOUNDER_PILOT",
     mode: "payment",
@@ -90,6 +92,7 @@ export function isBillingPlan(
   value: unknown,
 ): value is BillingPlan {
   return (
+    value === "pro" ||
     value === "founder_pilot" ||
     value === "pilot" ||
     value === "team" ||

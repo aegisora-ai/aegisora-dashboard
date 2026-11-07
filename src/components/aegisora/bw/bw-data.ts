@@ -138,7 +138,7 @@ export const COMPARE: { feature: string; icon: string; cells: Mark[] }[] = [
 export const FAQ = [
   {
     q: "Can I try Aegisora today?",
-    a: "Yes. Create a test workspace to evaluate a first agent action. There is no paid plan and no online checkout today.",
+    a: "Yes. Create a test workspace to evaluate a first agent action. You can start free and upgrade to Pro for $49 per month.",
   },
   {
     q: "Is pricing published?",

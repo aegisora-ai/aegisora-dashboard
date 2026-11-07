@@ -55,7 +55,7 @@ export const COLLECTIONS: Collection[] = [
           ] },
           { t: "h", text: "What to keep in mind" },
           { t: "ul", items: [
-            "There is no paid plan and no online checkout for test workspaces.",
+            "Test workspaces are free. Pro is $49 per month.",
             "Do not connect production systems or sensitive customer data to a test workspace.",
             "Any paid pilot is scoped and agreed in writing before customer data or production systems are connected.",
           ] },
@@ -226,7 +226,7 @@ export const COLLECTIONS: Collection[] = [
           { t: "p", text: "Price, tax treatment, hosting, service levels and production availability are not published and are not represented as established offers." },
           { t: "ul", items: [
             "There is no paid self-service plan.",
-            "There is no online checkout.",
+            "You can upgrade to Pro online from Billing in the dashboard.",
             "There is no automated subscription billing today.",
           ] },
           { t: "p", text: "You can still create a test workspace and evaluate Aegisora at no cost. If you want to explore a pilot, talk to the team." },

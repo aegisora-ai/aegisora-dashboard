@@ -144,6 +144,19 @@ export default async function PricingPage({ params }: Props) {
           ))}
         </div>
 
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-6 rounded-2xl border border-primary/60 bg-surface-3 p-6 md:p-8">
+          <div className="max-w-3xl">
+            <h3 className="text-xl font-semibold">Pro · $49{locale === "de" ? " / Monat" : " / month"}</h3>
+            <p className="mt-3 text-sm leading-6 text-foreground/70">
+              {locale === "de"
+                ? "Bis zu 5 Agenten, 5 Mitglieder und 25.000 Entscheidungen pro Monat. Kostenlos starten und jederzeit upgraden."
+                : "Up to 5 agents, 5 members and 25,000 decisions per month. Start free and upgrade any time."}
+            </p>
+          </div>
+          <Link href="/dashboard/billing" className="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
+            {locale === "de" ? "Pro starten" : "Get Pro"}
+          </Link>
+        </div>
         <div className="mt-6 flex flex-wrap items-center justify-between gap-6 rounded-2xl border border-border bg-surface-1 p-6 md:p-8">
           <div className="max-w-3xl">
             <h3 className="text-xl font-semibold">{t("commTitle")}</h3>

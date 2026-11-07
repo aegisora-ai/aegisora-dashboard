@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
-type Plan = "founder_pilot" | "pilot" | "team" | "business" | "enterprise";
+type Plan = "pro" | "founder_pilot" | "pilot" | "team" | "business" | "enterprise";
 
 type BillingState = {
   customer: { stripe_customer_id: string; email: string | null } | null;
@@ -29,6 +29,7 @@ type BillingState = {
 const SELF_SERVE = process.env.NEXT_PUBLIC_BILLING_SELF_SERVE === "true";
 
 const plans: Array<{ key: Plan; title: string; price: string; detail: string }> = [
+  { key: "pro", title: "Pro", price: "$49", detail: "per month" },
   { key: "founder_pilot", title: "Founder Pilot", price: "$1,250", detail: "one-time" },
   { key: "pilot", title: "Pilot", price: "$2,500", detail: "one-time" },
   { key: "team", title: "Team", price: "$299", detail: "per month" },
@@ -192,7 +193,7 @@ export default function BillingPage() {
             <h2 className="mt-2 text-2xl font-semibold tracking-tight">Choose the access level for this workspace.</h2>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {plans.map((plan) => {
               const active = activePlan === plan.key;
               const busy = working === plan.key;

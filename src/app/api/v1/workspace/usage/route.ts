@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { admin } from "@/lib/aegisora/server";
+import { getWorkspacePlanSummary } from "@/lib/aegisora/plan-limits";
 import { authenticateUser, requireWorkspacePermission } from "@/lib/aegisora/rbac-http";
 
 export const runtime = "nodejs";
@@ -20,6 +21,7 @@ export async function GET(req: Request) {
     
     await requireWorkspacePermission(user.id, workspaceId, "workspace:read");
 
+    const planSummary = await getWorkspacePlanSummary(workspaceId);
     const now = new Date();
     const windowStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
     const windowEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
@@ -37,7 +39,8 @@ export async function GET(req: Request) {
       window: { start: windowStart.toISOString(), end: windowEnd.toISOString() },
       evaluations: { total: total.count ?? 0, allow: allow.count ?? 0, block: block.count ?? 0, escalate: escalate.count ?? 0 },
       source: "persisted governance decisions",
-      billing_status: "not_connected",
+      plan: planSummary,
+      billing_status: planSummary.status ?? "none",
       measured_at: now.toISOString(),
     }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {

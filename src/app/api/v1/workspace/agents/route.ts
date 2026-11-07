@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { ApiError, admin, readJson } from "@/lib/aegisora/server";
 import { authenticateUser, requireAal2, requireWorkspacePermission } from "@/lib/aegisora/rbac-http";
 import { normalizeAgentInput, type AgentWrite } from "@/lib/aegisora/agent-input";
+import { assertWithinPlanLimit, assertAgentImportWithinLimit } from "@/lib/aegisora/plan-limits";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,6 +27,7 @@ export async function POST(req: Request) {
     if (operation === "create") {
       const normalized = normalizeAgentInput(body.agent, workspaceId, "manual");
       if (!normalized.row) throw new ApiError(400, "invalid_agent", normalized.error ?? "Invalid agent.");
+      await assertWithinPlanLimit(workspaceId, "agents", 1);
       const { data, error } = await db.from("agents").insert(normalized.row).select("id").single();
       if (error) throw error;
       return NextResponse.json({ id: data.id }, { status: 201 });
@@ -42,6 +44,7 @@ export async function POST(req: Request) {
         if (!normalized.row) throw new ApiError(400, "invalid_agent", normalized.error ?? "Invalid agent in import.");
         rows.set(normalized.row.name, normalized.row);
       }
+      await assertAgentImportWithinLimit(workspaceId, [...rows.keys()]);
       const { error } = await db.from("agents").upsert([...rows.values()], { onConflict: "workspace_id,name" });
       if (error) throw error;
       return NextResponse.json({ imported: rows.size });
