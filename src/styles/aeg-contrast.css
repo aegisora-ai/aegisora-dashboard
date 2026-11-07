@@ -1,40 +1,32 @@
 /* aeg-contrast: WCAG AA color-contrast fixes found by axe-core */
 
-/* dashboard, dark: active nav text and primary buttons */
+/* dashboard, dark */
 :root.dark .aeg-premium .bg-primary\/10 > .truncate { color: #8db8ff; }
 :root.dark .aeg-premium .bg-primary,
 :root.dark .aeg-premium .aeg-btn-brand { background-color: #2467f0; color: #ffffff; }
 :root.dark .aeg-premium .bg-primary:hover,
 :root.dark .aeg-premium .aeg-btn-brand:hover { background-color: #1f58d6; }
 
-/* public, dark: blue buttons */
-:root.dark .aegh__btn,
+/* public, dark: filled blue buttons only (never the ghost button) */
+:root.dark .aegh__btn:not(.aegh__btn--ghost),
 :root.dark .aegf__btn,
-:root.dark .bw-btn--blue,
-:root.dark .aeg-public .bg-primary { background-color: #1668e8; color: #ffffff; }
-:root.dark .aegh__btn:hover,
+:root.dark .aeg-public .bg-primary { background-color: #2467f0; color: #ffffff; }
+:root.dark .aegh__btn:not(.aegh__btn--ghost):hover,
 :root.dark .aegf__btn:hover,
-:root.dark .bw-btn--blue:hover,
-:root.dark .aeg-public .bg-primary:hover { background-color: #1259d0; }
-:root.dark .bw-count { color: #52a8ff; }
+:root.dark .aeg-public .bg-primary:hover { background-color: #1f58d6; }
 
-/* light: blue buttons get white text */
-:root:not(.dark) .aegh__btn,
+/* public, light: filled blue buttons get white text */
+:root:not(.dark) .aegh__btn:not(.aegh__btn--ghost),
 :root:not(.dark) .aegf__btn,
 :root:not(.dark) .aeg-public .bg-primary { color: #ffffff; }
 
 /* light: warm escalate color */
 :root:not(.dark) .text-escalate { color: #875600; }
-:root:not(.dark) .bw-pill--escalate { color: #8a5800; }
-:root:not(.dark) .bw-avatars span:nth-child(2) { color: #8a5800 !important; }
 
 /* light: muted grays */
-:root:not(.dark) .bw-mini__foot,
-:root:not(.dark) .bw-mini--rec small,
-:root:not(.dark) .bw-ide .c,
 :root:not(.dark) footer h2,
 :root:not(.dark) .aegf__note,
-:root:not(.dark) .aegf__legalin > span { color: #5a6785; }
-:root:not(.dark) .bw-ide .f { color: #08708a; }
-:root:not(.dark) .aeg-public [class*="text-foreground/50"] { color: color-mix(in srgb, var(--foreground) 68%, transparent); }
+:root:not(.dark) .aegf__legalin > span { color: #55637f; }
+:root:not(.dark) .aeg-public [class*="text-foreground/50"],
+:root:not(.dark) .aeg-public [class*="text-foreground/60"] { color: color-mix(in srgb, var(--foreground) 74%, transparent); }
 :root:not(.dark) .zpk-caption { color: #5c5b5a; }

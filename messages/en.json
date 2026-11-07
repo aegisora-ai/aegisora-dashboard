@@ -1330,5 +1330,71 @@
     "note": "Note",
     "tip": "Tip",
     "warn": "Important"
+  },
+  "HomeCalm": {
+    "hero": {
+      "badge": "Runtime security for AI agents",
+      "early": "Early access",
+      "title1": "Your agents act.",
+      "title2": "Aegisora decides first.",
+      "lead": "Each sensitive action is checked against policy, context and risk, then returned as ALLOW, ESCALATE or BLOCK before it executes.",
+      "cta1": "Test Aegisora",
+      "cta2": "Talk to us",
+      "note": "Default is BLOCK. No matching policy, nothing runs."
+    },
+    "demo": {
+      "label": "Try a decision",
+      "run": "Check",
+      "agent": "Agent",
+      "policy": "Policy",
+      "evidence": "Evidence",
+      "noPolicy": "No matching policy",
+      "disclaimer": "Illustrative sample data."
+    },
+    "how": {
+      "eyebrow": "How it works",
+      "title": "One check between your agent and the action.",
+      "s1t": "Your agent asks",
+      "s1d": "Before a sensitive action, your backend sends it to Aegisora together with its context.",
+      "s2t": "Aegisora decides",
+      "s2d": "Policy, risk and authorization are evaluated. The answer is ALLOW, ESCALATE or BLOCK.",
+      "s3t": "You stay in control",
+      "s3d": "Continue only on ALLOW. Escalations wait for a person. Every decision is recorded."
+    },
+    "feat": {
+      "eyebrow": "What you get",
+      "title": "Everything between a request and an action.",
+      "f1t": "Policies",
+      "f1d": "Write rules for who may do what. When nothing matches, the answer is BLOCK.",
+      "f2t": "Approvals",
+      "f2d": "Escalated actions wait for an authorized person. Execution stays paused until they decide.",
+      "f3t": "Evidence",
+      "f3d": "Every decision is recorded with a verifiable evidence chain.",
+      "f4t": "Live activity",
+      "f4d": "Watch decisions arrive in real time and open incidents when something goes wrong.",
+      "f5t": "API and webhooks",
+      "f5d": "Call Aegisora from your backend with a workspace API key and get notified by webhook.",
+      "f6t": "Team access",
+      "f6d": "Invite your team with roles and require a second factor for sensitive changes."
+    },
+    "live": {
+      "eyebrow": "Live",
+      "title": "Every decision, as it happens.",
+      "copy": "Aegisora checks each request before your action runs. This is what the stream of decisions looks like (sample data)."
+    },
+    "feed": {
+      "label": "Live decisions"
+    },
+    "code": {
+      "title": "Fail closed by design.",
+      "copy": "Ask first, then act. On BLOCK or an unknown answer, nothing happens.",
+      "label": "Illustrative"
+    },
+    "cta": {
+      "title": "Put a check in front of your agents.",
+      "copy": "Test workspaces are open in early access. Design partner pilots are scoped in writing.",
+      "cta1": "Test Aegisora",
+      "cta2": "Pilot program"
+    }
   }
 }

@@ -1330,5 +1330,71 @@
     "note": "Hinweis",
     "tip": "Tipp",
     "warn": "Wichtig"
+  },
+  "HomeCalm": {
+    "hero": {
+      "badge": "Laufzeitschutz für KI-Agenten",
+      "early": "Early Access",
+      "title1": "Ihre Agenten handeln.",
+      "title2": "Aegisora entscheidet zuerst.",
+      "lead": "Jede sensible Aktion wird gegen Richtlinie, Kontext und Risiko geprüft und als ALLOW, ESCALATE oder BLOCK zurückgegeben, bevor sie ausgeführt wird.",
+      "cta1": "Aegisora testen",
+      "cta2": "Mit uns sprechen",
+      "note": "Standard ist BLOCK. Ohne passende Richtlinie läuft nichts."
+    },
+    "demo": {
+      "label": "Entscheidung ausprobieren",
+      "run": "Prüfen",
+      "agent": "Agent",
+      "policy": "Richtlinie",
+      "evidence": "Nachweis",
+      "noPolicy": "Keine passende Richtlinie",
+      "disclaimer": "Beispieldaten zur Veranschaulichung."
+    },
+    "how": {
+      "eyebrow": "So funktioniert es",
+      "title": "Eine Prüfung zwischen Agent und Aktion.",
+      "s1t": "Ihr Agent fragt an",
+      "s1d": "Vor einer sensiblen Aktion sendet Ihr Backend sie mit Kontext an Aegisora.",
+      "s2t": "Aegisora entscheidet",
+      "s2d": "Richtlinie, Risiko und Berechtigung werden ausgewertet. Die Antwort lautet ALLOW, ESCALATE oder BLOCK.",
+      "s3t": "Sie behalten die Kontrolle",
+      "s3d": "Fortfahren nur bei ALLOW. Eskalationen warten auf eine Person. Jede Entscheidung wird protokolliert."
+    },
+    "feat": {
+      "eyebrow": "Das bekommen Sie",
+      "title": "Alles zwischen Anfrage und Aktion.",
+      "f1t": "Richtlinien",
+      "f1d": "Regeln festlegen, wer was darf. Passt nichts, lautet die Antwort BLOCK.",
+      "f2t": "Freigaben",
+      "f2d": "Eskalierte Aktionen warten auf eine berechtigte Person. Die Ausführung bleibt angehalten, bis sie entscheidet.",
+      "f3t": "Nachweise",
+      "f3d": "Jede Entscheidung wird mit einer prüfbaren Nachweiskette aufgezeichnet.",
+      "f4t": "Live-Aktivität",
+      "f4d": "Entscheidungen in Echtzeit verfolgen und bei Problemen Vorfälle öffnen.",
+      "f5t": "API und Webhooks",
+      "f5d": "Aegisora mit einem Workspace-API-Schlüssel aus dem Backend aufrufen und per Webhook benachrichtigt werden.",
+      "f6t": "Team-Zugriff",
+      "f6d": "Team mit Rollen einladen und für sensible Änderungen einen zweiten Faktor verlangen."
+    },
+    "live": {
+      "eyebrow": "Live",
+      "title": "Jede Entscheidung, sobald sie fällt.",
+      "copy": "Aegisora prüft jede Anfrage, bevor Ihre Aktion läuft. So sieht der Strom der Entscheidungen aus (Beispieldaten)."
+    },
+    "feed": {
+      "label": "Live-Entscheidungen"
+    },
+    "code": {
+      "title": "Im Zweifel gesperrt.",
+      "copy": "Erst fragen, dann handeln. Bei BLOCK oder unbekannter Antwort passiert nichts.",
+      "label": "Illustrativ"
+    },
+    "cta": {
+      "title": "Setzen Sie eine Prüfung vor Ihre Agenten.",
+      "copy": "Test-Workspaces sind im Early Access offen. Design-Partner-Pilotprojekte werden schriftlich vereinbart.",
+      "cta1": "Aegisora testen",
+      "cta2": "Pilotprogramm"
+    }
   }
 }

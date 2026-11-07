@@ -1,62 +1,41 @@
 
-[dark] /dashboard  (gercek-dugme)  axe sorun: 2
-   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Overview</span>
-   3.85/4.5:1  fg #ffffff  bg #2f7cff  .bg-primary  <a class="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-3.5 py-2 text-sm font-semibol
+[dark] /dashboard  (gercek-dugme)  axe sorun: 0
 
 [light] /dashboard  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/approvals  (gercek-dugme)  axe sorun: 1
-   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Approvals</span>
+[dark] /dashboard/approvals  (YEDEK(sinif))  axe sorun: 0
 
 [light] /dashboard/approvals  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/billing  (gercek-dugme)  axe sorun: 6
-   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Billing</span>
-   3.85/4.5:1  fg #ffffff  bg #2f7cff  article:nth-child(1) > .mt-auto.bg-primary.text-primary-foreground  <button type="button" class="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 t
-   3.85/4.5:1  fg #ffffff  bg #2f7cff  article:nth-child(2) > .mt-auto.bg-primary.text-primary-foreground  <button type="button" class="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 t
-   3.85/4.5:1  fg #ffffff  bg #2f7cff  article:nth-child(3) > .mt-auto.bg-primary.text-primary-foreground  <button type="button" class="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 t
-   3.85/4.5:1  fg #ffffff  bg #2f7cff  article:nth-child(5) > .mt-auto.bg-primary.text-primary-foreground  <button type="button" class="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 t
-   3.85/4.5:1  fg #ffffff  bg #2f7cff  article:nth-child(6) > .mt-auto.bg-primary.text-primary-foreground  <button type="button" class="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 t
+[dark] /dashboard/billing  (gercek-dugme)  axe sorun: 0
 
 [light] /dashboard/billing  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/agents  (gercek-dugme)  axe sorun: 1
-   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Agents</span>
+[dark] /dashboard/agents  (gercek-dugme)  axe sorun: 0
 
 [light] /dashboard/agents  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/policies  (gercek-dugme)  axe sorun: 1
-   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Policies</span>
+[dark] /dashboard/policies  (gercek-dugme)  axe sorun: 0
 
-[light] /dashboard/policies  (gercek-dugme)  axe sorun: 2
-   4.37/4.5:1  fg #9a6400  bg #e9f0ff  .hover\:bg-surface-1:nth-child(1) > .align-top[data-label="Effect"] > .text-escalate.bg-surface-3.px-2\.5  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
-   4.37/4.5:1  fg #9a6400  bg #e9f0ff  .hover\:bg-surface-1:nth-child(2) > .align-top[data-label="Effect"] > .text-escalate.bg-surface-3.px-2\.5  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
+[light] /dashboard/policies  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/evidence  (gercek-dugme)  axe sorun: 1
-   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Evidence</span>
+[dark] /dashboard/evidence  (gercek-dugme)  axe sorun: 0
 
 [light] /dashboard/evidence  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/team  (gercek-dugme)  axe sorun: 1
-   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Team</span>
+[dark] /dashboard/team  (gercek-dugme)  axe sorun: 0
 
 [light] /dashboard/team  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/settings  (gercek-dugme)  axe sorun: 3
-   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Settings</span>
-   3.85/4.5:1  fg #ffffff  bg #2f7cff  .rounded-xl.border-\[color\:var\(--aeg-card-line\)\].p-5:nth-child(2) > form > .aeg-btn-brand.px-6[type="submi  <button type="submit" class="inline-flex items-center justify-center rounded-md aeg-btn-brand px-6 py-3 text-s
-   3.85/4.5:1  fg #ffffff  bg #2f7cff  .rounded-xl.border-\[color\:var\(--aeg-card-line\)\].p-5:nth-child(3) > form > .aeg-btn-brand.px-6[type="submi  <button type="submit" class="inline-flex items-center justify-center rounded-md aeg-btn-brand px-6 py-3 text-s
+[dark] /dashboard/settings  (gercek-dugme)  axe sorun: 0
 
 [light] /dashboard/settings  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/api-keys  (gercek-dugme)  axe sorun: 2
-   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">API Keys</span>
-   3.85/4.5:1  fg #ffffff  bg #2f7cff  .aeg-btn-brand  <button type="submit" class="inline-flex items-center justify-center rounded-md aeg-btn-brand px-6 py-3 text-s
+[dark] /dashboard/api-keys  (gercek-dugme)  axe sorun: 0
 
 [light] /dashboard/api-keys  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/webhooks  (gercek-dugme)  axe sorun: 1
-   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Webhooks</span>
+[dark] /dashboard/webhooks  (gercek-dugme)  axe sorun: 0
 
 [light] /dashboard/webhooks  (gercek-dugme)  axe sorun: 0
 
@@ -64,96 +43,51 @@
 
 [light] /onboarding  (YEDEK(sinif))  axe sorun: 0
 
-[dark] /  (gercek-dugme)  axe sorun: 6
-   3.08/4.5:1  fg #f1f5ff  bg #1b8cff  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
-   4.43/4.5:1  fg #1b8cff  bg #10264d  .bw-feat.bw-rv--in:nth-child(2) > .bw-vis[aria-hidden="true"] > .bw-vis__stack > .bw-mini:nth-child(1) > .bw-m  <span class="bw-count">2 waiting</span>
+[dark] /  (gercek-dugme)  axe sorun: 2
    3.28/4.5:1  fg #886b37  bg #231f17  .bw-mini--low > .bw-mini__row > .bw-pill--escalate.bw-pill--xs.bw-pill  <span class="bw-pill bw-pill--escalate bw-pill--xs"><i aria-hidden="true"></i>ESCALATE</span>
-   3.36/4.5:1  fg #ffffff  bg #1b8cff  .bw-btn--blue  <a class="bw-btn bw-btn--blue bw-btn--lg bw-btn--block" href="/pilot">
-   3.08/4.5:1  fg #f1f5ff  bg #1b8cff  .aegf__btn  <a class="aegf__btn" href="/signup">
    1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
 
-[light] /  (gercek-dugme)  axe sorun: 38
-   3.46/4.5:1  fg #0a1220  bg #0f63e0  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
-   4.48/4.5:1  fg #9a6400  bg #fff1d6  .bw-mini__row:nth-child(3) > .bw-pill--escalate.bw-pill--xs.bw-pill  <span class="bw-pill bw-pill--escalate bw-pill--xs"><i aria-hidden="true"></i>ESCALATE</span>
-   3.63/4.5:1  fg #7b879b  bg #ffffff  .bw-mini__foot  <p class="bw-mini__foot">No match: BLOCK</p>
-   4.48/4.5:1  fg #9a6400  bg #fff1d6  .bw-mini:nth-child(1) > .bw-mini__row > .bw-pill--escalate.bw-pill--xs.bw-pill  <span class="bw-pill bw-pill--escalate bw-pill--xs"><i aria-hidden="true"></i>ESCALATE</span>
-   2.11/4.5:1  fg #c4a771  bg #fbf5e7  .bw-mini--low > .bw-mini__row > .bw-pill--escalate.bw-pill--xs.bw-pill  <span class="bw-pill bw-pill--escalate bw-pill--xs"><i aria-hidden="true"></i>ESCALATE</span>
-   3.63/4.5:1  fg #7b879b  bg #ffffff  .bw-mini--rec.bw-mini:nth-child(1) > small  <small>9c41f2...e07a</small>
-   3.63/4.5:1  fg #7b879b  bg #ffffff  .bw-mini--rec.bw-mini:nth-child(2) > small  <small>b27d10...4f93</small>
-   3.32/4.5:1  fg #7b879b  bg #f1f5fb  .c:nth-child(1)  <span class="c">// ask first, then act</span>
-   4.34/4.5:1  fg #0a7d9a  bg #f1f5fb  .f  <span class="f"> checkAction</span>
-   3.32/4.5:1  fg #7b879b  bg #f1f5fb  .c:nth-child(15)  <span class="c">// BLOCK or unknown: fail closed</span>
-   4.48/4.5:1  fg #9a6400  bg #fff1d6  .bw-ide__result > .bw-pill--escalate.bw-pill  <span class="bw-pill bw-pill--escalate"><i aria-hidden="true"></i>ESCALATE</span>
-   4.48/4.5:1  fg #9a6400  bg #fff1d6  .bw-art > .bw-avatars > span:nth-child(2)  <span style="background: rgb(255, 241, 214); color: rgb(154, 100, 0);">ES</span>
+[light] /  (gercek-dugme)  axe sorun: 18
+   1.05/4.5:1  fg #ffffff  bg #f7f9fb  .aegh__btn--ghost  <a class="aegh__btn aegh__btn--ghost aegh__hide-md" href="/enterprise">Contact us</a>
+   2.3/4.5:1  fg #bba071  bg #fbf5e7  .bw-mini--low > .bw-mini__row > .bw-pill--escalate.bw-pill--xs.bw-pill  <span class="bw-pill bw-pill--escalate bw-pill--xs"><i aria-hidden="true"></i>ESCALATE</span>
+   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-feat--phone.bw-feat.bw-rv--in:nth-child(1) > .bw-phone[aria-hidden="true"] > .bw-phone__screen > .bw-verdi  <small>support-read-scope</small>
+   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-feat--phone.bw-feat.bw-rv--in:nth-child(2) > .bw-phone[aria-hidden="true"] > .bw-phone__screen > .bw-verdi  <small>transfer-approval-limit</small>
+   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-feat--phone.bw-feat.bw-rv--in:nth-child(3) > .bw-phone[aria-hidden="true"] > .bw-phone__screen > .bw-verdi  <small>deny-destructive-sql</small>
+   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(1) > code  <code>payments.transfer</code>
+   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(2) > code  <code>db.drop_table</code>
+   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(3) > code  <code>email.send</code>
+   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(4) > code  <code>crm.read_ticket</code>
+   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(5) > code  <code>files.export</code>
+   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(6) > code  <code>code.execute</code>
+   3.44/4.5:1  fg #7b879b  bg #f7f9fc  .bw-tile[href$="quickstart"]:nth-child(7) > code  <code>browser.navigate</code>
 
-[dark] /pricing  (gercek-dugme)  axe sorun: 7
-   3.36/4.5:1  fg #ffffff  bg #1b8cff  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
-   2.98/4.5:1  fg #ffffff  bg #1599ff  .border-primary\/60.relative.flex-col > .absolute.-top-3.right-6  <span class="absolute -top-3 right-6 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide bg-primary
-   2.7/4.5:1  fg #eef4ff  bg #1599ff  .border-primary\/60.relative.flex-col > .hover\:bg-primary-hover.bg-primary.text-primary-foreground  <a class="mt-6 inline-flex h-11 items-center justify-center rounded-md text-sm font-semibold transition bg-pri
-   2.7/4.5:1  fg #eef4ff  bg #1599ff  a[href$="billing"]  <a class="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foregrou
-   2.7/4.5:1  fg #eef4ff  bg #1599ff  .flex-wrap.gap-3.flex > .px-5.hover\:bg-primary-hover.bg-primary  <a class="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foregrou
-   3.36/4.5:1  fg #ffffff  bg #1b8cff  .aegf__btn  <a class="aegf__btn" href="/signup">
+[dark] /pricing  (gercek-dugme)  axe sorun: 1
    1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
 
-[light] /pricing  (gercek-dugme)  axe sorun: 23
-   3.12/4.5:1  fg #898785  bg #f2efec  .relative.flex-col.md\:p-7:nth-child(1) > .mt-5.grid-cols-3.pt-4 > div:nth-child(1) > .text-\[10px\].tracking-  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">DECISIONS</dt>
-   3.12/4.5:1  fg #898785  bg #f2efec  .relative.flex-col.md\:p-7:nth-child(1) > .mt-5.grid-cols-3.pt-4 > div:nth-child(2) > .text-\[10px\].tracking-  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">DEFAULT</dt>
-   3.12/4.5:1  fg #898785  bg #f2efec  .relative.flex-col.md\:p-7:nth-child(1) > .mt-5.grid-cols-3.pt-4 > div:nth-child(3) > .text-\[10px\].tracking-  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">EVIDENCE</dt>
-   3.05/4.5:1  fg #85827f  bg #eae5e0  .border-primary\/60.relative.flex-col > .mt-5.grid-cols-3.pt-4 > div:nth-child(1) > .text-\[10px\].tracking-wi  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">WORKFLOW</dt>
-   3.05/4.5:1  fg #85827f  bg #eae5e0  .border-primary\/60.relative.flex-col > .mt-5.grid-cols-3.pt-4 > div:nth-child(2) > .text-\[10px\].tracking-wi  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">ENVIRONMENT</dt>
-   3.05/4.5:1  fg #85827f  bg #eae5e0  .border-primary\/60.relative.flex-col > .mt-5.grid-cols-3.pt-4 > div:nth-child(3) > .text-\[10px\].tracking-wi  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">TERM</dt>
-   2.51/4.5:1  fg #0a2540  bg #1d4ef0  .border-primary\/60.relative.flex-col > .hover\:bg-primary-hover.bg-primary.text-primary-foreground  <a class="mt-6 inline-flex h-11 items-center justify-center rounded-md text-sm font-semibold transition bg-pri
-   3.12/4.5:1  fg #898785  bg #f2efec  .relative.flex-col.md\:p-7:nth-child(3) > .mt-5.grid-cols-3.pt-4 > div:nth-child(1) > .text-\[10px\].tracking-  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">HOSTING</dt>
-   3.12/4.5:1  fg #898785  bg #f2efec  .relative.flex-col.md\:p-7:nth-child(3) > .mt-5.grid-cols-3.pt-4 > div:nth-child(2) > .text-\[10px\].tracking-  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">SSO</dt>
-   3.12/4.5:1  fg #898785  bg #f2efec  .relative.flex-col.md\:p-7:nth-child(3) > .mt-5.grid-cols-3.pt-4 > div:nth-child(3) > .text-\[10px\].tracking-  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">AUDIT OPS</dt>
-   2.51/4.5:1  fg #0a2540  bg #1d4ef0  a[href$="billing"]  <a class="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foregrou
-   2.51/4.5:1  fg #0a2540  bg #1d4ef0  .flex-wrap.gap-3.flex > .px-5.hover\:bg-primary-hover.bg-primary  <a class="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foregrou
-
-[dark] /product  (gercek-dugme)  axe sorun: 3
-   3.36/4.5:1  fg #ffffff  bg #1b8cff  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
-   3.36/4.5:1  fg #ffffff  bg #1b8cff  .aegf__btn  <a class="aegf__btn" href="/signup">
-   1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
-
-[light] /product  (gercek-dugme)  axe sorun: 8
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__note  <p class="aegf__note">Test workspaces are open in early access. Design partner pilots are scoped in writing. P
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__col[aria-label="Product"] > h2  <h2>Product</h2>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Developers"] > h2  <h2>Developers</h2>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Company"] > h2  <h2>Company</h2>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Legal"] > h2  <h2>Legal</h2>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__legalin > span:nth-child(1)  <span>© <!-- -->2026<!-- --> Aegisora. <!-- -->All rights reserved.</span>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__legalin > span:nth-child(2)  <span>Examples on this site use illustrative sample data.</span>
+[light] /pricing  (gercek-dugme)  axe sorun: 5
+   1.05/4.5:1  fg #ffffff  bg #f7f9fb  .aegh__btn--ghost  <a class="aegh__btn aegh__btn--ghost aegh__hide-md" href="/enterprise">Contact us</a>
+   4.3/4.5:1  fg #757677  bg #f6f9fc  .border-t-2[open=""] > .pb-3 > .grid-cols-\[1\.7fr_1fr_1fr_1fr\].grid.gap-2:nth-child(1) > .text-center:nth-ch  <span class="text-xs font-medium text-foreground/60">Planned</span>
+   4.3/4.5:1  fg #757677  bg #f6f9fc  .border-t-2[open=""] > .pb-3 > .grid-cols-\[1\.7fr_1fr_1fr_1fr\].grid.gap-2:nth-child(2) > .text-center:nth-ch  <span class="text-xs font-medium text-foreground/60">Planned</span>
+   4.3/4.5:1  fg #757677  bg #f6f9fc  .border-t-2[open=""] > .pb-3 > .grid-cols-\[1\.7fr_1fr_1fr_1fr\].grid.gap-2:nth-child(3) > .text-center:nth-ch  <span class="text-xs font-medium text-foreground/60">Planned</span>
    1.11/3:1  fg #dde7f5  bg #eef3f9  .aegf__word > span  <span>Aegisora</span>
 
-[dark] /docs  (gercek-dugme)  axe sorun: 3
-   3.08/4.5:1  fg #f1f5ff  bg #1b8cff  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
-   3.08/4.5:1  fg #f1f5ff  bg #1b8cff  .aegf__btn  <a class="aegf__btn" href="/signup">
+[dark] /product  (gercek-dugme)  axe sorun: 1
    1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
 
-[light] /docs  (gercek-dugme)  axe sorun: 12
-   3.46/4.5:1  fg #0a1220  bg #0f63e0  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
-   3.67/4.5:1  fg #807f7e  bg #f7f5f3  #example > figure > figcaption  <figcaption class="zpk-caption">Illustrative policy expression.</figcaption>
-   3.67/4.5:1  fg #807f7e  bg #f7f5f3  .mt-8:nth-child(19) > figure > figcaption  <figcaption class="zpk-caption">Request and response shape of the current endpoint. The outcome depends on you
-   3.46/4.5:1  fg #0a1220  bg #0f63e0  .aegf__btn  <a class="aegf__btn" href="/signup">
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__note  <p class="aegf__note">Test workspaces are open in early access. Design partner pilots are scoped in writing. P
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__col[aria-label="Product"] > h2  <h2>Product</h2>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Developers"] > h2  <h2>Developers</h2>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Company"] > h2  <h2>Company</h2>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Legal"] > h2  <h2>Legal</h2>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__legalin > span:nth-child(1)  <span>© <!-- -->2026<!-- --> Aegisora. <!-- -->All rights reserved.</span>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__legalin > span:nth-child(2)  <span>Examples on this site use illustrative sample data.</span>
+[light] /product  (gercek-dugme)  axe sorun: 2
+   1.05/4.5:1  fg #ffffff  bg #f7f9fb  .aegh__btn--ghost  <a class="aegh__btn aegh__btn--ghost aegh__hide-md" href="/enterprise">Contact us</a>
    1.11/3:1  fg #dde7f5  bg #eef3f9  .aegf__word > span  <span>Aegisora</span>
 
-[dark] /enterprise  (gercek-dugme)  axe sorun: 3
-   3.36/4.5:1  fg #ffffff  bg #1b8cff  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
-   3.36/4.5:1  fg #ffffff  bg #1b8cff  .aegf__btn  <a class="aegf__btn" href="/signup">
+[dark] /docs  (gercek-dugme)  axe sorun: 1
    1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
 
-[light] /enterprise  (gercek-dugme)  axe sorun: 8
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__note  <p class="aegf__note">Test workspaces are open in early access. Design partner pilots are scoped in writing. P
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__col[aria-label="Product"] > h2  <h2>Product</h2>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Developers"] > h2  <h2>Developers</h2>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Company"] > h2  <h2>Company</h2>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Legal"] > h2  <h2>Legal</h2>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__legalin > span:nth-child(1)  <span>© <!-- -->2026<!-- --> Aegisora. <!-- -->All rights reserved.</span>
-   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__legalin > span:nth-child(2)  <span>Examples on this site use illustrative sample data.</span>
+[light] /docs  (gercek-dugme)  axe sorun: 2
+   1.05/4.5:1  fg #ffffff  bg #f7f9fb  .aegh__btn--ghost  <a class="aegh__btn aegh__btn--ghost aegh__hide-md" href="/enterprise">Contact us</a>
+   1.11/3:1  fg #dde7f5  bg #eef3f9  .aegf__word > span  <span>Aegisora</span>
+
+[dark] /enterprise  (gercek-dugme)  axe sorun: 1
+   1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
+
+[light] /enterprise  (gercek-dugme)  axe sorun: 2
+   1.05/4.5:1  fg #ffffff  bg #f7f9fb  .aegh__btn--ghost  <a class="aegh__btn aegh__btn--ghost aegh__hide-md" href="/enterprise">Contact us</a>
    1.11/3:1  fg #dde7f5  bg #eef3f9  .aegf__word > span  <span>Aegisora</span>

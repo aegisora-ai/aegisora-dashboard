@@ -1,3 +1,4 @@
+import "@/styles/aeg-calm.css";
 import "@/styles/aeg-contrast.css";
 import { SiteFooter } from "@/components/aegisora/site-footer";
 import { SiteHeader } from "@/components/aegisora/site-header";

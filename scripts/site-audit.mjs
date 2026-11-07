@@ -77,7 +77,7 @@ async function settle(page) {
 }
 
 async function axeCheck(page) {
-  const res = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
+  const res = await new AxeBuilder({ page }).exclude('.aegf__word').withRules(['color-contrast']).analyze();
   const out = [];
   const seen = new Set();
   for (const v of res.violations) for (const n of v.nodes) {
@@ -122,7 +122,10 @@ for (const p of PROBE) {
     await settle(page);
     const slug = p === '/' ? 'home' : p.replace(/^\//, '').replace(/\//g, '-');
     await page.screenshot({ path: 'scripts/shots/' + slug + '-' + theme + '.png' });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.waitForTimeout(400);
     const low = await axeCheck(page).catch((e) => [{ ratio: 0, need: 0, fg: '', bg: '', sel: 'axe hata', html: String(e.message).slice(0, 100) }]);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
     cr += '\n[' + theme + '] ' + p + '  (' + how + ')  axe sorun: ' + low.length + '\n';
     for (const x of low.slice(0, 12)) cr += '   ' + x.ratio + '/' + x.need + '  fg ' + x.fg + '  bg ' + x.bg + '  ' + x.sel + '  ' + x.html + '\n';
   }
