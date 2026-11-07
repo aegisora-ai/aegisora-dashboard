@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import PageView from "../../../../components/aegisora/site/PageView";
+import PageView from "@/components/aegx/page-view";
 import { PAGES, PAGES_DE } from "../../../../components/aegisora/site/content";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {

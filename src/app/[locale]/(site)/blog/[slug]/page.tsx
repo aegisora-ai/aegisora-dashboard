@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegisora/page-kit";
+import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegx/kit";
 import { POSTS } from "@/lib/blog-posts";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };

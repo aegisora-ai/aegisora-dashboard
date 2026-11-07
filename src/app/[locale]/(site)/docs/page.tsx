@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { CodeBlock, DataTable, Eyebrow, Steps } from "@/components/aegisora/page-kit";
+import { CodeBlock, DataTable, Eyebrow, Steps } from "@/components/aegx/kit";
 import { V1Canvas, V2Canvas, V3Canvas } from "@/components/aegisora/version-canvas";
 import { meta } from "@/lib/seo";
 

@@ -191,3 +191,45 @@ html:has(.aegx), body:has(.aegx) { background: #000; color-scheme: dark; }
   .aegx-hero__band { animation: none; }
   .aegx *, .aegx *::before, .aegx *::after { transition: none !important; }
 }
+/* aegx-step2: motion, content pages, forms, auth */
+.aegx [data-rv] { transition: opacity 0.75s cubic-bezier(0.2, 0.7, 0.2, 1) var(--rv-d, 0ms), transform 0.75s cubic-bezier(0.2, 0.7, 0.2, 1) var(--rv-d, 0ms); }
+.aegx-js [data-rv]:not(.is-in) { opacity: 0; transform: translateY(18px); }
+.aegx-cell { position: relative; --mx: 50%; --my: 50%; }
+.aegx-cell::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s; background: radial-gradient(280px circle at var(--mx) var(--my), rgb(255 255 255 / 0.07), transparent 70%); }
+.aegx-cell:hover::before { opacity: 1; }
+.aegx a.aegx-cell { display: block; }
+.aegx a.aegx-cell:hover .aegx-h3 { color: #fff; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgb(255 255 255 / 0.3); }
+.aegx-cell--fill { padding: 0; }
+@media (max-width: 1100px) { .aegx-cell--fill { display: none; } }
+.aegx-hero__art canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0.9; }
+.aegx-sbody { padding: 0 var(--pad) clamp(40px, 6vw, 72px); }
+.aegx-sbody--top { padding-top: clamp(40px, 6vw, 72px); }
+.aegx-sbody > .aegx-cells { margin: 0 calc(var(--pad) * -1); }
+.aegx-sbody:has(> .aegx-cells:last-child) { padding-bottom: 0; }
+.aegx-table--left th, .aegx-table--left td { text-align: left; }
+.aegx-list { margin: 20px 0 24px; display: grid; gap: 10px; }
+.aegx-list li { position: relative; padding-left: 22px; font-size: 14px; color: var(--mut); }
+.aegx-list li::before { content: ""; position: absolute; left: 2px; top: 0.55em; width: 9px; height: 5px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg); }
+.aegx-prose { max-width: 720px; margin-left: auto; margin-right: auto; display: grid; gap: 16px; color: var(--mut); line-height: 1.7; }
+.aegx-form { max-width: 760px; margin: 36px auto 0; display: grid; gap: 18px; text-align: left; }
+.aegx-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 640px) { .aegx-form__row { grid-template-columns: 1fr; } }
+.aegx-field { display: grid; gap: 7px; }
+.aegx-field label { font-size: 12.5px; color: var(--mut); }
+.aegx-field input, .aegx-field select, .aegx-field textarea { width: 100%; background: rgb(255 255 255 / 0.05); border: 1px solid var(--line2); border-radius: 12px; padding: 11px 14px; color: #fff; font: inherit; font-size: 14.5px; transition: border-color 0.2s, background-color 0.2s; }
+.aegx-field textarea { min-height: 110px; resize: vertical; }
+.aegx-field input:focus, .aegx-field select:focus, .aegx-field textarea:focus { outline: none; border-color: rgb(255 255 255 / 0.55); background: rgb(255 255 255 / 0.07); }
+.aegx-field select option { background: #0a0a0a; color: #fff; }
+.aegx-check { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--mut); }
+.aegx-check input { margin-top: 3px; accent-color: #fff; }
+.aegx-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.aegx-form .aegx-btn { justify-self: start; }
+.aegx-form__msg--err { color: #f87171; font-size: 13.5px; }
+.aegx-done { max-width: 560px; margin: 36px auto 0; padding: 32px; text-align: center; border: 1px solid var(--line2); border-radius: 18px; background: rgb(255 255 255 / 0.03); }
+.aegx-auth { isolation: isolate; display: flex; flex-direction: column; }
+.aegx-auth__art { position: absolute; inset: 0; z-index: -1; overflow: hidden; opacity: 0.6; }
+.aegx-auth__art::after { content: ""; position: absolute; inset: 0; background: radial-gradient(55% 55% at 50% 45%, rgb(0 0 0 / 0.88), transparent 85%), linear-gradient(#000 0%, transparent 28%, transparent 72%, #000 100%); }
+.aegx-auth__top { display: flex; align-items: center; padding: 22px var(--pad); }
+.aegx-auth__main { flex: 1; display: grid; place-items: center; padding: 16px var(--pad) 72px; }
+.aegx-auth__card { width: 100%; max-width: 440px; padding: clamp(24px, 4vw, 40px); background: rgb(8 8 10 / 0.74); border: 1px solid var(--line2); border-radius: 20px; -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: 0 30px 80px -30px rgb(0 0 0 / 0.9); }
+@media (prefers-reduced-motion: reduce) { .aegx [data-rv] { transition: none; } .aegx-js [data-rv]:not(.is-in) { opacity: 1; transform: none; } }

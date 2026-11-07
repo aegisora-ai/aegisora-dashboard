@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { CodeBlock, Steps } from "@/components/aegisora/page-kit";
+import { CodeBlock, Steps } from "@/components/aegx/kit";
 import { meta } from "@/lib/seo";
 
 type Props = { params: Promise<{ locale: string }> };

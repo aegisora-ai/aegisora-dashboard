@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { PageHero, Section } from "@/components/aegisora/page-kit";
+import { PageHero, Section } from "@/components/aegx/kit";
 import { DraftNotice } from "@/components/aegisora/draft-notice";
 import { meta } from "@/lib/seo";
 

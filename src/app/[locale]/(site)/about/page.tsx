@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { CtaBand, PageHero, Section, CardGrid } from "@/components/aegisora/page-kit";
+import { CtaBand, PageHero, Section, CardGrid } from "@/components/aegx/kit";
 import { meta } from "@/lib/seo";
 
 type Props = { params: Promise<{ locale: string }> };

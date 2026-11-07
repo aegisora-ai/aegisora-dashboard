@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegisora/page-kit";
+import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegx/kit";
 import { POSTS } from "@/lib/blog-posts";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {

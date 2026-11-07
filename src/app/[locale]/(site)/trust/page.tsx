@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegisora/page-kit";
+import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegx/kit";
 import { meta } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {

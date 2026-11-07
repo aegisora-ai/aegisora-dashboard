@@ -5,7 +5,7 @@ export function AegxBrand({ height = 22 }: { height?: number }) {
   const width = Math.round((height * 369) / 256);
   return (
     <span className="aegx-logo">
-      <img data-logo="" src="/logo-mark.png" alt="" aria-hidden="true" width={width} height={height} style={{ width, height }} />
+      <img data-logo="" src="/logo-mark.png" alt="" aria-hidden="true" width={width} height={height} style={{ width, height, filter: "brightness(0) invert(1)" }} />
       <span className="aegx-logo__text">Aegisora</span>
     </span>
   );

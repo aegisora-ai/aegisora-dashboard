@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { AegxAurora } from "./aurora";
 
 type Variant = "solid" | "soft";
 type Action = { label: string; href: string };
@@ -15,7 +16,7 @@ export function Hero({ badge, title, dim, intro, primary, secondary, compact, ch
 }) {
   return (
     <section className={"aegx-sec aegx-hero" + (compact ? " aegx-hero--compact" : "")}>
-      <div className="aegx-hero__art" aria-hidden="true"><i className="aegx-hero__band" /></div>
+      <div className="aegx-hero__art" aria-hidden="true"><i className="aegx-hero__band" /><AegxAurora /></div>
       <div className="aegx-col">
         <div className="aegx-hero__in">
           {badge ? <span className="aegx-eyebrow">{badge}</span> : null}
