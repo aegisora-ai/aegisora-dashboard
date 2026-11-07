@@ -127,3 +127,18 @@ body:has(.aeg-premium) {
   .aeg-premium a[class*="rounded-xl"]:hover { transform: none; }
   .aeg-mark { display: none; }
 }
+/* aeg-stage-fix: onboarding always dark; page backgrounds transparent so the backdrop shows */
+.aeg-premium.aeg-stage {
+  color-scheme: dark;
+  --background: #030b22; --surface-1: #07163a; --surface-2: #0a1d4a; --surface-3: #0f2656; --surface-4: #153068;
+  --foreground: #f3f7ff; --muted-foreground: #93a9d9;
+  --primary: #2f7cff; --primary-hover: #5496ff; --primary-foreground: #ffffff;
+  --card: #07163a; --card-foreground: #f3f7ff; --popover: #0a1d4a; --popover-foreground: #f3f7ff;
+  --secondary: #0f2656; --secondary-foreground: #f3f7ff; --muted: #0a1d4a;
+  --accent: #153068; --accent-foreground: #f3f7ff;
+  --border: #1a3470; --input: #1a3470; --ring: #5496ff; --aeg-body: #93a9d9;
+  min-height: 100vh;
+  color: var(--foreground);
+}
+.aeg-stage > :not(.aeg-backdrop):not(.aeg-mark),
+.aeg-stage main { background: transparent !important; }
