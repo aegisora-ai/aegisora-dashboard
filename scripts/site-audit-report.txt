@@ -1,5 +1,0 @@
-TOPLAM 102 sayfa, SORUNLU 1
-
-/dashboard  [200] 
-    - http 404 /sounds/secure-session.mp3
-    - console: Failed to load resource: the server responded with a status of 404 ()
