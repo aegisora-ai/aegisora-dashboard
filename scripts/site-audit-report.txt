@@ -1,0 +1,8 @@
+TOPLAM 108 sayfa, SORUNLU 6
+
+/dashboard/integrations  [200] EMPTY,404
+/dashboard/providers  [200] EMPTY,404
+/dashboard/risk  [200] EMPTY,404
+/de/dashboard/integrations  [200] EMPTY,404
+/de/dashboard/providers  [200] EMPTY,404
+/de/dashboard/risk  [200] EMPTY,404

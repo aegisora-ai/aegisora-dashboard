@@ -14,7 +14,7 @@ const ACTIONS: Action[] = [
   { id: "agent", title: "Agent", sub: "Register an AI worker", href: "/dashboard/agents", icon: Bot, words: "register connect import workflow assistant" },
   { id: "key", title: "API key", sub: "Server-side access", href: "/dashboard/api-keys", icon: KeyRound, words: "token secret credential access" },
   { id: "webhook", title: "Webhook", sub: "Event delivery", href: "/dashboard/webhooks", icon: Webhook, words: "notify event callback slack alert" },
-  { id: "integration", title: "Integration", sub: "Connect your stack", href: "/dashboard/integrations", icon: Plug, words: "provider connect sdk framework" },
+  { id: "integration", title: "Integration", sub: "Connect your stack", href: "/docs/quickstart", icon: Plug, words: "provider connect sdk framework" },
 ];
 
 export function HomeHero({ workspaceName }: { workspaceName: string }) {
