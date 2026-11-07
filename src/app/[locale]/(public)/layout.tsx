@@ -1,3 +1,4 @@
+import "@/styles/aeg-contrast.css";
 import { SiteFooter } from "@/components/aegisora/site-footer";
 import { SiteHeader } from "@/components/aegisora/site-header";
 import { publicFontVars } from "@/lib/public-fonts";

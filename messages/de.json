@@ -1014,8 +1014,8 @@
   "Onboarding": {
     "steps": {
       "s0": "Workspace",
-      "s1": "MFA",
-      "s2": "Agent",
+      "s1": "Erster Agent",
+      "s2": "Verbinden",
       "s3": "Richtlinie",
       "s4": "Anbindung"
     },
@@ -1075,6 +1075,35 @@
       "needWs": "Erstellen Sie zuerst einen Workspace.",
       "signIn": "Melden Sie sich erneut an, um das Onboarding fortzusetzen.",
       "failed": "Die Workspace-Einrichtungsanfrage ist fehlgeschlagen."
+    },
+    "q": {
+      "title": "Ersten Agenten einrichten",
+      "desc": "Agenten benennen und festlegen, was bei einer sensiblen Aktion passiert. Alles lässt sich später ändern.",
+      "agent": "Name des Agenten",
+      "action": "Zu steuernde Aktion",
+      "resource": "Ressource",
+      "outcome": "Wenn diese Aktion angefragt wird",
+      "escalate": "Anhalten und eine Person fragen",
+      "block": "Blockieren",
+      "allow": "Erlauben",
+      "create": "Agent und Regel anlegen",
+      "busy": "Wird gespeichert…",
+      "skip": "Vorerst überspringen",
+      "mfaTitle": "Zuerst Identität bestätigen",
+      "mfaDesc": "Zum Anlegen von Agenten und Regeln ist ein zweiter Faktor nötig. In einem neuen Tab einrichten, dann erneut prüfen.",
+      "mfaOpen": "Zwei-Faktor-Anmeldung einrichten",
+      "mfaCheck": "Erledigt, erneut prüfen",
+      "checking": "Wird geprüft…"
+    },
+    "finish": {
+      "title": "Bereit zur Anbindung",
+      "desc": "API-Schlüssel erstellen und Aegisora vor jeder sensiblen Aktion aus dem Backend aufrufen.",
+      "ws": "Workspace",
+      "agent": "Agent",
+      "policy": "Regel",
+      "notSet": "Noch kein Agent und keine Regel. Beides lässt sich jederzeit im Dashboard hinzufügen.",
+      "key": "API-Schlüssel erstellen",
+      "quickstart": "Quickstart öffnen"
     }
   },
   "PgTrust": {

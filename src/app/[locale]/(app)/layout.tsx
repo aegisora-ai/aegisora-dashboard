@@ -1,3 +1,4 @@
+import "@/styles/aeg-contrast.css";
 import "@/styles/aeg-premium.css";
 import { AppShell } from "@/components/aegisora/app-shell";
 import { MobileNav } from "@/components/aegisora/mobile-nav";

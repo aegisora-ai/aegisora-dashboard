@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/aegisora/logo";
 import { OnboardingIntro, INTRO_KEY } from "@/components/aegisora/onboarding-intro";
 
-const STEP_KEYS = ["s0", "s1", "s2", "s3", "s4"];
+const STEP_KEYS = ["s0", "s1", "s2"];
 type PolicyDecision = "ALLOW" | "BLOCK" | "ESCALATE";
 
 export function OnboardingFlow() {
@@ -36,6 +36,7 @@ export function OnboardingFlow() {
   const [agentId, setAgentId] = useState<string | null>(null);
   const [policyId, setPolicyId] = useState<string | null>(null);
   const [aal, setAal] = useState<string | null>(null);
+  const [aalReady, setAalReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,10 +44,10 @@ export function OnboardingFlow() {
     if (step !== 1) return;
     let cancelled = false;
     void createClient().auth.mfa.getAuthenticatorAssuranceLevel().then(({ data, error: mfaError }) => {
-      if (!cancelled) {
-        setAal(mfaError ? null : data.currentLevel);
-        if (mfaError) setError(t("err.mfa"));
-      }
+      if (cancelled) return;
+      setAal(mfaError ? null : data.currentLevel);
+      setAalReady(true);
+      if (mfaError) setError(t("err.mfa"));
     });
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,6 +58,7 @@ export function OnboardingFlow() {
     setError(null);
     const { data, error: mfaError } = await createClient().auth.mfa.getAuthenticatorAssuranceLevel();
     setBusy(false);
+    setAalReady(true);
     if (mfaError) { setError(t("err.mfa")); return; }
     setAal(data.currentLevel);
   }
@@ -105,38 +107,37 @@ export function OnboardingFlow() {
     }
   }
 
-  async function createAgent() {
-    const result = await postWorkspaceMutation("/api/v1/workspace/agents", {
-      operation: "create",
-      agent: { name: agentName.trim(), framework: null, description: "Created during workspace onboarding", external_id: null },
-    });
-    if (typeof result?.id === "string") setAgentId(result.id);
-  }
-
-  async function createPolicy() {
-    const result = await postWorkspaceMutation("/api/v1/workspace/policies", {
+  async function createAgentAndRule() {
+    let id = agentId;
+    if (!id) {
+      const agent = await postWorkspaceMutation("/api/v1/workspace/agents", {
+        operation: "create",
+        agent: { name: agentName.trim(), framework: null, description: "Created during workspace onboarding", external_id: null },
+      });
+      if (typeof agent?.id !== "string") return;
+      id = agent.id;
+      setAgentId(id);
+    }
+    const policy = await postWorkspaceMutation("/api/v1/workspace/policies", {
       name: `${agentName.trim()} onboarding rule`,
-      agent_id: agentId,
+      agent_id: id,
       action_pattern: actionPattern.trim(),
       resource_pattern: resourcePattern.trim(),
       decision,
       priority: 100,
     });
-    if (typeof result?.id === "string") setPolicyId(result.id);
+    if (typeof policy?.id === "string") {
+      setPolicyId(policy.id);
+      setStep(2);
+    }
   }
 
   if (introDone === null) return null;
   if (!introDone) return <OnboardingIntro onDone={() => setIntroDone(true)} />;
 
-  const continueStep = () => {
-    setError(null);
-    if (step === 1 && aal !== "aal2") return;
-    setStep((current) => Math.min(current + 1, STEP_KEYS.length - 1));
-  };
-
   return (
     <div className="mx-auto max-w-2xl px-6 py-12"><Logo className="mb-10" />
-      <ol className="mb-10 grid grid-cols-5 gap-1">
+      <ol className="mb-10 grid grid-cols-3 gap-1">
         {steps.map((label, index) => (
           <li key={label} aria-current={index === step ? "step" : undefined}>
             <div className={cn("h-0.5", index <= step ? "bg-primary" : "bg-surface-4")} />
@@ -159,55 +160,54 @@ export function OnboardingFlow() {
 
         {step === 1 && (
           <>
-            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("s1.title")}</h1>
-            <p className="mt-2 text-sm text-muted-foreground">{t("s1.desc")}</p>
-            <p role="status" className="mt-4 font-mono text-xs">{t("s1.assurance")}: {aal?.toUpperCase() ?? t("s1.checking")}</p>
-            {aal !== "aal2" && <Link className="mt-4 flex w-fit text-sm underline underline-offset-4" href="/dashboard/identity" target="_blank" rel="noreferrer">{t("s1.open")}</Link>}
-            <button type="button" onClick={() => void checkMfa()} disabled={busy} className={`${btnOutline} mt-5 disabled:opacity-50`}>{busy ? t("s1.busy") : t("s1.btn")}</button>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("q.title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("q.desc")}</p>
+
+            {!aalReady ? (
+              <p role="status" className="mt-6 text-sm text-muted-foreground">{t("q.checking")}</p>
+            ) : aal !== "aal2" ? (
+              <div className="mt-6 rounded-xl border border-border bg-card p-4">
+                <p className="text-sm font-medium">{t("q.mfaTitle")}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{t("q.mfaDesc")}</p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <Link href="/dashboard/identity" target="_blank" rel="noreferrer" className={btnPrimary}>{t("q.mfaOpen")}</Link>
+                  <button type="button" onClick={() => void checkMfa()} disabled={busy} className={`${btnOutline} disabled:opacity-50`}>{busy ? t("q.checking") : t("q.mfaCheck")}</button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="mt-6 space-y-1.5"><Label htmlFor="agent">{t("q.agent")}</Label><Input id="agent" value={agentName} maxLength={120} onChange={(event) => setAgentName(event.target.value)} disabled={Boolean(agentId)} /></div>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5"><Label htmlFor="action-pattern">{t("q.action")}</Label><Input id="action-pattern" value={actionPattern} maxLength={200} onChange={(event) => setActionPattern(event.target.value)} /></div>
+                  <div className="space-y-1.5"><Label htmlFor="resource-pattern">{t("q.resource")}</Label><Input id="resource-pattern" value={resourcePattern} maxLength={500} onChange={(event) => setResourcePattern(event.target.value)} /></div>
+                </div>
+                <fieldset className="mt-5 space-y-2"><legend className="mb-2 text-sm font-medium">{t("q.outcome")}</legend>
+                  {(["ESCALATE", "BLOCK", "ALLOW"] as const).map((effect) => (
+                    <label key={effect} className="flex cursor-pointer items-center gap-3 rounded-sm border border-border p-3 text-sm">
+                      <input type="radio" name="decision" value={effect} checked={decision === effect} onChange={() => setDecision(effect)} />
+                      <span><span className="font-mono text-xs font-semibold">{effect}</span> <span className="text-muted-foreground">{effect === "ESCALATE" ? t("q.escalate") : effect === "BLOCK" ? t("q.block") : t("q.allow")}</span></span>
+                    </label>
+                  ))}
+                </fieldset>
+                <button type="button" onClick={() => void createAgentAndRule()} disabled={busy || !agentName.trim() || !actionPattern.trim() || !resourcePattern.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? t("q.busy") : t("q.create")}</button>
+              </>
+            )}
           </>
         )}
 
         {step === 2 && (
           <>
-            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("s2.title")}</h1>
-            <p className="mt-2 text-sm text-muted-foreground">{t("s2.desc")}</p>
-            <div className="mt-6 space-y-1.5"><Label htmlFor="agent">{t("s2.label")}</Label><Input id="agent" value={agentName} maxLength={120} onChange={(event) => setAgentName(event.target.value)} disabled={Boolean(agentId)} /></div>
-            {agentId ? <p className="mt-4 break-all font-mono text-xs text-allow">{t("s2.registered")} {agentId}</p> : <button type="button" onClick={() => void createAgent()} disabled={busy || !agentName.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? t("s2.busy") : t("s2.btn")}</button>}
-          </>
-        )}
-
-        {step === 3 && (
-          <>
-            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("s3.title")}</h1>
-            <p className="mt-2 text-sm text-muted-foreground">{t("s3.desc")}</p>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5"><Label htmlFor="action-pattern">{t("s3.action")}</Label><Input id="action-pattern" value={actionPattern} maxLength={200} onChange={(event) => setActionPattern(event.target.value)} disabled={Boolean(policyId)} /></div>
-              <div className="space-y-1.5"><Label htmlFor="resource-pattern">{t("s3.resource")}</Label><Input id="resource-pattern" value={resourcePattern} maxLength={500} onChange={(event) => setResourcePattern(event.target.value)} disabled={Boolean(policyId)} /></div>
-            </div>
-            <fieldset className="mt-5 space-y-2"><legend className="mb-2 text-sm font-medium">{t("s3.outcome")}</legend>
-              {(["ESCALATE", "BLOCK", "ALLOW"] as const).map((effect) => (
-                <label key={effect} className="flex cursor-pointer items-start gap-3 rounded-sm border border-border p-3 text-sm">
-                  <input type="radio" name="decision" value={effect} checked={decision === effect} disabled={Boolean(policyId)} onChange={() => setDecision(effect)} className="mt-1" />
-                  <span><span className="font-mono text-xs font-semibold">{effect}</span><span className="block text-muted-foreground">{effect === "ESCALATE" ? t("s3.escalate") : effect === "BLOCK" ? t("s3.block") : t("s3.allow")}</span></span>
-                </label>
-              ))}
-            </fieldset>
-            {policyId ? <p className="mt-4 break-all font-mono text-xs text-allow">{t("s3.persisted")} {policyId}</p> : <button type="button" onClick={() => void createPolicy()} disabled={busy || !actionPattern.trim() || !resourcePattern.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? t("s3.busy") : t("s3.btn")}</button>}
-          </>
-        )}
-
-        {step === 4 && (
-          <>
-            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("s4.title")}</h1>
-            <p className="mt-2 text-sm text-muted-foreground">{t("s4.desc")}</p>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("finish.title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("finish.desc")}</p>
             <dl className="mt-5 divide-y divide-border/60 border-y border-border">
-              <div className="py-3"><dt className="text-xs text-muted-foreground">{t("s4.ws")}</dt><dd className="mt-1 break-all font-mono text-xs">{workspaceId}</dd></div>
-              <div className="py-3"><dt className="text-xs text-muted-foreground">{t("s4.agent")}</dt><dd className="mt-1 break-all font-mono text-xs">{agentId}</dd></div>
-              <div className="py-3"><dt className="text-xs text-muted-foreground">{t("s4.policy")}</dt><dd className="mt-1 break-all font-mono text-xs">{policyId} / {decision}</dd></div>
+              <div className="py-3"><dt className="text-xs text-muted-foreground">{t("finish.ws")}</dt><dd className="mt-1 text-sm">{workspace.trim()}</dd></div>
+              {agentId && <div className="py-3"><dt className="text-xs text-muted-foreground">{t("finish.agent")}</dt><dd className="mt-1 text-sm">{agentName.trim()}</dd></div>}
+              {policyId && <div className="py-3"><dt className="text-xs text-muted-foreground">{t("finish.policy")}</dt><dd className="mt-1 font-mono text-xs">{actionPattern.trim()} / {decision}</dd></div>}
             </dl>
+            {!agentId && !policyId && <p className="mt-4 text-sm text-muted-foreground">{t("finish.notSet")}</p>}
             <div className="mt-5 space-y-3 text-sm">
-              <Link href="/dashboard/api-keys" className="block underline underline-offset-4">{t("s4.key")}</Link>
-              <Link href="/docs" className="block underline underline-offset-4">{t("s4.quickstart")}</Link>
+              <Link href="/dashboard/api-keys" className="block underline underline-offset-4">{t("finish.key")}</Link>
+              <Link href="/docs" className="block underline underline-offset-4">{t("finish.quickstart")}</Link>
               <p className="text-xs leading-5 text-muted-foreground">{t.rich("s4.note", { code: (chunks) => <code>{chunks}</code> })}</p>
             </div>
           </>
@@ -217,12 +217,17 @@ export function OnboardingFlow() {
       </section>
 
       <div className="mt-6 flex justify-between">
-        {step < 4 ? (
+        {step === 1 ? (
           <>
-            <button type="button" onClick={() => { setError(null); setStep((current) => Math.max(0, current - 1)); }} disabled={step === 0 || busy} className={`${btnOutline} disabled:opacity-40`}>{t("back")}</button>
-            {step === 0 ? <span /> : <button type="button" onClick={continueStep} disabled={busy || (step === 1 && aal !== "aal2") || (step === 2 && !agentId) || (step === 3 && !policyId)} className={`${btnPrimary} disabled:opacity-40`}>{t("next")}</button>}
+            <span />
+            <button type="button" onClick={() => { setError(null); setStep(2); }} disabled={busy} className={`${btnOutline} disabled:opacity-40`}>{t("q.skip")}</button>
           </>
-        ) : <Link href="/dashboard" className={btnPrimary}>{t("open")}</Link>}
+        ) : step === 2 ? (
+          <>
+            <span />
+            <Link href="/dashboard" className={btnPrimary}>{t("open")}</Link>
+          </>
+        ) : null}
       </div>
     </div>
   );

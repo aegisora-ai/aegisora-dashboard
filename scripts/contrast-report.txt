@@ -1,517 +1,159 @@
 
-[dark] /dashboard  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 0
+[dark] /dashboard  (gercek-dugme)  axe sorun: 2
+   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Overview</span>
+   3.85/4.5:1  fg #ffffff  bg #2f7cff  .bg-primary  <a class="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-3.5 py-2 text-sm font-semibol
 
-[light] /dashboard  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 0
+[light] /dashboard  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/approvals  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 0
+[dark] /dashboard/approvals  (gercek-dugme)  axe sorun: 1
+   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Approvals</span>
 
-[light] /dashboard/approvals  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 0
+[light] /dashboard/approvals  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/billing  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 1
-   2  <button> "Current plan"  class="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 text-sm fo"
+[dark] /dashboard/billing  (gercek-dugme)  axe sorun: 6
+   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Billing</span>
+   3.85/4.5:1  fg #ffffff  bg #2f7cff  article:nth-child(1) > .mt-auto.bg-primary.text-primary-foreground  <button type="button" class="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 t
+   3.85/4.5:1  fg #ffffff  bg #2f7cff  article:nth-child(2) > .mt-auto.bg-primary.text-primary-foreground  <button type="button" class="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 t
+   3.85/4.5:1  fg #ffffff  bg #2f7cff  article:nth-child(3) > .mt-auto.bg-primary.text-primary-foreground  <button type="button" class="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 t
+   3.85/4.5:1  fg #ffffff  bg #2f7cff  article:nth-child(5) > .mt-auto.bg-primary.text-primary-foreground  <button type="button" class="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 t
+   3.85/4.5:1  fg #ffffff  bg #2f7cff  article:nth-child(6) > .mt-auto.bg-primary.text-primary-foreground  <button type="button" class="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 t
 
-[light] /dashboard/billing  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 1
-   2.3  <button> "Current plan"  class="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 text-sm fo"
+[light] /dashboard/billing  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/agents  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 25
-   2.9  <span> "Overview"  class="truncate"
-   2.9  <span> "Approvals"  class="truncate"
-   2.9  <span> "Live Activity"  class="truncate"
-   2.9  <span> "Incidents"  class="truncate"
-   2.9  <span> "Policies"  class="truncate"
-   2.9  <span> "Evidence"  class="truncate"
-   2.9  <span> "API Keys"  class="truncate"
-   2.9  <span> "Webhooks"  class="truncate"
-   2.9  <span> "Team"  class="truncate"
-   2.9  <span> "Billing"  class="truncate"
-   2.9  <span> "Settings"  class="truncate"
-   2.9  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
-   1  <span> "selftest-race-17544"  class="font-medium"
-   1  <td> "27 Oct 2026, 15:59"  class="px-4 py-3 align-top"
-   1  <span> "selftest-race-94715"  class="font-medium"
-   1  <td> "27 Oct 2026, 15:50"  class="px-4 py-3 align-top"
-   1  <span> "selftest-race-40652"  class="font-medium"
-   1  <td> "27 Oct 2026, 13:19"  class="px-4 py-3 align-top"
-   1  <span> "selftest-race-53907"  class="font-medium"
-   1  <td> "27 Oct 2026, 12:07"  class="px-4 py-3 align-top"
-   1  <span> "selftest-agent"  class="font-medium"
-   1  <td> "27 Oct 2026, 15:59"  class="px-4 py-3 align-top"
-   1  <span> "loadtest"  class="font-medium"
-   1  <td> "21 Oct 2026, 00:22"  class="px-4 py-3 align-top"
-   1  <span> "verify-agent"  class="font-medium"
+[dark] /dashboard/agents  (gercek-dugme)  axe sorun: 1
+   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Agents</span>
 
-[light] /dashboard/agents  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 25
-   2.3  <span> "Overview"  class="truncate"
-   2.3  <span> "Approvals"  class="truncate"
-   2.3  <span> "Live Activity"  class="truncate"
-   2.3  <span> "Incidents"  class="truncate"
-   2.3  <span> "Policies"  class="truncate"
-   2.3  <span> "Evidence"  class="truncate"
-   2.3  <span> "API Keys"  class="truncate"
-   2.3  <span> "Webhooks"  class="truncate"
-   2.3  <span> "Team"  class="truncate"
-   2.3  <span> "Billing"  class="truncate"
-   2.3  <span> "Settings"  class="truncate"
-   2.3  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
-   2.2  <button> "workspace /"  class="hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground h"
-   2.2  <a> "Control"  class="hover:text-foreground"
-   1.1  <span> "selftest-race-17544"  class="font-medium"
-   1.1  <td> "27 Oct 2026, 15:59"  class="px-4 py-3 align-top"
-   1.1  <span> "selftest-race-94715"  class="font-medium"
-   1.1  <td> "27 Oct 2026, 15:50"  class="px-4 py-3 align-top"
-   1.1  <span> "selftest-race-40652"  class="font-medium"
-   1.1  <td> "27 Oct 2026, 13:19"  class="px-4 py-3 align-top"
-   1.1  <span> "selftest-race-53907"  class="font-medium"
-   1.1  <td> "27 Oct 2026, 12:07"  class="px-4 py-3 align-top"
-   1.1  <span> "selftest-agent"  class="font-medium"
-   1.1  <td> "27 Oct 2026, 15:59"  class="px-4 py-3 align-top"
-   1.1  <span> "loadtest"  class="font-medium"
+[light] /dashboard/agents  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/policies  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 25
-   2.9  <span> "Overview"  class="truncate"
-   2.9  <span> "Approvals"  class="truncate"
-   2.9  <span> "Live Activity"  class="truncate"
-   2.9  <span> "Incidents"  class="truncate"
-   2.9  <span> "Agents"  class="truncate"
-   2.9  <span> "Evidence"  class="truncate"
-   2.9  <span> "API Keys"  class="truncate"
-   2.9  <span> "Webhooks"  class="truncate"
-   2.9  <span> "Team"  class="truncate"
-   2.9  <span> "Billing"  class="truncate"
-   2.9  <span> "Settings"  class="truncate"
-   2.9  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
-   1  <span> "10"  class="font-mono text-xs"
-   1  <td> "Finance: approve payments"  class="px-4 py-3 align-top"
-   1  <span> "payments.*"  class="font-mono text-xs"
-   1  <span> "20"  class="font-mono text-xs"
-   1  <td> "Finance: approve transfers"  class="px-4 py-3 align-top"
-   1  <span> "transfers.*"  class="font-mono text-xs"
-   1  <span> "40"  class="font-mono text-xs"
-   1  <td> "Finance: block secrets access"  class="px-4 py-3 align-top"
-   1  <span> "secrets.*"  class="font-mono text-xs"
-   1  <span> "100"  class="font-mono text-xs"
-   1  <td> "Finance: allow reads"  class="px-4 py-3 align-top"
-   1  <span> "*.read"  class="font-mono text-xs"
-   1  <span> "110"  class="font-mono text-xs"
+[dark] /dashboard/policies  (gercek-dugme)  axe sorun: 1
+   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Policies</span>
 
-[light] /dashboard/policies  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 25
-   2.3  <span> "Overview"  class="truncate"
-   2.3  <span> "Approvals"  class="truncate"
-   2.3  <span> "Live Activity"  class="truncate"
-   2.3  <span> "Incidents"  class="truncate"
-   2.3  <span> "Agents"  class="truncate"
-   2.3  <span> "Evidence"  class="truncate"
-   2.3  <span> "API Keys"  class="truncate"
-   2.3  <span> "Webhooks"  class="truncate"
-   2.3  <span> "Team"  class="truncate"
-   2.3  <span> "Billing"  class="truncate"
-   2.3  <span> "Settings"  class="truncate"
-   2.3  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
-   2.2  <button> "workspace /"  class="hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground h"
-   2.2  <a> "Control"  class="hover:text-foreground"
-   1.1  <span> "10"  class="font-mono text-xs"
-   1.1  <td> "Finance: approve payments"  class="px-4 py-3 align-top"
-   1.1  <span> "payments.*"  class="font-mono text-xs"
-   1.1  <span> "20"  class="font-mono text-xs"
-   1.1  <td> "Finance: approve transfers"  class="px-4 py-3 align-top"
-   1.1  <span> "transfers.*"  class="font-mono text-xs"
-   1.1  <span> "40"  class="font-mono text-xs"
-   1.1  <td> "Finance: block secrets access"  class="px-4 py-3 align-top"
-   1.1  <span> "secrets.*"  class="font-mono text-xs"
-   1.1  <span> "100"  class="font-mono text-xs"
-   1.1  <td> "Finance: allow reads"  class="px-4 py-3 align-top"
+[light] /dashboard/policies  (gercek-dugme)  axe sorun: 2
+   4.37/4.5:1  fg #9a6400  bg #e9f0ff  .hover\:bg-surface-1:nth-child(1) > .align-top[data-label="Effect"] > .text-escalate.bg-surface-3.px-2\.5  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
+   4.37/4.5:1  fg #9a6400  bg #e9f0ff  .hover\:bg-surface-1:nth-child(2) > .align-top[data-label="Effect"] > .text-escalate.bg-surface-3.px-2\.5  <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 tex
 
-[dark] /dashboard/evidence  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 25
-   2.9  <span> "Overview"  class="truncate"
-   2.9  <span> "Approvals"  class="truncate"
-   2.9  <span> "Live Activity"  class="truncate"
-   2.9  <span> "Incidents"  class="truncate"
-   2.9  <span> "Agents"  class="truncate"
-   2.9  <span> "Policies"  class="truncate"
-   2.9  <span> "API Keys"  class="truncate"
-   2.9  <span> "Webhooks"  class="truncate"
-   2.9  <span> "Team"  class="truncate"
-   2.9  <span> "Billing"  class="truncate"
-   2.9  <span> "Settings"  class="truncate"
-   2.9  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
-   1  <span> "249"  class="font-mono text-xs"
-   1  <td> "27 Oct 2026, 15:59"  class="px-4 py-3 align-top"
-   1  <span> "a.b"  class="font-mono text-xs"
-   1  <td> "BLOCK"  class="px-4 py-3 align-top"
-   1  <span> "248"  class="font-mono text-xs"
-   1  <td> "27 Oct 2026, 15:59"  class="px-4 py-3 align-top"
-   1  <span> "files.read"  class="font-mono text-xs"
-   1  <td> "ALLOW"  class="px-4 py-3 align-top"
-   1  <span> "247"  class="font-mono text-xs"
-   1  <td> "27 Oct 2026, 15:59"  class="px-4 py-3 align-top"
-   1  <span> "files.read"  class="font-mono text-xs"
-   1  <td> "ALLOW"  class="px-4 py-3 align-top"
-   1  <span> "246"  class="font-mono text-xs"
+[dark] /dashboard/evidence  (gercek-dugme)  axe sorun: 1
+   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Evidence</span>
 
-[light] /dashboard/evidence  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 25
-   2.3  <span> "Overview"  class="truncate"
-   2.3  <span> "Approvals"  class="truncate"
-   2.3  <span> "Live Activity"  class="truncate"
-   2.3  <span> "Incidents"  class="truncate"
-   2.3  <span> "Agents"  class="truncate"
-   2.3  <span> "Policies"  class="truncate"
-   2.3  <span> "API Keys"  class="truncate"
-   2.3  <span> "Webhooks"  class="truncate"
-   2.3  <span> "Team"  class="truncate"
-   2.3  <span> "Billing"  class="truncate"
-   2.3  <span> "Settings"  class="truncate"
-   2.3  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
-   2.2  <button> "workspace /"  class="hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground h"
-   2.2  <a> "Control"  class="hover:text-foreground"
-   1.1  <span> "249"  class="font-mono text-xs"
-   1.1  <td> "27 Oct 2026, 15:59"  class="px-4 py-3 align-top"
-   1.1  <span> "a.b"  class="font-mono text-xs"
-   1.1  <td> "BLOCK"  class="px-4 py-3 align-top"
-   1.1  <span> "248"  class="font-mono text-xs"
-   1.1  <td> "27 Oct 2026, 15:59"  class="px-4 py-3 align-top"
-   1.1  <span> "files.read"  class="font-mono text-xs"
-   1.1  <td> "ALLOW"  class="px-4 py-3 align-top"
-   1.1  <span> "247"  class="font-mono text-xs"
-   1.1  <td> "27 Oct 2026, 15:59"  class="px-4 py-3 align-top"
-   1.1  <span> "files.read"  class="font-mono text-xs"
+[light] /dashboard/evidence  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/team  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 12
-   2.9  <span> "Overview"  class="truncate"
-   2.9  <span> "Approvals"  class="truncate"
-   2.9  <span> "Live Activity"  class="truncate"
-   2.9  <span> "Incidents"  class="truncate"
-   2.9  <span> "Agents"  class="truncate"
-   2.9  <span> "Policies"  class="truncate"
-   2.9  <span> "Evidence"  class="truncate"
-   2.9  <span> "API Keys"  class="truncate"
-   2.9  <span> "Webhooks"  class="truncate"
-   2.9  <span> "Billing"  class="truncate"
-   2.9  <span> "Settings"  class="truncate"
-   2.9  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
+[dark] /dashboard/team  (gercek-dugme)  axe sorun: 1
+   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Team</span>
 
-[light] /dashboard/team  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 18
-   2.3  <span> "Overview"  class="truncate"
-   2.3  <span> "Approvals"  class="truncate"
-   2.3  <span> "Live Activity"  class="truncate"
-   2.3  <span> "Incidents"  class="truncate"
-   2.3  <span> "Agents"  class="truncate"
-   2.3  <span> "Policies"  class="truncate"
-   2.3  <span> "Evidence"  class="truncate"
-   2.3  <span> "API Keys"  class="truncate"
-   2.3  <span> "Webhooks"  class="truncate"
-   2.3  <span> "Billing"  class="truncate"
-   2.3  <span> "Settings"  class="truncate"
-   2.3  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
-   2.2  <button> "workspace /"  class="hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground h"
-   2.2  <a> "Control"  class="hover:text-foreground"
-   2.7  <div> "OWNER"  class="font-mono text-sm tracking-wider text-cyan"
-   2.8  <div> "OWNER"  class="font-mono text-[11px] tracking-wider text-cyan"
-   2.1  <a> "Verify an authenticator code"  class="text-cyan underline underline-offset-2"
-   2.8  <td> "OWNER"  class="px-4 py-3 font-mono text-[11px] tracking-wider text-cyan"
+[light] /dashboard/team  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/settings  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 12
-   2.9  <span> "Overview"  class="truncate"
-   2.9  <span> "Approvals"  class="truncate"
-   2.9  <span> "Live Activity"  class="truncate"
-   2.9  <span> "Incidents"  class="truncate"
-   2.9  <span> "Agents"  class="truncate"
-   2.9  <span> "Policies"  class="truncate"
-   2.9  <span> "Evidence"  class="truncate"
-   2.9  <span> "API Keys"  class="truncate"
-   2.9  <span> "Webhooks"  class="truncate"
-   2.9  <span> "Team"  class="truncate"
-   2.9  <span> "Billing"  class="truncate"
-   2.9  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
+[dark] /dashboard/settings  (gercek-dugme)  axe sorun: 3
+   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Settings</span>
+   3.85/4.5:1  fg #ffffff  bg #2f7cff  .rounded-xl.border-\[color\:var\(--aeg-card-line\)\].p-5:nth-child(2) > form > .aeg-btn-brand.px-6[type="submi  <button type="submit" class="inline-flex items-center justify-center rounded-md aeg-btn-brand px-6 py-3 text-s
+   3.85/4.5:1  fg #ffffff  bg #2f7cff  .rounded-xl.border-\[color\:var\(--aeg-card-line\)\].p-5:nth-child(3) > form > .aeg-btn-brand.px-6[type="submi  <button type="submit" class="inline-flex items-center justify-center rounded-md aeg-btn-brand px-6 py-3 text-s
 
-[light] /dashboard/settings  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 14
-   2.3  <span> "Overview"  class="truncate"
-   2.3  <span> "Approvals"  class="truncate"
-   2.3  <span> "Live Activity"  class="truncate"
-   2.3  <span> "Incidents"  class="truncate"
-   2.3  <span> "Agents"  class="truncate"
-   2.3  <span> "Policies"  class="truncate"
-   2.3  <span> "Evidence"  class="truncate"
-   2.3  <span> "API Keys"  class="truncate"
-   2.3  <span> "Webhooks"  class="truncate"
-   2.3  <span> "Team"  class="truncate"
-   2.3  <span> "Billing"  class="truncate"
-   2.3  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
-   2.2  <button> "workspace /"  class="hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground h"
-   2.2  <a> "Control"  class="hover:text-foreground"
+[light] /dashboard/settings  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/api-keys  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 12
-   2.9  <span> "Overview"  class="truncate"
-   2.9  <span> "Approvals"  class="truncate"
-   2.9  <span> "Live Activity"  class="truncate"
-   2.9  <span> "Incidents"  class="truncate"
-   2.9  <span> "Agents"  class="truncate"
-   2.9  <span> "Policies"  class="truncate"
-   2.9  <span> "Evidence"  class="truncate"
-   2.9  <span> "Webhooks"  class="truncate"
-   2.9  <span> "Team"  class="truncate"
-   2.9  <span> "Billing"  class="truncate"
-   2.9  <span> "Settings"  class="truncate"
-   2.9  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
+[dark] /dashboard/api-keys  (gercek-dugme)  axe sorun: 2
+   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">API Keys</span>
+   3.85/4.5:1  fg #ffffff  bg #2f7cff  .aeg-btn-brand  <button type="submit" class="inline-flex items-center justify-center rounded-md aeg-btn-brand px-6 py-3 text-s
 
-[light] /dashboard/api-keys  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 14
-   2.3  <span> "Overview"  class="truncate"
-   2.3  <span> "Approvals"  class="truncate"
-   2.3  <span> "Live Activity"  class="truncate"
-   2.3  <span> "Incidents"  class="truncate"
-   2.3  <span> "Agents"  class="truncate"
-   2.3  <span> "Policies"  class="truncate"
-   2.3  <span> "Evidence"  class="truncate"
-   2.3  <span> "Webhooks"  class="truncate"
-   2.3  <span> "Team"  class="truncate"
-   2.3  <span> "Billing"  class="truncate"
-   2.3  <span> "Settings"  class="truncate"
-   2.3  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
-   2.2  <button> "workspace /"  class="hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground h"
-   2.2  <a> "Control"  class="hover:text-foreground"
+[light] /dashboard/api-keys  (gercek-dugme)  axe sorun: 0
 
-[dark] /dashboard/webhooks  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 12
-   2.9  <span> "Overview"  class="truncate"
-   2.9  <span> "Approvals"  class="truncate"
-   2.9  <span> "Live Activity"  class="truncate"
-   2.9  <span> "Incidents"  class="truncate"
-   2.9  <span> "Agents"  class="truncate"
-   2.9  <span> "Policies"  class="truncate"
-   2.9  <span> "Evidence"  class="truncate"
-   2.9  <span> "API Keys"  class="truncate"
-   2.9  <span> "Team"  class="truncate"
-   2.9  <span> "Billing"  class="truncate"
-   2.9  <span> "Settings"  class="truncate"
-   2.9  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
+[dark] /dashboard/webhooks  (gercek-dugme)  axe sorun: 1
+   4.19/4.5:1  fg #2f7cff  bg #0b1e4a  .bg-primary\/10 > .truncate  <span class="truncate">Webhooks</span>
 
-[light] /dashboard/webhooks  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 14
-   2.3  <span> "Overview"  class="truncate"
-   2.3  <span> "Approvals"  class="truncate"
-   2.3  <span> "Live Activity"  class="truncate"
-   2.3  <span> "Incidents"  class="truncate"
-   2.3  <span> "Agents"  class="truncate"
-   2.3  <span> "Policies"  class="truncate"
-   2.3  <span> "Evidence"  class="truncate"
-   2.3  <span> "API Keys"  class="truncate"
-   2.3  <span> "Team"  class="truncate"
-   2.3  <span> "Billing"  class="truncate"
-   2.3  <span> "Settings"  class="truncate"
-   2.3  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
-   2.2  <button> "workspace /"  class="hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground h"
-   2.2  <a> "Control"  class="hover:text-foreground"
+[light] /dashboard/webhooks  (gercek-dugme)  axe sorun: 0
 
-[dark] /onboarding  (YEDEK(sinif) class="__variable_a5f026 dark" data-theme=dark)  dusuk kontrast: 0
+[dark] /onboarding  (YEDEK(sinif))  axe sorun: 0
 
-[light] /onboarding  (YEDEK(sinif) class="__variable_a5f026" data-theme=light)  dusuk kontrast: 4
-   1  <span> "Aegisora"  class="text-[17px] font-semibold tracking-tight text-foreground"
-   1  <h1> "What’s your company size?"  class="mt-10 text-3xl font-semibold tracking-tight sm:text-4xl"
-   2.2  <p> "This helps us recommend the righ"  class="mt-3 max-w-xl text-sm text-muted-foreground"
-   2.2  <button> "Skip for now"  class="underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-vis"
+[light] /onboarding  (YEDEK(sinif))  axe sorun: 0
 
-[dark] /  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 1
-   1.1  <span> "Aegisora"  class=""
+[dark] /  (gercek-dugme)  axe sorun: 6
+   3.08/4.5:1  fg #f1f5ff  bg #1b8cff  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
+   4.43/4.5:1  fg #1b8cff  bg #10264d  .bw-feat.bw-rv--in:nth-child(2) > .bw-vis[aria-hidden="true"] > .bw-vis__stack > .bw-mini:nth-child(1) > .bw-m  <span class="bw-count">2 waiting</span>
+   3.28/4.5:1  fg #886b37  bg #231f17  .bw-mini--low > .bw-mini__row > .bw-pill--escalate.bw-pill--xs.bw-pill  <span class="bw-pill bw-pill--escalate bw-pill--xs"><i aria-hidden="true"></i>ESCALATE</span>
+   3.36/4.5:1  fg #ffffff  bg #1b8cff  .bw-btn--blue  <a class="bw-btn bw-btn--blue bw-btn--lg bw-btn--block" href="/pilot">
+   3.08/4.5:1  fg #f1f5ff  bg #1b8cff  .aegf__btn  <a class="aegf__btn" href="/signup">
+   1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
 
-[light] /  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 1
-   1.1  <span> "Aegisora"  class=""
+[light] /  (gercek-dugme)  axe sorun: 38
+   3.46/4.5:1  fg #0a1220  bg #0f63e0  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
+   4.48/4.5:1  fg #9a6400  bg #fff1d6  .bw-mini__row:nth-child(3) > .bw-pill--escalate.bw-pill--xs.bw-pill  <span class="bw-pill bw-pill--escalate bw-pill--xs"><i aria-hidden="true"></i>ESCALATE</span>
+   3.63/4.5:1  fg #7b879b  bg #ffffff  .bw-mini__foot  <p class="bw-mini__foot">No match: BLOCK</p>
+   4.48/4.5:1  fg #9a6400  bg #fff1d6  .bw-mini:nth-child(1) > .bw-mini__row > .bw-pill--escalate.bw-pill--xs.bw-pill  <span class="bw-pill bw-pill--escalate bw-pill--xs"><i aria-hidden="true"></i>ESCALATE</span>
+   2.11/4.5:1  fg #c4a771  bg #fbf5e7  .bw-mini--low > .bw-mini__row > .bw-pill--escalate.bw-pill--xs.bw-pill  <span class="bw-pill bw-pill--escalate bw-pill--xs"><i aria-hidden="true"></i>ESCALATE</span>
+   3.63/4.5:1  fg #7b879b  bg #ffffff  .bw-mini--rec.bw-mini:nth-child(1) > small  <small>9c41f2...e07a</small>
+   3.63/4.5:1  fg #7b879b  bg #ffffff  .bw-mini--rec.bw-mini:nth-child(2) > small  <small>b27d10...4f93</small>
+   3.32/4.5:1  fg #7b879b  bg #f1f5fb  .c:nth-child(1)  <span class="c">// ask first, then act</span>
+   4.34/4.5:1  fg #0a7d9a  bg #f1f5fb  .f  <span class="f"> checkAction</span>
+   3.32/4.5:1  fg #7b879b  bg #f1f5fb  .c:nth-child(15)  <span class="c">// BLOCK or unknown: fail closed</span>
+   4.48/4.5:1  fg #9a6400  bg #fff1d6  .bw-ide__result > .bw-pill--escalate.bw-pill  <span class="bw-pill bw-pill--escalate"><i aria-hidden="true"></i>ESCALATE</span>
+   4.48/4.5:1  fg #9a6400  bg #fff1d6  .bw-art > .bw-avatars > span:nth-child(2)  <span style="background: rgb(255, 241, 214); color: rgb(154, 100, 0);">ES</span>
 
-[dark] /pricing  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 7
-   2.9  <span> "ALLOW"  class="zp-verdict zp-verdict--ALLOW"
-   2.7  <span> "ESCALATE"  class="zp-verdict zp-verdict--ESCALATE"
-   3  <span> "RECOMMENDED"  class="absolute -top-3 right-6 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide bg-"
-   2.7  <a> "Talk to Enterprise"  class="mt-6 inline-flex h-11 items-center justify-center rounded-md text-sm font-semibold transit"
-   2.7  <a> "Get Pro"  class="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primar"
-   2.7  <a> "Pilot overview"  class="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primar"
-   1.1  <span> "Aegisora"  class=""
+[dark] /pricing  (gercek-dugme)  axe sorun: 7
+   3.36/4.5:1  fg #ffffff  bg #1b8cff  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
+   2.98/4.5:1  fg #ffffff  bg #1599ff  .border-primary\/60.relative.flex-col > .absolute.-top-3.right-6  <span class="absolute -top-3 right-6 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide bg-primary
+   2.7/4.5:1  fg #eef4ff  bg #1599ff  .border-primary\/60.relative.flex-col > .hover\:bg-primary-hover.bg-primary.text-primary-foreground  <a class="mt-6 inline-flex h-11 items-center justify-center rounded-md text-sm font-semibold transition bg-pri
+   2.7/4.5:1  fg #eef4ff  bg #1599ff  a[href$="billing"]  <a class="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foregrou
+   2.7/4.5:1  fg #eef4ff  bg #1599ff  .flex-wrap.gap-3.flex > .px-5.hover\:bg-primary-hover.bg-primary  <a class="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foregrou
+   3.36/4.5:1  fg #ffffff  bg #1b8cff  .aegf__btn  <a class="aegf__btn" href="/signup">
+   1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
 
-[light] /pricing  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 6
-   2.9  <span> "ALLOW"  class="zp-verdict zp-verdict--ALLOW"
-   2.7  <span> "ESCALATE"  class="zp-verdict zp-verdict--ESCALATE"
-   2.5  <a> "Talk to Enterprise"  class="mt-6 inline-flex h-11 items-center justify-center rounded-md text-sm font-semibold transit"
-   2.5  <a> "Get Pro"  class="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primar"
-   2.5  <a> "Pilot overview"  class="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primar"
-   1.1  <span> "Aegisora"  class=""
+[light] /pricing  (gercek-dugme)  axe sorun: 23
+   3.12/4.5:1  fg #898785  bg #f2efec  .relative.flex-col.md\:p-7:nth-child(1) > .mt-5.grid-cols-3.pt-4 > div:nth-child(1) > .text-\[10px\].tracking-  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">DECISIONS</dt>
+   3.12/4.5:1  fg #898785  bg #f2efec  .relative.flex-col.md\:p-7:nth-child(1) > .mt-5.grid-cols-3.pt-4 > div:nth-child(2) > .text-\[10px\].tracking-  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">DEFAULT</dt>
+   3.12/4.5:1  fg #898785  bg #f2efec  .relative.flex-col.md\:p-7:nth-child(1) > .mt-5.grid-cols-3.pt-4 > div:nth-child(3) > .text-\[10px\].tracking-  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">EVIDENCE</dt>
+   3.05/4.5:1  fg #85827f  bg #eae5e0  .border-primary\/60.relative.flex-col > .mt-5.grid-cols-3.pt-4 > div:nth-child(1) > .text-\[10px\].tracking-wi  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">WORKFLOW</dt>
+   3.05/4.5:1  fg #85827f  bg #eae5e0  .border-primary\/60.relative.flex-col > .mt-5.grid-cols-3.pt-4 > div:nth-child(2) > .text-\[10px\].tracking-wi  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">ENVIRONMENT</dt>
+   3.05/4.5:1  fg #85827f  bg #eae5e0  .border-primary\/60.relative.flex-col > .mt-5.grid-cols-3.pt-4 > div:nth-child(3) > .text-\[10px\].tracking-wi  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">TERM</dt>
+   2.51/4.5:1  fg #0a2540  bg #1d4ef0  .border-primary\/60.relative.flex-col > .hover\:bg-primary-hover.bg-primary.text-primary-foreground  <a class="mt-6 inline-flex h-11 items-center justify-center rounded-md text-sm font-semibold transition bg-pri
+   3.12/4.5:1  fg #898785  bg #f2efec  .relative.flex-col.md\:p-7:nth-child(3) > .mt-5.grid-cols-3.pt-4 > div:nth-child(1) > .text-\[10px\].tracking-  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">HOSTING</dt>
+   3.12/4.5:1  fg #898785  bg #f2efec  .relative.flex-col.md\:p-7:nth-child(3) > .mt-5.grid-cols-3.pt-4 > div:nth-child(2) > .text-\[10px\].tracking-  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">SSO</dt>
+   3.12/4.5:1  fg #898785  bg #f2efec  .relative.flex-col.md\:p-7:nth-child(3) > .mt-5.grid-cols-3.pt-4 > div:nth-child(3) > .text-\[10px\].tracking-  <dt class="text-[10px] font-semibold tracking-wider text-foreground/50">AUDIT OPS</dt>
+   2.51/4.5:1  fg #0a2540  bg #1d4ef0  a[href$="billing"]  <a class="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foregrou
+   2.51/4.5:1  fg #0a2540  bg #1d4ef0  .flex-wrap.gap-3.flex > .px-5.hover\:bg-primary-hover.bg-primary  <a class="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foregrou
 
-[dark] /product  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 25
-   2.6  <a> "Home"  class="aegh__link"
-   1  <a> "Product"  class="aegh__link is-active"
-   2.6  <a> "Live demo"  class="aegh__link"
-   2.6  <a> "Pricing"  class="aegh__link"
-   2.6  <a> "Docs"  class="aegh__link"
-   1.2  <a> "Talk to Enterprise"  class="zp-btn zp-btn--outline"
-   2.9  <span> "ALLOW"  class="zp-verdict zp-verdict--ALLOW"
-   2.7  <span> "ESCALATE"  class="zp-verdict zp-verdict--ESCALATE"
-   2.4  <a> "Platform"  class=""
-   2.4  <a> "Solutions"  class=""
-   2.4  <a> "Live demo"  class=""
-   2.4  <a> "Pricing"  class=""
-   2.4  <a> "Enterprise"  class=""
-   2.4  <a> "Introduction"  class=""
-   2.4  <a> "Quickstart"  class=""
-   2.4  <a> "Technical docs"  class=""
-   2.4  <a> "Changelog"  class=""
-   2.4  <a> "Support"  class=""
-   2.4  <a> "About"  class=""
-   2.4  <a> "Contact"  class=""
-   2.4  <a> "Security"  class=""
-   2.4  <a> "Trust center"  class=""
-   2.4  <a> "Blog"  class=""
-   2.4  <a> "Privacy policy"  class=""
-   2.4  <a> "Terms of service"  class=""
+[dark] /product  (gercek-dugme)  axe sorun: 3
+   3.36/4.5:1  fg #ffffff  bg #1b8cff  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
+   3.36/4.5:1  fg #ffffff  bg #1b8cff  .aegf__btn  <a class="aegf__btn" href="/signup">
+   1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
 
-[light] /product  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 25
-   2  <a> "Home"  class="aegh__link"
-   1  <a> "Product"  class="aegh__link is-active"
-   2  <a> "Live demo"  class="aegh__link"
-   2  <a> "Pricing"  class="aegh__link"
-   2  <a> "Docs"  class="aegh__link"
-   1.1  <a> "Talk to Enterprise"  class="zp-btn zp-btn--outline"
-   2.9  <span> "ALLOW"  class="zp-verdict zp-verdict--ALLOW"
-   2.7  <span> "ESCALATE"  class="zp-verdict zp-verdict--ESCALATE"
-   1.9  <a> "Platform"  class=""
-   1.9  <a> "Solutions"  class=""
-   1.9  <a> "Live demo"  class=""
-   1.9  <a> "Pricing"  class=""
-   1.9  <a> "Enterprise"  class=""
-   1.9  <a> "Introduction"  class=""
-   1.9  <a> "Quickstart"  class=""
-   1.9  <a> "Technical docs"  class=""
-   1.9  <a> "Changelog"  class=""
-   1.9  <a> "Support"  class=""
-   1.9  <a> "About"  class=""
-   1.9  <a> "Contact"  class=""
-   1.9  <a> "Security"  class=""
-   1.9  <a> "Trust center"  class=""
-   1.9  <a> "Blog"  class=""
-   1.9  <a> "Privacy policy"  class=""
-   1.9  <a> "Terms of service"  class=""
+[light] /product  (gercek-dugme)  axe sorun: 8
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__note  <p class="aegf__note">Test workspaces are open in early access. Design partner pilots are scoped in writing. P
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__col[aria-label="Product"] > h2  <h2>Product</h2>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Developers"] > h2  <h2>Developers</h2>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Company"] > h2  <h2>Company</h2>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Legal"] > h2  <h2>Legal</h2>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__legalin > span:nth-child(1)  <span>© <!-- -->2026<!-- --> Aegisora. <!-- -->All rights reserved.</span>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__legalin > span:nth-child(2)  <span>Examples on this site use illustrative sample data.</span>
+   1.11/3:1  fg #dde7f5  bg #eef3f9  .aegf__word > span  <span>Aegisora</span>
 
-[dark] /docs  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 1
-   1.1  <span> "Aegisora"  class=""
+[dark] /docs  (gercek-dugme)  axe sorun: 3
+   3.08/4.5:1  fg #f1f5ff  bg #1b8cff  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
+   3.08/4.5:1  fg #f1f5ff  bg #1b8cff  .aegf__btn  <a class="aegf__btn" href="/signup">
+   1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
 
-[light] /docs  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 25
-   1  <a> "Home"  class="aegh__link"
-   1  <a> "Product"  class="aegh__link"
-   1  <a> "Live demo"  class="aegh__link"
-   1  <a> "Pricing"  class="aegh__link"
-   1  <a> "Docs"  class="aegh__link is-active"
-   1.6  <a> "Quickstart"  class="block rounded-md px-3 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-acce"
-   1.6  <a> "Policy Example"  class="block rounded-md px-3 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-acce"
-   1.6  <a> "Technical reference"  class="block rounded-md px-3 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-acce"
-   1.6  <a> "Runtime Pipeline"  class="block rounded-md px-3 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-acce"
-   1.6  <a> "Policies, decisions and evidence"  class="block rounded-md px-3 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-acce"
-   1.6  <a> "1.0 - Foundation"  class="block rounded-md px-3 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-acce"
-   1.6  <a> "2.0 - Context & Risk"  class="block rounded-md px-3 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-acce"
-   1.6  <a> "3.0 - Enterprise Runtime"  class="block rounded-md px-3 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-acce"
-   1.6  <a> "4.0 - Current"  class="block rounded-md px-3 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-acce"
-   1.6  <a> "Capability Matrix"  class="block rounded-md px-3 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-acce"
-   1.6  <a> "API Contract"  class="block rounded-md px-3 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-acce"
-   1.9  <a> "Platform"  class=""
-   1.9  <a> "Solutions"  class=""
-   1.9  <a> "Live demo"  class=""
-   1.9  <a> "Pricing"  class=""
-   1.9  <a> "Enterprise"  class=""
-   1.9  <a> "Introduction"  class=""
-   1.9  <a> "Quickstart"  class=""
-   1.9  <a> "Technical docs"  class=""
-   1.9  <a> "Changelog"  class=""
+[light] /docs  (gercek-dugme)  axe sorun: 12
+   3.46/4.5:1  fg #0a1220  bg #0f63e0  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
+   3.67/4.5:1  fg #807f7e  bg #f7f5f3  #example > figure > figcaption  <figcaption class="zpk-caption">Illustrative policy expression.</figcaption>
+   3.67/4.5:1  fg #807f7e  bg #f7f5f3  .mt-8:nth-child(19) > figure > figcaption  <figcaption class="zpk-caption">Request and response shape of the current endpoint. The outcome depends on you
+   3.46/4.5:1  fg #0a1220  bg #0f63e0  .aegf__btn  <a class="aegf__btn" href="/signup">
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__note  <p class="aegf__note">Test workspaces are open in early access. Design partner pilots are scoped in writing. P
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__col[aria-label="Product"] > h2  <h2>Product</h2>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Developers"] > h2  <h2>Developers</h2>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Company"] > h2  <h2>Company</h2>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Legal"] > h2  <h2>Legal</h2>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__legalin > span:nth-child(1)  <span>© <!-- -->2026<!-- --> Aegisora. <!-- -->All rights reserved.</span>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__legalin > span:nth-child(2)  <span>Examples on this site use illustrative sample data.</span>
+   1.11/3:1  fg #dde7f5  bg #eef3f9  .aegf__word > span  <span>Aegisora</span>
 
-[dark] /enterprise  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 25
-   2.6  <a> "Home"  class="aegh__link"
-   1  <a> "Product"  class="aegh__link is-active"
-   2.6  <a> "Live demo"  class="aegh__link"
-   2.6  <a> "Pricing"  class="aegh__link"
-   2.6  <a> "Docs"  class="aegh__link"
-   1.2  <a> "Review the API"  class="zp-btn zp-btn--outline"
-   2.7  <span> "ESCALATE"  class="zp-verdict zp-verdict--ESCALATE"
-   2.9  <span> "ALLOW"  class="zp-verdict zp-verdict--ALLOW"
-   2.4  <a> "Platform"  class=""
-   2.4  <a> "Solutions"  class=""
-   2.4  <a> "Live demo"  class=""
-   2.4  <a> "Pricing"  class=""
-   2.4  <a> "Enterprise"  class=""
-   2.4  <a> "Introduction"  class=""
-   2.4  <a> "Quickstart"  class=""
-   2.4  <a> "Technical docs"  class=""
-   2.4  <a> "Changelog"  class=""
-   2.4  <a> "Support"  class=""
-   2.4  <a> "About"  class=""
-   2.4  <a> "Contact"  class=""
-   2.4  <a> "Security"  class=""
-   2.4  <a> "Trust center"  class=""
-   2.4  <a> "Blog"  class=""
-   2.4  <a> "Privacy policy"  class=""
-   2.4  <a> "Terms of service"  class=""
+[dark] /enterprise  (gercek-dugme)  axe sorun: 3
+   3.36/4.5:1  fg #ffffff  bg #1b8cff  .aegh__btn.aegh__hide-md[href$="signup"]  <a class="aegh__btn aegh__hide-md" href="/signup">Test Aegisora</a>
+   3.36/4.5:1  fg #ffffff  bg #1b8cff  .aegf__btn  <a class="aegf__btn" href="/signup">
+   1.06/3:1  fg #0d1b3d  bg #0a1530  .aegf__word > span  <span>Aegisora</span>
 
-[light] /enterprise  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 25
-   2  <a> "Home"  class="aegh__link"
-   1  <a> "Product"  class="aegh__link is-active"
-   2  <a> "Live demo"  class="aegh__link"
-   2  <a> "Pricing"  class="aegh__link"
-   2  <a> "Docs"  class="aegh__link"
-   1.1  <a> "Review the API"  class="zp-btn zp-btn--outline"
-   2.7  <span> "ESCALATE"  class="zp-verdict zp-verdict--ESCALATE"
-   2.9  <span> "ALLOW"  class="zp-verdict zp-verdict--ALLOW"
-   1.9  <a> "Platform"  class=""
-   1.9  <a> "Solutions"  class=""
-   1.9  <a> "Live demo"  class=""
-   1.9  <a> "Pricing"  class=""
-   1.9  <a> "Enterprise"  class=""
-   1.9  <a> "Introduction"  class=""
-   1.9  <a> "Quickstart"  class=""
-   1.9  <a> "Technical docs"  class=""
-   1.9  <a> "Changelog"  class=""
-   1.9  <a> "Support"  class=""
-   1.9  <a> "About"  class=""
-   1.9  <a> "Contact"  class=""
-   1.9  <a> "Security"  class=""
-   1.9  <a> "Trust center"  class=""
-   1.9  <a> "Blog"  class=""
-   1.9  <a> "Privacy policy"  class=""
-   1.9  <a> "Terms of service"  class=""
-
-[dark] /login  (gercek-dugme class="__variable_a5f026 dark" data-theme=undefined)  dusuk kontrast: 21
-   2.9  <span> "Approvals"  class="truncate"
-   2.9  <span> "Live Activity"  class="truncate"
-   2.9  <span> "Incidents"  class="truncate"
-   2.9  <span> "Agents"  class="truncate"
-   2.9  <span> "Policies"  class="truncate"
-   2.9  <span> "Evidence"  class="truncate"
-   2.9  <span> "API Keys"  class="truncate"
-   2.9  <span> "Webhooks"  class="truncate"
-   2.9  <span> "Team"  class="truncate"
-   2.9  <span> "Billing"  class="truncate"
-   2.9  <span> "Settings"  class="truncate"
-   2.9  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
-   1  <span> "Create an API key"  class=""
-   1  <span> "a.b"  class="font-mono text-xs"
-   1  <span> "files.read"  class="font-mono text-xs"
-   1  <span> "files.read"  class="font-mono text-xs"
-   1  <span> "files.read"  class="font-mono text-xs"
-   1  <span> "files.read"  class="font-mono text-xs"
-   1  <span> "files.read"  class="font-mono text-xs"
-   1  <span> "files.read"  class="font-mono text-xs"
-   1  <span> "files.read"  class="font-mono text-xs"
-
-[light] /login  (gercek-dugme class="__variable_a5f026" data-theme=undefined)  dusuk kontrast: 23
-   2.3  <span> "Approvals"  class="truncate"
-   2.3  <span> "Live Activity"  class="truncate"
-   2.3  <span> "Incidents"  class="truncate"
-   2.3  <span> "Agents"  class="truncate"
-   2.3  <span> "Policies"  class="truncate"
-   2.3  <span> "Evidence"  class="truncate"
-   2.3  <span> "API Keys"  class="truncate"
-   2.3  <span> "Webhooks"  class="truncate"
-   2.3  <span> "Team"  class="truncate"
-   2.3  <span> "Billing"  class="truncate"
-   2.3  <span> "Settings"  class="truncate"
-   2.3  <button> "Advanced"  class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium up"
-   2.2  <button> "workspace /"  class="hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground h"
-   2.2  <a> "Control"  class="hover:text-foreground"
-   1.1  <span> "Create an API key"  class=""
-   1.1  <span> "a.b"  class="font-mono text-xs"
-   1.1  <span> "files.read"  class="font-mono text-xs"
-   1.1  <span> "files.read"  class="font-mono text-xs"
-   1.1  <span> "files.read"  class="font-mono text-xs"
-   1.1  <span> "files.read"  class="font-mono text-xs"
-   1.1  <span> "files.read"  class="font-mono text-xs"
-   1.1  <span> "files.read"  class="font-mono text-xs"
-   1.1  <span> "files.read"  class="font-mono text-xs"
+[light] /enterprise  (gercek-dugme)  axe sorun: 8
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__note  <p class="aegf__note">Test workspaces are open in early access. Design partner pilots are scoped in writing. P
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__col[aria-label="Product"] > h2  <h2>Product</h2>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Developers"] > h2  <h2>Developers</h2>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Company"] > h2  <h2>Company</h2>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  nav[aria-label="Legal"] > h2  <h2>Legal</h2>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__legalin > span:nth-child(1)  <span>© <!-- -->2026<!-- --> Aegisora. <!-- -->All rights reserved.</span>
+   3.25/4.5:1  fg #7b879b  bg #eef3f9  .aegf__legalin > span:nth-child(2)  <span>Examples on this site use illustrative sample data.</span>
+   1.11/3:1  fg #dde7f5  bg #eef3f9  .aegf__word > span  <span>Aegisora</span>

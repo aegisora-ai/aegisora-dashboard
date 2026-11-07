@@ -1014,8 +1014,8 @@
   "Onboarding": {
     "steps": {
       "s0": "Workspace",
-      "s1": "MFA",
-      "s2": "Agent",
+      "s1": "First agent",
+      "s2": "Connect",
       "s3": "Policy",
       "s4": "Integrate"
     },
@@ -1075,6 +1075,35 @@
       "needWs": "Create a workspace before continuing.",
       "signIn": "Sign in again to continue onboarding.",
       "failed": "The workspace setup request failed."
+    },
+    "q": {
+      "title": "Set up your first agent",
+      "desc": "Name an agent and choose what happens when it tries a sensitive action. You can change everything later.",
+      "agent": "Agent name",
+      "action": "Action to govern",
+      "resource": "Resource",
+      "outcome": "When this action is requested",
+      "escalate": "Pause and ask a person",
+      "block": "Block it",
+      "allow": "Allow it",
+      "create": "Create agent and rule",
+      "busy": "Saving…",
+      "skip": "Skip for now",
+      "mfaTitle": "Verify your identity first",
+      "mfaDesc": "Creating agents and rules needs a second factor. Set it up in a new tab, then check again.",
+      "mfaOpen": "Set up two-factor sign-in",
+      "mfaCheck": "I’ve done it, check again",
+      "checking": "Checking…"
+    },
+    "finish": {
+      "title": "You’re ready to connect",
+      "desc": "Create an API key and call Aegisora from your backend before each sensitive action.",
+      "ws": "Workspace",
+      "agent": "Agent",
+      "policy": "Rule",
+      "notSet": "No agent or rule yet. You can add them any time in the dashboard.",
+      "key": "Create an API key",
+      "quickstart": "Open the quickstart"
     }
   },
   "PgTrust": {
