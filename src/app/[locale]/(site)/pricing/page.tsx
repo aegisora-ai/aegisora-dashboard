@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Check, Minus } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { PricingTiers } from "@/components/aegx/pricing-tiers";
 import { meta } from "@/lib/seo";
 import { Btn, Cell, Cells, Cta, Hero, Sec, SectionHead } from "@/components/aegx/ui";
 
@@ -117,19 +118,7 @@ export default async function PricingPage({ params }: Props) {
           ))}
         </Cells>
 
-        <div className="aegx-band">
-          <div>
-            <h3 className="aegx-h3">{"Pro \u00b7 $49" + (de ? " / Monat" : " / month")}</h3>
-            <p className="aegx-p">
-              {de
-                ? "Bis zu 5 Agenten, 5 Mitglieder und 25.000 Entscheidungen pro Monat. Kostenlos starten und jederzeit upgraden."
-                : "Up to 5 agents, 5 members and 25,000 decisions per month. Start free and upgrade any time."}
-            </p>
-          </div>
-          <div className="aegx-band__act">
-            <Btn href="/dashboard/billing">{de ? "Pro starten" : "Get Pro"}</Btn>
-          </div>
-        </div>
+        <PricingTiers de={de} />
 
         <div className="aegx-band">
           <div>

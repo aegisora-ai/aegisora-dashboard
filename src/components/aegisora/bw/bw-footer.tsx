@@ -34,7 +34,7 @@ const COLS: { key: string; links: [string, string][] }[] = [
       ["contact", "/pilot"],
       ["security", "/security"],
       ["trust", "/trust"],
-      ["blog", "/blog"],
+      ["blog", "/blog"], ["careers", "/careers"],
     ],
   },
   {

@@ -6,7 +6,7 @@ import { AegxBrand } from "./brand";
 const COLS: { key: string; links: [string, string][] }[] = [
   { key: "product", links: [["platform", "/product"], ["solutions", "/solutions"], ["demo", "/demo"], ["pricing", "/pricing"], ["enterprise", "/enterprise"]] },
   { key: "developers", links: [["intro", "/docs"], ["quickstart", "/docs/quickstart"], ["technical", "/docs/technical"], ["changelog", "/docs/technical#releases"], ["support", "/support"]] },
-  { key: "company", links: [["about", "/about"], ["contact", "/pilot"], ["security", "/security"], ["trust", "/trust"], ["blog", "/blog"]] },
+  { key: "company", links: [["about", "/about"], ["contact", "/pilot"], ["security", "/security"], ["trust", "/trust"], ["blog", "/blog"], ["careers", "/careers"]] },
   { key: "legal", links: [["privacy", "/trust/privacy"], ["terms", "/terms"], ["impressum", "/impressum"], ["subprocessors", "/trust/subprocessors"]] },
 ];
 
