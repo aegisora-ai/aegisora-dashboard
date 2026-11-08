@@ -71,7 +71,7 @@ export function UsageCard() {
             {metric("Blocked", usage?.evaluations.block)}
             {metric("Escalated", usage?.evaluations.escalate)}
           </div>
-          {usage && <p className="text-xs text-muted-foreground">UTC window: {new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(usage.window.start))} up to (but not including) {new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(usage.window.end))}. Source: {usage.source}.</p>}
+          {usage && <p className="text-xs text-muted-foreground">UTC window: {new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(usage.window.start))} up to (but not including) {new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(usage.window.end))}. Source: {usage.source}.</p>}
         </>
       )}
     </section>

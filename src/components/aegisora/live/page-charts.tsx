@@ -32,7 +32,7 @@ function build(rows: R[]) {
     const d = new Date();
     d.setHours(12, 0, 0, 0);
     d.setDate(d.getDate() - (13 - i));
-    return { key: dayKey(d), label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }), allow: 0, escalate: 0, block: 0 };
+    return { key: dayKey(d), label: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }), allow: 0, escalate: 0, block: 0 };
   });
   const idx = new Map(days.map((d, i) => [d.key, i]));
   const acts = new Map<string, { name: string; allow: number; escalate: number; block: number; total: number }>();
@@ -64,15 +64,23 @@ export function DecisionCharts({ wsId }: { wsId: string }) {
       try {
         const sb = createClient();
         const since = new Date(Date.now() - 14 * DAY).toISOString();
-        const { data, error } = await sb
-          .from("decisions")
-          .select("created_at,decision,action,risk_score")
-          .eq("workspace_id", wsId)
-          .gte("created_at", since)
-          .order("created_at", { ascending: false })
-          .limit(1000);
+        const all: R[] = [];
+        let failed = false;
+        for (let p = 0; p < 6; p++) {
+          const { data, error } = await sb
+            .from("decisions")
+            .select("created_at,decision,action,risk_score")
+            .eq("workspace_id", wsId)
+            .gte("created_at", since)
+            .order("created_at", { ascending: false })
+            .range(p * 1000, p * 1000 + 999);
+          if (error) { failed = true; break; }
+          const batch = (data ?? []) as R[];
+          all.push(...batch);
+          if (batch.length < 1000) break;
+        }
         if (!alive) return;
-        setRows(error ? [] : ((data ?? []) as R[]));
+        setRows(failed && all.length === 0 ? [] : all);
       } catch {
         if (alive) setRows([]);
       }

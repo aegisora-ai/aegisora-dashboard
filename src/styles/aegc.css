@@ -167,3 +167,10 @@ a.aegc-li:hover .aegc-li__t b { text-decoration: underline; text-decoration-colo
 @media (prefers-reduced-motion: reduce) { .aegc-bar__col { animation: none; } .aegc *, .aegc *::before { transition: none !important; } }
 /* aegc-step8: white wordmark, blue mark stays */
 .aegc-brand, .aegc-brand__t { color: #fff; }
+
+/* aegc-blue-theme: decision colors follow the brand blue */
+:root, html:has(.aegc), .aegc {
+  --allow: #4da3ff; --allow-muted: rgb(77 163 255 / 0.12);
+  --escalate: #a78bfa; --escalate-muted: rgb(167 139 250 / 0.12);
+  --block: #ff6b7a; --block-muted: rgb(255 107 122 / 0.12);
+}

@@ -49,7 +49,7 @@ function build(rows: Row[]) {
     const d = new Date();
     d.setHours(12, 0, 0, 0);
     d.setDate(d.getDate() - (13 - i));
-    return { key: dayKey(d), label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }), allow: 0, escalate: 0, block: 0, total: 0, blockRate: 0, allowRate: 0, escRate: 0 };
+    return { key: dayKey(d), label: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }), allow: 0, escalate: 0, block: 0, total: 0, blockRate: 0, allowRate: 0, escRate: 0 };
   });
   const idx = new Map(days.map((d, i) => [d.key, i]));
   const cur: Row[] = [];
