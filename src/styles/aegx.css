@@ -313,3 +313,18 @@ html:has(.aegx), body:has(.aegx) { background: #000; color-scheme: dark; }
 .aegx-cp .aegx-v { padding: 5px 8px; font-size: 9.5px; }
 .aegx-cp__cap { margin-top: 16px; text-align: center; font-size: 12.5px; color: var(--dim); }
 @media (prefers-reduced-motion: reduce) { .aegx-cover__s, .aegx-cp__bars i { animation: none; } }
+/* aegx-step3: blue logo + neutral black tokens for older token-based components (docs, trust, blog posts) */
+.aegx-logo__mark { display: block; flex: none; background: #1f7aff; -webkit-mask: url(/logo-mark.png) center / contain no-repeat; mask: url(/logo-mark.png) center / contain no-repeat; }
+.aegx-logo, .aegx-logo__text { color: #3d8bff; }
+.aegx {
+  --background: #000; --foreground: #f5f5f5;
+  --surface-1: #0a0a0a; --surface-2: #0e0e0e; --surface-3: #141414; --surface-4: #1b1b1b;
+  --card: #0a0a0a; --card-foreground: #f5f5f5; --popover: #0c0c0c; --popover-foreground: #f5f5f5;
+  --secondary: #141414; --secondary-foreground: #f5f5f5; --muted: #0e0e0e; --muted-foreground: #a3a3a3;
+  --accent: #171717; --accent-foreground: #fff;
+  --primary: #fff; --primary-hover: #d9d9d9; --primary-foreground: #000;
+  --border: rgb(255 255 255 / 0.12); --input: rgb(255 255 255 / 0.16); --ring: #8a8a8a;
+  --allow: #4ade80; --allow-muted: rgb(74 222 128 / 0.1);
+  --block: #f87171; --block-muted: rgb(248 113 113 / 0.1);
+  --escalate: #fbbf24; --escalate-muted: rgb(251 191 36 / 0.1);
+}
