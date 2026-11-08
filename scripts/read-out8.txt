@@ -1,0 +1,922 @@
+
+##### src\app\[locale]\(site)\page.tsx #####
+import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
+import { FileCheck, GitBranch, Scale, ScrollText, UserCheck, Users } from "lucide-react";
+import { meta } from "@/lib/seo";
+import { HomeMore, HomePreview } from "@/components/aegx/home-extra";
+import { Cell, Cells, Cta, Feed, Hero, Sec, SectionHead } from "@/components/aegx/ui";
+
+type Props = { params: Promise<{ locale: string }> };
+type Item = { title: string; body: string };
+
+const EN = {
+  metaTitle: "Runtime security for AI agents",
+  metaDesc: "Aegisora evaluates every sensitive action of an AI agent against policy, context and risk before it runs.",
+  badge: "Runtime security for AI agents",
+  title: "Control what your AI agents",
+  dim: "are allowed to do.",
+  intro: "Aegisora evaluates every sensitive action against policy, context and risk before it runs. Allow it, block it or send it to a person, and keep the evidence.",
+  primary: "Start for free",
+  secondary: "Request a pilot",
+  feedTitle: "Example decisions",
+  feedRows: [
+    { action: "crm.read_ticket", meta: "support-agent \u00b7 read access within policy", v: "ALLOW" },
+    { action: "files.export salary.csv", meta: "hr-agent \u00b7 needs a person to approve", v: "ESCALATE" },
+    { action: "customers.delete bulk", meta: "billing-agent \u00b7 violates a deletion policy", v: "BLOCK" },
+  ],
+  stepsEyebrow: "How it works",
+  stepsTitle: "One decision point.",
+  stepsDim: "Three steps.",
+  steps: [
+    { title: "Connect your agents", body: "Create an API key and import or register the agents that act on your systems." },
+    { title: "Write your policies", body: "Define what each agent may do. Start from the starter policies and tighten them as you learn." },
+    { title: "Decide, approve, prove", body: "Every action gets a decision. Escalations pause until a person approves, and every outcome is logged as evidence." },
+  ] as Item[],
+  featEyebrow: "Platform",
+  featTitle: "Every agent action",
+  featDim: "passes through one gate.",
+  features: [
+    { title: "Runtime decisions", body: "Each sensitive action is evaluated at the execution boundary and returns allow, block or escalate." },
+    { title: "Policies", body: "Rules your team controls, versioned and reviewable, applied the same way every time." },
+    { title: "Human approvals", body: "Escalated actions wait for a person. Approvals apply to one request and expire." },
+    { title: "Evidence", body: "Every decision is recorded, and the log can be exported for audits and incident reviews." },
+    { title: "Traces and audit", body: "Follow an agent across steps, with an audit trail of changes in your workspace." },
+    { title: "Team and access", body: "Workspaces, member roles, API keys, webhooks and multi-factor sign-in for your team." },
+  ] as Item[],
+  princEyebrow: "Design principles",
+  princTitle: "Built to be",
+  princDim: "trusted.",
+  principles: [
+    { title: "Deterministic", body: "The same input and the same policy always produce the same decision." },
+    { title: "Framework-agnostic", body: "Works with any agent framework through a single API." },
+    { title: "Request-bound approvals", body: "An approval applies only to the exact request it was given for." },
+    { title: "Evidence by default", body: "No decision is made without leaving a record." },
+  ] as Item[],
+  ctaTitle: "Put a gate in front of your agents.",
+  ctaBody: "Start free, or talk to us about a pilot for your team.",
+  ctaPrimary: "Start for free",
+  ctaSecondary: "Talk to us",
+};
+type Copy = typeof EN;
+
+const DE: Copy = {
+  metaTitle: "Runtime-Security f\u00fcr KI-Agenten",
+  metaDesc: "Aegisora pr\u00fcft jede sensible Aktion eines KI-Agenten gegen Richtlinie, Kontext und Risiko, bevor sie ausgef\u00fchrt wird.",
+  badge: "Runtime-Security f\u00fcr KI-Agenten",
+  title: "Steuere, was deine KI-Agenten",
+  dim: "tun d\u00fcrfen.",
+  intro: "Aegisora bewertet jede sensible Aktion anhand von Richtlinie, Kontext und Risiko, bevor sie ausgef\u00fchrt wird. Erlauben, blockieren oder an eine Person eskalieren, mit Nachweis f\u00fcr jede Entscheidung.",
+  primary: "Kostenlos starten",
+  secondary: "Pilot anfragen",
+  feedTitle: "Beispiel-Entscheidungen",
+  feedRows: [
+    { action: "crm.read_ticket", meta: "support-agent \u00b7 Lesezugriff innerhalb der Richtlinie", v: "ALLOW" },
+    { action: "files.export salary.csv", meta: "hr-agent \u00b7 Freigabe durch eine Person n\u00f6tig", v: "ESCALATE" },
+    { action: "customers.delete bulk", meta: "billing-agent \u00b7 verst\u00f6\u00dft gegen eine L\u00f6schrichtlinie", v: "BLOCK" },
+  ],
+  stepsEyebrow: "So funktioniert es",
+  stepsTitle: "Ein Entscheidungspunkt.",
+  stepsDim: "Drei Schritte.",
+  steps: [
+    { title: "Agenten verbinden", body: "Erstelle einen API-Schl\u00fcssel und importiere oder registriere die Agenten, die in deinen Systemen handeln." },
+    { title: "Richtlinien festlegen", body: "Lege fest, was jeder Agent darf. Starte mit den Starter-Richtlinien und sch\u00e4rfe sie nach." },
+    { title: "Entscheiden, freigeben, belegen", body: "Jede Aktion erh\u00e4lt eine Entscheidung. Eskalationen warten auf eine Person, jedes Ergebnis wird als Nachweis protokolliert." },
+  ],
+  featEyebrow: "Plattform",
+  featTitle: "Jede Aktion eines Agenten",
+  featDim: "l\u00e4uft durch ein Tor.",
+  features: [
+    { title: "Laufzeit-Entscheidungen", body: "Jede sensible Aktion wird an der Ausf\u00fchrungsgrenze bewertet und liefert erlauben, blockieren oder eskalieren." },
+    { title: "Richtlinien", body: "Regeln unter der Kontrolle deines Teams, versioniert und pr\u00fcfbar, jedes Mal gleich angewendet." },
+    { title: "Freigaben durch Menschen", body: "Eskalierte Aktionen warten auf eine Person. Freigaben gelten nur f\u00fcr eine Anfrage und laufen ab." },
+    { title: "Nachweise", body: "Jede Entscheidung wird festgehalten, das Protokoll l\u00e4sst sich f\u00fcr Audits und Incident-Reviews exportieren." },
+    { title: "Traces und Audit", body: "Verfolge einen Agenten \u00fcber mehrere Schritte, mit Audit-Trail der \u00c4nderungen in deinem Workspace." },
+    { title: "Team und Zugriff", body: "Workspaces, Rollen, API-Schl\u00fcssel, Webhooks und Multi-Faktor-Anmeldung f\u00fcr dein Team." },
+  ],
+  princEyebrow: "Designprinzipien",
+  princTitle: "Gebaut, um",
+  princDim: "zu vertrauen.",
+  principles: [
+    { title: "Deterministisch", body: "Gleiche Eingabe und gleiche Richtlinie ergeben immer dieselbe Entscheidung." },
+    { title: "Framework-unabh\u00e4ngig", body: "Funktioniert mit jedem Agenten-Framework \u00fcber eine einzige API." },
+    { title: "Anfragegebundene Freigaben", body: "Eine Freigabe gilt nur f\u00fcr genau die Anfrage, f\u00fcr die sie erteilt wurde." },
+    { title: "Nachweis als Standard", body: "Keine Entscheidung ohne Protokolleintrag." },
+  ],
+  ctaTitle: "Setze ein Tor vor deine Agenten.",
+  ctaBody: "Starte kostenlos oder sprich mit uns \u00fcber einen Pilot f\u00fcr dein Team.",
+  ctaPrimary: "Kostenlos starten",
+  ctaSecondary: "Mit uns sprechen",
+};
+
+const FEATURE_ICONS = [Scale, ScrollText, UserCheck, FileCheck, GitBranch, Users];
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const c = locale === "de" ? DE : EN;
+  return meta(c.metaTitle, c.metaDesc);
+}
+
+export default async function HomePage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const c = locale === "de" ? DE : EN;
+  return (
+    <>
+      <Hero
+        badge={c.badge}
+        title={c.title}
+        dim={c.dim}
+        intro={c.intro}
+        primary={{ label: c.primary, href: "/signup" }}
+        secondary={{ label: c.secondary, href: "/pilot" }}
+      >
+        <Feed title={c.feedTitle} rows={c.feedRows} />
+      </Hero>
+
+      <HomePreview locale={locale} />
+
+      <Sec flush>
+        <div className="aegx-pad aegx-pad--head">
+          <SectionHead eyebrow={c.stepsEyebrow} title={c.stepsTitle} dim={c.stepsDim} />
+        </div>
+        <Cells n={3}>
+          {c.steps.map((s, i) => (
+            <Cell key={s.title} num={String(i + 1).padStart(2, "0")} title={s.title}>{s.body}</Cell>
+          ))}
+        </Cells>
+      </Sec>
+
+      <Sec flush>
+        <div className="aegx-pad aegx-pad--head">
+          <SectionHead eyebrow={c.featEyebrow} title={c.featTitle} dim={c.featDim} />
+        </div>
+        <Cells n={6}>
+          {c.features.map((f, i) => (
+            <Cell key={f.title} icon={FEATURE_ICONS[i]} title={f.title}>{f.body}</Cell>
+          ))}
+        </Cells>
+      </Sec>
+
+      <Sec flush>
+        <div className="aegx-pad aegx-pad--head">
+          <SectionHead eyebrow={c.princEyebrow} title={c.princTitle} dim={c.princDim} />
+        </div>
+        <Cells n={4}>
+          {c.principles.map((p) => (
+            <Cell key={p.title} title={p.title}>{p.body}</Cell>
+          ))}
+        </Cells>
+      </Sec>
+
+      <HomeMore locale={locale} />
+
+      <Cta
+        title={c.ctaTitle}
+        body={c.ctaBody}
+        primary={{ label: c.ctaPrimary, href: "/signup" }}
+        secondary={{ label: c.ctaSecondary, href: "/enterprise" }}
+      />
+    </>
+  );
+}
+
+##### src\components\aegx\ui.tsx #####
+import type { ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { AegxAurora } from "./aurora";
+
+type Variant = "solid" | "soft";
+type Action = { label: string; href: string };
+
+export function Btn({ href, variant = "solid", small, block, children }: { href: string; variant?: Variant; small?: boolean; block?: boolean; children: ReactNode }) {
+  const cls = ["aegx-btn", "aegx-btn--" + variant, small ? "aegx-btn--sm" : "", block ? "aegx-btn--block" : ""].filter(Boolean).join(" ");
+  return <Link href={href} className={cls}>{children}</Link>;
+}
+
+export function Hero({ badge, title, dim, intro, primary, secondary, compact, children }: {
+  badge?: string; title: string; dim?: string; intro?: string; primary?: Action; secondary?: Action; compact?: boolean; children?: ReactNode;
+}) {
+  return (
+    <section className={"aegx-sec aegx-hero" + (compact ? " aegx-hero--compact" : "")}>
+      <div className="aegx-hero__art" aria-hidden="true"><i className="aegx-hero__band" /><AegxAurora /></div>
+      <div className="aegx-col">
+        <div className="aegx-hero__in">
+          {badge ? <span className="aegx-eyebrow">{badge}</span> : null}
+          <h1 className="aegx-h1">
+            {title}
+            {dim ? (<><br /><span className="aegx-dim">{dim}</span></>) : null}
+          </h1>
+          {intro ? <p className="aegx-lead">{intro}</p> : null}
+          {primary || secondary ? (
+            <div className="aegx-actions">
+              {primary ? <Btn href={primary.href}>{primary.label}</Btn> : null}
+              {secondary ? <Btn href={secondary.href} variant="soft">{secondary.label}</Btn> : null}
+            </div>
+          ) : null}
+          {children}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function Feed({ title, rows }: { title: string; rows: { action: string; meta: string; v: string }[] }) {
+  return (
+    <div className="aegx-feed" role="group" aria-label={title}>
+      <div className="aegx-feed__bar">
+        <span className="aegx-feed__dots" aria-hidden="true"><i /><i /><i /></span>
+        <span>{title}</span>
+      </div>
+      {rows.map((r) => (
+        <div key={r.action} className="aegx-feed__row">
+          <div>
+            <p className="aegx-mono">{r.action}</p>
+            <p className="aegx-feed__meta">{r.meta}</p>
+          </div>
+          <span className={"aegx-v aegx-v--" + r.v.toLowerCase()}>{r.v}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function SectionHead({ eyebrow, title, dim, intro }: { eyebrow?: string; title: string; dim?: string; intro?: string }) {
+  return (
+    <div className="aegx-sh">
+      {eyebrow ? <span className="aegx-eyebrow">{eyebrow}</span> : null}
+      <h2 className="aegx-h2">
+        {title}
+        {dim ? (<> <span className="aegx-dim">{dim}</span></>) : null}
+      </h2>
+      {intro ? <p className="aegx-lead">{intro}</p> : null}
+    </div>
+  );
+}
+
+export function Sec({ children, flush, id }: { children: ReactNode; flush?: boolean; id?: string }) {
+  return (
+    <section id={id} className="aegx-sec">
+      <div className="aegx-col">
+        <div className={flush ? undefined : "aegx-pad"}>{children}</div>
+      </div>
+    </section>
+  );
+}
+
+export function Cells({ n, children }: { n: 2 | 3 | 4 | 6; children: ReactNode }) {
+  return <div className={"aegx-cells aegx-cells--" + n}>{children}</div>;
+}
+
+export function Cell({ icon: Icon, num, title, children }: { icon?: LucideIcon; num?: string; title: string; children?: ReactNode }) {
+  return (
+    <div className="aegx-cell">
+      {Icon ? <span className="aegx-ico"><Icon aria-hidden="true" /></span> : null}
+      {num ? <span className="aegx-num">{num}</span> : null}
+      <h3 className="aegx-h3">{title}</h3>
+      {children ? <p className="aegx-p">{children}</p> : null}
+    </div>
+  );
+}
+
+export function Cta({ title, body, primary, secondary }: { title: string; body: string; primary: Action; secondary?: Action }) {
+  return (
+    <section className="aegx-sec">
+      <div className="aegx-col">
+        <div className="aegx-cta">
+          <div className="aegx-cta__art" aria-hidden="true" />
+          <div className="aegx-cta__in">
+            <h2 className="aegx-h2">{title}</h2>
+            <p className="aegx-lead">{body}</p>
+            <div className="aegx-actions aegx-actions--left">
+              <Btn href={primary.href}>{primary.label}</Btn>
+              {secondary ? <Btn href={secondary.href} variant="soft">{secondary.label}</Btn> : null}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+##### src\components\aegx\kit.tsx #####
+import type { ReactNode } from "react";
+import * as Lucide from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { Cells, Cta, Feed, Hero, Sec, SectionHead } from "./ui";
+
+// Everything the old kit offers stays available; the four layout pieces below replace its look.
+export * from "@/components/aegisora/page-kit";
+
+type Act = { label: string; href: string };
+
+export function PageHero(p: {
+  eyebrow?: string; title?: ReactNode; intro?: string; lead?: string; primary?: Act; secondary?: Act;
+  rows?: { action: string; meta: string; v: string }[]; children?: ReactNode; [k: string]: unknown;
+}) {
+  return (
+    <Hero
+      compact
+      badge={p.eyebrow}
+      title={typeof p.title === "string" ? p.title : ""}
+      intro={p.intro ?? p.lead}
+      primary={p.primary}
+      secondary={p.secondary}
+    >
+      {p.rows ? <Feed title="aegisora / runtime" rows={p.rows} /> : null}
+      {p.children}
+    </Hero>
+  );
+}
+
+export function Section(p: { eyebrow?: string; title?: string; intro?: string; tone?: string; id?: string; children?: ReactNode; [k: string]: unknown }) {
+  return (
+    <Sec flush id={p.id}>
+      {p.title ? (
+        <div className="aegx-pad aegx-pad--head">
+          <SectionHead eyebrow={p.eyebrow} title={p.title} intro={p.intro} />
+        </div>
+      ) : null}
+      <div className={"aegx-sbody" + (p.title ? "" : " aegx-sbody--top")}>{p.children}</div>
+    </Sec>
+  );
+}
+
+type Item = { icon?: string; title: string; body?: string; href?: string; n?: string; [k: string]: unknown };
+
+export function CardGrid({ cols = 3, items }: { cols?: number; items: Item[] }) {
+  const n = (cols === 2 || cols === 4 || cols === 6 ? cols : 3) as 2 | 3 | 4 | 6;
+  const perRow = n === 6 ? 3 : n;
+  const missing = items.length % perRow === 0 ? 0 : perRow - (items.length % perRow);
+  const icons = Lucide as unknown as Record<string, LucideIcon | undefined>;
+  return (
+    <Cells n={n}>
+      {items.map((it, i) => {
+        const Icon = it.icon ? icons[it.icon] : undefined;
+        const inner = (
+          <>
+            {Icon ? <span className="aegx-ico"><Icon aria-hidden="true" /></span> : null}
+            {it.n ? <span className="aegx-num">{it.n}</span> : null}
+            <h3 className="aegx-h3">{it.title}</h3>
+            {it.body ? <p className="aegx-p">{it.body}</p> : null}
+          </>
+        );
+        return it.href ? (
+          <Link key={i} href={it.href} className="aegx-cell">{inner}</Link>
+        ) : (
+          <div key={i} className="aegx-cell">{inner}</div>
+        );
+      })}
+      {Array.from({ length: missing }).map((_, i) => (
+        <div key={"f" + i} className="aegx-cell aegx-cell--fill" aria-hidden="true" />
+      ))}
+    </Cells>
+  );
+}
+
+export function CtaBand(p: { title: string; body?: string; primary: Act; secondary?: Act; [k: string]: unknown }) {
+  return <Cta title={p.title} body={p.body ?? ""} primary={p.primary} secondary={p.secondary} />;
+}
+
+##### src\components\aegx\home-extra.tsx #####
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { POSTS } from "@/lib/blog-posts";
+import { BlogCover } from "./blog-cover";
+import { ConsolePreview } from "./console-preview";
+import { Cell, Cells, Sec, SectionHead } from "./ui";
+
+export function HomePreview({ locale }: { locale: string }) {
+  const de = locale === "de";
+  return (
+    <Sec flush>
+      <div className="aegx-pad aegx-pad--head">
+        <SectionHead
+          eyebrow={de ? "Konsole" : "Console"}
+          title={de ? "Jede Entscheidung" : "Every decision,"}
+          dim={de ? "auf einen Blick." : "at a glance."}
+          intro={de ? "Freigaben, Richtlinien, Agenten und Nachweise in einer ruhigen, schnellen Konsole." : "Approvals, policies, agents and evidence in one calm, fast console."}
+        />
+      </div>
+      <div className="aegx-sbody"><ConsolePreview de={de} /></div>
+    </Sec>
+  );
+}
+
+export async function HomeMore({ locale }: { locale: string }) {
+  const de = locale === "de";
+  const tp = await getTranslations({ locale, namespace: "Pricing" });
+  const tb = await getTranslations({ locale, namespace: "Blog" });
+  const fmt = (iso: string) =>
+    new Date(iso + "T00:00:00Z").toLocaleDateString(de ? "de-DE" : "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+  const use = de
+    ? [
+        { title: "Plattform-Teams", body: "Ein Richtlinien-Tor vor jedem Agenten, unabh\u00e4ngig vom Framework." },
+        { title: "Security-Teams", body: "Riskante Aktionen blockieren, bevor sie Produktivsysteme erreichen." },
+        { title: "Compliance und Audit", body: "Jede Entscheidung als pr\u00fcfbarer Nachweis, exportierbar f\u00fcr Audits." },
+        { title: "KI-Produktteams", body: "Agenten ausliefern und Menschen genau dort einbinden, wo es z\u00e4hlt." },
+      ]
+    : [
+        { title: "Platform teams", body: "One policy gate in front of every agent, whatever the framework." },
+        { title: "Security teams", body: "Block risky actions before they reach production systems." },
+        { title: "Compliance and audit", body: "Every decision as reviewable evidence, exportable for audits." },
+        { title: "AI product teams", body: "Ship agents and bring people in exactly where it matters." },
+      ];
+  const faq: [string, string][] = ["1", "2", "3", "4", "5"].map((n) => [tp("q" + n), tp("a" + n)]);
+  const posts = POSTS.slice(0, 3);
+  return (
+    <>
+      <Sec flush>
+        <div className="aegx-pad aegx-pad--head">
+          <SectionHead eyebrow={de ? "F\u00fcr wen" : "Built for"} title={de ? "Teams, die Agenten" : "Teams that run agents"} dim={de ? "in Produktion bringen." : "in production."} />
+        </div>
+        <Cells n={4}>
+          {use.map((u) => (<Cell key={u.title} title={u.title}>{u.body}</Cell>))}
+        </Cells>
+      </Sec>
+
+      {posts.length > 0 ? (
+        <Sec flush>
+          <div className="aegx-pad aegx-pad--head">
+            <SectionHead eyebrow="Blog" title={de ? "Neueste" : "Latest"} dim={de ? "Beitr\u00e4ge." : "posts."} />
+          </div>
+          <div className="aegx-cells aegx-cells--3">
+            {posts.map((p) => (
+              <Link key={p.slug} href={"/blog/" + p.slug} className="aegx-cell aegx-post">
+                <div className="aegx-post__cover"><BlogCover seed={p.slug} label={p.category} /></div>
+                <div className="aegx-post__b">
+                  <span className="aegx-post__cat">{p.category}</span>
+                  <h3 className="aegx-h3">{p.title}</h3>
+                  <span className="aegx-post__meta">{fmt(p.date) + " \u00b7 " + tb("minRead", { n: p.readMinutes })}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </Sec>
+      ) : null}
+
+      <Sec>
+        <SectionHead title={tp("faqTitle")} />
+        <div className="aegx-faq" style={{ marginTop: 40 }}>
+          {faq.map(([q, a]) => (
+            <details key={q}>
+              <summary>{q}<span aria-hidden="true">+</span></summary>
+              <p>{a}</p>
+            </details>
+          ))}
+        </div>
+      </Sec>
+    </>
+  );
+}
+
+##### src\app\[locale]\(site)\docs\layout.tsx #####
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import "@/components/aegisora/bw/bw.css";
+import { bwFontVars } from "@/components/aegisora/bw/bw-font-vars";
+import { DocsFrame } from "@/components/aegisora/docs-frame";
+import { DocsNav } from "@/components/aegisora/docs-nav";
+
+export default async function DocsLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "Docs" });
+  return (
+    <div className={bwFontVars}>
+      <DocsFrame menu={t("menu")} nav={<DocsNav />}>
+        {children}
+      </DocsFrame>
+    </div>
+  );
+}
+
+##### src\app\[locale]\(site)\docs\technical\page.tsx #####
+import type { Metadata } from "next";
+import { TechDocs } from "@/components/aegisora/tech-docs/tech-docs";
+
+export const metadata: Metadata = {
+  title: "Technical documentation",
+  description:
+    "Aegisora runtime reference: governance pipeline, canonical authority, Continuity Seal, evidence and enterprise controls for autonomous AI agents.",
+};
+
+export default function TechnicalDocsPage() {
+  return <TechDocs />;
+}
+
+##### src\components\aegisora\docs-frame.tsx #####
+"use client";
+
+import type { ReactNode } from "react";
+import { usePathname } from "@/i18n/navigation";
+
+export function DocsFrame({ menu, nav, children }: { menu: string; nav: ReactNode; children: ReactNode }) {
+  const pathname = usePathname();
+  // The technical reference has its own sidebar, so it renders full width.
+  if (pathname === "/docs/technical") return <>{children}</>;
+  return (
+    <div className="mx-auto max-w-[1280px] px-4 py-10 text-foreground sm:px-6 md:py-16">
+      <details className="mb-8 rounded-xl border border-border bg-surface-1 px-4 py-3 lg:hidden">
+        <summary className="cursor-pointer text-sm font-semibold">{menu}</summary>
+        <div className="mt-3">{nav}</div>
+      </details>
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[220px_1fr]">
+        <aside className="hidden lg:block">
+          <div className="sticky top-24">{nav}</div>
+        </aside>
+        <div className="min-w-0">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+##### src\components\aegisora\tech-docs\tech-docs.tsx #####
+"use client";
+
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  DOC_VERSION,
+  GROUPS,
+  PIPELINE,
+  SECTIONS,
+  type Block,
+  type DocSection,
+  type PipelineStep,
+} from "./data";
+
+const THEME = { "--td-bg": "transparent", "--td-panel": "color-mix(in srgb, var(--foreground) 5%, transparent)", "--td-panel-2": "color-mix(in srgb, var(--foreground) 8%, transparent)", "--td-line": "color-mix(in srgb, var(--foreground) 14%, transparent)", "--td-text": "var(--foreground)", "--td-muted": "color-mix(in srgb, var(--foreground) 62%, transparent)", "--td-accent": "var(--primary)", "--td-accent-2": "var(--primary)" } as CSSProperties;
+
+function Inline({ text }: { text: string }) {
+  const parts = text.split(/(`[^`]+`)/g);
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.startsWith("`") && p.endsWith("`") && p.length > 2 ? (
+          <code
+            key={i}
+            className="rounded bg-[var(--td-line)] px-1.5 py-0.5 font-mono text-[0.85em] text-[var(--td-accent-2)]"
+          >
+            {p.slice(1, -1)}
+          </code>
+        ) : (
+          <span key={i}>{p}</span>
+        ),
+      )}
+    </>
+  );
+}
+
+function CodeBlock({ title, code }: { title?: string; code: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      setCopied(false);
+    }
+  };
+  return (
+    <div className="overflow-hidden rounded-xl border border-[var(--td-line)] bg-[var(--td-panel-2)]">
+      <div className="flex items-center justify-between border-b border-[var(--td-line)] px-4 py-2">
+        <span className="text-xs font-medium uppercase tracking-wider text-[var(--td-muted)]">
+          {title ?? "Reference"}
+        </span>
+        <button
+          type="button"
+          onClick={copy}
+          className="rounded-md border border-[var(--td-line)] px-2 py-1 text-xs text-[var(--td-muted)] transition hover:border-[var(--td-accent)] hover:text-[var(--td-text)]"
+        >
+          {copied ? "Copied" : "Copy"}
+        </button>
+      </div>
+      <pre className="overflow-x-auto p-4 font-mono text-[13px] leading-relaxed text-[var(--td-text)]">
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
+
+function Pipeline() {
+  const start = Math.max(
+    0,
+    PIPELINE.findIndex((s) => s.name === "CONTINUITY SEAL"),
+  );
+  const [sel, setSel] = useState(start);
+  const step: PipelineStep = PIPELINE.find((_, i) => i === sel) ?? (PIPELINE[0] as PipelineStep);
+  return (
+    <div className="grid gap-4 lg:grid-cols-[250px_minmax(0,1fr)]">
+      <ol className="space-y-1">
+        {PIPELINE.map((s, i) => (
+          <li key={s.name}>
+            <button
+              type="button"
+              onClick={() => setSel(i)}
+              aria-pressed={i === sel}
+              className={
+                "flex w-full items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm transition " +
+                (i === sel
+                  ? "border-[var(--td-accent)] bg-[var(--td-accent)]/10 text-[var(--td-text)]"
+                  : "border-transparent text-[var(--td-muted)] hover:bg-[var(--td-panel-2)] hover:text-[var(--td-text)]")
+              }
+            >
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--td-line)] font-mono text-[11px]">
+                {i + 1}
+              </span>
+              <span className="flex-1 font-medium tracking-wide">{s.name}</span>
+              {s.since ? (
+                <span className="rounded-full bg-[var(--td-accent)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--td-accent)]">
+                  {s.since}
+                </span>
+              ) : null}
+            </button>
+          </li>
+        ))}
+      </ol>
+      <div className="rounded-xl border border-[var(--td-line)] bg-[var(--td-panel)] p-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="font-mono text-xs text-[var(--td-muted)]">
+            Stage {sel + 1} of {PIPELINE.length}
+          </span>
+          {step.since ? (
+            <span className="rounded-full bg-[var(--td-accent)]/15 px-2.5 py-0.5 text-xs font-semibold text-[var(--td-accent)]">
+              Introduced in {step.since}
+            </span>
+          ) : null}
+        </div>
+        <h4 className="mt-3 text-xl font-semibold tracking-wide text-[var(--td-text)]">{step.name}</h4>
+        <p className="mt-2 text-[var(--td-text)]/90">{step.summary}</p>
+        <ul className="mt-5 space-y-2.5">
+          {step.details.map((d) => (
+            <li key={d} className="flex gap-3 text-sm leading-relaxed text-[var(--td-muted)]">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--td-accent-2)]" />
+              <span>
+                <Inline text={d} />
+              </span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-6 flex justify-between border-t border-[var(--td-line)] pt-4 text-sm">
+          <button
+            type="button"
+            disabled={sel === 0}
+            onClick={() => setSel((v) => Math.max(0, v - 1))}
+            className="text-[var(--td-muted)] transition hover:text-[var(--td-text)] disabled:opacity-30"
+          >
+            Previous stage
+          </button>
+          <button
+            type="button"
+            disabled={sel === PIPELINE.length - 1}
+            onClick={() => setSel((v) => Math.min(PIPELINE.length - 1, v + 1))}
+            className="text-[var(--td-accent)] transition hover:text-[var(--td-text)] disabled:opacity-30"
+          >
+            Next stage
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const TONES: Record<"info" | "security" | "new", { box: string; label: string }> = {
+  info: { box: "border-sky-500/40 bg-sky-500/[0.08]", label: "text-sky-600" },
+  security: { box: "border-emerald-500/40 bg-emerald-500/[0.08]", label: "text-emerald-600" },
+  new: { box: "border-[var(--td-accent)]/35 bg-[var(--td-accent)]/10", label: "text-[var(--td-accent)]" },
+};
+
+function BlockView({ b }: { b: Block }): ReactNode {
+  switch (b.t) {
+    case "p":
+      return (
+        <p className="leading-relaxed text-[var(--td-muted)]">
+          <Inline text={b.text} />
+        </p>
+      );
+    case "h3":
+      return (
+        <h3 id={b.id} className="scroll-mt-28 pt-4 text-lg font-semibold text-[var(--td-text)]">
+          {b.text}
+        </h3>
+      );
+    case "list": {
+      const Tag = b.ordered ? "ol" : "ul";
+      return (
+        <Tag className="space-y-2">
+          {b.items.map((it) => (
+            <li key={it} className="flex gap-3 leading-relaxed text-[var(--td-muted)]">
+              <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--td-accent)]" />
+              <span>
+                <Inline text={it} />
+              </span>
+            </li>
+          ))}
+        </Tag>
+      );
+    }
+    case "code":
+      return <CodeBlock title={b.title} code={b.code} />;
+    case "table":
+      return (
+        <div className="overflow-x-auto rounded-xl border border-[var(--td-line)]">
+          <table className="w-full min-w-[520px] border-collapse text-left text-sm">
+            <thead>
+              <tr className="bg-[var(--td-panel-2)]">
+                {b.head.map((h) => (
+                  <th key={h} className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[var(--td-muted)]">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {b.rows.map((r, i) => (
+                <tr key={i} className="border-t border-[var(--td-line)]">
+                  {r.map((c, j) => (
+                    <td
+                      key={j}
+                      className={"px-4 py-3 align-top " + (j === 0 ? "font-medium text-[var(--td-text)]" : "text-[var(--td-muted)]")}
+                    >
+                      <Inline text={c} />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    case "callout": {
+      const tone = TONES[b.tone];
+      return (
+        <div className={"rounded-xl border p-4 " + tone.box}>
+          <div className={"text-xs font-semibold uppercase tracking-wider " + tone.label}>{b.title}</div>
+          <p className="mt-1.5 text-sm leading-relaxed text-[var(--td-text)]/90">
+            <Inline text={b.text} />
+          </p>
+        </div>
+      );
+    }
+    case "cards":
+      return (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {b.items.map((c) => (
+            <div key={c.title} className="rounded-xl border border-[var(--td-line)] bg-[var(--td-panel)] p-5">
+              {c.tag ? (
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--td-accent-2)]">{c.tag}</span>
+              ) : null}
+              <div className="mt-1 font-semibold text-[var(--td-text)]">{c.title}</div>
+              <p className="mt-1.5 text-sm leading-relaxed text-[var(--td-muted)]">
+                <Inline text={c.text} />
+              </p>
+            </div>
+          ))}
+        </div>
+      );
+    case "pipeline":
+      return <Pipeline />;
+    default:
+      return null;
+  }
+}
+
+function matches(s: DocSection, q: string): boolean {
+  if (!q) return true;
+  return (s.title + " " + s.keywords + " " + s.lead).toLowerCase().includes(q.toLowerCase());
+}
+
+export function TechDocs() {
+  const [query, setQuery] = useState("");
+  const [active, setActive] = useState(SECTIONS[0]?.id ?? "");
+  const [open, setOpen] = useState(false);
+
+
+##### src\app\[locale]\(site)\layout.tsx #####
+import "@/styles/aegx.css";
+import { Inter } from "next/font/google";
+
+import { AegxFooter } from "@/components/aegx/footer";
+import { AegxFx } from "@/components/aegx/fx";
+import { AegxHeader } from "@/components/aegx/header";
+import { ForceDark } from "@/components/aegx/force-dark";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+
+export default function SiteLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <div className={"aegx " + inter.variable}>
+      <ForceDark />
+      <AegxFx />
+      <AegxHeader />
+      <main>{children}</main>
+      <AegxFooter />
+      
+    </div>
+  );
+}
+
+##### messages: hero / home metinleri #####
+messages\en.json:54: "tagline": "Runtime security for AI agents",
+messages\en.json:427: "badge": "Runtime security for AI agents",
+messages\en.json:1337: "badge": "Runtime security for AI agents",
+
+##### css: hero, head, burger, art, sec, col, media #####
+aegx.css 6:   --col: 1180px; --pad: clamp(20px, 4vw, 40px);
+aegx.css 22: .aegx-head { position: sticky; top: 0; z-index: 80; background: rgb(0 0 0 / 0.72); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+aegx.css 23: .aegx-head__in { max-width: var(--col); margin: 0 auto; height: 60px; padding: 0 var(--pad); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; }
+aegx.css 24: .aegx-head__brand { display: inline-flex; align-items: center; justify-self: start; }
+aegx.css 29: .aegx-head__right { justify-self: end; display: flex; align-items: center; gap: 10px; }
+aegx.css 30: .aegx-head__signin { font-size: 13.5px; color: var(--mut); padding: 7px 10px; border-radius: 999px; transition: color 0.2s; }
+aegx.css 31: .aegx-head__signin:hover { color: #fff; }
+aegx.css 32: .aegx-burger { display: none; width: 38px; height: 38px; align-items: center; justify-content: center; border-radius: 999px; border: 1px solid var(--line2); background: transparent; color: #fff; cursor: pointer; }
+aegx.css 33: .aegx-burger svg { width: 18px; height: 18px; }
+aegx.css 34: @media (max-width: 860px) {
+aegx.css 35:   .aegx-head__in { grid-template-columns: 1fr auto; }
+aegx.css 36:   .aegx-nav, .aegx-head__signin { display: none; }
+aegx.css 37:   .aegx-burger { display: inline-flex; }
+aegx.css 39: .aegx-drawer { position: fixed; inset: 60px 0 0 0; z-index: 70; background: #000; padding: 20px var(--pad) 40px; overflow-y: auto; }
+aegx.css 60: .aegx-sec { position: relative; border-top: 1px solid var(--line); }
+aegx.css 61: .aegx-col { position: relative; max-width: var(--col); margin: 0 auto; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+aegx.css 62: .aegx-sec > .aegx-col::before, .aegx-sec > .aegx-col::after { content: "+"; position: absolute; top: -9px; z-index: 2; font-size: 15px; line-height: 1; color: rgb(255 255 255 / 0.42); pointer-events: none; }
+aegx.css 63: .aegx-sec > .aegx-col::before { left: -5px; }
+aegx.css 64: .aegx-sec > .aegx-col::after { right: -5px; }
+aegx.css 65: @media (max-width: 1240px) { .aegx-sec > .aegx-col::before, .aegx-sec > .aegx-col::after { display: none; } }
+aegx.css 66: .aegx-pad { padding: clamp(56px, 8vw, 104px) var(--pad); }
+aegx.css 71: .aegx-h1 { font-size: clamp(36px, 6vw, 62px); line-height: 1.05; letter-spacing: -0.035em; font-weight: 500; }
+aegx.css 72: .aegx-h2 { font-size: clamp(28px, 4vw, 42px); line-height: 1.1; letter-spacing: -0.028em; font-weight: 500; }
+aegx.css 75: .aegx-lead { max-width: 540px; margin: 20px auto 0; font-size: 16px; line-height: 1.6; color: var(--mut); }
+aegx.css 83: .aegx-hero { border-top: 0; overflow: hidden; isolation: isolate; }
+aegx.css 84: .aegx-hero__art { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; background:
+aegx.css 90: .aegx-hero__art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, #000 0%, rgb(0 0 0 / 0.6) 34%, rgb(0 0 0 / 0) 68%, #000 100%); }
+aegx.css 91: .aegx-hero__band { position: absolute; left: -10%; right: -10%; bottom: -26%; height: 62%; transform: rotate(-8deg); background: linear-gradient(90deg, transparent 0%, #1d3bff 22%, #8a4dff 40%, #ff5fa8 55%, #ffb35c 70%, #ffe08a 82%, transparent 100%); filter: blur(48px); opacity: 0.7; animation: aegx-drift 28s ease-in-out infinite alternate; will-change: transform; }
+aegx.css 93: .aegx-hero__in { text-align: center; padding: clamp(72px, 11vw, 124px) var(--pad) clamp(48px, 7vw, 80px); }
+aegx.css 94: .aegx-hero--compact .aegx-hero__in { padding: clamp(64px, 9vw, 104px) var(--pad) clamp(44px, 6vw, 72px); }
+aegx.css 95: .aegx-hero--compact .aegx-hero__band { opacity: 0.5; height: 48%; }
+aegx.css 96: @media (max-width: 768px) { .aegx-hero__band { animation: none; } }
+aegx.css 111: .aegx-cells { display: grid; gap: 1px; background: var(--line); border-top: 1px solid var(--line); }
+aegx.css 112: .aegx-cells--2 { grid-template-columns: repeat(2, 1fr); }
+aegx.css 113: .aegx-cells--3 { grid-template-columns: repeat(3, 1fr); }
+aegx.css 114: .aegx-cells--4 { grid-template-columns: repeat(4, 1fr); }
+aegx.css 115: .aegx-cells--6 { grid-template-columns: repeat(3, 1fr); }
+aegx.css 116: @media (max-width: 1100px) { .aegx-cells--4 { grid-template-columns: repeat(2, 1fr); } }
+aegx.css 117: @media (max-width: 900px) { .aegx-cells--3 { grid-template-columns: 1fr; } .aegx-cells--6 { grid-template-columns: repeat(2, 1fr); } }
+aegx.css 118: @media (max-width: 700px) { .aegx-cells--2 { grid-template-columns: 1fr; } }
+aegx.css 119: @media (max-width: 600px) { .aegx-cells--4, .aegx-cells--6 { grid-template-columns: 1fr; } }
+aegx.css 120: .aegx-cell { background: #000; padding: clamp(24px, 3vw, 36px); }
+aegx.css 138: .aegx-band { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; padding: 30px var(--pad); border-top: 1px solid var(--line); }
+aegx.css 167: .aegx-cta { position: relative; overflow: hidden; isolation: isolate; padding: clamp(56px, 8vw, 96px) var(--pad); }
+aegx.css 175: .aegx-cta .aegx-lead { margin-left: 0; }
+aegx.css 178: .aegx-foot__grid { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 36px; padding: clamp(48px, 6vw, 72px) var(--pad); }
+aegx.css 179: @media (max-width: 960px) { .aegx-foot__grid { grid-template-columns: repeat(2, 1fr); } .aegx-foot__brand { grid-column: 1 / -1; } }
+aegx.css 188: .aegx-foot__legal { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding: 22px var(--pad); border-top: 1px solid var(--line); font-size: 13px; color: var(--dim); }
+aegx.css 190: @media (prefers-reduced-motion: reduce) {
+aegx.css 191:   .aegx-hero__band { animation: none; }
+aegx.css 197: .aegx-cell { position: relative; --mx: 50%; --my: 50%; }
+aegx.css 200: .aegx a.aegx-cell { display: block; }
+aegx.css 203: @media (max-width: 1100px) { .aegx-cell--fill { display: none; } }
+aegx.css 204: .aegx-hero__art canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0.9; }
+aegx.css 205: .aegx-sbody { padding: 0 var(--pad) clamp(40px, 6vw, 72px); }
+aegx.css 207: .aegx-sbody > .aegx-cells { margin: 0 calc(var(--pad) * -1); }
+aegx.css 208: .aegx-sbody:has(> .aegx-cells:last-child) { padding-bottom: 0; }
+aegx.css 216: @media (max-width: 640px) { .aegx-form__row { grid-template-columns: 1fr; } }
+aegx.css 232: .aegx-auth__top { display: flex; align-items: center; padding: 22px var(--pad); }
+aegx.css 233: .aegx-auth__main { flex: 1; display: grid; place-items: center; padding: 16px var(--pad) 72px; }
+aegx.css 235: @media (prefers-reduced-motion: reduce) { .aegx [data-rv] { transition: none; } .aegx-js [data-rv]:not(.is-in) { opacity: 1; transform: none; } }
+aegx.css 239: .aegx a.aegx-head__signin { color: var(--mut); }
+aegx.css 240: .aegx a.aegx-head__signin:hover { color: #fff; }
+aegx.css 244: .aegx-hero__art { background:
+aegx.css 249: .aegx-hero__band { background: linear-gradient(90deg, transparent 0%, #0a2a8f 20%, #1f7aff 44%, #4da3ff 60%, #1448d8 80%, transparent 100%); opacity: 0.55; }
+aegx.css 257: @media (max-width: 960px) { .aegx-foot__grid { grid-template-columns: repeat(2, 1fr); } }
+aegx.css 262: .aegx-loop { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 26px var(--pad); font-size: 15px; color: var(--mut); }
+aegx.css 270: @media (max-width: 860px) { .aegx a.aegx-feature { grid-template-columns: 1fr; } }
+aegx.css 274: .aegx a.aegx-feature:hover .aegx-h2 { text-decoration: underline; text-underline-offset: 6px; text-decoration-color: rgb(255 255 255 / 0.3); }
+aegx.css 280: .aegx-tabs { display: flex; flex-wrap: wrap; gap: 8px; padding: 26px var(--pad); border-top: 1px solid var(--line); }
+aegx.css 288: @media (max-width: 720px) { .aegx-cp { grid-template-columns: 1fr; } .aegx-cp__side { display: none; } }
+aegx.css 298: @media (max-width: 560px) { .aegx-cp__stats { grid-template-columns: repeat(2, 1fr); } }
+aegx.css 303: @media (max-width: 720px) { .aegx-cp__grid { grid-template-columns: 1fr; } }
+aegx.css 315: @media (prefers-reduced-motion: reduce) { .aegx-cover__s, .aegx-cp__bars i { animation: none; } }
+aegx.css 332: .aegx-art { max-width: 720px; margin: 0 auto; padding: clamp(32px, 6vw, 72px) var(--pad); }
+aegx.css 341: .aegx a.aegx-head__signin { white-space: nowrap; }
+aegx.css 343: @media (max-width: 1100px) {
+aegx.css 344:   .aegx-head__in { grid-template-columns: 1fr auto; }
+aegx.css 345:   .aegx-nav, .aegx-head__signin { display: none; }
+aegx.css 346:   .aegx-burger { display: inline-flex; }
+aegx.css 348: .aegx-hero__in .aegx-lead { margin-left: auto; margin-right: auto; text-align: center; }
+aegx.css 349: .aegx-hero__in .aegx-actions { justify-content: center; }
+aegx.css 351: .aegx-cta__in .aegx-lead { margin-left: 0; margin-right: 0; text-align: left; }
+aegx.css 354: .aegx-sup-searchwrap { padding: 0 var(--pad); margin-top: -18px; position: relative; z-index: 5; }
+aegx.css 362: @media (max-width: 560px) { .aegx-ss__box kbd { display: none; } }
+aegx.css 376: .aegx .aegx-sup-list a { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px var(--pad); color: #fff; font-size: 15.5px; font-weight: 500; transition: background-color 0.2s; }
+aegx.css 385: .aegx .aegx-sup-mini a, .aegx .aegx-cell h3 a { color: #fff; }
+aegx.css 387: .aegx .aegx-sup-mini a:hover, .aegx .aegx-cell h3 a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgb(255 255 255 / 0.35); }
+aegx.css 391: .aegx-sup { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 40px; padding: clamp(32px, 5vw, 60px) var(--pad); }
+aegx.css 393: @media (max-width: 1180px) { .aegx-sup--toc { grid-template-columns: 240px minmax(0, 1fr); } .aegx-sup__toc { display: none; } }
