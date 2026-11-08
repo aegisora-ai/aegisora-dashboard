@@ -5,11 +5,11 @@ import { useEffect, useRef } from "react";
 type Blob = { c: string; r: number; sx: number; sy: number; px: number; py: number; ax: number; ay: number; cx: number; cy: number; a: number };
 
 const BLOBS: Blob[] = [
-  { c: "214,70,160", r: 0.62, sx: 0.00021, sy: 0.00017, px: 0.0, py: 1.3, ax: 0.1, ay: 0.06, cx: 0.14, cy: 0.9, a: 0.62 },
-  { c: "40,90,255", r: 0.7, sx: 0.00017, sy: 0.00023, px: 2.1, py: 0.4, ax: 0.12, ay: 0.05, cx: 0.4, cy: 0.98, a: 0.72 },
-  { c: "255,186,70", r: 0.58, sx: 0.00025, sy: 0.00015, px: 4.0, py: 2.2, ax: 0.1, ay: 0.06, cx: 0.72, cy: 0.94, a: 0.6 },
-  { c: "70,210,255", r: 0.5, sx: 0.00019, sy: 0.00027, px: 1.1, py: 3.3, ax: 0.08, ay: 0.08, cx: 0.92, cy: 0.78, a: 0.45 },
-  { c: "138,77,255", r: 0.6, sx: 0.00023, sy: 0.00019, px: 3.2, py: 5.1, ax: 0.14, ay: 0.06, cx: 0.55, cy: 0.88, a: 0.5 },
+  { c: "20,72,216", r: 0.72, sx: 0.00021, sy: 0.00017, px: 0.0, py: 1.3, ax: 0.1, ay: 0.06, cx: 0.16, cy: 0.95, a: 0.72 },
+  { c: "31,122,255", r: 0.78, sx: 0.00017, sy: 0.00023, px: 2.1, py: 0.4, ax: 0.12, ay: 0.05, cx: 0.45, cy: 1.0, a: 0.78 },
+  { c: "77,163,255", r: 0.56, sx: 0.00025, sy: 0.00015, px: 4.0, py: 2.2, ax: 0.1, ay: 0.06, cx: 0.78, cy: 0.95, a: 0.55 },
+  { c: "60,90,255", r: 0.6, sx: 0.00019, sy: 0.00027, px: 1.1, py: 3.3, ax: 0.08, ay: 0.08, cx: 0.62, cy: 0.85, a: 0.45 },
+  { c: "10,42,143", r: 0.85, sx: 0.00023, sy: 0.00019, px: 3.2, py: 5.1, ax: 0.14, ay: 0.06, cx: 0.3, cy: 0.8, a: 0.7 },
 ];
 
 /** Soft animated aurora on a small canvas. Pauses off-screen and respects reduced motion. */

@@ -1,5 +1,4 @@
-import { ArrowRight } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { SocialLinks } from "@/components/aegisora/social-links";
 import { AegxBrand } from "./brand";
@@ -13,37 +12,44 @@ const COLS: { key: string; links: [string, string][] }[] = [
 
 export function AegxFooter() {
   const t = useTranslations("Footer");
+  const de = useLocale() === "de";
   return (
-    <footer className="aegx-sec aegx-foot">
-      <div className="aegx-col">
-        <div className="aegx-foot__grid">
-          <div className="aegx-foot__brand">
-            <AegxBrand height={24} />
-            <p>{t("tagline")}</p>
-            <Link href="/signup" className="aegx-btn aegx-btn--solid">
-              {t("getStarted")}
-              <ArrowRight aria-hidden="true" size={16} />
-            </Link>
-            <p className="aegx-foot__note">{t("note")}</p>
-            <div className="aegx-foot__social" role="group" aria-label={t("socialAria")}>
-              <SocialLinks />
-            </div>
+    <>
+      <section className="aegx-sec">
+        <div className="aegx-col">
+          <div className="aegx-loop">
+            <p><b>{de ? "Bleib auf dem Laufenden." : "Stay in the loop."}</b> {de ? "Neue Funktionen und Releases im Blick." : "Follow new features and releases."}</p>
+            <Link href="/changelog" className="aegx-btn aegx-btn--soft aegx-btn--sm">{de ? "Updates ansehen" : "See updates"}</Link>
           </div>
-          {COLS.map((col) => (
-            <nav key={col.key} className="aegx-foot__col" aria-label={t("cols." + col.key)}>
-              <h2>{t("cols." + col.key)}</h2>
-              <ul>
-                {col.links.map(([k, href]) => (
-                  <li key={k}><Link href={href}>{t("links." + k)}</Link></li>
-                ))}
-              </ul>
-            </nav>
-          ))}
         </div>
-        <div className="aegx-foot__legal">
-          <span>&copy; {new Date().getFullYear()} Aegisora. {t("rights")}</span>
+      </section>
+      <footer className="aegx-sec aegx-foot">
+        <div className="aegx-col">
+          <div className="aegx-foot__grid">
+            <div className="aegx-foot__brand">
+              <AegxBrand height={24} />
+              <p>{t("tagline")}</p>
+              <div className="aegx-foot__social" role="group" aria-label={t("socialAria")}>
+                <SocialLinks />
+              </div>
+              <p className="aegx-foot__note">{t("note")}</p>
+            </div>
+            {COLS.map((col) => (
+              <nav key={col.key} className="aegx-foot__col" aria-label={t("cols." + col.key)}>
+                <h2>{t("cols." + col.key)}</h2>
+                <ul>
+                  {col.links.map(([k, href]) => (
+                    <li key={k}><Link href={href}>{t("links." + k)}</Link></li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
+          </div>
+          <div className="aegx-foot__legal">
+            <span>&copy; {new Date().getFullYear()} Aegisora. {t("rights")}</span>
+          </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }

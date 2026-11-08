@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { FileCheck, GitBranch, Scale, ScrollText, UserCheck, Users } from "lucide-react";
 import { meta } from "@/lib/seo";
+import { HomeMore, HomePreview } from "@/components/aegx/home-extra";
 import { Cell, Cells, Cta, Feed, Hero, Sec, SectionHead } from "@/components/aegx/ui";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -131,6 +132,8 @@ export default async function HomePage({ params }: Props) {
         <Feed title={c.feedTitle} rows={c.feedRows} />
       </Hero>
 
+      <HomePreview locale={locale} />
+
       <Sec flush>
         <div className="aegx-pad aegx-pad--head">
           <SectionHead eyebrow={c.stepsEyebrow} title={c.stepsTitle} dim={c.stepsDim} />
@@ -163,6 +166,8 @@ export default async function HomePage({ params }: Props) {
           ))}
         </Cells>
       </Sec>
+
+      <HomeMore locale={locale} />
 
       <Cta
         title={c.ctaTitle}

@@ -8,11 +8,13 @@ import { BwLocaleSwitcher } from "@/components/aegisora/bw/bw-locale-switcher";
 import { AegxBrand } from "./brand";
 
 const NAV = [
-  { key: "product", href: "/product" },
-  { key: "security", href: "/security" },
-  { key: "pricing", href: "/pricing" },
-  { key: "docs", href: "/docs" },
-  { key: "pilot", href: "/pilot" },
+  { href: "/product", en: "Product", de: "Produkt" },
+  { href: "/solutions", en: "Solutions", de: "L\u00f6sungen" },
+  { href: "/pricing", en: "Pricing", de: "Preise" },
+  { href: "/docs", en: "Docs", de: "Docs" },
+  { href: "/changelog", en: "Updates", de: "Updates" },
+  { href: "/blog", en: "Blog", de: "Blog" },
+  { href: "/pilot", en: "Contact", de: "Kontakt" },
 ];
 
 export function AegxHeader() {
@@ -20,7 +22,9 @@ export function AegxHeader() {
   const locale = useLocale();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const signIn = locale === "de" ? "Anmelden" : "Sign in";
+  const de = locale === "de";
+  const signIn = de ? "Anmelden" : "Sign in";
+  const label = (n: (typeof NAV)[number]) => (de ? n.de : n.en);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setOpen(false), 0);
@@ -29,9 +33,7 @@ export function AegxHeader() {
 
   useEffect(() => {
     if (!open) return undefined;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
     const prev = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
     document.addEventListener("keydown", onKey);
@@ -52,22 +54,14 @@ export function AegxHeader() {
           </Link>
           <nav className="aegx-nav" aria-label={t("mainAria")}>
             {NAV.map((n) => (
-              <Link key={n.key} href={n.href} aria-current={on(n.href) ? "page" : undefined}>
-                {t("items." + n.key)}
-              </Link>
+              <Link key={n.href} href={n.href} aria-current={on(n.href) ? "page" : undefined}>{label(n)}</Link>
             ))}
           </nav>
           <div className="aegx-head__right">
             <BwLocaleSwitcher />
             <Link href="/login" className="aegx-head__signin">{signIn}</Link>
             <Link href="/signup" className="aegx-btn aegx-btn--solid aegx-btn--sm">{t("testAegisora")}</Link>
-            <button
-              type="button"
-              className="aegx-burger"
-              aria-label={open ? t("menuClose") : t("menuOpen")}
-              aria-expanded={open}
-              onClick={() => setOpen((v) => !v)}
-            >
+            <button type="button" className="aegx-burger" aria-label={open ? t("menuClose") : t("menuOpen")} aria-expanded={open} onClick={() => setOpen((v) => !v)}>
               {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
             </button>
           </div>
@@ -77,9 +71,7 @@ export function AegxHeader() {
         <div className="aegx-drawer" role="dialog" aria-modal="true" aria-label={t("drawerAria")}>
           <nav aria-label={t("mainAria")}>
             {NAV.map((n) => (
-              <Link key={n.key} href={n.href} onClick={() => setOpen(false)}>
-                {t("items." + n.key)}
-              </Link>
+              <Link key={n.href} href={n.href} onClick={() => setOpen(false)}>{label(n)}</Link>
             ))}
           </nav>
           <div className="aegx-drawer__cta">
