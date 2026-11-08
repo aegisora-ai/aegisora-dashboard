@@ -1,11 +1,6 @@
-import "@/styles/aeg-premium.css";
-import { PremiumBackdrop } from "@/components/aegisora/fx/premium-backdrop";
+import { AuthSplit } from "@/components/aegx/auth-split";
 
-export default function OnboardingLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <div className="aeg-premium aeg-stage">
-      <PremiumBackdrop />
-      {children}
-    </div>
-  );
+export default async function OnboardingLayout({ children, params }: Readonly<{ children: React.ReactNode; params: Promise<{ locale: string }> }>) {
+  const { locale } = await params;
+  return <AuthSplit de={locale === "de"} wide>{children}</AuthSplit>;
 }

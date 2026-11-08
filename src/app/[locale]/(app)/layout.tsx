@@ -4,7 +4,6 @@ import { AppShell } from "@/components/aegisora/app-shell";
 import { MobileNav } from "@/components/aegisora/mobile-nav";
 import { MobileTableCards } from "@/components/aegisora/mobile-table-cards";
 import { FeedbackHost } from "@/components/aegisora/live/feedback";
-import { SoundProvider } from "@/components/aegisora/live/sound-provider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
@@ -19,7 +18,6 @@ export default function AppLayout({
       <MobileNav />
       <MobileTableCards />
       <FeedbackHost />
-      <SoundProvider />
     </div>
   );
 }

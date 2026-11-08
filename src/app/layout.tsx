@@ -9,7 +9,6 @@ import "@fontsource/ibm-plex-mono/600.css";
 import "@fontsource/ibm-plex-mono/700.css";
 import "./globals.css";
 import { getLocale } from "next-intl/server";
-import { AegisoraSound } from '../components/aegisora-sound';
 import { ThemeBoot } from "@/components/aegisora/theme-boot";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
@@ -49,7 +48,6 @@ export default async function RootLayout({
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         {children}
         <PwaBoot />
-        <AegisoraSound />
         <ThemeBoot />
       </body>
     </html>

@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowRight, Check, Search } from "lucide-react";
-import { Logo } from "@/components/aegisora/logo";
 import { createClient } from "@/lib/supabase/client";
 import { btnPrimary, focusRing } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -88,9 +87,7 @@ export function OnboardingIntro({ onDone }: { onDone: () => void }) {
   const tiles = STACK.filter((s) => label(s).toLowerCase().includes(q.trim().toLowerCase()));
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="px-6 py-5 sm:px-10"><Logo /></header>
-      <main className="mx-auto w-full max-w-3xl px-6 pb-20 pt-12 sm:pt-20">
+    <div className="aegx-ob"><main>
         <div
           role="progressbar"
           aria-valuemin={1}

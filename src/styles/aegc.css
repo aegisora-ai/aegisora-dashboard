@@ -165,3 +165,5 @@ a.aegc-li:hover .aegc-li__t b { text-decoration: underline; text-decoration-colo
 .aegc-dim { color: var(--muted-foreground); }
 
 @media (prefers-reduced-motion: reduce) { .aegc-bar__col { animation: none; } .aegc *, .aegc *::before { transition: none !important; } }
+/* aegc-step8: white wordmark, blue mark stays */
+.aegc-brand, .aegc-brand__t { color: #fff; }

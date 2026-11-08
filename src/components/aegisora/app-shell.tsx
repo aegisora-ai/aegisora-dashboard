@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   Activity, ArrowUpRight, Bell, Bot, ClipboardList, CreditCard, FileSearch, KeyRound, Layers,
   LayoutDashboard, LogOut, Menu, Route, Scale, ScrollText, Search, Settings, ShieldCheck,
-  TriangleAlert, UserCheck, Users, Volume2, VolumeX, Webhook, type LucideIcon,
+  TriangleAlert, UserCheck, Users, Webhook, type LucideIcon,
 } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { AccountSwitcher } from "@/components/aegisora/account-switcher";
@@ -14,7 +14,6 @@ import { UserMenu } from "@/components/aegisora/user-menu";
 import { WelcomeTour } from "@/components/aegisora/welcome-tour";
 import { WorkspaceProvider, useWorkspace } from "@/components/aegisora/workspace-provider";
 import { usePendingApprovals } from "@/lib/aegisora/use-pending-approvals";
-import { play, setSoundEnabled, soundEnabled } from "@/lib/aegisora/sound";
 import { createClient } from "@/lib/supabase/client";
 import { focusRing } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -129,7 +128,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [palette, setPalette] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [notif, setNotif] = useState(false);
-  const [snd, setSnd] = useState(true);
   const pending = usePendingApprovals();
 
   // The console is dark-only: keep the dark class while it is mounted, then restore.
@@ -147,10 +145,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return () => window.clearTimeout(timer);
   }, [pathname]);
 
-  useEffect(() => {
-    const t = window.setTimeout(() => setSnd(soundEnabled()), 0);
-    return () => window.clearTimeout(t);
-  }, []);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -212,16 +206,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
               ) : null}
             </div>
-            <button
-              type="button"
-              data-sound="off"
-              onClick={() => { const next = !snd; setSoundEnabled(next); setSnd(next); if (next) play("on"); }}
-              aria-label={snd ? "Mute interface sounds" : "Unmute interface sounds"}
-              aria-pressed={!snd}
-              className={cn("aegc-ibtn", focusRing)}
-            >
-              {snd ? <Volume2 aria-hidden="true" /> : <VolumeX aria-hidden="true" />}
-            </button>
             <UserMenu />
           </header>
 

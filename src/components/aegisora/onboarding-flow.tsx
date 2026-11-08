@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { btnOutline, btnPrimary } from "@/lib/ui";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/aegisora/logo";
 import { OnboardingIntro, INTRO_KEY } from "@/components/aegisora/onboarding-intro";
 
 const STEP_KEYS = ["s0", "s1", "s2"];
@@ -136,7 +135,7 @@ export function OnboardingFlow() {
   if (!introDone) return <OnboardingIntro onDone={() => setIntroDone(true)} />;
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-12"><Logo className="mb-10" />
+    <div className="aegx-ob">
       <ol className="mb-10 grid grid-cols-3 gap-1">
         {steps.map((label, index) => (
           <li key={label} aria-current={index === step ? "step" : undefined}>

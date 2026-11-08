@@ -424,3 +424,33 @@ html:has(.aegx), body:has(.aegx) { background: #000; color-scheme: dark; }
 .aegx-sup__toc ul { margin: 12px 0 0; padding: 0 0 0 12px; list-style: none; border-left: 1px solid var(--line2); display: grid; gap: 8px; font-size: 13.5px; }
 .aegx .aegx-sup__toc a { color: var(--mut); }
 .aegx .aegx-sup__toc a:hover { color: #fff; }
+/* aegx-step8: white wordmark, centered CTA, split auth layout */
+.aegx-logo .aegx-logo__text, .aegx .aegx-logo__text { color: #fff; }
+.aegx-logo { color: #fff; }
+.aegx-cta__in { max-width: 640px; margin: 0 auto; text-align: center; }
+.aegx-cta__in .aegx-lead { margin-left: auto; margin-right: auto; text-align: center; }
+.aegx-cta .aegx-actions, .aegx-actions--left { justify-content: center; }
+.aegx-cta__art::after { background: radial-gradient(70% 90% at 50% 50%, rgb(0 0 0 / 0.1) 0%, rgb(0 0 0 / 0.6) 100%); }
+
+.aegx-auth2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: 100vh; background: #000; color: #fff; }
+.aegx-auth2__left { display: flex; flex-direction: column; min-width: 0; min-height: 100vh; padding: 28px clamp(24px, 5vw, 72px); }
+.aegx-auth2__form { flex: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; max-width: 420px; margin: 0 auto; padding: 40px 0; }
+.aegx-auth2__form--wide { max-width: 600px; }
+.aegx-auth2__foot { display: flex; flex-wrap: wrap; gap: 18px; font-size: 12.5px; color: #6a6a6a; }
+.aegx .aegx-auth2__foot a { color: #8a8a8a; }
+.aegx .aegx-auth2__foot a:hover { color: #fff; }
+.aegx-auth2__right { position: sticky; top: 0; height: 100vh; overflow: hidden; border-left: 1px solid var(--line); background: #000; }
+.aegx-auth2__right canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.aegx-auth2__cap { position: absolute; left: 28px; right: 28px; bottom: 28px; padding: 22px 24px; border: 1px solid rgb(255 255 255 / 0.16); border-radius: 18px; background: rgb(255 255 255 / 0.06); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.aegx-auth2__cap h2 { font-size: clamp(20px, 2.4vw, 28px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+.aegx-auth2__cap h2 span { color: #8fc0ff; }
+.aegx-auth2__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+@media (max-width: 760px) { .aegx-auth2 { grid-template-columns: 1fr; } .aegx-auth2__right { display: none; } }
+
+.aegx-auth2 .bw-auth__h1 { font-size: 30px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; color: #fff; }
+.aegx-auth2 input[data-slot="input"] { height: 44px; border-radius: 10px; background: #0a0a0a; color: #fff; border: 1px solid var(--line2); font-size: 15px; padding: 0 12px; }
+.aegx-auth2 input[data-slot="input"]:focus-visible { border-color: rgb(77 163 255 / 0.7); outline: 0; box-shadow: 0 0 0 3px rgb(31 122 255 / 0.2); }
+.aegx-auth2 label { color: #fff; }
+.aegx-auth2 .aeg-btn-brand { display: inline-flex; align-items: center; justify-content: center; height: 46px; padding: 0 22px; border: 0; border-radius: 10px; background: #1f6bff; background-image: none; color: #fff; font-weight: 600; font-size: 15px; box-shadow: none; cursor: pointer; transition: background-color 0.2s; }
+.aegx-auth2 .aeg-btn-brand:hover:not(:disabled) { background: #3a82ff; background-image: none; }
+.aegx-ob h1 { color: #fff; }
