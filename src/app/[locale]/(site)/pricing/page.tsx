@@ -91,33 +91,6 @@ export default async function PricingPage({ params }: Props) {
       />
 
       <Sec flush>
-        <div className="aegx-pad aegx-pad--head">
-          <SectionHead eyebrow={t("plansEyebrow")} title={t("plansTitle")} />
-        </div>
-        <Cells n={3}>
-          {PLANS.map((p) => (
-            <div key={p.name} className={"aegx-plan" + (p.featured ? " aegx-plan--feat" : "")}>
-              <div className="aegx-plan__top">
-                <h3 className="aegx-h3">{p.name}</h3>
-                {p.badge ? <span className="aegx-tag">{p.badge}</span> : null}
-              </div>
-              <p className="aegx-plan__sub">{p.blurb}</p>
-              <p className="aegx-price">{p.price}</p>
-              <p className="aegx-plan__per">{p.sub}</p>
-              <dl className="aegx-meta">
-                {p.meta.map(([k, v]) => (
-                  <div key={k}>
-                    <dt>{k}</dt>
-                    <dd>{v}</dd>
-                  </div>
-                ))}
-              </dl>
-              <Btn href={p.cta.href} variant={p.featured ? "solid" : "soft"} block>{p.cta.label}</Btn>
-              <Link href={p.more.href} className="aegx-more">{p.more.label}</Link>
-            </div>
-          ))}
-        </Cells>
-
         <PricingTiers de={de} />
 
         <div className="aegx-band">

@@ -480,3 +480,45 @@ html:has(.aegx), body:has(.aegx) { background: #000; color-scheme: dark; }
   .aegx-tiers__grid { grid-template-columns: 1fr; }
   .aegx-tier + .aegx-tier { border-left: 0; border-top: 1px solid var(--line); }
 }
+/* aegx-step11: brand blue selection, calm spacing, hero text, mobile header */
+::selection { background: #1f6bff; color: #fff; }
+::-moz-selection { background: #1f6bff; color: #fff; }
+html, body { max-width: 100%; overflow-x: clip; }
+
+/* hero: title and intro never touch */
+.aegx-hero__in h1 { line-height: 1.08; margin: 0; text-wrap: balance; }
+.aegx-hero__in .aegx-lead { margin-top: 22px; line-height: 1.6; max-width: 640px; text-wrap: pretty; }
+.aegx-hero__in .aegx-actions { margin-top: 30px; }
+
+/* blog and article body */
+.aegx-art { max-width: 680px; margin: 0 auto; padding: clamp(36px, 5vw, 64px) 20px; }
+.aegx-art__p { margin: 0 0 1.25em; font-size: 16.5px; line-height: 1.8; }
+.aegx-art__h2 { margin: 2.4em 0 0.7em; font-size: clamp(21px, 2.4vw, 26px); line-height: 1.25; letter-spacing: -0.02em; }
+.aegx-art > div:first-child .aegx-art__h2, .aegx-art > .aegx-art__h2:first-child { margin-top: 0; }
+.aegx-art__ul { margin: 0 0 1.4em; padding-left: 1.25em; display: grid; gap: 0.6em; line-height: 1.7; }
+.aegx-art__code { margin: 1.6em 0; padding: 18px 20px; overflow-x: auto; border-radius: 12px; line-height: 1.6; }
+.aegx-post__b h3 { line-height: 1.3; }
+.aegx-post__b .aegx-p { line-height: 1.6; }
+
+/* old plan cards, if still present: numbers must fit */
+.aegx-plan { gap: 0; }
+.aegx-plan__sub { min-height: 0; margin-bottom: 4px; line-height: 1.55; }
+.aegx-price { margin-top: 20px; font-size: clamp(30px, 3.2vw, 40px); line-height: 1.12; text-wrap: balance; }
+.aegx-plan__per { margin-top: 12px; margin-bottom: 14px; line-height: 1.5; }
+.aegx-tiers { border-top: 0; padding-top: clamp(28px, 4vw, 48px); }
+
+/* header: hamburger instead of nav, always visible */
+.aegx-head__in { min-width: 0; gap: 10px; }
+.aegx-head__brand { flex: none; }
+.aegx-head__right { min-width: 0; gap: 10px; }
+.aegx-burger { flex: none; }
+.aegx-drawer { max-width: 100vw; overflow-x: hidden; }
+@media (max-width: 900px) {
+  .aegx-nav, .aegx-head__signin { display: none !important; }
+  .aegx-burger { display: inline-flex !important; align-items: center; justify-content: center; width: 40px; height: 40px; flex: none; }
+}
+@media (max-width: 520px) {
+  .aegx-head__in { padding-left: 16px; padding-right: 16px; }
+  .aegx-head__right { margin-left: auto; }
+  .aegx-head__right .aegx-btn { display: none !important; }
+}
