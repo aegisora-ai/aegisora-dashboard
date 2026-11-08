@@ -522,3 +522,30 @@ html, body { max-width: 100%; overflow-x: clip; }
   .aegx-head__right { margin-left: auto; }
   .aegx-head__right .aegx-btn { display: none !important; }
 }
+/* aegx-step12: hero slogan, mobile hero, docs overflow */
+.aegx-hero__in h1.aegx-h1 { max-width: 14ch; margin-left: auto; margin-right: auto; text-wrap: balance; }
+.aegx-hero__in .aegx-lead { max-width: 520px; font-size: 17px; line-height: 1.6; }
+.aegx-hero__in .aegx-eyebrow { margin-bottom: 22px; display: inline-block; }
+.aegx-feed { margin-top: clamp(32px, 5vw, 56px); }
+.aegx-feed__row > div { min-width: 0; }
+.aegx-feed__row .aegx-mono, .aegx-feed__meta { overflow-wrap: anywhere; }
+
+/* docs: nothing may push the page sideways */
+.aegx main { overflow-x: clip; }
+.aegx main pre { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.aegx main table { max-width: 100%; }
+.aegx main code { overflow-wrap: anywhere; }
+.aegx main img, .aegx main svg { max-width: 100%; height: auto; }
+.aegx main :is(h1, h2, h3, h4) { overflow-wrap: anywhere; }
+.aegx main :is(h2, h3) { scroll-margin-top: 84px; }
+
+@media (max-width: 640px) {
+  .aegx-hero__in { padding-top: 56px; padding-bottom: 44px; }
+  .aegx-hero__in h1.aegx-h1 { font-size: clamp(32px, 9.5vw, 40px); line-height: 1.1; max-width: 12ch; }
+  .aegx-hero__in .aegx-lead { font-size: 15.5px; margin-top: 18px; }
+  .aegx-hero__in .aegx-actions { flex-direction: column; align-items: stretch; gap: 10px; margin-top: 26px; }
+  .aegx-hero__in .aegx-actions .aegx-btn { width: 100%; justify-content: center; }
+  .aegx-h2 { font-size: clamp(26px, 7.5vw, 32px); line-height: 1.15; }
+  .aegx-pad { padding-top: 48px; padding-bottom: 48px; }
+  .aegx-cell { padding: 24px 20px; }
+}
