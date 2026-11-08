@@ -1,0 +1,1744 @@
+##### aeg-app / aeg-glow / tema degiskenlerinin bulundugu css dosyalari #####
+src\app\globals.css  [24.5 KB]
+src\components\aegisora\bw\aeg-chrome.css  [9.8 KB]
+src\styles\aeg-calm-chrome.css  [6.2 KB]
+src\styles\aeg-calm-kit.css  [7.3 KB]
+src\styles\aeg-calm.css  [13.5 KB]
+src\styles\aeg-dash-teal.css  [2.5 KB]
+src\styles\aeg-premium.css  [5.4 KB]
+src\styles\zp.css  [40.9 KB]
+
+##### src\app\globals.css #####
+@import "tailwindcss";
+@import "tw-animate-css";
+@custom-variant dark (&:is(.dark *));
+
+/* =========================================================
+   AEGISORA DESIGN SYSTEM (light, single blue accent)
+   ========================================================= */
+
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --surface-1: #f6f9fc;
+  --surface-2: #ffffff;
+  --surface-3: #eef3f8;
+  --surface-4: #e1e8f0;
+  --foreground: #0a1220;
+  --muted-foreground: #58657c;
+  --primary: #0f63e0;
+  --primary-hover: #0b54c4;
+  --primary-foreground: #ffffff;
+  --cyan: #0b6fb5;
+  --card: #ffffff;
+  --card-foreground: #0a1220;
+  --popover: #ffffff;
+  --popover-foreground: #0a1220;
+  --secondary: #eef3f8;
+  --secondary-foreground: #0a1220;
+  --muted: #f6f9fc;
+  --accent: #e1e8f0;
+  --accent-foreground: #0a1220;
+  --border: #dbe3ed;
+  --input: #dbe3ed;
+  --ring: #0f63e0;
+  --destructive: #c2262e;
+  --destructive-foreground: #ffffff;
+  --allow: #0f7b4f;
+  --allow-muted: #e2f4eb;
+  --block: #c2262e;
+  --block-muted: #fbe8e9;
+  --escalate: #9a6400;
+  --escalate-muted: #fbf0d9;
+  --grid-line: rgb(10 18 32 / 0.05);
+  --panel-shadow: 0 1px 2px rgb(10 18 32 / 0.04), 0 14px 30px -18px rgb(10 18 32 / 0.16);
+  --aeg-body: #58657c;
+  --radius: 0.375rem;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #020611;
+  --surface-1: #061022;
+  --surface-2: #09162e;
+  --surface-3: #0c1c3a;
+  --surface-4: #102347;
+  --foreground: #ffffff;
+  --muted-foreground: #8a9fc2;
+  --primary: #1677ff;
+  --primary-hover: #2188ff;
+  --primary-foreground: #ffffff;
+  --cyan: #00b8ff;
+  --card: #061022;
+  --card-foreground: #ffffff;
+  --popover: #061022;
+  --popover-foreground: #ffffff;
+  --secondary: #0c1c3a;
+  --secondary-foreground: #ffffff;
+  --muted: #09162e;
+  --accent: #102347;
+  --accent-foreground: #f5f7fa;
+  --border: #1a2738;
+  --input: #1a2738;
+  --ring: #2188ff;
+  --destructive: #e5484d;
+  --destructive-foreground: #ffffff;
+  --allow: #34b37e;
+  --allow-muted: #0f2a22;
+  --block: #e5484d;
+  --block-muted: #2c1518;
+  --escalate: #e0a030;
+  --escalate-muted: #2b2210;
+  --grid-line: rgb(26 39 56 / 0.5);
+  --panel-shadow: none;
+  --aeg-body: #8a9fc2;
+}
+
+
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-4: var(--surface-4);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-cyan: var(--cyan);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-allow: var(--allow);
+  --color-allow-muted: var(--allow-muted);
+  --color-block: var(--block);
+  --color-block-muted: var(--block-muted);
+  --color-escalate: var(--escalate);
+  --color-escalate-muted: var(--escalate-muted);
+  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground antialiased; overflow-x: clip; }
+  html { scroll-behavior: smooth; }
+}
+
+/* ---------- Typography ---------- */
+.aeg-display {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  text-wrap: balance;
+}
+.aeg-eyebrow {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--primary);
+}
+.aeg-body-text { color: var(--aeg-body); line-height: 1.7; }
+
+/* ---------- Surfaces ---------- */
+.aeg-panel {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--panel-shadow);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.aeg-panel.group:hover {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+}
+.aeg-tile {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.2s ease;
+}
+.aeg-tile:hover { border-color: color-mix(in srgb, var(--primary) 40%, var(--border)); }
+
+.aeg-grid-bg {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.aeg-hero { position: relative; overflow: hidden; isolation: isolate; }
+
+/* Pages are plain light. Kept as a hook so old markup does not break. */
+.aeg-page, .aeg-light-band { background-color: var(--background); color: var(--foreground); }
+.aeg-section-glow { border-top: 1px solid var(--border); }
+.aeg-announce { background: var(--surface-1); color: var(--foreground); }
+
+/* ---------- Deliberate dark band (product visuals, code, CTA) ---------- */
+.aeg-dark-band, .aeg-dark-page, .aeg-night {
+  color-scheme: dark;
+  --background: #020a1c;
+  --surface-1: #07142a;
+  --surface-2: #0a1a35;
+  --surface-3: #0e2243;
+  --surface-4: #102347;
+  --foreground: #ffffff;
+  --muted-foreground: #a9bbdb;
+  --card: #07142a;
+  --card-foreground: #ffffff;
+  --border: #1f3350;
+  --input: #1f3350;
+  --cyan: #4da6ff;
+  --aeg-body: #a9bbdb;
+  --allow: #34b37e;
+  --allow-muted: #0f2a22;
+  --block: #e5484d;
+  --block-muted: #2c1518;
+  --escalate: #e0a030;
+  --escalate-muted: #2b2210;
+  --grid-line: rgb(31 51 80 / 0.5);
+  --panel-shadow: none;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+.aeg-dark-band .text-primary, .aeg-night .text-primary, .aeg-dark-page .text-primary { color: #6aa6ff; }
+
+/* ---------- Scrollbar ---------- */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(10, 18, 32, 0.25) transparent;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background-color: rgba(10, 18, 32, 0.22); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background-color: rgba(10, 18, 32, 0.4); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* ---------- Animations ---------- */
+.aeg-ambient-cell {
+  animation-name: aeg-ambient-pulse;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+@keyframes aeg-ambient-pulse {
+
+##### src\lib\aegisora\nav.ts #####
+import { Activity, Bot, LayoutDashboard, ScrollText, Settings, UserCheck, type LucideIcon } from "lucide-react";
+
+export type NavTab = { label: string; href: string };
+export type NavGroup = {
+  id: string;
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  prefixes: string[];
+  tabs?: NavTab[];
+};
+
+export const MAIN_NAV: NavGroup[] = [
+  { id: "overview", label: "Overview", href: "/dashboard", icon: LayoutDashboard, prefixes: [] },
+  { id: "agents", label: "Agents", href: "/dashboard/agents", icon: Bot, prefixes: ["/dashboard/agents"] },
+  { id: "approvals", label: "Approvals", href: "/dashboard/approvals", icon: UserCheck, prefixes: ["/dashboard/approvals"] },
+  { id: "policies", label: "Policies", href: "/dashboard/policies", icon: ScrollText, prefixes: ["/dashboard/policies"] },
+  {
+    id: "activity",
+    label: "Activity",
+    href: "/dashboard/activity",
+    icon: Activity,
+    prefixes: [
+      "/dashboard/activity", "/dashboard/decisions", "/dashboard/incidents",
+      "/dashboard/traces", "/dashboard/audit", "/dashboard/evidence",
+    ],
+    tabs: [
+      { label: "Live", href: "/dashboard/activity" },
+      { label: "Decisions", href: "/dashboard/decisions" },
+      { label: "Incidents", href: "/dashboard/incidents" },
+      { label: "Traces", href: "/dashboard/traces" },
+      { label: "Audit", href: "/dashboard/audit" },
+      { label: "Evidence", href: "/dashboard/evidence" },
+    ],
+  },
+];
+
+export const SETTINGS_NAV: NavGroup = {
+  id: "settings",
+  label: "Settings",
+  href: "/dashboard/settings",
+  icon: Settings,
+  prefixes: [
+    "/dashboard/settings", "/dashboard/workspace", "/dashboard/team", "/dashboard/api-keys",
+    "/dashboard/webhooks", "/dashboard/billing", "/dashboard/identity",
+  ],
+  tabs: [
+    { label: "General", href: "/dashboard/settings" },
+    { label: "Workspace", href: "/dashboard/workspace" },
+    { label: "Team", href: "/dashboard/team" },
+    { label: "API keys", href: "/dashboard/api-keys" },
+    { label: "Webhooks", href: "/dashboard/webhooks" },
+    { label: "Billing", href: "/dashboard/billing" },
+    { label: "Identity", href: "/dashboard/identity" },
+  ],
+};
+
+export const ALL_NAV: NavGroup[] = [...MAIN_NAV, SETTINGS_NAV];
+
+export function activeGroup(pathname: string): NavGroup | null {
+  const p = pathname.replace(/\/+$/, "") || "/";
+  if (p === "/dashboard") return MAIN_NAV[0];
+  return ALL_NAV.find((g) => g.id !== "overview" && g.prefixes.some((x) => p === x || p.startsWith(x + "/"))) ?? null;
+}
+
+##### src\app\[locale]\(app)\layout.tsx #####
+import "@/styles/aeg-contrast.css";
+import "@/styles/aeg-premium.css";
+import "@/styles/aeg-dash-teal.css";
+import "@/styles/aeg-dash-status.css";
+import { AppShell } from "@/components/aegisora/app-shell";
+import { MobileNav } from "@/components/aegisora/mobile-nav";
+import { MobileTableCards } from "@/components/aegisora/mobile-table-cards";
+import { FeedbackHost } from "@/components/aegisora/live/feedback";
+import { SoundProvider } from "@/components/aegisora/live/sound-provider";
+
+export default function AppLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <div className="aeg-premium">
+      <AppShell>
+        <div className="pb-[calc(5.25rem+env(safe-area-inset-bottom))] md:pb-0">{children}</div>
+      </AppShell>
+      <MobileNav />
+      <MobileTableCards />
+      <FeedbackHost />
+      <SoundProvider />
+    </div>
+  );
+}
+
+##### src\components\aegisora\app-shell.tsx #####
+                      <Icon className="size-5" aria-hidden="true" />
+                      {g.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          </div>
+        )}
+
+        <div className="relative isolate flex min-w-0 flex-1 flex-col">
+          <div className="aeg-glow" aria-hidden="true" />
+
+          <header className="sticky top-0 z-30 border-b border-border bg-background/60 backdrop-blur-md">
+            <div className="flex h-16 items-center gap-3 px-4 md:px-8">
+              <button
+                type="button"
+                aria-label="Open navigation"
+                onClick={() => setDrawer(true)}
+                className={cn("inline-flex size-10 items-center justify-center rounded-xl border border-border lg:hidden", focusRing)}
+              >
+                <Menu className="size-4" />
+              </button>
+
+              <p className="hidden text-base font-semibold tracking-tight sm:block">{group?.label ?? "Dashboard"}</p>
+
+              <AccountSwitcher />
+
+              <button
+                type="button"
+                onClick={() => setPalette(true)}
+                className={cn(
+                  "flex h-10 min-w-0 flex-1 items-center gap-2 rounded-xl border border-border bg-surface-1 px-3.5 text-sm text-muted-foreground hover:bg-surface-3 sm:mx-auto sm:max-w-md",
+                  focusRing,
+                )}
+              >
+                <Search className="size-4" />
+                <span className="flex-1 truncate text-left">Search...</span>
+                <kbd className="hidden rounded-md border border-border px-1.5 font-mono text-[10px] sm:inline">Ctrl K</kbd>
+              </button>
+
+              <div className="relative">
+                <button
+                  type="button"
+                  aria-label="Notifications"
+                  aria-expanded={notif}
+                  onClick={() => setNotif(!notif)}
+                  className={cn("relative inline-flex size-10 items-center justify-center rounded-xl border border-border text-muted-foreground hover:bg-surface-3", focusRing)}
+                >
+                  <Bell className="size-4" />
+                  {pending > 0 && <span className="absolute right-2 top-2 size-2 rounded-full bg-escalate" />}
+                </button>
+                {notif && (
+                  <div className="aeg-panel absolute right-0 top-full z-40 mt-2 w-72 p-2">
+                    <Link href="/dashboard/approvals" className="block rounded-md px-3 py-2.5 hover:bg-surface-3">
+                      <span className="block text-sm font-medium">{pending === 0 ? "Nothing is waiting" : pending === 1 ? "1 approval waiting" : pending + " approvals waiting"}</span>
+                      <span className="block text-xs text-muted-foreground">{pending === 0 ? "No actions need a decision." : "Execution is paused until a person decides."}</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              <TopbarActions />
+              <UserMenu />
+            </div>
+          </header>
+
+          <main data-app-main className="relative mx-auto w-full max-w-[1320px] flex-1 px-4 py-6 md:px-8">
+            <SectionTabs />
+            {children}
+          </main>
+        </div>
+
+        <CommandPalette open={palette} onClose={() => setPalette(false)} />
+        <WelcomeTour />
+      </div>
+    </WorkspaceProvider>
+  );
+}
+
+##### src\components\aegisora\topbar-actions.tsx #####
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { CircleHelp, Moon, Sun, Volume2, VolumeX } from "lucide-react";
+import { THEME_KEY } from "@/lib/theme";
+import { play, setSoundEnabled, soundEnabled } from "@/lib/aegisora/sound";
+import { focusRing } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+const btn = "inline-flex size-9 items-center justify-center rounded-sm border border-border text-muted-foreground hover:bg-surface-3 hover:text-foreground";
+
+export function TopbarActions() {
+  const [dark, setDark] = useState(true);
+  const [snd, setSnd] = useState(true);
+
+  useEffect(() => {
+    const t = window.setTimeout(() => { setDark(document.documentElement.classList.contains("dark")); setSnd(soundEnabled()); }, 0);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  function toggle() {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    try { window.localStorage.setItem(THEME_KEY, next ? "dark" : "light"); } catch {}
+  }
+
+  return (
+    <>
+      <span className="hidden sm:inline-flex">
+        <Link href="/support" aria-label="Help center" className={cn(btn, focusRing)}>
+          <CircleHelp className="size-4" />
+        </Link>
+      </span>
+      <button
+        type="button"
+        data-sound="off"
+        onClick={() => { const next = !snd; setSoundEnabled(next); setSnd(next); if (next) play("on"); }}
+        aria-label={snd ? "Mute interface sounds" : "Unmute interface sounds"}
+        aria-pressed={!snd}
+        className={cn(btn, focusRing)}
+      >
+        {snd ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+      </button>
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+        className={cn(btn, focusRing)}
+      >
+        {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+      </button>
+    </>
+  );
+}
+
+##### src\components\aegisora\user-menu.tsx #####
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { LogOut, User } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useWorkspace } from "@/components/aegisora/workspace-provider";
+import { createClient } from "@/lib/supabase/client";
+import { focusRing } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+export function UserMenu() {
+  const router = useRouter();
+  const { userEmail, userName } = useWorkspace();
+
+  async function signOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
+
+  const initial = (userName || userEmail || "?").charAt(0).toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            aria-label="Account menu"
+            className={cn(
+              "inline-flex size-9 items-center justify-center rounded-sm border border-border bg-surface-1 font-mono text-xs text-muted-foreground hover:bg-surface-3 hover:text-foreground",
+              focusRing,
+            )}
+          >
+            {initial}
+          </button>
+        }
+      />
+      <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuLabel>
+          <span className="block text-sm font-medium">{userName || "Account"}</span>
+          <span className="block truncate font-mono text-[11px] text-muted-foreground">{userEmail}</span>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          render={
+            <Link href="/dashboard/settings" className="flex items-center gap-2">
+              <User className="size-4" /> Account settings
+            </Link>
+          }
+        />
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={signOut} className="flex items-center gap-2 text-block focus:text-block">
+          <LogOut className="size-4" /> Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+##### src\components\aegisora\account-switcher.tsx #####
+"use client";
+
+import Link from "next/link";
+import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useWorkspace } from "@/components/aegisora/workspace-provider";
+import { focusRing } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+export function AccountSwitcher() {
+  const { loading, workspaces, currentWorkspace, setCurrentWorkspaceId } = useWorkspace();
+
+  if (loading) {
+    return <span className="hidden font-mono text-xs text-muted-foreground sm:inline">workspace / loading...</span>;
+  }
+
+  if (!currentWorkspace) {
+    return (
+      <Link href="/onboarding" className="hidden font-mono text-xs text-cyan underline-offset-4 hover:underline sm:inline">
+        workspace / create one
+      </Link>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            className={cn(
+              "hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground hover:bg-surface-3 hover:text-foreground sm:flex",
+              focusRing,
+            )}
+          >
+            workspace / <span className="text-foreground">{currentWorkspace.slug}</span>
+            <ChevronsUpDown className="size-3.5" />
+          </button>
+        }
+      />
+      <DropdownMenuContent align="start" className="w-64">
+        <DropdownMenuLabel className="font-mono text-[10px] tracking-wider text-muted-foreground">
+          WORKSPACES
+        </DropdownMenuLabel>
+        {workspaces.map((w) => (
+          <DropdownMenuItem key={w.id} onClick={() => setCurrentWorkspaceId(w.id)} className="flex items-center justify-between gap-2">
+            <span>
+              <span className="block text-sm">{w.name}</span>
+              <span className="block font-mono text-[10px] text-muted-foreground">{w.role}</span>
+            </span>
+            {w.id === currentWorkspace.id && <Check className="size-4 text-cyan" />}
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          render={
+            <Link href="/onboarding" className="flex items-center gap-2">
+              <Plus className="size-4" /> Create workspace
+            </Link>
+          }
+        />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+##### src\components\aegisora\workspace-provider.tsx #####
+"use client";
+
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+
+export type WorkspaceSummary = { id: string; name: string; slug: string; role: string };
+
+type WorkspaceContextValue = {
+  loading: boolean;
+  userEmail: string | null;
+  userName: string | null;
+  workspaces: WorkspaceSummary[];
+  currentWorkspace: WorkspaceSummary | null;
+  setCurrentWorkspaceId: (id: string) => void;
+  refresh: () => void;
+};
+
+const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
+
+export const WORKSPACE_STORAGE_KEY = "aeg-current-workspace";
+
+export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
+  const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [workspaces, setWorkspaces] = useState<WorkspaceSummary[]>([]);
+  const [currentId, setCurrentId] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const supabase = createClient();
+
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData.user;
+    setUserEmail(user?.email ?? null);
+    setUserName((user?.user_metadata?.full_name as string) ?? null);
+
+    if (!user) {
+      setWorkspaces([]);
+      setLoading(false);
+      return;
+    }
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (sessionData.session?.access_token) {
+      await fetch("/api/v1/workspace/members/accept", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${sessionData.session.access_token}` },
+        cache: "no-store",
+      }).catch(() => undefined);
+    }
+
+    const { data, error } = await supabase
+      .from("workspace_members")
+      .select("role, workspaces(id, name, slug)")
+      .eq("user_id", user.id)
+      .eq("status", "active");
+
+    if (error || !data) {
+      setWorkspaces([]);
+      setLoading(false);
+      return;
+    }
+
+    const list: WorkspaceSummary[] = data
+  // Legacy boundary typing retained temporarily; runtime validation occurs at the Supabase boundary.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .filter((m: any) => m.workspaces)
+  // Legacy boundary typing retained temporarily; runtime validation occurs at the Supabase boundary.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((m: any) => ({
+        id: m.workspaces.id,
+        name: m.workspaces.name,
+        slug: m.workspaces.slug,
+        role: m.role,
+      }));
+
+    setWorkspaces(list);
+
+    const stored = typeof window !== "undefined" ? window.localStorage.getItem(WORKSPACE_STORAGE_KEY) : null;
+    const valid = list.find((w) => w.id === stored);
+    setCurrentId(valid ? valid.id : (list[0]?.id ?? null));
+
+    setLoading(false);
+  }, []);
+
+    useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void load();
+    }, 0);
+
+##### src\components\aegisora\section-tabs.tsx #####
+"use client";
+
+import { Link, usePathname } from "@/i18n/navigation";
+import { activeGroup } from "@/lib/aegisora/nav";
+import { focusRing } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+export function SectionTabs() {
+  const pathname = usePathname();
+  const group = activeGroup(pathname);
+  if (!group?.tabs) return null;
+  return (
+    <nav aria-label={group.label + " sections"} className="-mx-1 mb-6 flex gap-1 overflow-x-auto px-1 pb-1">
+      {group.tabs.map((t) => {
+        const on = pathname === t.href || pathname.startsWith(t.href + "/");
+        return (
+          <Link
+            key={t.href}
+            href={t.href}
+            aria-current={on ? "page" : undefined}
+            className={cn(
+              "shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
+              on ? "border-primary/40 bg-primary/12 text-primary" : "border-transparent text-muted-foreground hover:bg-surface-3 hover:text-foreground",
+              focusRing,
+            )}
+          >
+            {t.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+##### src\components\aegisora\welcome-tour.tsx #####
+"use client";
+
+import { useEffect, useState } from "react";
+import { Bot, Check, Lock, Scale, ScrollText, ShieldCheck, X } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+
+const KEY = "aegisora:welcome-tour:v1";
+
+const STEPS = [
+  { icon: ShieldCheck, title: "Welcome to Aegisora Control",
+    body: "Aegisora sits between your AI agents and the actions they take. Every action is checked against your policies, decided, and recorded as evidence. This short tour gets you to your first test." },
+  { icon: Lock, title: "1. Secure your account",
+    body: "Creating agents, policies and API keys requires multi-factor authentication. Enroll an authenticator app once; it takes about a minute.", href: "/dashboard/identity", cta: "Open Identity" },
+  { icon: Bot, title: "2. Connect an agent",
+    body: "Agents are the AI workers you want to govern. Register one, then use its API key in your runtime.", href: "/dashboard/agents", cta: "Open Agents" },
+  { icon: ScrollText, title: "3. Define a policy",
+    body: "Policies decide what an agent may do: allow, block, or require human approval. Start with one simple rule.", href: "/dashboard/policies", cta: "Open Policies" },
+  { icon: Scale, title: "4. Run your first test",
+    body: "Send a test action from your agent. You will see the decision, its trace, and the evidence record.", href: "/dashboard/decisions", cta: "Open Decisions" },
+  { icon: Check, title: "You are ready",
+    body: "Everything you did is recorded under Evidence and Audit. You can reopen any section from the menu." },
+];
+
+export function WelcomeTour() {
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const supabase = createClient();
+        const { data: auth } = await supabase.auth.getUser();
+        if (!auth.user || !alive) return;
+        try { if (localStorage.getItem(KEY)) return; } catch { /* ignore */ }
+        const { data, error } = await supabase
+          .from("profiles").select("onboarded_at").eq("id", auth.user.id).maybeSingle();
+        if (!alive) return;
+        if (error) {
+          // onboarded_at kolonu henuz yoksa tarayici yedegine dus
+          if (!localStorage.getItem(KEY)) setOpen(true);
+          return;
+        }
+        if (!data?.onboarded_at) setOpen(true);
+      } catch { /* sessiz gec */ }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") void close(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  async function close() {
+    setOpen(false);
+    try { localStorage.setItem(KEY, "done"); } catch { /* ignore */ }
+    try {
+      const supabase = createClient();
+      const { data: auth } = await supabase.auth.getUser();
+      if (auth.user) {
+        await supabase.from("profiles").update({ onboarded_at: new Date().toISOString() }).eq("id", auth.user.id);
+      }
+    } catch { /* ignore */ }
+  }
+
+  if (!open) return null;
+  const s = STEPS[step];
+  const last = step === STEPS.length - 1;
+
+  return (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Welcome tour">
+      <div className="aeg-panel w-full max-w-md bg-popover p-6 shadow-2xl">
+        <div className="flex items-start justify-between">
+          <div className="flex size-11 items-center justify-center rounded-full bg-primary/15 text-primary">
+            <s.icon className="size-5" />
+          </div>
+          <button type="button" onClick={() => void close()} aria-label="Skip tour" className="text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
+        </div>
+        <h2 className="mt-4 text-lg font-semibold">{s.title}</h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+        {s.href && (
+          <Link href={s.href} onClick={() => void close()} className="mt-3 inline-block text-sm font-medium text-primary hover:underline">{s.cta} &rarr;</Link>
+        )}
+        <div className="mt-6 flex items-center justify-between">
+          <div className="flex gap-1.5">
+            {STEPS.map((_, i) => (
+
+##### src\components\aegisora\command-palette.tsx #####
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Search } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import { useWorkspace } from "@/lib/aegisora/use-workspace";
+
+type Item = { label: string; hint?: string; href: string; group: string; keywords?: string };
+
+const items: Item[] = [
+  { label: "Overview", href: "/dashboard", group: "Go to" },
+  { label: "Decisions", href: "/dashboard/decisions", group: "Go to" },
+  { label: "Approvals", href: "/dashboard/approvals", group: "Go to" },
+  { label: "Evidence", href: "/dashboard/evidence", group: "Go to" },
+  { label: "Audit", href: "/dashboard/audit", group: "Go to" },
+  { label: "Agents", href: "/dashboard/agents", group: "Go to" },
+  { label: "Policies", href: "/dashboard/policies", group: "Go to" },
+  { label: "Identity", href: "/dashboard/identity", group: "Go to" },
+  { label: "Incidents", href: "/dashboard/incidents", group: "Go to" },
+  { label: "Traces", href: "/dashboard/traces", group: "Go to" },
+  { label: "Live Activity", href: "/dashboard/activity", group: "Go to" },
+  { label: "Webhooks", href: "/dashboard/webhooks", group: "Go to" },
+  { label: "Team", href: "/dashboard/team", group: "Go to" },
+  { label: "Billing", href: "/dashboard/billing", group: "Go to" },
+  { label: "Workspace", href: "/dashboard/workspace", group: "Go to" },
+  { label: "Settings", href: "/dashboard/settings", group: "Go to" },
+];
+
+export function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [q, setQ] = useState("");
+  const [idx, setIdx] = useState(0);
+  const [prevOpen, setPrevOpen] = useState(open);
+  const { ws } = useWorkspace();
+  const wsId = ws?.id;
+  const term = q.trim();
+  const [live, setLive] = useState<{ q: string; items: Item[] }>({ q: "", items: [] });
+
+  // Live search over the signed-in workspace (RLS-scoped), replaces sample data.
+  useEffect(() => {
+    if (!open || !wsId || term.length < 2) return;
+    let alive = true;
+    const timer = setTimeout(() => {
+      void (async () => {
+        const sb = createClient();
+        const like = `%${term.replace(/[%_,()]/g, " ")}%`;
+        const [a, p, d] = await Promise.all([
+          sb.from("agents").select("id,name,framework").eq("workspace_id", wsId).ilike("name", like).limit(5),
+          sb.from("policies").select("id,name,version").eq("workspace_id", wsId).ilike("name", like).limit(5),
+          sb.from("decisions").select("id,agent_name,action").eq("workspace_id", wsId).ilike("action", like).order("created_at", { ascending: false }).limit(5),
+        ]);
+        const found: Item[] = [
+          ...((a.data ?? []) as { id: string; name: string; framework: string | null }[]).map((r) => ({
+            label: r.name, hint: r.framework ?? "agent", href: `/dashboard/agents/${r.id}`, group: "Agents",
+          })),
+          ...((p.data ?? []) as { id: string; name: string; version: number }[]).map((r) => ({
+            label: `${r.name} (v${r.version})`, hint: "policy", href: `/dashboard/policies/${r.id}`, group: "Policies",
+          })),
+          ...((d.data ?? []) as { id: string; agent_name: string; action: string }[]).map((r) => ({
+            label: `${r.action} by ${r.agent_name}`, hint: r.id.slice(0, 8), href: `/dashboard/decisions/${r.id}`, group: "Decisions",
+          })),
+        ];
+        if (alive) setLive({ q: term, items: found });
+      })();
+    }, 250);
+    return () => { alive = false; clearTimeout(timer); };
+  }, [open, wsId, term]);
+
+##### src\lib\aegisora\use-workspace.tsx #####
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+
+export type Workspace = { id: string; name: string; slug: string };
+let cached: Workspace | null = null;
+
+export function useWorkspace() {
+  const [ws, setWs] = useState<Workspace | null>(cached);
+  const [loading, setLoading] = useState(cached === null);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const supabase = createClient();
+    const { data, error: err } = await supabase
+      .from("workspace_members")
+      .select("workspaces(id,name,slug)")
+      .order("created_at", { ascending: true })
+      .limit(1);
+    if (err) {
+      setError(err.message);
+      setLoading(false);
+      return;
+    }
+    const raw = (data?.[0] as unknown as { workspaces?: Workspace | Workspace[] } | undefined)?.workspaces;
+    cached = (Array.isArray(raw) ? raw[0] : raw) ?? null;
+    setWs(cached);
+    setError(null);
+    setLoading(false);
+  }, []);
+
+  // Cache miss intentionally triggers asynchronous workspace hydration.
+  useEffect(() => {
+    if (cached === null) {
+      const timer = window.setTimeout(() => {
+        void load();
+      }, 0);
+
+      return () => window.clearTimeout(timer);
+    }
+
+    return undefined;
+  }, [load]);
+
+  return { ws, loading, error, reload: load };
+}
+
+
+
+
+
+
+##### src\lib\aegisora\use-pending-approvals.ts #####
+"use client";
+
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useWorkspace } from "@/lib/aegisora/use-workspace";
+
+export function usePendingApprovals(): number {
+  const { ws } = useWorkspace();
+  const [n, setN] = useState(0);
+
+  useEffect(() => {
+    if (!ws) return;
+    const supabase = createClient();
+    let alive = true;
+    const load = async () => {
+      const { count } = await supabase
+        .from("approvals")
+        .select("id", { count: "exact", head: true })
+        .eq("workspace_id", ws.id)
+        .eq("status", "pending")
+        .gt("expires_at", new Date().toISOString());
+      if (alive) setN(count ?? 0);
+    };
+    void load();
+    const ch = supabase
+      .channel(`pending-${ws.id}-${Math.random().toString(36).slice(2)}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "approvals", filter: `workspace_id=eq.${ws.id}` }, () => { void load(); })
+      .subscribe();
+    return () => {
+      alive = false;
+      void supabase.removeChannel(ch);
+    };
+  }, [ws]);
+
+  return n;
+}
+
+##### src\lib\ui.ts #####
+export const focusRing =
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
+export const btnPrimary = `inline-flex items-center justify-center rounded-md aeg-btn-brand px-6 py-3 text-sm font-medium ${focusRing}`;
+
+export const btnOutline = `inline-flex items-center justify-center rounded-sm border border-border px-6 py-3 text-sm font-medium transition-colors hover:bg-surface-3 ${focusRing}`;
+
+##### src\components\aegisora\live\ui.tsx #####
+"use client";
+
+import { useState, type FormEvent, type ReactNode } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useWorkspace, type Workspace } from "@/lib/aegisora/use-workspace";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { btnPrimary } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+export const selectCls = "h-9 w-full rounded-md border border-border bg-surface-1 px-2 text-sm";
+export const btnGhost = "inline-flex h-8 items-center rounded-md border border-border bg-background px-3 text-xs font-medium shadow-sm transition-colors hover:bg-surface-3 disabled:opacity-50";
+
+export const fmt = (v: unknown) =>
+  v ? new Date(String(v)).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }) : "-";
+
+const tones: Record<string, string> = {
+  ALLOW: "text-allow", BLOCK: "text-block", ESCALATE: "text-escalate",
+  approved: "text-allow", rejected: "text-block", pending: "text-escalate", expired: "text-muted-foreground",
+  open: "text-block", resolved: "text-allow", active: "text-allow", suspended: "text-block",
+  ok: "text-allow", block: "text-block", escalate: "text-escalate", allow: "text-allow",
+};
+
+export function Badge({ value }: { value: unknown }) {
+  const v = String(value ?? "");
+  return (
+    <span className={cn("inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-3 px-2.5 py-0.5 text-[11px] font-semibold tracking-wide", tones[v] ?? "text-muted-foreground")}>
+      <i aria-hidden="true" className="size-1.5 rounded-full bg-current" />{v.toUpperCase()}
+    </span>
+  );
+}
+
+export function PageHeader({ title, description, actions }: { title: string; description: string; actions?: ReactNode }) {
+  return (
+    <header className="relative flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+      </div>
+      <span aria-hidden="true" className="absolute -bottom-px left-0 h-px w-24" style={{ backgroundImage: "var(--aeg-brand-grad)" }} />{actions && <div className="flex items-center gap-2">{actions}</div>}
+    </header>
+  );
+}
+
+export function Panel({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn("rounded-xl border border-[color:var(--aeg-card-line)] bg-surface-1 p-5 [box-shadow:var(--aeg-card-shadow)]", className)}>{children}</div>;
+}
+
+export function Notice({ ok, children }: { ok?: boolean; children: ReactNode }) {
+  return (
+    <p role={ok ? "status" : "alert"} className={cn("rounded-md border px-3 py-2.5 text-sm", ok ? "border-allow/30 bg-surface-3 text-allow" : "border-block/30 bg-block-muted text-block")}>
+      {children}
+    </p>
+  );
+}
+
+export function Skeleton() {
+  return (
+    <div className="animate-pulse space-y-3" aria-busy="true">
+      <div className="h-9 w-56 rounded-sm bg-surface-3" />
+      <div className="h-24 rounded-md bg-surface-3" />
+      <div className="h-24 rounded-md bg-surface-3" />
+    </div>
+  );
+}
+
+function CreateWorkspace({ onDone }: { onDone: () => void }) {
+  const [name, setName] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setErr(null);
+    const supabase = createClient();
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData?.user) {
+      setBusy(false);
+      setErr("Your session has expired. Sign in again to continue.");
+      return;
+    }
+    const { error } = await supabase.rpc("create_workspace", { p_name: name.trim() });
+    setBusy(false);
+    if (error) setErr(error.message);
+    else onDone();
+  }
+
+  return (
+    <Panel className="mx-auto max-w-md">
+      <h2 className="text-lg font-semibold">Create your workspace</h2>
+      <p className="mt-1 text-sm text-muted-foreground">A workspace holds your agents, policies and evidence. You can invite your team later.</p>
+      {err && <div className="mt-4"><Notice>{err}</Notice></div>}
+      <form onSubmit={submit} className="mt-4 space-y-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="ws-name">Company or team name</Label>
+          <Input id="ws-name" value={name} onChange={(e) => setName(e.target.value)} required maxLength={80} />
+        </div>
+        <button type="submit" disabled={busy || !name.trim()} className={`${btnPrimary} w-full disabled:opacity-60`}>
+          {busy ? "Creating..." : "Create workspace"}
+        </button>
+      </form>
+    </Panel>
+  );
+}
+
+export function WorkspaceGate({ children }: { children: (ws: Workspace) => ReactNode }) {
+  const { ws, loading, error, reload } = useWorkspace();
+  if (loading && !ws) return <Skeleton />;
+  if (error) return <Notice>Could not load your workspace: {error}. Refresh the page, or contact support if this continues.</Notice>;
+  if (!ws) return <CreateWorkspace onDone={() => void reload()} />;
+  return <>{children(ws)}</>;
+}
+
+##### src\components\aegisora\live\overview-v2.tsx #####
+"use client";
+
+import { useState } from "react";
+import { Link } from "@/i18n/navigation";
+import { focusRing } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+import type { Bucket } from "./decision-charts";
+
+export function StatCard({ label, value, href, warn }: { label: string; value: string; href: string; warn?: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={cn("block rounded-2xl border border-[color:var(--aeg-card-line)] bg-surface-1 p-4 transition-colors hover:bg-surface-2", focusRing)}
+    >
+      <span className="block text-xs text-muted-foreground">{label}</span>
+      <span className={cn("mt-2 block text-3xl font-semibold tabular-nums tracking-tight", warn ? "text-escalate" : "text-foreground")}>{value}</span>
+    </Link>
+  );
+}
+
+export function HourlyBars({ buckets, labels }: { buckets: Bucket[]; labels: string[] }) {
+  const totals = buckets.map((b) => b.allow + b.escalate + b.block);
+  const max = Math.max(1, ...totals);
+  const peak = totals.some((t) => t > 0) ? totals.indexOf(Math.max(...totals)) : null;
+  const [hover, setHover] = useState<number | null>(null);
+  const active = hover ?? peak;
+  const heightOf = (t: number) => (t === 0 ? 1.5 : Math.max(5, (t / max) * 100));
+  const b = active !== null ? buckets[active] : null;
+
+  return (
+    <div>
+      <div className="relative h-56" onPointerLeave={() => setHover(null)}>
+        <div role="img" aria-label="Decisions per hour, last 24 hours" className="flex h-full items-end gap-1.5 sm:gap-2">
+          {totals.map((t, i) => (
+            <div key={i} className="flex h-full flex-1 cursor-pointer items-end" onPointerEnter={() => setHover(i)} onClick={() => setHover(i)}>
+              <span
+                className={cn("block w-full rounded-t-md transition-colors", i === active ? "bg-[#22d3ee] shadow-[0_0_28px_rgb(34_211_238/0.5)]" : "bg-[#1a6b78]")}
+                style={{ height: heightOf(t) + "%" }}
+              />
+            </div>
+          ))}
+        </div>
+        {active !== null && b && totals[active] > 0 && (
+          <div
+            className="pointer-events-none absolute z-10 w-40 -translate-x-1/2 rounded-xl border border-border bg-popover p-3 text-xs shadow-xl"
+            style={{
+              left: "clamp(5rem, " + ((active + 0.5) / 24) * 100 + "%, calc(100% - 5rem))",
+              bottom: "min(calc(" + heightOf(totals[active]) + "% + 12px), calc(100% - 96px))",
+            }}
+          >
+            <p className="font-medium text-foreground">{labels[active]}:00</p>
+            <p className="mt-1 text-muted-foreground">{totals[active] + (totals[active] === 1 ? " decision" : " decisions")}</p>
+            <p className="mt-1.5 flex justify-between text-allow"><span>Allow</span><span>{b.allow}</span></p>
+            <p className="flex justify-between text-escalate"><span>Escalate</span><span>{b.escalate}</span></p>
+            <p className="flex justify-between text-block"><span>Block</span><span>{b.block}</span></p>
+          </div>
+        )}
+      </div>
+      <div className="mt-2 flex gap-1.5 text-[10px] text-muted-foreground sm:gap-2">
+        {labels.map((l, i) => (
+          <span key={i} className="min-w-0 flex-1 text-center">{i % 3 === 0 ? l : ""}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+##### src\components\aegisora\live\overview-insights.tsx #####
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { AlertTriangle, ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
+import {
+  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart,
+  PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ReferenceLine, ResponsiveContainer,
+  Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis,
+} from "recharts";
+import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+
+type Row = { created_at: string; decision: string | null; agent_name: string | null; action: string | null; risk_score: number | null; policy_id: string | null };
+type Pending = { id: string; agent_name: string | null; action: string | null; requested_at: string; expires_at: string };
+type Bubble = { name: string; x: number; y: number; z: number; esc: number };
+
+const DAY = 864e5;
+const PAGE = 1000;
+const MAX_PAGES = 5;
+const C = { allow: "var(--allow)", escalate: "var(--escalate)", block: "var(--block)", primary: "var(--primary)", grid: "var(--border)", text: "var(--muted-foreground)" };
+const PALETTE = ["#3a85f8", "#34d399", "#fbbf24", "#f87171", "#a78bfa", "#94a3b8"];
+const WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+const tip = {
+  contentStyle: { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 10, fontSize: 12, color: "var(--popover-foreground)", boxShadow: "0 8px 24px rgba(0,0,0,0.18)" },
+  labelStyle: { color: "var(--popover-foreground)", fontWeight: 600 },
+  itemStyle: { color: "var(--popover-foreground)" },
+};
+const axis = { tick: { fontSize: 11, fill: "var(--muted-foreground)" }, axisLine: false, tickLine: false };
+
+const pct = (a: number, b: number) => (b > 0 ? Math.round((a / b) * 1000) / 10 : 0);
+const dayKey = (d: Date) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+
+function stat(rows: Row[]) {
+  let allow = 0, block = 0, esc = 0, policy = 0, high = 0;
+  for (const r of rows) {
+    if (r.decision === "ALLOW") allow++;
+    else if (r.decision === "BLOCK") block++;
+    else if (r.decision === "ESCALATE") esc++;
+    if (r.policy_id) policy++;
+    if ((r.risk_score ?? 0) >= 70) high++;
+  }
+  return { total: rows.length, allow, block, esc, policy, high };
+}
+
+function build(rows: Row[]) {
+  const days = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    d.setDate(d.getDate() - (13 - i));
+    return { key: dayKey(d), label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }), allow: 0, escalate: 0, block: 0, total: 0, blockRate: 0, allowRate: 0, escRate: 0 };
+  });
+  const idx = new Map(days.map((d, i) => [d.key, i]));
+  const cur: Row[] = [];
+  const prev: Row[] = [];
+  const week = [0, 0, 0, 0, 0, 0, 0];
+  for (const r of rows) {
+    const t = new Date(r.created_at);
+    const i = idx.get(dayKey(t));
+    if (i === undefined) continue;
+    const d = days[i];
+    d.total++;
+    if (r.decision === "ALLOW") d.allow++;
+    else if (r.decision === "BLOCK") d.block++;
+    else if (r.decision === "ESCALATE") d.escalate++;
+    (i >= 7 ? cur : prev).push(r);
+    week[(t.getDay() + 6) % 7]++;
+  }
+  for (const d of days) {
+    d.blockRate = pct(d.block, d.total);
+    d.allowRate = pct(d.allow, d.total);
+    d.escRate = pct(d.escalate, d.total);
+  }
+  const sc = stat(cur);
+  const sp = stat(prev);
+
+  const ag = new Map<string, { name: string; allow: number; escalate: number; block: number; total: number }>();
+  const cat = new Map<string, number>();
+  const blocked = new Map<string, number>();
+  for (const r of cur) {
+    const name = r.agent_name || "Unknown";
+    const a = ag.get(name) ?? { name, allow: 0, escalate: 0, block: 0, total: 0 };
+    a.total++;
+    if (r.decision === "ALLOW") a.allow++;
+    else if (r.decision === "BLOCK") a.block++;
+    else if (r.decision === "ESCALATE") a.escalate++;
+    ag.set(name, a);
+    const fam = (r.action || "unknown").split(".")[0] || "unknown";
+    cat.set(fam, (cat.get(fam) ?? 0) + 1);
+    if (r.decision === "BLOCK") blocked.set(r.action || "unknown", (blocked.get(r.action || "unknown") ?? 0) + 1);
+  }
+  const agents = [...ag.values()].sort((a, b) => b.total - a.total);
+  const bubbles: Bubble[] = agents.slice(0, 12).map((a) => ({ name: a.name, x: a.total, y: pct(a.block, a.total), z: Math.max(a.escalate, 1), esc: a.escalate }));
+  const catSorted = [...cat.entries()].sort((a, b) => b[1] - a[1]);
+  const cats = catSorted.slice(0, 5).map(([name, value]) => ({ name, value }));
+  const rest = catSorted.slice(5).reduce((s, [, v]) => s + v, 0);
+  if (rest > 0) cats.push({ name: "other", value: rest });
+  const topBlocked = [...blocked.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([action, count]) => ({ action, count }));
+  const avgBlock = pct(sc.block, sc.total);
+  const radar = [
+    { axis: "Policy coverage", cur: pct(sc.policy, sc.total), prev: pct(sp.policy, sp.total) },
+    { axis: "Allowed", cur: pct(sc.allow, sc.total), prev: pct(sp.allow, sp.total) },
+    { axis: "Blocked", cur: pct(sc.block, sc.total), prev: pct(sp.block, sp.total) },
+    { axis: "Escalated", cur: pct(sc.esc, sc.total), prev: pct(sp.esc, sp.total) },
+    { axis: "High risk", cur: pct(sc.high, sc.total), prev: pct(sp.high, sp.total) },
+  ];
+  const today = (new Date().getDay() + 6) % 7;
+  const weekData = WEEK.map((name, i) => ({ name, value: week[i], today: i === today }));
+  return { days, sc, sp, agents: agents.slice(0, 6), bubbles, cats, topBlocked, avgBlock, radar, weekData, total: rows.length };
+
+##### src\components\aegisora\live\page-charts.tsx #####
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+
+type R = { created_at: string; decision: string | null; action: string | null; risk_score: number | null };
+
+const DAY = 864e5;
+const C = { allow: "var(--allow)", escalate: "var(--escalate)", block: "var(--block)", primary: "var(--primary)", grid: "var(--border)" };
+const tip = {
+  contentStyle: { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 10, fontSize: 12, color: "var(--popover-foreground)", boxShadow: "0 8px 24px rgba(0,0,0,0.18)" },
+  labelStyle: { color: "var(--popover-foreground)", fontWeight: 600 },
+  itemStyle: { color: "var(--popover-foreground)" },
+};
+const axis = { tick: { fontSize: 11, fill: "var(--muted-foreground)" }, axisLine: false, tickLine: false };
+const dayKey = (d: Date) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+
+function Card({ title, hint, className, children }: { title: string; hint?: string; className?: string; children: React.ReactNode }) {
+  return (
+    <section className={cn("aeg-panel min-w-0 p-4 sm:p-5", className)}>
+      <h2 className="text-sm font-semibold">{title}</h2>
+      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+function build(rows: R[]) {
+  const days = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    d.setDate(d.getDate() - (13 - i));
+    return { key: dayKey(d), label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }), allow: 0, escalate: 0, block: 0 };
+  });
+  const idx = new Map(days.map((d, i) => [d.key, i]));
+  const acts = new Map<string, { name: string; allow: number; escalate: number; block: number; total: number }>();
+  const risk = [
+    { name: "0-19", value: 0 }, { name: "20-39", value: 0 }, { name: "40-59", value: 0 },
+    { name: "60-79", value: 0 }, { name: "80-100", value: 0 },
+  ];
+  for (const r of rows) {
+    const i = idx.get(dayKey(new Date(r.created_at)));
+    const k = r.decision === "ALLOW" ? "allow" : r.decision === "BLOCK" ? "block" : r.decision === "ESCALATE" ? "escalate" : null;
+    if (i !== undefined && k) days[i][k]++;
+    const name = r.action || "unknown";
+    const a = acts.get(name) ?? { name, allow: 0, escalate: 0, block: 0, total: 0 };
+    a.total++;
+    if (k) a[k]++;
+    acts.set(name, a);
+    if (typeof r.risk_score === "number") risk[Math.min(4, Math.floor(r.risk_score / 20))].value++;
+  }
+  const top = [...acts.values()].sort((a, b) => b.total - a.total).slice(0, 6);
+  return { days, top, risk, hasRisk: risk.some((x) => x.value > 0) };
+}
+
+export function DecisionCharts({ wsId }: { wsId: string }) {
+  const [rows, setRows] = useState<R[] | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const sb = createClient();
+        const since = new Date(Date.now() - 14 * DAY).toISOString();
+        const { data, error } = await sb
+          .from("decisions")
+          .select("created_at,decision,action,risk_score")
+          .eq("workspace_id", wsId)
+
+##### src\components\aegisora\live\live-table.tsx #####
+"use client";
+
+import { Fragment, useCallback, useEffect, useState, type ReactNode } from "react";
+import { RefreshCw } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import type { Workspace } from "@/lib/aegisora/use-workspace";
+import { Notice, PageHeader, Panel, Skeleton, WorkspaceGate, btnGhost } from "@/components/aegisora/live/ui";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Row = Record<string, any>;
+export type Column = { label: string; render: (r: Row) => ReactNode };
+
+type Props = {
+  table: string;
+  title: string;
+  description: string;
+  columns: Column[];
+  empty: { title: string; body: string };
+  select?: string;
+  orderBy?: string;
+  ascending?: boolean;
+  limit?: number;
+  realtime?: boolean;
+  actions?: (r: Row, reload: () => void) => ReactNode;
+  detail?: (r: Row) => unknown;
+  above?: (ws: Workspace, reload: () => void) => ReactNode;
+  headerActions?: (ws: Workspace, reload: () => void) => ReactNode;
+};
+
+// step27: row cache. The last result per table stays in memory, so coming back to a page paints
+// immediately and the fresh query runs in the background (no skeleton flash on every navigation).
+const rowCache = new Map<string, Row[]>();
+const ROW_CACHE_MAX = 40;
+function rowCacheSet(key: string, value: Row[]) {
+  rowCache.delete(key);
+  rowCache.set(key, value);
+  if (rowCache.size > ROW_CACHE_MAX) {
+    const oldest = rowCache.keys().next().value;
+    if (oldest !== undefined) rowCache.delete(oldest);
+  }
+}
+
+function DetailGrid({ value }: { value: unknown }) {
+  const entries = value && typeof value === "object" ? Object.entries(value as Record<string, unknown>) : [];
+  const show = (v: unknown) => {
+    if (v === null || v === undefined || v === "") return "-";
+    if (typeof v === "boolean") return v ? "Yes" : "No";
+    if (typeof v === "object") return JSON.stringify(v);
+    return String(v);
+  };
+  return (
+    <dl className="grid gap-x-6 gap-y-3 text-xs sm:grid-cols-2">
+      {entries.map(([k, v]) => (
+        <div key={k} className="min-w-0">
+          <dt className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{k.replace(/_/g, " ")}</dt>
+          <dd className="mt-0.5 max-h-32 overflow-auto break-words font-mono">{show(v)}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+export function LiveTable(props: Props) {
+  return <WorkspaceGate>{(ws) => <Inner key={ws.id} ws={ws} {...props} />}</WorkspaceGate>;
+}
+
+function Inner({ ws, table, title, description, columns, empty, select = "*", orderBy = "created_at", ascending = false, limit = 100, realtime = false, actions, detail, above, headerActions }: Props & { ws: Workspace }) {
+  const cacheKey = [ws.id, table, select, orderBy, String(ascending), String(limit)].join("|");
+  const [rows, setRows] = useState<Row[] | null>(() => rowCache.get(cacheKey) ?? null);
+  const [err, setErr] = useState<string | null>(null);
+  const [open, setOpen] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const load = useCallback(async () => {
+    const supabase = createClient();
+    const { data, error } = await supabase.from(table).select(select).eq("workspace_id", ws.id).order(orderBy, { ascending }).limit(limit);
+    if (error) setErr(error.message);
+    else {
+      const list = (data ?? []) as unknown as Row[];
+      rowCacheSet(cacheKey, list);
+      setErr(null);
+      setRows(list);
+    }
+  }, [cacheKey, table, select, orderBy, ascending, limit, ws.id]);
+
+  // Initial async table hydration intentionally starts from an effect.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void load();
+    }, 0);
+
+##### src\components\aegisora\state-badge.tsx #####
+import { cn } from "@/lib/utils";
+
+export type DecisionState = "ALLOW" | "BLOCK" | "ESCALATE";
+export type RiskLevel = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+export type ApprovalStatus = "PENDING" | "APPROVED" | "REJECTED" | "EXPIRED";
+
+const decisionStyle: Record<DecisionState, string> = {
+  ALLOW: "border-allow/40 bg-allow-muted text-allow",
+  BLOCK: "border-block/40 bg-block-muted text-block",
+  ESCALATE: "border-escalate/40 bg-escalate-muted text-escalate",
+};
+
+export function DecisionBadge({
+  state,
+  className,
+}: {
+  state: DecisionState;
+  className?: string;
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-mono text-[11px] font-semibold tracking-wider",
+        decisionStyle[state],
+        className,
+      )}
+    >
+      <span aria-hidden className="size-1.5 rounded-full bg-current" />
+      {state}
+    </span>
+  );
+}
+
+const riskIndex: Record<RiskLevel, number> = {
+  LOW: 1,
+  MEDIUM: 2,
+  HIGH: 3,
+  CRITICAL: 4,
+};
+
+export function RiskIndicator({ level }: { level: RiskLevel }) {
+  const n = riskIndex[level];
+  return (
+    <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-wider text-foreground">
+      <span aria-hidden className="flex gap-0.5">
+        {[1, 2, 3, 4].map((i) => (
+          <span
+            key={i}
+            className={cn(
+              "h-3 w-1.5 rounded-[1px]",
+
+##### src\app\[locale]\(app)\dashboard\page.tsx #####
+"use client";
+
+import { useEffect, useState } from "react";
+import { ArrowRight, Check, Circle } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import type { Workspace } from "@/lib/aegisora/use-workspace";
+import { Badge, Notice, PageHeader, Panel, Skeleton, WorkspaceGate, fmt } from "@/components/aegisora/live/ui";
+import type { Row } from "@/components/aegisora/live/live-table";
+import type { Bucket } from "@/components/aegisora/live/decision-charts";
+import { HourlyBars, StatCard } from "@/components/aegisora/live/overview-v2";
+import { focusRing } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+// null = the query failed (unknown), never "0".
+type Stats = { agents: number | null; policies: number | null; keys: number | null; pending: number | null; incidents: number | null; allow: number | null; block: number | null; escalate: number | null };
+type Point = { created_at: string; decision: string | null };
+type Pending = { id: string; agent_name: string | null; action: string | null; requested_at: string; expires_at: string };
+
+const HOUR = 36e5;
+const SERIES_LIMIT = 1000;
+const NONE: Stats = { agents: null, policies: null, keys: null, pending: null, incidents: null, allow: null, block: null, escalate: null };
+const btnPrimary = "inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover";
+
+const pick = (v: unknown): Record<string, unknown> | null =>
+  Array.isArray(v) ? ((v[0] as Record<string, unknown> | undefined) ?? null) : ((v as Record<string, unknown> | null) ?? null);
+
+function bucketize(points: Point[]): { buckets: Bucket[]; labels: string[] } {
+  const now = Date.now();
+  const buckets: Bucket[] = Array.from({ length: 24 }, () => ({ allow: 0, escalate: 0, block: 0 }));
+  const labels = Array.from({ length: 24 }, (_, i) => String(new Date(now - (23 - i) * HOUR).getHours()).padStart(2, "0"));
+  for (const p of points) {
+    const idx = 23 - Math.floor((now - new Date(p.created_at).getTime()) / HOUR);
+    if (idx < 0 || idx > 23) continue;
+    if (p.decision === "ALLOW") buckets[idx].allow++;
+    else if (p.decision === "ESCALATE") buckets[idx].escalate++;
+    else if (p.decision === "BLOCK") buckets[idx].block++;
+  }
+  return { buckets, labels };
+}
+
+function timeLeft(iso: string) {
+  const mins = Math.round((Date.parse(iso) - Date.now()) / 6e4);
+  if (mins < 1) return "expires now";
+  if (mins < 60) return mins + "m left";
+  return Math.round(mins / 60) + "h left";
+}
+
+function Overview({ ws }: { ws: Workspace }) {
+  const [s, setS] = useState<Stats | null>(null);
+
+##### src\app\[locale]\(app)\dashboard\activity\page.tsx #####
+"use client";
+
+import { LiveTable } from "@/components/aegisora/live/live-table";
+import { Badge, fmt } from "@/components/aegisora/live/ui";
+
+export default function ActivityPage() {
+  return (
+    <LiveTable
+      table="decisions"
+      title="Live Activity"
+      description="Streams new decisions in real time."
+      limit={50}
+      realtime
+      columns={[
+        { label: "Time", render: (r) => fmt(r.created_at) },
+        { label: "Agent", render: (r) => r.agent_name },
+        { label: "Action", render: (r) => <span className="font-mono text-xs">{r.action}</span> },
+        { label: "Resource", render: (r) => <span className="text-muted-foreground">{r.resource || "-"}</span> },
+        { label: "Decision", render: (r) => <Badge value={r.decision ?? r.effect} /> },
+      ]}
+      empty={{ title: "Waiting for the first action", body: "This view updates live. Send a test action from your agent or with curl and it will appear here instantly." }}
+    />
+  );
+}
+
+##### src\app\[locale]\(app)\dashboard\agents\page.tsx #####
+"use client";
+
+import { useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { LiveTable } from "@/components/aegisora/live/live-table";
+import { Badge, Notice, Panel, btnGhost, fmt } from "@/components/aegisora/live/ui";
+import type { Workspace } from "@/lib/aegisora/use-workspace";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { btnPrimary } from "@/lib/ui";
+import { confirmDialog, notify } from "@/components/aegisora/live/feedback";
+
+type Parsed = { name: string; framework: string | null; description: string | null; external_id: string | null; metadata: object };
+
+function parseImport(text: string): Parsed[] {
+  const t = text.trim();
+  if (!t) return [];
+  if (t.startsWith("[") || t.startsWith("{")) {
+    const v = JSON.parse(t);
+    const list: Record<string, unknown>[] = Array.isArray(v) ? v : Array.isArray(v?.agents) ? v.agents : [];
+    return list
+      .filter((a) => a && typeof a.name === "string" && a.name.trim())
+      .map((a) => ({
+        name: String(a.name).trim().slice(0, 120),
+        framework: a.framework ? String(a.framework).slice(0, 80) : null,
+        description: a.description ? String(a.description).slice(0, 1000) : null,
+        external_id: a.external_id != null ? String(a.external_id).slice(0, 200) : null,
+        metadata: a.metadata && typeof a.metadata === "object" ? (a.metadata as object) : {},
+      }));
+  }
+  return t
+    .split(/\r?\n/)
+    .map((l) => l.split(",").map((x) => x.trim()))
+    .filter((c) => c[0] && c[0].toLowerCase() !== "name")
+    .map((c) => ({ name: c[0].slice(0, 120), framework: c[1] || null, description: c[2] || null, external_id: null, metadata: {} }));
+}
+
+function AgentTools({ ws, reload }: { ws: Workspace; reload: () => void }) {
+  const [mode, setMode] = useState<"register" | "import" | null>(null);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [name, setName] = useState("");
+  const [framework, setFramework] = useState("");
+  const [description, setDescription] = useState("");
+  const [bulk, setBulk] = useState("");
+  const [origin, setOrigin] = useState("https://YOUR_DOMAIN");
+
+  // Client-only origin hydration intentionally avoids SSR/browser mismatch.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+
+##### src\app\[locale]\(site)\docs\layout.tsx #####
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import "@/components/aegisora/bw/bw.css";
+import { bwFontVars } from "@/components/aegisora/bw/bw-font-vars";
+import { DocsFrame } from "@/components/aegisora/docs-frame";
+import { DocsNav } from "@/components/aegisora/docs-nav";
+
+export default async function DocsLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "Docs" });
+  return (
+    <div className={bwFontVars}>
+      <DocsFrame menu={t("menu")} nav={<DocsNav />}>
+        {children}
+      </DocsFrame>
+    </div>
+  );
+}
+
+##### src\components\aegisora\docs-frame.tsx #####
+"use client";
+
+import type { ReactNode } from "react";
+import { usePathname } from "@/i18n/navigation";
+
+export function DocsFrame({ menu, nav, children }: { menu: string; nav: ReactNode; children: ReactNode }) {
+  const pathname = usePathname();
+  // The technical reference has its own sidebar, so it renders full width.
+  if (pathname === "/docs/technical") return <>{children}</>;
+  return (
+    <div className="mx-auto max-w-[1280px] px-4 py-10 text-foreground sm:px-6 md:py-16">
+      <details className="mb-8 rounded-xl border border-border bg-surface-1 px-4 py-3 lg:hidden">
+        <summary className="cursor-pointer text-sm font-semibold">{menu}</summary>
+        <div className="mt-3">{nav}</div>
+      </details>
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[220px_1fr]">
+        <aside className="hidden lg:block">
+          <div className="sticky top-24">{nav}</div>
+        </aside>
+        <div className="min-w-0">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+##### src\components\aegisora\docs-mega-menu.tsx #####
+'use client';
+
+import { Link } from '@/i18n/navigation';
+import { NAV_TREE } from '@/components/aegisora/docs-nav';
+
+export function DocsMegaMenu() {
+  return (
+    <div className="invisible absolute left-0 top-full z-[110] w-[92vw] max-w-[520px] translate-y-1 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+      <div className="rounded-xl border border-[#1677ff]/20 bg-[#061022]/98 p-6 shadow-2xl shadow-black/50 backdrop-blur-md">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
+          {NAV_TREE.map((group) => (
+            <div key={group.title}>
+              <h3 className="font-mono text-[10px] font-semibold uppercase tracking-wider text-[#1677ff]">
+                {group.title}
+              </h3>
+              <ul className="mt-3 space-y-2">
+                {group.items.map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className="text-sm text-slate-300 transition-colors hover:text-white">
+                      {item.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-800 pt-4">
+          <p className="text-xs text-slate-500">Full documentation, versioned and searchable.</p>
+          <Link href="/docs" className="shrink-0 text-xs font-semibold text-[#1677ff] hover:underline">
+            Open Docs &rarr;
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+##### logo-mark.png #####
+369x256
