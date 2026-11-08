@@ -1,0 +1,590 @@
+
+##### src\components\aegisora\account-switcher.tsx #####
+"use client";
+
+import Link from "next/link";
+import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useWorkspace } from "@/components/aegisora/workspace-provider";
+import { focusRing } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+export function AccountSwitcher() {
+  const { loading, workspaces, currentWorkspace, setCurrentWorkspaceId } = useWorkspace();
+
+  if (loading) {
+    return <span className="hidden font-mono text-xs text-muted-foreground sm:inline">workspace / loading...</span>;
+  }
+
+  if (!currentWorkspace) {
+    return (
+      <Link href="/onboarding" className="hidden font-mono text-xs text-cyan underline-offset-4 hover:underline sm:inline">
+        workspace / create one
+      </Link>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            className={cn(
+              "hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground hover:bg-surface-3 hover:text-foreground sm:flex",
+              focusRing,
+            )}
+          >
+            workspace / <span className="text-foreground">{currentWorkspace.slug}</span>
+            <ChevronsUpDown className="size-3.5" />
+          </button>
+        }
+      />
+      <DropdownMenuContent align="start" className="w-64">
+        <DropdownMenuLabel className="font-mono text-[10px] tracking-wider text-muted-foreground">
+          WORKSPACES
+        </DropdownMenuLabel>
+        {workspaces.map((w) => (
+          <DropdownMenuItem key={w.id} onClick={() => setCurrentWorkspaceId(w.id)} className="flex items-center justify-between gap-2">
+            <span>
+              <span className="block text-sm">{w.name}</span>
+              <span className="block font-mono text-[10px] text-muted-foreground">{w.role}</span>
+            </span>
+            {w.id === currentWorkspace.id && <Check className="size-4 text-cyan" />}
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          render={
+            <Link href="/onboarding" className="flex items-center gap-2">
+              <Plus className="size-4" /> Create workspace
+            </Link>
+          }
+        />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+##### src\components\aegisora\workspace-provider.tsx #####
+"use client";
+
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+
+export type WorkspaceSummary = { id: string; name: string; slug: string; role: string };
+
+type WorkspaceContextValue = {
+  loading: boolean;
+  userEmail: string | null;
+  userName: string | null;
+  workspaces: WorkspaceSummary[];
+  currentWorkspace: WorkspaceSummary | null;
+  setCurrentWorkspaceId: (id: string) => void;
+  refresh: () => void;
+};
+
+const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
+
+export const WORKSPACE_STORAGE_KEY = "aeg-current-workspace";
+
+export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
+  const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [workspaces, setWorkspaces] = useState<WorkspaceSummary[]>([]);
+  const [currentId, setCurrentId] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const supabase = createClient();
+
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData.user;
+    setUserEmail(user?.email ?? null);
+    setUserName((user?.user_metadata?.full_name as string) ?? null);
+
+    if (!user) {
+      setWorkspaces([]);
+      setLoading(false);
+      return;
+    }
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (sessionData.session?.access_token) {
+      await fetch("/api/v1/workspace/members/accept", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${sessionData.session.access_token}` },
+        cache: "no-store",
+      }).catch(() => undefined);
+    }
+
+    const { data, error } = await supabase
+      .from("workspace_members")
+      .select("role, workspaces(id, name, slug)")
+      .eq("user_id", user.id)
+      .eq("status", "active");
+
+    if (error || !data) {
+      setWorkspaces([]);
+      setLoading(false);
+      return;
+    }
+
+    const list: WorkspaceSummary[] = data
+  // Legacy boundary typing retained temporarily; runtime validation occurs at the Supabase boundary.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .filter((m: any) => m.workspaces)
+  // Legacy boundary typing retained temporarily; runtime validation occurs at the Supabase boundary.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((m: any) => ({
+        id: m.workspaces.id,
+        name: m.workspaces.name,
+        slug: m.workspaces.slug,
+        role: m.role,
+      }));
+
+    setWorkspaces(list);
+
+    const stored = typeof window !== "undefined" ? window.localStorage.getItem(WORKSPACE_STORAGE_KEY) : null;
+    const valid = list.find((w) => w.id === stored);
+    setCurrentId(valid ? valid.id : (list[0]?.id ?? null));
+
+    setLoading(false);
+  }, []);
+
+    useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void load();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [load]);
+
+  function setCurrentWorkspaceId(id: string) {
+    setCurrentId(id);
+    if (typeof window !== "undefined") window.localStorage.setItem(WORKSPACE_STORAGE_KEY, id);
+  }
+
+  const currentWorkspace = workspaces.find((w) => w.id === currentId) ?? null;
+
+  return (
+    <WorkspaceContext.Provider
+      value={{ loading, userEmail, userName, workspaces, currentWorkspace, setCurrentWorkspaceId, refresh: load }}
+    >
+      {children}
+    </WorkspaceContext.Provider>
+  );
+}
+
+export function useWorkspace() {
+  const ctx = useContext(WorkspaceContext);
+  if (!ctx) throw new Error("useWorkspace must be used within WorkspaceProvider");
+  return ctx;
+}
+
+
+
+
+
+
+##### src\lib\aegisora\use-workspace.ts #####
+(YOK)
+
+##### src\app\[locale]\(app)\dashboard\workspace\page.tsx #####
+"use client";
+
+import Link from "next/link";
+import { useWorkspace } from "@/components/aegisora/workspace-provider";
+
+export default function WorkspacePage() {
+  const { currentWorkspace, loading } = useWorkspace();
+  const canManage = currentWorkspace?.role === "OWNER" || currentWorkspace?.role === "ADMIN";
+
+  if (loading) {
+    return <div className="mx-auto max-w-4xl py-12 text-sm text-muted-foreground">Loading workspace…</div>;
+  }
+
+  if (!currentWorkspace) {
+    return <div className="mx-auto max-w-4xl py-12 text-sm text-muted-foreground">No active workspace is available for this account.</div>;
+  }
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-6">
+      <header>
+        <h1 className="text-3xl font-light tracking-tight">Workspace</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Workspace details from your active membership.</p>
+      </header>
+      <section aria-labelledby="general-title" className="aeg-panel p-5">
+        <h2 id="general-title" className="text-sm font-medium">General</h2>
+        <dl className="mt-4 divide-y divide-border/60 border-t border-border">
+          <div className="grid grid-cols-[160px_1fr] gap-3 py-2.5 text-sm">
+            <dt className="text-muted-foreground">Name</dt><dd>{currentWorkspace.name}</dd>
+          </div>
+          <div className="grid grid-cols-[160px_1fr] gap-3 py-2.5 text-sm">
+            <dt className="text-muted-foreground">Slug</dt><dd className="font-mono text-xs">{currentWorkspace.slug}</dd>
+          </div>
+          <div className="grid grid-cols-[160px_1fr] gap-3 py-2.5 text-sm">
+            <dt className="text-muted-foreground">Your role</dt><dd>{currentWorkspace.role}</dd>
+          </div>
+        </dl>
+      </section>
+      <section aria-labelledby="access-title" className="aeg-panel p-5">
+        <h2 id="access-title" className="text-sm font-medium">Access</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {canManage ? "Your role can manage workspace members." : "Workspace administration is limited to owners and admins."}
+        </p>
+        <Link className="mt-4 inline-flex text-sm underline underline-offset-4" href="/dashboard/team">View team</Link>
+      </section>
+    </div>
+  );
+}
+
+##### src\components\aegisora\mobile-nav.tsx #####
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { TouchEvent as ReactTouchEvent } from "react";
+import type { LucideIcon } from "lucide-react";
+import {
+  Activity, Bot, Check, ClipboardList, Ellipsis, FileCheck, GitBranch, KeyRound,
+  LayoutDashboard, Scale, ScrollText, Settings, SlidersHorizontal, TriangleAlert,
+  UserCheck, Users, CreditCard, ShieldCheck, Webhook, X,
+} from "lucide-react";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+
+type Item = { id: string; href: string; label: string; icon: LucideIcon };
+type Density = "compact" | "standard" | "large";
+type Prefs = { tabs: string[]; density: Density; home: string };
+
+const ITEMS: Item[] = [
+  { id: "overview", href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { id: "activity", href: "/dashboard/activity", label: "Live Activity", icon: Activity },
+  { id: "agents", href: "/dashboard/agents", label: "Agents", icon: Bot },
+  { id: "policies", href: "/dashboard/policies", label: "Policies", icon: ScrollText },
+  { id: "decisions", href: "/dashboard/decisions", label: "Decisions", icon: Scale },
+  { id: "approvals", href: "/dashboard/approvals", label: "Approvals", icon: UserCheck },
+  { id: "incidents", href: "/dashboard/incidents", label: "Incidents", icon: TriangleAlert },
+  { id: "evidence", href: "/dashboard/evidence", label: "Evidence", icon: FileCheck },
+  { id: "audit", href: "/dashboard/audit", label: "Audit", icon: ClipboardList },
+  { id: "traces", href: "/dashboard/traces", label: "Traces", icon: GitBranch },
+  { id: "webhooks", href: "/dashboard/webhooks", label: "Webhooks", icon: Webhook },
+  { id: "api-keys", href: "/dashboard/api-keys", label: "API Keys", icon: KeyRound },
+  { id: "settings", href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { id: "team", href: "/dashboard/team", label: "Team", icon: Users },
+  { id: "billing", href: "/dashboard/billing", label: "Billing", icon: CreditCard },
+  { id: "identity", href: "/dashboard/identity", label: "Identity", icon: ShieldCheck },
+];
+
+const GROUPS = [
+  { title: "Overview", ids: ["overview"] },
+  { title: "Monitor", ids: ["approvals", "activity", "incidents"] },
+  { title: "Govern", ids: ["agents", "policies", "evidence"] },
+  { title: "Workspace", ids: ["api-keys", "webhooks", "team", "billing", "settings"] },
+  { title: "Advanced", ids: ["decisions", "traces", "audit", "identity"] },
+];
+
+const DEFAULTS: Prefs = {
+  tabs: ["overview", "activity", "approvals", "incidents"],
+  density: "standard",
+  home: "overview",
+};
+const KEY = "aeg.dash.prefs.v1";
+const byId = (id: string): Item | undefined => ITEMS.find((i) => i.id === id);
+const FOCUS = "focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary";
+
+function sanitize(raw: unknown): Prefs {
+  const r = (raw ?? {}) as Partial<Prefs>;
+  const tabs = Array.isArray(r.tabs) ? r.tabs.filter((t) => typeof t === "string" && byId(t)) : [];
+  return {
+    tabs: tabs.length === 4 ? tabs : DEFAULTS.tabs,
+    density: r.density === "compact" || r.density === "large" ? r.density : "standard",
+    home: typeof r.home === "string" && byId(r.home) ? r.home : "overview",
+  };
+}
+
+function tap() {
+  try { navigator.vibrate?.(8); } catch { /* not supported */ }
+}
+
+export function MobileNav() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [prefs, setPrefs] = useState<Prefs>(DEFAULTS);
+  const [sheet, setSheet] = useState<null | "more" | "customize">(null);
+  const [counts, setCounts] = useState({ approvals: 0, incidents: 0 });
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const drag = useRef<{ y: number; dy: number } | null>(null);
+
+  useEffect(() => {
+    let p = DEFAULTS;
+
+##### src\components\aegx\ui.tsx #####
+import type { ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { AegxAurora } from "./aurora";
+
+type Variant = "solid" | "soft";
+type Action = { label: string; href: string };
+
+export function Btn({ href, variant = "solid", small, block, children }: { href: string; variant?: Variant; small?: boolean; block?: boolean; children: ReactNode }) {
+  const cls = ["aegx-btn", "aegx-btn--" + variant, small ? "aegx-btn--sm" : "", block ? "aegx-btn--block" : ""].filter(Boolean).join(" ");
+  return <Link href={href} className={cls}>{children}</Link>;
+}
+
+export function Hero({ badge, title, dim, intro, primary, secondary, compact, children }: {
+  badge?: string; title: string; dim?: string; intro?: string; primary?: Action; secondary?: Action; compact?: boolean; children?: ReactNode;
+}) {
+  return (
+    <section className={"aegx-sec aegx-hero" + (compact ? " aegx-hero--compact" : "")}>
+      <div className="aegx-hero__art" aria-hidden="true"><i className="aegx-hero__band" /><AegxAurora /></div>
+      <div className="aegx-col">
+        <div className="aegx-hero__in">
+          {badge ? <span className="aegx-eyebrow">{badge}</span> : null}
+          <h1 className="aegx-h1">
+            {title}
+            {dim ? (<><br /><span className="aegx-dim">{dim}</span></>) : null}
+          </h1>
+          {intro ? <p className="aegx-lead">{intro}</p> : null}
+          {primary || secondary ? (
+            <div className="aegx-actions">
+              {primary ? <Btn href={primary.href}>{primary.label}</Btn> : null}
+              {secondary ? <Btn href={secondary.href} variant="soft">{secondary.label}</Btn> : null}
+            </div>
+          ) : null}
+          {children}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function Feed({ title, rows }: { title: string; rows: { action: string; meta: string; v: string }[] }) {
+  return (
+    <div className="aegx-feed" role="group" aria-label={title}>
+      <div className="aegx-feed__bar">
+        <span className="aegx-feed__dots" aria-hidden="true"><i /><i /><i /></span>
+        <span>{title}</span>
+      </div>
+      {rows.map((r) => (
+        <div key={r.action} className="aegx-feed__row">
+          <div>
+            <p className="aegx-mono">{r.action}</p>
+            <p className="aegx-feed__meta">{r.meta}</p>
+          </div>
+          <span className={"aegx-v aegx-v--" + r.v.toLowerCase()}>{r.v}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function SectionHead({ eyebrow, title, dim, intro }: { eyebrow?: string; title: string; dim?: string; intro?: string }) {
+  return (
+    <div className="aegx-sh">
+      {eyebrow ? <span className="aegx-eyebrow">{eyebrow}</span> : null}
+      <h2 className="aegx-h2">
+        {title}
+        {dim ? (<> <span className="aegx-dim">{dim}</span></>) : null}
+      </h2>
+      {intro ? <p className="aegx-lead">{intro}</p> : null}
+    </div>
+  );
+}
+
+export function Sec({ children, flush, id }: { children: ReactNode; flush?: boolean; id?: string }) {
+  return (
+    <section id={id} className="aegx-sec">
+      <div className="aegx-col">
+        <div className={flush ? undefined : "aegx-pad"}>{children}</div>
+      </div>
+    </section>
+  );
+}
+
+export function Cells({ n, children }: { n: 2 | 3 | 4 | 6; children: ReactNode }) {
+  return <div className={"aegx-cells aegx-cells--" + n}>{children}</div>;
+}
+
+export function Cell({ icon: Icon, num, title, children }: { icon?: LucideIcon; num?: string; title: string; children?: ReactNode }) {
+  return (
+    <div className="aegx-cell">
+      {Icon ? <span className="aegx-ico"><Icon aria-hidden="true" /></span> : null}
+      {num ? <span className="aegx-num">{num}</span> : null}
+      <h3 className="aegx-h3">{title}</h3>
+      {children ? <p className="aegx-p">{children}</p> : null}
+    </div>
+  );
+}
+
+export function Cta({ title, body, primary, secondary }: { title: string; body: string; primary: Action; secondary?: Action }) {
+  return (
+    <section className="aegx-sec">
+      <div className="aegx-col">
+        <div className="aegx-cta">
+          <div className="aegx-cta__art" aria-hidden="true" />
+          <div className="aegx-cta__in">
+            <h2 className="aegx-h2">{title}</h2>
+            <p className="aegx-lead">{body}</p>
+            <div className="aegx-actions aegx-actions--left">
+              <Btn href={primary.href}>{primary.label}</Btn>
+              {secondary ? <Btn href={secondary.href} variant="soft">{secondary.label}</Btn> : null}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+##### aegx.css (ilgili satirlar) #####
+22: .aegx-head { position: sticky; top: 0; z-index: 80; background: rgb(0 0 0 / 0.72); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+23: .aegx-head__in { max-width: var(--col); margin: 0 auto; height: 60px; padding: 0 var(--pad); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; }
+24: .aegx-head__brand { display: inline-flex; align-items: center; justify-self: start; }
+25: .aegx-nav { display: flex; gap: 2px; }
+26: .aegx-nav a { padding: 7px 13px; border-radius: 999px; font-size: 13.5px; color: var(--mut); transition: color 0.2s, background-color 0.2s; }
+27: .aegx-nav a:hover { color: var(--fg); background: rgb(255 255 255 / 0.06); }
+28: .aegx-nav a[aria-current="page"] { color: #fff; }
+29: .aegx-head__right { justify-self: end; display: flex; align-items: center; gap: 10px; }
+30: .aegx-head__signin { font-size: 13.5px; color: var(--mut); padding: 7px 10px; border-radius: 999px; transition: color 0.2s; }
+31: .aegx-head__signin:hover { color: #fff; }
+32: .aegx-burger { display: none; width: 38px; height: 38px; align-items: center; justify-content: center; border-radius: 999px; border: 1px solid var(--line2); background: transparent; color: #fff; cursor: pointer; }
+33: .aegx-burger svg { width: 18px; height: 18px; }
+34: @media (max-width: 860px) {
+35:   .aegx-head__in { grid-template-columns: 1fr auto; }
+36:   .aegx-nav, .aegx-head__signin { display: none; }
+37:   .aegx-burger { display: inline-flex; }
+39: .aegx-drawer { position: fixed; inset: 60px 0 0 0; z-index: 70; background: #000; padding: 20px var(--pad) 40px; overflow-y: auto; }
+40: .aegx-drawer nav { display: flex; flex-direction: column; }
+41: .aegx-drawer nav a { padding: 16px 4px; font-size: 22px; letter-spacing: -0.02em; border-bottom: 1px solid var(--line); }
+42: .aegx-drawer__cta { display: grid; gap: 10px; margin-top: 28px; }
+49: .aegx-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 42px; padding: 0 20px; border-radius: 999px; font-size: 14px; font-weight: 550; border: 1px solid transparent; cursor: pointer; white-space: nowrap; transition: background-color 0.2s, border-color 0.2s, color 0.2s; }
+50: .aegx-btn--solid { background: #fff; color: #000; }
+51: .aegx-btn--solid:hover { background: #dedede; }
+52: .aegx-btn--soft { background: rgb(255 255 255 / 0.1); color: #fff; border-color: rgb(255 255 255 / 0.14); }
+53: .aegx-btn--soft:hover { background: rgb(255 255 255 / 0.17); }
+54: .aegx-btn--sm { height: 34px; padding: 0 14px; font-size: 13px; }
+55: .aegx-btn--block { display: flex; width: 100%; }
+65: @media (max-width: 1240px) { .aegx-sec > .aegx-col::before, .aegx-sec > .aegx-col::after { display: none; } }
+83: .aegx-hero { border-top: 0; overflow: hidden; isolation: isolate; }
+84: .aegx-hero__art { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; background:
+90: .aegx-hero__art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, #000 0%, rgb(0 0 0 / 0.6) 34%, rgb(0 0 0 / 0) 68%, #000 100%); }
+91: .aegx-hero__band { position: absolute; left: -10%; right: -10%; bottom: -26%; height: 62%; transform: rotate(-8deg); background: linear-gradient(90deg, transparent 0%, #1d3bff 22%, #8a4dff 40%, #ff5fa8 55%, #ffb35c 70%, #ffe08a 82%, transparent 100%); filter: blur(48px); opacity: 0.7; animation: aegx-drift 28s ease-in-out infinite alternate; will-change: transform; }
+93: .aegx-hero__in { text-align: center; padding: clamp(72px, 11vw, 124px) var(--pad) clamp(48px, 7vw, 80px); }
+94: .aegx-hero--compact .aegx-hero__in { padding: clamp(64px, 9vw, 104px) var(--pad) clamp(44px, 6vw, 72px); }
+95: .aegx-hero--compact .aegx-hero__band { opacity: 0.5; height: 48%; }
+96: @media (max-width: 768px) { .aegx-hero__band { animation: none; } }
+116: @media (max-width: 1100px) { .aegx-cells--4 { grid-template-columns: repeat(2, 1fr); } }
+117: @media (max-width: 900px) { .aegx-cells--3 { grid-template-columns: 1fr; } .aegx-cells--6 { grid-template-columns: repeat(2, 1fr); } }
+118: @media (max-width: 700px) { .aegx-cells--2 { grid-template-columns: 1fr; } }
+119: @media (max-width: 600px) { .aegx-cells--4, .aegx-cells--6 { grid-template-columns: 1fr; } }
+135: .aegx-plan .aegx-btn { margin-top: auto; }
+167: .aegx-cta { position: relative; overflow: hidden; isolation: isolate; padding: clamp(56px, 8vw, 96px) var(--pad); }
+168: .aegx-cta__art { position: absolute; inset: 0; z-index: -1; background:
+173: .aegx-cta__art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #000 14%, rgb(0 0 0 / 0.55) 55%, rgb(0 0 0 / 0.1) 100%); }
+174: .aegx-cta__in { max-width: 560px; }
+175: .aegx-cta .aegx-lead { margin-left: 0; }
+179: @media (max-width: 960px) { .aegx-foot__grid { grid-template-columns: repeat(2, 1fr); } .aegx-foot__brand { grid-column: 1 / -1; } }
+181: .aegx-foot__brand .aegx-btn { margin-top: 20px; }
+190: @media (prefers-reduced-motion: reduce) {
+191:   .aegx-hero__band { animation: none; }
+203: @media (max-width: 1100px) { .aegx-cell--fill { display: none; } }
+204: .aegx-hero__art canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0.9; }
+216: @media (max-width: 640px) { .aegx-form__row { grid-template-columns: 1fr; } }
+226: .aegx-form .aegx-btn { justify-self: start; }
+235: @media (prefers-reduced-motion: reduce) { .aegx [data-rv] { transition: none; } .aegx-js [data-rv]:not(.is-in) { opacity: 1; transform: none; } }
+237: .aegx a.aegx-btn--solid, .aegx a.aegx-btn--solid:hover { color: #000; }
+238: .aegx a.aegx-btn--soft, .aegx a.aegx-btn--soft:hover { color: #fff; }
+239: .aegx a.aegx-head__signin { color: var(--mut); }
+240: .aegx a.aegx-head__signin:hover { color: #fff; }
+244: .aegx-hero__art { background:
+249: .aegx-hero__band { background: linear-gradient(90deg, transparent 0%, #0a2a8f 20%, #1f7aff 44%, #4da3ff 60%, #1448d8 80%, transparent 100%); opacity: 0.55; }
+251: .aegx-cta__art { background:
+257: @media (max-width: 960px) { .aegx-foot__grid { grid-template-columns: repeat(2, 1fr); } }
+270: @media (max-width: 860px) { .aegx a.aegx-feature { grid-template-columns: 1fr; } }
+288: @media (max-width: 720px) { .aegx-cp { grid-template-columns: 1fr; } .aegx-cp__side { display: none; } }
+298: @media (max-width: 560px) { .aegx-cp__stats { grid-template-columns: repeat(2, 1fr); } }
+303: @media (max-width: 720px) { .aegx-cp__grid { grid-template-columns: 1fr; } }
+315: @media (prefers-reduced-motion: reduce) { .aegx-cover__s, .aegx-cp__bars i { animation: none; } }
+
+##### workspace ile ilgili API rotalari #####
+src\app\api\v1\workspace\agents\route.ts
+src\app\api\v1\workspace\approvals\[approvalId]\route.ts
+src\app\api\v1\workspace\evidence\export\route.ts
+src\app\api\v1\workspace\members\route.ts
+src\app\api\v1\workspace\members\accept\route.ts
+src\app\api\v1\workspace\policies\route.ts
+src\app\api\v1\workspace\usage\route.ts
+
+##### supabase: workspaces ile ilgili satirlar #####
+003_core.sql:17: workspace_id uuid not null references public.workspaces(id) on delete cascade,
+003_core.sql:32: workspace_id uuid not null references public.workspaces(id) on delete cascade,
+003_core.sql:44: workspace_id uuid not null references public.workspaces(id) on delete cascade,
+003_core.sql:59: workspace_id uuid not null references public.workspaces(id) on delete cascade,
+003_core.sql:77: workspace_id uuid not null references public.workspaces(id) on delete cascade,
+003_core.sql:89: workspace_id uuid not null references public.workspaces(id) on delete cascade,
+003_core.sql:106: workspace_id uuid not null references public.workspaces(id) on delete cascade,
+003_core.sql:117: workspace_id uuid not null references public.workspaces(id) on delete cascade,
+003_core.sql:134: workspace_id uuid not null references public.workspaces(id) on delete cascade,
+003_core.sql:146: workspace_id uuid not null references public.workspaces(id) on delete cascade,
+003_core.sql:161: workspace_id uuid not null references public.workspaces(id) on delete cascade,
+003_core.sql:172: workspace_id uuid primary key references public.workspaces(id) on delete cascade,
+003_core.sql:344: drop policy if exists workspaces_update on public.workspaces;
+003_core.sql:345: create policy workspaces_update on public.workspaces for update
+schema.sql:44: create table if not exists public.workspaces (
+schema.sql:59: create table if not exists public.workspace_members (
+schema.sql:60: workspace_id uuid not null references public.workspaces(id) on delete cascade,
+schema.sql:71: create policy "members_select_own" on public.workspace_members
+schema.sql:75: create policy "workspaces_select_member" on public.workspaces
+20260922150000_canonical_production_schema_baseline.sql:386: CREATE TABLE IF NOT EXISTS public.workspace_members (
+20260922150000_canonical_production_schema_baseline.sql:405: CREATE TABLE IF NOT EXISTS public.workspaces (
+20260922150000_canonical_production_schema_baseline.sql:432: ALTER TABLE public.agents ADD CONSTRAINT agents_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:447: ALTER TABLE public.api_keys ADD CONSTRAINT api_keys_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:471: ALTER TABLE public.approvals ADD CONSTRAINT approvals_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:480: ALTER TABLE public.audit_events ADD CONSTRAINT audit_events_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:503: ALTER TABLE public.decisions ADD CONSTRAINT decisions_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:521: ALTER TABLE public.evidence ADD CONSTRAINT evidence_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:535: ALTER TABLE public.executions ADD CONSTRAINT executions_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:541: ALTER TABLE public.global_search_documents ADD CONSTRAINT global_search_documents_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:556: ALTER TABLE public.incidents ADD CONSTRAINT incidents_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:567: ALTER TABLE public.policies ADD CONSTRAINT policies_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:582: ALTER TABLE public.policy_audit_events ADD CONSTRAINT policy_audit_events_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:596: ALTER TABLE public.policy_change_requests ADD CONSTRAINT policy_change_requests_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:611: ALTER TABLE public.policy_versions ADD CONSTRAINT policy_versions_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:626: ALTER TABLE public.risk_rules ADD CONSTRAINT risk_rules_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:641: ALTER TABLE public.service_account_keys ADD CONSTRAINT service_account_keys_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:652: ALTER TABLE public.service_accounts ADD CONSTRAINT service_accounts_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:661: ALTER TABLE public.traces ADD CONSTRAINT traces_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:670: ALTER TABLE public.webhooks ADD CONSTRAINT webhooks_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:679: ALTER TABLE public.workspace_invitations ADD CONSTRAINT workspace_invitations_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:685: ALTER TABLE public.workspace_members ADD CONSTRAINT workspace_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:688: ALTER TABLE public.workspace_members ADD CONSTRAINT workspace_members_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:700: ALTER TABLE public.workspace_settings ADD CONSTRAINT workspace_settings_workspace_id_fkey FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE;
+20260922150000_canonical_production_schema_baseline.sql:703: ALTER TABLE public.workspaces ADD CONSTRAINT workspaces_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
+20260922150000_canonical_production_schema_baseline.sql:957: event_action := 'workspace_members.delete';
+20260922150000_canonical_production_schema_baseline.sql:1348: DELETE FROM public.workspace_members
+20260922150000_canonical_production_schema_baseline.sql:1533: CREATE TRIGGER workspace_members_audit_trg AFTER INSERT OR DELETE OR UPDATE ON workspace_members FOR EACH ROW EXECUTE FUNCTION audit_workspace_member_change();
+20260922150000_canonical_production_schema_baseline.sql:1788: -- POLICY: workspace_members.members can read own membership
+20260922150000_canonical_production_schema_baseline.sql:1789: CREATE POLICY "members can read own membership" ON public.workspace_members AS PERMISSIVE FOR SELECT TO authenticated USING ((user_id = auth.uid()));
+20260922150000_canonical_production_schema_baseline.sql:1797: -- POLICY: workspaces.workspace members can read workspaces
+20260922150000_canonical_production_schema_baseline.sql:1798: CREATE POLICY "workspace members can read workspaces" ON public.workspaces AS PERMISSIVE FOR SELECT TO authenticated USING (is_workspace_member(id));
+20260922150000_canonical_production_schema_baseline.sql:1800: -- POLICY: workspaces.workspaces_update
+20260922150000_canonical_production_schema_baseline.sql:1801: CREATE POLICY workspaces_update ON public.workspaces AS PERMISSIVE FOR UPDATE TO authenticated USING (has_role(id, ARRAY['owner'::text, 'admin'::text])) WITH CHECK (has_role(id, ARRAY['owner'::text, 'admin'::text]));
+20260927004717_enterprise_tenant_isolation_hardening.sql:482: create policy workspace_members_select
+20260927004717_enterprise_tenant_isolation_hardening.sql:490: create policy workspace_members_insert
+20260927004717_enterprise_tenant_isolation_hardening.sql:501: create policy workspace_members_update
+20260927004717_enterprise_tenant_isolation_hardening.sql:518: create policy workspace_members_delete
+20260927004717_enterprise_tenant_isolation_hardening.sql:533: create policy workspaces_select
+20260927004717_enterprise_tenant_isolation_hardening.sql:541: create policy workspaces_update
+20260927170000_workspace_member_audit.sql:33: event_action := 'workspace_members.delete';
