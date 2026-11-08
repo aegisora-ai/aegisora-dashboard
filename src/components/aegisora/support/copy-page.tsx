@@ -17,12 +17,8 @@ export function CopyPage({ text }: { text: string }) {
     }
   }
   return (
-    <button
-      type="button"
-      onClick={copy}
-      className="inline-flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold transition hover:bg-surface-3"
-    >
-      {done ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
+    <button type="button" onClick={copy} className="aegx-copy">
+      {done ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
       {done ? t("copied") : t("copy")}
     </button>
   );

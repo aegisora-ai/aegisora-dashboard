@@ -47,40 +47,32 @@ export function SupportSearch({ items }: { items: Item[] }) {
   };
 
   return (
-    <div className="relative max-w-xl">
-      <div className="flex h-14 items-center gap-3 rounded-2xl border border-border bg-surface-1 px-4 shadow-sm focus-within:ring-2 focus-within:ring-primary/40">
-        <Search className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+    <div className="aegx-ss">
+      <div className="aegx-ss__box">
+        <Search aria-hidden="true" />
         <input
           ref={ref}
           value={q}
-          onChange={(e) => {
-            setQ(e.target.value);
-            setActive(0);
-          }}
+          onChange={(e) => { setQ(e.target.value); setActive(0); }}
           onKeyDown={onKeyDown}
           placeholder={t("searchPh")}
           aria-label={t("searchAria")}
-          className="h-full min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
         />
-        <kbd className="hidden rounded border border-border px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground sm:inline">Ctrl K</kbd>
+        <kbd>Ctrl K</kbd>
       </div>
       {q.trim().length >= 2 ? (
-        <div className="absolute left-0 right-0 top-full z-20 mt-2 overflow-hidden rounded-2xl border border-border bg-surface-1 shadow-lg">
+        <div className="aegx-ss__pop">
           {results.length === 0 ? (
-            <p className="px-5 py-4 text-sm text-muted-foreground">{t("noResults")}</p>
+            <p className="aegx-ss__none">{t("noResults")}</p>
           ) : (
             <ul>
               {results.map((r, i) => (
-                <li key={r.href} className="border-b border-border last:border-b-0">
-                  <a
-                    href={r.href}
-                    onMouseEnter={() => setActive(i)}
-                    className={"flex items-start gap-3 px-5 py-3 transition " + (i === active ? "bg-surface-3" : "")}
-                  >
-                    <FileText className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+                <li key={r.href}>
+                  <a href={r.href} onMouseEnter={() => setActive(i)} className={i === active ? "is-on" : ""}>
+                    <FileText aria-hidden="true" />
                     <span>
-                      <span className="block text-sm font-semibold">{r.title}</span>
-                      <span className="mt-0.5 block text-xs text-muted-foreground">{r.collection} · {r.summary}</span>
+                      <b>{r.title}</b>
+                      <small>{r.collection} · {r.summary}</small>
                     </span>
                   </a>
                 </li>
