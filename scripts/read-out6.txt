@@ -1,0 +1,2207 @@
+##### auth/onboarding dosyalari #####
+src\app\[locale]\(auth)\accept-invite\page.tsx
+src\app\[locale]\(auth)\forgot-password\page.tsx
+src\app\[locale]\(auth)\layout.tsx
+src\app\[locale]\(auth)\login\page.tsx
+src\app\[locale]\(auth)\reset-password\page.tsx
+src\app\[locale]\(auth)\signup\page.tsx
+src\app\[locale]\(auth)\verify-email\page.tsx
+src\app\[locale]\onboarding\layout.tsx
+src\app\[locale]\onboarding\page.tsx
+src\components\aegisora\auth-canvas.tsx
+src\components\aegisora\auth-form.tsx
+src\components\aegisora\auth-shell.tsx
+src\components\aegisora\auth-side-panel.tsx
+src\components\aegisora\bw\auth-bw.css
+src\components\aegisora\login-form.tsx
+src\components\aegisora\logo.tsx
+src\components\aegisora\onboarding-flow.tsx
+src\components\aegisora\onboarding-intro.tsx
+src\components\aegisora\signup-form.tsx
+src\components\aegx\brand.tsx
+
+##### src\app\[locale]\(auth)\accept-invite\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { AuthForm } from "@/components/aegisora/auth-form";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("invite.title") };
+}
+
+export default async function AcceptInvitePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return (
+    <AuthForm
+      mode="invite"
+      title={t("invite.title")}
+      description={t("invite.desc")}
+      fields={[
+        { name: "name", label: t("invite.fullName"), type: "text", autoComplete: "name" },
+        { name: "password", label: t("common.password"), type: "password", autoComplete: "new-password" },
+      ]}
+      submitLabel={t("invite.submit")}
+      redirectTo="/dashboard"
+    />
+  );
+}
+
+##### src\app\[locale]\(auth)\forgot-password\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { AuthForm } from "@/components/aegisora/auth-form";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("forgot.title") };
+}
+
+export default async function ForgotPasswordPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return (
+    <AuthForm
+      mode="reset"
+      title={t("forgot.title")}
+      description={t("forgot.desc")}
+      fields={[{ name: "email", label: t("common.workEmail"), type: "email", autoComplete: "email" }]}
+      submitLabel={t("forgot.submit")}
+      redirectTo="/login"
+      links={[{ text: t("forgot.remembered"), label: t("forgot.logIn"), href: "/login" }]}
+    />
+  );
+}
+
+##### src\app\[locale]\(auth)\layout.tsx #####
+import "@/styles/aegx.css";
+import { Inter } from "next/font/google";
+import { AegxAurora } from "@/components/aegx/aurora";
+import { AegxBrand } from "@/components/aegx/brand";
+import { AegxFx } from "@/components/aegx/fx";
+import { ForceDark } from "@/components/aegx/force-dark";
+import { Link } from "@/i18n/navigation";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+
+export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <div className={"aegx aegx-auth " + inter.variable}>
+      <ForceDark />
+      <AegxFx />
+      <div className="aegx-auth__art" aria-hidden="true"><AegxAurora intensity={0.9} /></div>
+      <header className="aegx-auth__top">
+        <Link href="/" aria-label="Aegisora"><AegxBrand height={24} /></Link>
+      </header>
+      <main className="aegx-auth__main">
+        <div className="aegx-auth__card">{children}</div>
+      </main>
+    </div>
+  );
+}
+
+##### src\app\[locale]\(auth)\login\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { LoginForm } from "@/components/aegisora/login-form";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("login.title") };
+}
+
+export default function LoginPage() {
+  return <LoginForm redirectTo="/dashboard" />;
+}
+
+##### src\app\[locale]\(auth)\reset-password\page.tsx #####
+"use client";
+
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { btnPrimary } from "@/lib/ui";
+
+export default function ResetPasswordPage() {
+  const t = useTranslations("Auth");
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    const form = new FormData(e.currentTarget);
+    const password = String(form.get("password") ?? "");
+
+    const supabase = createClient();
+    const { error: err } = await supabase.auth.updateUser({ password });
+    setLoading(false);
+    if (err) {
+      setError(err.message);
+      return;
+    }
+    setDone(true);
+    setTimeout(() => router.push("/dashboard"), 1500);
+  }
+
+  return (
+    <div className="w-full max-w-sm">
+      <h1 className="bw-auth__h1">{t("reset.title")}</h1>
+      <p className="mt-3 text-sm text-muted-foreground">{t("reset.desc")}</p>
+
+      {error && (
+        <p role="alert" className="mt-6 rounded-sm border border-block/30 bg-block-muted px-3 py-2 text-xs text-block">
+          {error}
+        </p>
+      )}
+      {done && (
+        <p role="status" className="mt-6 rounded-sm border border-allow/30 bg-allow-muted px-3 py-2 text-xs text-allow">
+          {t("reset.done")}
+        </p>
+      )}
+
+      <form className="mt-6 space-y-4" onSubmit={onSubmit}>
+        <div className="space-y-1.5">
+          <Label htmlFor="password">{t("reset.label")}</Label>
+          <Input id="password" name="password" type="password" autoComplete="new-password" required minLength={8} />
+        </div>
+        <button type="submit" disabled={loading || done} className={`${btnPrimary} w-full disabled:opacity-60`}>
+          {loading ? t("reset.updating") : t("reset.submit")}
+        </button>
+      </form>
+
+      <p className="mt-6 text-sm text-muted-foreground">
+        <Link href="/login" className="text-primary underline-offset-4 hover:underline">{t("common.backToLogin")}</Link>
+      </p>
+    </div>
+  );
+}
+
+##### src\app\[locale]\(auth)\signup\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { SignupForm } from "@/components/aegisora/signup-form";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("signup.title") };
+}
+
+export default function SignupPage() {
+  return <SignupForm redirectTo="/onboarding" />;
+}
+
+##### src\app\[locale]\(auth)\verify-email\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("verify.title") };
+}
+
+export default async function VerifyEmailPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return (
+    <div className="w-full max-w-sm">
+      <h1 className="bw-auth__h1">{t("verify.title")}</h1>
+      <p className="mt-3 text-sm text-muted-foreground">{t("verify.desc")}</p>
+      <Link href="/login" className="mt-6 inline-flex text-sm font-semibold text-primary underline-offset-4 hover:underline">
+        {t("verify.back")}
+      </Link>
+    </div>
+  );
+}
+
+##### src\app\[locale]\onboarding\layout.tsx #####
+import "@/styles/aeg-premium.css";
+import { PremiumBackdrop } from "@/components/aegisora/fx/premium-backdrop";
+
+export default function OnboardingLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <div className="aeg-premium aeg-stage">
+      <PremiumBackdrop />
+      {children}
+    </div>
+  );
+}
+
+##### src\app\[locale]\onboarding\page.tsx #####
+import { OnboardingFlow } from "@/components/aegisora/onboarding-flow";
+
+export default function OnboardingPage() {
+  return <OnboardingFlow />;
+}
+
+##### src\components\aegisora\auth-canvas.tsx #####
+"use client";
+
+import { useEffect, useRef } from "react";
+
+type Pt = { x: number; y: number };
+type Verdict = "allow" | "escalate" | "block";
+type Packet = { from: number; verdict: Verdict; t: number; speed: number; hit: boolean };
+type Burst = { x: number; y: number; age: number };
+
+const AGENTS = 7;
+const TAU = Math.PI * 2;
+const RGB = {
+  pre: "96,165,250",
+  allow: "56,189,248",
+  escalate: "240,180,41",
+  block: "239,68,68",
+  blue: "22,119,255",
+  text: "169,187,219",
+};
+
+function quad(a: Pt, c: Pt, b: Pt, t: number): Pt {
+  const u = 1 - t;
+  return {
+    x: u * u * a.x + 2 * u * t * c.x + t * t * b.x,
+    y: u * u * a.y + 2 * u * t * c.y + t * t * b.y,
+  };
+}
+
+function layout(w: number, h: number) {
+  const wide = w > 980;
+  const left = wide ? w * 0.42 : w * 0.06;
+  const span = w * 0.94 - left;
+  const cy = h * 0.5;
+  const R = Math.max(26, Math.min(h * 0.14, span * 0.1));
+  const gate: Pt = { x: left + span * 0.55, y: cy };
+  const agents: Pt[] = [];
+  const c1: Pt[] = [];
+  const gateIn: Pt[] = [];
+  for (let i = 0; i < AGENTS; i++) {
+    const k = i / (AGENTS - 1);
+    const a: Pt = { x: left + span * 0.05 * Math.sin(k * Math.PI), y: h * (0.15 + 0.7 * k) };
+    agents.push(a);
+    c1.push({ x: a.x + (gate.x - R - a.x) * 0.62, y: a.y });
+    gateIn.push({ x: gate.x - R * 1.05, y: gate.y + (a.y - gate.y) * 0.1 });
+  }
+  const outs = {
+    allow: { x: left + span * 0.97, y: cy - h * 0.2 } as Pt,
+    escalate: { x: left + span * 0.97, y: cy + h * 0.2 } as Pt,
+  };
+  return { gate, R, agents, c1, gateIn, outs };
+}
+type Scene = ReturnType<typeof layout>;
+
+function pos(p: Packet, s: Scene, t: number): Pt {
+  if (t < 1 || p.verdict === "block") {
+    const k = Math.max(0, Math.min(1, t));
+    return quad(s.agents[p.from], s.c1[p.from], s.gateIn[p.from], k);
+  }
+  const o = p.verdict === "allow" ? s.outs.allow : s.outs.escalate;
+  const a: Pt = { x: s.gate.x + s.R * 1.05, y: s.gate.y };
+  const c: Pt = { x: a.x + (o.x - a.x) * 0.55, y: a.y };
+  return quad(a, c, o, Math.min(1, t - 1));
+}
+
+export function AuthCanvas() {
+  const ref = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    const host = canvas ? canvas.parentElement : null;
+    const ctx = canvas ? canvas.getContext("2d") : null;
+    if (!canvas || !host || !ctx) return;
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let w = 0;
+    let h = 0;
+    let L: Scene = layout(1, 1);
+    let packets: Packet[] = [];
+    let bursts: Burst[] = [];
+    let flash = 0;
+    let flashRgb = RGB.blue;
+    const pulse = { allow: 0, escalate: 0 };
+    let spawnIn = 0;
+    let px = 0;
+    let py = 0;
+    let tx = 0;
+    let ty = 0;
+    let raf = 0;
+    let last = performance.now() / 1000;
+
+    const spawn = (seedT?: number) => {
+      const r = Math.random();
+      const verdict: Verdict = r < 0.7 ? "allow" : r < 0.86 ? "escalate" : "block";
+      let t = seedT ?? 0;
+      if (verdict === "block" && t >= 1) t = 0.5 + Math.random() * 0.45;
+      packets.push({
+        from: Math.floor(Math.random() * AGENTS),
+        verdict,
+        t,
+        speed: 0.4 + Math.random() * 0.2,
+        hit: t >= 1,
+      });
+    };
+
+    const update = (dt: number) => {
+      spawnIn -= dt;
+      if (spawnIn <= 0 && packets.length < 16) {
+        spawn();
+        spawnIn = 0.35 + Math.random() * 0.5;
+      }
+      flash = Math.max(0, flash - dt * 2.2);
+      pulse.allow = Math.max(0, pulse.allow - dt * 1.8);
+      pulse.escalate = Math.max(0, pulse.escalate - dt * 1.8);
+      const next: Packet[] = [];
+      for (const p of packets) {
+        p.t += dt * p.speed;
+        if (!p.hit && p.t >= 1) {
+          p.hit = true;
+          flash = 1;
+          flashRgb = RGB[p.verdict];
+          if (p.verdict === "block") {
+            const q = pos(p, L, 1);
+            bursts.push({ x: q.x, y: q.y, age: 0 });
+            continue;
+          }
+        }
+        if (p.t >= 2) {
+          if (p.verdict === "allow") pulse.allow = 1;
+          if (p.verdict === "escalate") pulse.escalate = 1;
+          continue;
+        }
+        next.push(p);
+      }
+      packets = next;
+      bursts = bursts.map((b) => ({ x: b.x, y: b.y, age: b.age + dt })).filter((b) => b.age < 0.9);
+      px += (tx - px) * Math.min(1, dt * 3);
+      py += (ty - py) * Math.min(1, dt * 3);
+    };
+
+    const draw = (time: number) => {
+      const s = L;
+      const R = s.R;
+      ctx.clearRect(0, 0, w, h);
+
+      for (let x = 0; x < w; x += 34) {
+        for (let y = 0; y < h; y += 34) {
+          const d = Math.hypot(x - s.gate.x, y - s.gate.y);
+          const a = 0.04 + 0.12 * Math.exp(-d / (h * 0.5)) + 0.025 * Math.sin(time * 0.9 + x * 0.021 + y * 0.034);
+          ctx.fillStyle = "rgba(120,170,255," + Math.max(0, a).toFixed(3) + ")";
+          ctx.fillRect(x, y, 1.5, 1.5);
+        }
+      }
+
+      ctx.save();
+      ctx.translate(px, py);
+
+      const glow = ctx.createRadialGradient(s.gate.x, s.gate.y, 0, s.gate.x, s.gate.y, R * 4.5);
+      glow.addColorStop(0, "rgba(" + RGB.blue + "," + (0.3 + flash * 0.22).toFixed(3) + ")");
+      glow.addColorStop(1, "rgba(" + RGB.blue + ",0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(-40, -40, w + 80, h + 80);
+
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(" + RGB.blue + ",0.22)";
+      for (let i = 0; i < AGENTS; i++) {
+        ctx.beginPath();
+        ctx.moveTo(s.agents[i].x, s.agents[i].y);
+        ctx.quadraticCurveTo(s.c1[i].x, s.c1[i].y, s.gateIn[i].x, s.gateIn[i].y);
+        ctx.stroke();
+      }
+      const gx = s.gate.x + R * 1.05;
+      for (const o of [s.outs.allow, s.outs.escalate]) {
+        ctx.beginPath();
+        ctx.moveTo(gx, s.gate.y);
+        ctx.quadraticCurveTo(gx + (o.x - gx) * 0.55, s.gate.y, o.x, o.y);
+        ctx.stroke();
+      }
+
+      for (let i = 0; i < AGENTS; i++) {
+        const a = s.agents[i];
+        const ph = 0.5 + 0.5 * Math.sin(time * 1.6 + i * 1.3);
+        ctx.fillStyle = "rgba(" + RGB.blue + ",0.18)";
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, 7 + ph * 3, 0, TAU);
+        ctx.fill();
+        ctx.fillStyle = "rgba(" + RGB.pre + ",0.95)";
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, 3.5, 0, TAU);
+        ctx.fill();
+      }
+
+      ctx.setLineDash([2, 10]);
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = "rgba(" + RGB.pre + ",0.55)";
+      ctx.beginPath();
+      ctx.arc(s.gate.x, s.gate.y, R, time * 0.3, time * 0.3 + TAU);
+      ctx.stroke();
+      ctx.setLineDash([18, 14]);
+      ctx.strokeStyle = "rgba(" + RGB.blue + ",0.45)";
+      ctx.beginPath();
+      ctx.arc(s.gate.x, s.gate.y, R * 1.35, -time * 0.18, -time * 0.18 + TAU);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle = "rgba(" + RGB.blue + ",0.14)";
+      ctx.beginPath();
+      ctx.arc(s.gate.x, s.gate.y, R * 1.75, 0, TAU);
+      ctx.stroke();
+      if (flash > 0.02) {
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "rgba(" + flashRgb + "," + (flash * 0.85).toFixed(3) + ")";
+        ctx.beginPath();
+        ctx.arc(s.gate.x, s.gate.y, R * (1 + (1 - flash) * 0.25), 0, TAU);
+        ctx.stroke();
+      }
+
+      ctx.save();
+      ctx.translate(s.gate.x, s.gate.y);
+      ctx.rotate(time * 0.12);
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const ang = (i / 6) * TAU;
+        const hx = Math.cos(ang) * R * 0.62;
+        const hy = Math.sin(ang) * R * 0.62;
+        if (i === 0) ctx.moveTo(hx, hy);
+        else ctx.lineTo(hx, hy);
+      }
+      ctx.closePath();
+      ctx.fillStyle = "rgba(" + RGB.blue + ",0.10)";
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = "rgba(" + RGB.pre + ",0.75)";
+      ctx.stroke();
+      ctx.restore();
+
+      const k = R * 0.3;
+      ctx.save();
+      ctx.translate(s.gate.x, s.gate.y);
+      ctx.lineWidth = 1.8;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "rgba(226,238,255,0.9)";
+      ctx.beginPath();
+      ctx.moveTo(0, -k);
+      ctx.lineTo(k * 0.85, -k * 0.55);
+      ctx.lineTo(k * 0.85, k * 0.1);
+      ctx.quadraticCurveTo(k * 0.85, k * 0.75, 0, k);
+      ctx.quadraticCurveTo(-k * 0.85, k * 0.75, -k * 0.85, k * 0.1);
+      ctx.lineTo(-k * 0.85, -k * 0.55);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-k * 0.38, 0);
+      ctx.lineTo(-k * 0.08, k * 0.3);
+      ctx.lineTo(k * 0.42, -k * 0.28);
+      ctx.stroke();
+      ctx.restore();
+
+      for (const p of packets) {
+        const col = p.t < 1 ? RGB.pre : RGB[p.verdict];
+        for (let j = 9; j >= 1; j--) {
+
+##### src\components\aegisora\auth-form.tsx #####
+"use client";
+
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { btnPrimary } from "@/lib/ui";
+
+type Field = { name: string; label: string; type: string; autoComplete?: string };
+type Mode = "login" | "signup" | "reset" | "invite";
+
+type Props = {
+  mode: Mode;
+  title: string;
+  description: string;
+  fields: Field[];
+  submitLabel: string;
+  redirectTo: string;
+  links?: { text: string; label: string; href: string }[];
+};
+
+function withCompany(mode: Mode, fields: Field[], label: string): Field[] {
+  if (mode !== "signup" || fields.some((f) => f.name === "company")) return fields;
+  const companyField: Field = { name: "company", label, type: "text", autoComplete: "organization" };
+  const i = fields.findIndex((f) => f.name === "password");
+  return i === -1 ? [...fields, companyField] : [...fields.slice(0, i), companyField, ...fields.slice(i)];
+}
+
+export function AuthForm({ mode, title, description, fields, submitLabel, redirectTo, links }: Props) {
+  const t = useTranslations("Auth");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const allFields = withCompany(mode, fields, t("common.company"));
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setNotice(null);
+    setLoading(true);
+
+    const form = new FormData(e.currentTarget);
+    const email = String(form.get("email") ?? "").trim();
+    const password = String(form.get("password") ?? "");
+    const fullName = String(form.get("name") ?? "").trim();
+    const company = String(form.get("company") ?? "").trim();
+
+    const supabase = createClient();
+
+    try {
+      if (mode === "login") {
+        const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+        if (err) throw err;
+        window.location.href = redirectTo;
+        return;
+      }
+
+      if (mode === "signup") {
+        const { data, error: err } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: fullName, ...(company ? { company } : {}) } },
+        });
+        if (err) throw err;
+        if (data.session) {
+          window.location.href = redirectTo;
+        } else {
+          setNotice(t("signup.checkInbox"));
+        }
+        return;
+      }
+
+      if (mode === "reset") {
+        const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (err) throw err;
+        setNotice(t("forgot.sent"));
+        return;
+      }
+
+      if (mode === "invite") {
+        const { error: err } = await supabase.auth.updateUser({
+          password,
+          data: { full_name: fullName },
+        });
+        if (err) throw err;
+        window.location.href = redirectTo;
+        return;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("common.genericError"));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="w-full max-w-sm">
+      <h1 className="bw-auth__h1">{title}</h1>
+      <p className="mt-3 text-sm text-muted-foreground">{description}</p>
+
+      {error && (
+        <p role="alert" className="mt-6 rounded-sm border border-block/30 bg-block-muted px-3 py-2 text-xs text-block">
+          {error}
+        </p>
+      )}
+      {notice && (
+        <p role="status" className="mt-6 rounded-sm border border-cyan/30 bg-surface-3 px-3 py-2 text-xs text-cyan">
+          {notice}
+        </p>
+      )}
+
+      <form className="mt-6 space-y-4" onSubmit={onSubmit}>
+        {allFields.map((f) => (
+          <div key={f.name} className="space-y-1.5">
+            <Label htmlFor={f.name}>{f.label}</Label>
+            <Input id={f.name} name={f.name} type={f.type} autoComplete={f.autoComplete} required />
+          </div>
+        ))}
+        <button type="submit" disabled={loading} className={`${btnPrimary} w-full disabled:opacity-60`}>
+          {loading ? t("common.wait") : submitLabel}
+        </button>
+      </form>
+
+      {links && (
+        <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
+          {links.map((l) => (
+            <li key={l.href}>
+              {l.text}{" "}
+              <Link href={l.href} className="text-primary underline-offset-4 hover:underline">
+                {l.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+##### src\components\aegisora\auth-shell.tsx #####
+import "./bw/bw.css";
+import "./bw/auth-bw.css";
+import { BwHeader } from "./bw/bw-header";
+import { BwFooter } from "./bw/bw-footer";
+import { bwFontVars } from "./bw/bw-font-vars";
+import "@/styles/aeg-auth-glass.css";
+import { LiquidBackdrop } from "./calm/liquid-backdrop";
+
+export function AuthShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className={"bw-root bw-authpage " + bwFontVars}>
+      <LiquidBackdrop />
+      <BwHeader />
+      <main className="bw-auth">
+        <div className="bw-auth__card">{children}</div>
+      </main>
+      <BwFooter />
+    </div>
+  );
+}
+
+##### src\components\aegisora\auth-side-panel.tsx #####
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Logo } from '@/components/aegisora/logo';
+import { AmbientGridCells } from '@/components/aegisora/ambient-grid-cells';
+
+const STEPS = [
+  'REQUEST',
+  'CONTEXT',
+  'POLICY',
+  'RISK',
+  'DECISION',
+  'ENFORCEMENT',
+  'EXECUTION',
+  'EVIDENCE',
+];
+
+export function AuthSidePanel() {
+  const [activeStep, setActiveStep] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveStep((prev) => (prev + 1) % STEPS.length);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="hidden w-1/2 flex-col justify-between overflow-hidden border-r border-slate-800/50 bg-[#020611] p-12 lg:flex relative">
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:32px_32px]" />
+
+      <AmbientGridCells cols={15} rows={24} count={32} opacity={0.35} />
+
+      <div className="absolute inset-0 bg-gradient-to-b from-[#020611] via-transparent to-[#020611]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,#020611_85%)]" />
+
+      <div className="relative z-10">
+        <Logo />
+      </div>
+
+      <div className="relative z-10 mb-10">
+        <h2 className="mb-12 text-5xl font-light tracking-tight text-white">
+          An agent proposes. <br />
+          <span className="font-medium">Aegisora decides.</span>
+        </h2>
+
+        <div className="flex flex-col gap-3 font-mono text-xs font-semibold tracking-widest">
+          {STEPS.map((step, idx) => {
+            const isActive = activeStep === idx;
+            const isPassed = activeStep > idx;
+
+            const stepClass = isActive
+              ? 'text-[#1677ff] scale-105 origin-left'
+              : isPassed
+                ? 'text-slate-500'
+                : 'text-slate-700';
+
+            return (
+              <div
+                key={step}
+                className={`flex items-center gap-6 transition-all duration-500 ${stepClass}`}
+              >
+                <span>0{idx + 1}</span>
+                <span>{step}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+##### src\components\aegisora\bw\auth-bw.css #####
+/* Auth pages in the bw design. Loaded after bw.css, scoped to .bw-authpage. */
+.bw-authpage { min-height: 100vh; display: flex; flex-direction: column; background: var(--bw-bg); }
+.bw-authpage .bw-auth { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: clamp(32px, 8vh, 88px) 20px 80px; }
+.bw-authpage .bw-auth__card {
+  width: 100%; max-width: 448px; background: var(--bw-card); border: 1px solid var(--bw-line);
+  border-radius: 18px; box-shadow: var(--bw-shadow); padding: 32px;
+}
+@media (max-width: 480px) { .bw-authpage .bw-auth__card { padding: 24px 20px; } }
+.bw-authpage .bw-auth__h1 {
+  font-family: var(--bw-display); font-weight: 600; font-size: 30px; line-height: 1.1;
+  letter-spacing: -0.03em; color: var(--bw-ink);
+}
+.bw-authpage .bw-auth__card input[data-slot="input"] {
+  height: 44px; border-radius: 10px; background: var(--bw-card); color: var(--bw-ink);
+  border: 1px solid var(--bw-line-2); font-size: 15px; padding: 0 12px;
+}
+.bw-authpage .bw-auth__card input[data-slot="input"]:focus-visible { border-color: var(--bw-blue); outline: 2px solid var(--bw-blue-soft); }
+.bw-authpage .bw-auth__card label { color: var(--bw-ink); font-weight: 600; font-size: 14px; }
+.bw-authpage .bw-auth__card button.aeg-btn-brand {
+  height: 46px; border-radius: 10px; border: 0; background: var(--bw-blue); color: #ffffff;
+  font-weight: 600; font-size: 15px; background-image: none; box-shadow: none;
+}
+.bw-authpage .bw-auth__card button.aeg-btn-brand:hover:not(:disabled) { background: var(--bw-blue-2); background-image: none; }
+
+##### src\components\aegisora\login-form.tsx #####
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { btnPrimary } from "@/lib/ui";
+import { SocialButtons } from "./social-buttons";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export function LoginForm({ redirectTo }: { redirectTo: string }) {
+  const t = useTranslations("Auth");
+  const [step, setStep] = useState<"email" | "password">("email");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const mailRef = useRef<HTMLInputElement>(null);
+  const pwRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (step === "password") pwRef.current?.focus();
+    else mailRef.current?.focus();
+  }, [step]);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+
+    if (step === "email") {
+      if (!EMAIL_RE.test(email.trim())) {
+        setError(t("login.invalidEmail"));
+        return;
+      }
+      setStep("password");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const supabase = createClient();
+      const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (err) throw err;
+      window.location.href = redirectTo;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : t("common.genericError");
+      setError(msg.toLowerCase().includes("invalid login credentials") ? t("login.badCredentials") : msg);
+      setLoading(false);
+    }
+  }
+
+  function change() {
+    setStep("email");
+    setPassword("");
+    setShow(false);
+    setError(null);
+  }
+
+  const locked = step === "password";
+
+  return (
+    <div>
+      <h1 className="bw-auth__h1">{t("login.title")}</h1>
+      <p className="mt-3 text-sm">
+        <span className="text-muted-foreground">{t("login.newHere")} </span>
+        <Link href="/signup" className="font-semibold text-primary underline-offset-4 hover:underline">{t("login.signUp")}</Link>
+      </p>
+
+      <div className="mt-8">
+        <SocialButtons onError={setError} />
+      </div>
+
+      {error ? (
+        <p role="alert" className="mt-5 rounded-sm border border-block/30 bg-block-muted px-3 py-2 text-xs text-block">
+          {error}
+        </p>
+      ) : null}
+
+      <form className="mt-5 space-y-4" onSubmit={onSubmit} noValidate>
+        <div className="space-y-1.5">
+          <Label htmlFor="email">{t("common.email")}</Label>
+          <div className="relative">
+            <Input
+              ref={mailRef}
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="username"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              readOnly={locked}
+              tabIndex={locked ? -1 : 0}
+              className={locked ? "bg-surface-3 pr-24 text-muted-foreground" : ""}
+            />
+            {locked ? (
+              <button
+                type="button"
+                onClick={change}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-primary hover:underline"
+              >
+                {t("login.change")}
+              </button>
+            ) : null}
+          </div>
+        </div>
+
+        {locked ? (
+          <div className="space-y-1.5">
+            <Label htmlFor="password">{t("common.password")}</Label>
+            <div className="relative">
+              <Input
+                ref={pwRef}
+                id="password"
+                name="password"
+                type={show ? "text" : "password"}
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShow((v) => !v)}
+                aria-label={show ? t("common.hide") : t("common.show")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {show ? <EyeOff className="size-4" aria-hidden /> : <Eye className="size-4" aria-hidden />}
+              </button>
+            </div>
+            <div className="flex justify-end pt-1">
+              <Link href="/forgot-password" className="text-xs font-semibold text-primary underline-offset-4 hover:underline">
+                {t("login.forgot")}
+              </Link>
+            </div>
+          </div>
+        ) : null}
+
+        <button
+          type="submit"
+          disabled={loading || (locked ? password === "" : email.trim() === "")}
+          className={`${btnPrimary} w-full disabled:opacity-60`}
+        >
+          {loading ? t("common.wait") : locked ? t("login.signIn") : t("login.next")}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+##### src\components\aegisora\logo.tsx #####
+/* eslint-disable @next/next/no-img-element */
+import React from 'react';
+import Link from 'next/link';
+
+// Yeni marka isareti (public/logo-mark.png) + metin. Metin rengi temadan gelir.
+export function Logo({ className = '' }: { className?: string }) {
+  return (
+    <Link
+      href="/"
+      className={"flex items-center gap-2 shrink-0 cursor-pointer transition-opacity hover:opacity-85 " + className}
+      title="Aegisora"
+    >
+      <img
+        src="/logo-mark.png"
+        width={40}
+        height={28}
+        alt=""
+        aria-hidden="true"
+        className="block h-6 w-auto md:h-7"
+      />
+      <span className="text-[17px] font-semibold tracking-tight text-foreground">Aegisora</span>
+    </Link>
+  );
+}
+
+##### src\components\aegisora\onboarding-flow.tsx #####
+"use client";
+
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { WORKSPACE_STORAGE_KEY } from "@/components/aegisora/workspace-provider";
+import { createClient } from "@/lib/supabase/client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { btnOutline, btnPrimary } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+import { Logo } from "@/components/aegisora/logo";
+import { OnboardingIntro, INTRO_KEY } from "@/components/aegisora/onboarding-intro";
+
+const STEP_KEYS = ["s0", "s1", "s2"];
+type PolicyDecision = "ALLOW" | "BLOCK" | "ESCALATE";
+
+export function OnboardingFlow() {
+  const t = useTranslations("Onboarding");
+  const steps = STEP_KEYS.map((k) => t("steps." + k));
+  const [step, setStep] = useState(0);
+  const [introDone, setIntroDone] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      try { setIntroDone(window.localStorage.getItem(INTRO_KEY) === "done"); } catch { setIntroDone(false); }
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+  const [workspace, setWorkspace] = useState("My workspace");
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
+  const [agentName, setAgentName] = useState("finance-operator");
+  const [actionPattern, setActionPattern] = useState("invoice.read");
+  const [resourcePattern, setResourcePattern] = useState("invoice:sample-001");
+  const [decision, setDecision] = useState<PolicyDecision>("ESCALATE");
+  const [agentId, setAgentId] = useState<string | null>(null);
+  const [policyId, setPolicyId] = useState<string | null>(null);
+  const [aal, setAal] = useState<string | null>(null);
+  const [aalReady, setAalReady] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (step !== 1) return;
+    let cancelled = false;
+    void createClient().auth.mfa.getAuthenticatorAssuranceLevel().then(({ data, error: mfaError }) => {
+      if (cancelled) return;
+      setAal(mfaError ? null : data.currentLevel);
+      setAalReady(true);
+      if (mfaError) setError(t("err.mfa"));
+    });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
+  async function checkMfa() {
+    setBusy(true);
+    setError(null);
+    const { data, error: mfaError } = await createClient().auth.mfa.getAuthenticatorAssuranceLevel();
+    setBusy(false);
+    setAalReady(true);
+    if (mfaError) { setError(t("err.mfa")); return; }
+    setAal(data.currentLevel);
+  }
+
+  async function createWorkspace() {
+    setBusy(true);
+    setError(null);
+    const { data, error: createError } = await createClient().rpc("create_workspace", {
+      p_name: workspace.trim(),
+    });
+    setBusy(false);
+    if (createError || typeof data !== "string") {
+      setError(createError?.message ?? t("err.noId"));
+      return;
+    }
+    setWorkspaceId(data);
+    window.localStorage.setItem(WORKSPACE_STORAGE_KEY, data);
+    setStep(1);
+  }
+
+  async function postWorkspaceMutation(path: string, body: Record<string, unknown>) {
+    if (!workspaceId) { setError(t("err.needWs")); return null; }
+    setBusy(true);
+    setError(null);
+    try {
+      const { data: { session } } = await createClient().auth.getSession();
+      if (!session?.access_token) throw new Error(t("err.signIn"));
+      const response = await fetch(path, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ workspace_id: workspaceId, ...body }),
+        cache: "no-store",
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        const message = result?.error?.message ?? t("err.failed");
+        if (result?.error?.code === "mfa_required") setAal("aal1");
+        throw new Error(message);
+      }
+      return result as Record<string, unknown>;
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : t("err.failed"));
+      return null;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function createAgentAndRule() {
+    let id = agentId;
+    if (!id) {
+      const agent = await postWorkspaceMutation("/api/v1/workspace/agents", {
+        operation: "create",
+        agent: { name: agentName.trim(), framework: null, description: "Created during workspace onboarding", external_id: null },
+      });
+      if (typeof agent?.id !== "string") return;
+      id = agent.id;
+      setAgentId(id);
+    }
+    const policy = await postWorkspaceMutation("/api/v1/workspace/policies", {
+      name: `${agentName.trim()} onboarding rule`,
+      agent_id: id,
+      action_pattern: actionPattern.trim(),
+      resource_pattern: resourcePattern.trim(),
+      decision,
+      priority: 100,
+    });
+    if (typeof policy?.id === "string") {
+      setPolicyId(policy.id);
+      setStep(2);
+    }
+  }
+
+  if (introDone === null) return null;
+  if (!introDone) return <OnboardingIntro onDone={() => setIntroDone(true)} />;
+
+  return (
+    <div className="mx-auto max-w-2xl px-6 py-12"><Logo className="mb-10" />
+      <ol className="mb-10 grid grid-cols-3 gap-1">
+        {steps.map((label, index) => (
+          <li key={label} aria-current={index === step ? "step" : undefined}>
+            <div className={cn("h-0.5", index <= step ? "bg-primary" : "bg-surface-4")} />
+            <div className={cn("mt-2 font-mono text-[10px] tracking-wider", index === step ? "text-foreground" : "text-muted-foreground")}>
+              {String(index + 1).padStart(2, "0")}<span className="hidden sm:inline"> {label.toUpperCase()}</span>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <section aria-labelledby="step-title" className="py-2">
+        {step === 0 && (
+          <>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("s0.title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("s0.desc")}</p>
+            <div className="mt-6 space-y-1.5"><Label htmlFor="workspace">{t("s0.label")}</Label><Input id="workspace" value={workspace} maxLength={120} onChange={(event) => setWorkspace(event.target.value)} /></div>
+            <button type="button" onClick={() => void createWorkspace()} disabled={busy || !workspace.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? t("s0.busy") : t("s0.btn")}</button>
+          </>
+        )}
+
+        {step === 1 && (
+          <>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("q.title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("q.desc")}</p>
+
+            {!aalReady ? (
+              <p role="status" className="mt-6 text-sm text-muted-foreground">{t("q.checking")}</p>
+            ) : aal !== "aal2" ? (
+              <div className="mt-6 rounded-xl border border-border bg-card p-4">
+                <p className="text-sm font-medium">{t("q.mfaTitle")}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{t("q.mfaDesc")}</p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <Link href="/dashboard/identity" target="_blank" rel="noreferrer" className={btnPrimary}>{t("q.mfaOpen")}</Link>
+                  <button type="button" onClick={() => void checkMfa()} disabled={busy} className={`${btnOutline} disabled:opacity-50`}>{busy ? t("q.checking") : t("q.mfaCheck")}</button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="mt-6 space-y-1.5"><Label htmlFor="agent">{t("q.agent")}</Label><Input id="agent" value={agentName} maxLength={120} onChange={(event) => setAgentName(event.target.value)} disabled={Boolean(agentId)} /></div>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5"><Label htmlFor="action-pattern">{t("q.action")}</Label><Input id="action-pattern" value={actionPattern} maxLength={200} onChange={(event) => setActionPattern(event.target.value)} /></div>
+                  <div className="space-y-1.5"><Label htmlFor="resource-pattern">{t("q.resource")}</Label><Input id="resource-pattern" value={resourcePattern} maxLength={500} onChange={(event) => setResourcePattern(event.target.value)} /></div>
+                </div>
+                <fieldset className="mt-5 space-y-2"><legend className="mb-2 text-sm font-medium">{t("q.outcome")}</legend>
+                  {(["ESCALATE", "BLOCK", "ALLOW"] as const).map((effect) => (
+                    <label key={effect} className="flex cursor-pointer items-center gap-3 rounded-sm border border-border p-3 text-sm">
+                      <input type="radio" name="decision" value={effect} checked={decision === effect} onChange={() => setDecision(effect)} />
+                      <span><span className="font-mono text-xs font-semibold">{effect}</span> <span className="text-muted-foreground">{effect === "ESCALATE" ? t("q.escalate") : effect === "BLOCK" ? t("q.block") : t("q.allow")}</span></span>
+                    </label>
+                  ))}
+                </fieldset>
+                <button type="button" onClick={() => void createAgentAndRule()} disabled={busy || !agentName.trim() || !actionPattern.trim() || !resourcePattern.trim()} className={`${btnPrimary} mt-5 disabled:opacity-50`}>{busy ? t("q.busy") : t("q.create")}</button>
+              </>
+            )}
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <h1 id="step-title" className="text-3xl font-semibold tracking-tight">{t("finish.title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("finish.desc")}</p>
+            <dl className="mt-5 divide-y divide-border/60 border-y border-border">
+              <div className="py-3"><dt className="text-xs text-muted-foreground">{t("finish.ws")}</dt><dd className="mt-1 text-sm">{workspace.trim()}</dd></div>
+              {agentId && <div className="py-3"><dt className="text-xs text-muted-foreground">{t("finish.agent")}</dt><dd className="mt-1 text-sm">{agentName.trim()}</dd></div>}
+              {policyId && <div className="py-3"><dt className="text-xs text-muted-foreground">{t("finish.policy")}</dt><dd className="mt-1 font-mono text-xs">{actionPattern.trim()} / {decision}</dd></div>}
+            </dl>
+            {!agentId && !policyId && <p className="mt-4 text-sm text-muted-foreground">{t("finish.notSet")}</p>}
+            <div className="mt-5 space-y-3 text-sm">
+              <Link href="/dashboard/api-keys" className="block underline underline-offset-4">{t("finish.key")}</Link>
+              <Link href="/docs" className="block underline underline-offset-4">{t("finish.quickstart")}</Link>
+              <p className="text-xs leading-5 text-muted-foreground">{t.rich("s4.note", { code: (chunks) => <code>{chunks}</code> })}</p>
+            </div>
+          </>
+        )}
+
+        {error && <p role="alert" className="mt-5 rounded-sm border border-block/30 bg-block-muted px-3 py-2 text-xs text-block">{error}</p>}
+      </section>
+
+      <div className="mt-6 flex justify-between">
+        {step === 1 ? (
+          <>
+            <span />
+            <button type="button" onClick={() => { setError(null); setStep(2); }} disabled={busy} className={`${btnOutline} disabled:opacity-40`}>{t("q.skip")}</button>
+          </>
+        ) : step === 2 ? (
+          <>
+            <span />
+            <Link href="/dashboard" className={btnPrimary}>{t("open")}</Link>
+          </>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+##### src\components\aegisora\onboarding-intro.tsx #####
+"use client";
+
+import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
+import { ArrowRight, Check, Search } from "lucide-react";
+import { Logo } from "@/components/aegisora/logo";
+import { createClient } from "@/lib/supabase/client";
+import { btnPrimary, focusRing } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+export const INTRO_KEY = "aegisora:onboarding-intro:v1";
+
+// Gespeicherte Werte bleiben englisch (Datenbank), nur die Anzeige wird uebersetzt.
+const SIZES = ["1-49", "50-249", "250-999", "1,000-4,999", "5,000+"];
+const ROLES = ["Engineering", "Platform / DevOps", "Security", "Data / ML", "Product", "Compliance / Risk", "Founder / Executive", "Other"];
+type Tile = { id: string; name?: string; nameKey?: "stackMcp" | "stackCustom"; mark: string };
+const STACK: Tile[] = [
+  { id: "openai", name: "OpenAI", mark: "OA" },
+  { id: "anthropic", name: "Anthropic", mark: "An" },
+  { id: "gemini", name: "Google Gemini", mark: "Ge" },
+  { id: "azure", name: "Azure OpenAI", mark: "Az" },
+  { id: "bedrock", name: "AWS Bedrock", mark: "Bd" },
+  { id: "langchain", name: "LangChain", mark: "LC" },
+  { id: "llamaindex", name: "LlamaIndex", mark: "LI" },
+  { id: "crewai", name: "CrewAI", mark: "Cr" },
+  { id: "autogen", name: "AutoGen", mark: "Ag" },
+  { id: "vercel-ai", name: "Vercel AI SDK", mark: "Vx" },
+  { id: "mcp", nameKey: "stackMcp", mark: "MC" },
+  { id: "custom", nameKey: "stackCustom", mark: "In" },
+];
+
+type Answers = { companySize: string | null; role: string | null; stack: string[] };
+
+async function persist(a: Answers) {
+  try {
+    window.localStorage.setItem(INTRO_KEY, "done");
+    window.localStorage.setItem(INTRO_KEY + ":answers", JSON.stringify(a));
+  } catch {}
+  try {
+    const supabase = createClient();
+    const { data } = await supabase.auth.getUser();
+    if (data.user) await supabase.from("profiles").update({ onboarding: a }).eq("id", data.user.id);
+  } catch {}
+}
+
+function Chip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={cn(
+        "rounded-full border px-5 py-2 text-sm font-semibold transition",
+        focusRing,
+        active ? "border-primary bg-primary text-primary-foreground shadow-md" : "border-border bg-surface-3 hover:border-foreground/40",
+      )}
+    >
+      {label}
+    </button>
+  );
+}
+
+export function OnboardingIntro({ onDone }: { onDone: () => void }) {
+  const t = useTranslations("OnboardingIntro");
+  const total = 3;
+  const [step, setStep] = useState(0);
+  const [a, setA] = useState<Answers>({ companySize: null, role: null, stack: [] });
+  const [q, setQ] = useState("");
+  const [saving, setSaving] = useState(false);
+  const timer = useRef<number | null>(null);
+
+  const label = (s: Tile) => (s.nameKey ? t(s.nameKey) : (s.name ?? s.id));
+
+  function pick(key: "companySize" | "role", value: string) {
+    setA((cur) => ({ ...cur, [key]: value }));
+    if (timer.current) window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => setStep((s) => Math.min(s + 1, total - 1)), 220);
+  }
+  function toggle(id: string) {
+    setA((cur) => ({ ...cur, stack: cur.stack.includes(id) ? cur.stack.filter((x) => x !== id) : [...cur.stack, id] }));
+  }
+  async function finish() {
+    setSaving(true);
+    await persist(a);
+    onDone();
+  }
+
+  const tiles = STACK.filter((s) => label(s).toLowerCase().includes(q.trim().toLowerCase()));
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="px-6 py-5 sm:px-10"><Logo /></header>
+      <main className="mx-auto w-full max-w-3xl px-6 pb-20 pt-12 sm:pt-20">
+        <div
+          role="progressbar"
+          aria-valuemin={1}
+          aria-valuemax={total}
+          aria-valuenow={step + 1}
+          className="h-[3px] w-72 max-w-full overflow-hidden rounded-full bg-surface-4"
+        >
+          <div className="h-full rounded-full bg-primary transition-all duration-300" style={{ width: `${((step + 1) / total) * 100}%` }} />
+        </div>
+
+        {step === 0 && (
+          <section aria-labelledby="intro-title">
+            <h1 id="intro-title" className="mt-10 text-3xl font-semibold tracking-tight sm:text-4xl">{t("sizeTitle")}</h1>
+            <p className="mt-3 max-w-xl text-sm text-muted-foreground">{t("sizeDesc")}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              {SIZES.map((s) => <Chip key={s} label={s} active={a.companySize === s} onClick={() => pick("companySize", s)} />)}
+            </div>
+          </section>
+        )}
+
+        {step === 1 && (
+          <section aria-labelledby="intro-title">
+            <h1 id="intro-title" className="mt-10 text-3xl font-semibold tracking-tight sm:text-4xl">{t("roleTitle")}</h1>
+            <p className="mt-3 max-w-xl text-sm text-muted-foreground">{t("roleDesc")}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              {ROLES.map((r, i) => <Chip key={r} label={t("roles.r" + i)} active={a.role === r} onClick={() => pick("role", r)} />)}
+            </div>
+          </section>
+        )}
+
+        {step === 2 && (
+          <section aria-labelledby="intro-title">
+            <h1 id="intro-title" className="mt-10 text-3xl font-semibold tracking-tight sm:text-4xl">{t("stackTitle")}</h1>
+            <p className="mt-3 max-w-xl text-sm text-muted-foreground">{t("stackDesc")}</p>
+            <div className="mt-6 flex h-11 max-w-lg items-center gap-2 rounded-md border border-border bg-card px-3 focus-within:border-primary">
+              <Search className="size-4 text-muted-foreground" aria-hidden="true" />
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder={t("search")}
+                aria-label={t("search")}
+                className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              />
+            </div>
+            <div className="mt-4 max-h-[26rem] overflow-y-auto rounded-xl border border-border p-4">
+              {tiles.length === 0 ? (
+                <p className="py-6 text-center text-sm text-muted-foreground">{t("noMatch")}</p>
+              ) : (
+                <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                  {tiles.map((tile) => {
+                    const on = a.stack.includes(tile.id);
+                    return (
+                      <li key={tile.id}>
+                        <button
+                          type="button"
+                          aria-pressed={on}
+                          onClick={() => toggle(tile.id)}
+                          className={cn(
+                            "relative flex w-full flex-col items-center gap-2 rounded-lg border p-4 text-center text-xs font-medium transition",
+                            focusRing,
+                            on ? "border-primary bg-primary/5" : "border-border bg-card hover:border-foreground/30",
+                          )}
+                        >
+                          <span className="grid size-12 place-items-center rounded-lg bg-primary/10 font-mono text-sm font-semibold text-primary">{tile.mark}</span>
+                          {label(tile)}
+                          {on && (
+                            <span className="absolute right-2 top-2 grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
+                              <Check className="size-3" aria-hidden="true" />
+                            </span>
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+            <div className="mt-6">
+              <button type="button" onClick={() => void finish()} disabled={saving} className={`${btnPrimary} gap-2 disabled:opacity-50`}>
+                {saving ? t("saving") : a.stack.length ? t("contN", { n: a.stack.length }) : t("cont")}
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </button>
+            </div>
+          </section>
+        )}
+
+        <div className="mt-10 flex items-center gap-6 text-sm text-muted-foreground">
+          {step > 0 && (
+            <button type="button" onClick={() => setStep((s) => Math.max(0, s - 1))} className={cn("underline-offset-4 hover:text-foreground hover:underline", focusRing)}>{t("back")}</button>
+          )}
+          <button type="button" onClick={() => void finish()} className={cn("underline-offset-4 hover:text-foreground hover:underline", focusRing)}>{t("skip")}</button>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+##### src\components\aegisora\signup-form.tsx #####
+"use client";
+
+import { useState } from "react";
+import { Check, Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { btnPrimary } from "@/lib/ui";
+import { SocialButtons } from "./social-buttons";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function Rule({ ok, children }: { ok: boolean; children: React.ReactNode }) {
+  return (
+    <li className={"flex items-center gap-2 text-xs " + (ok ? "text-allow" : "text-muted-foreground")}>
+      <Check className="size-3.5 shrink-0" aria-hidden />
+      {children}
+    </li>
+  );
+}
+
+export function SignupForm({ redirectTo }: { redirectTo: string }) {
+  const t = useTranslations("Auth");
+  const [email, setEmail] = useState("");
+  const [first, setFirst] = useState("");
+  const [last, setLast] = useState("");
+  const [password, setPassword] = useState("");
+  const [company, setCompany] = useState("");
+  const [show, setShow] = useState(false);
+  const [accepted, setAccepted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  const mail = email.trim().toLowerCase();
+  const longEnough = password.length >= 8;
+  const noEmail = password.length > 0 && !(mail && password.toLowerCase().includes(mail));
+  const valid = Boolean(EMAIL_RE.test(email.trim()) && first.trim() && last.trim() && longEnough && noEmail && accepted);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!valid) return;
+    setError(null);
+    setNotice(null);
+    setLoading(true);
+    try {
+      const firstName = first.trim();
+      const lastName = last.trim();
+      const supabase = createClient();
+      // handle_new_user tetikleyicisi company bilgisinden workspace olusturur.
+      // Bos birakilirsa tetikleyicinin bos deger gormemesi icin varsayilan bir ad gonderilir.
+      const { data, error: err } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          data: {
+            full_name: firstName + " " + lastName,
+            first_name: firstName,
+            last_name: lastName,
+            company: company.trim() || firstName + "'s workspace",
+          },
+        },
+      });
+      if (err) throw err;
+      if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        throw new Error(t("signup.exists"));
+      }
+      if (data.session) {
+        window.location.href = redirectTo;
+        return;
+      }
+      setNotice(t("signup.checkInbox"));
+      setLoading(false);
+    } catch (err) {
+      const raw = err instanceof Error ? err.message : "";
+      if (/database error saving new user/i.test(raw)) {
+        const de = document.documentElement.lang === "de";
+        setError(de
+          ? "Aegisora ist derzeit nur für freigegebene Pilotnutzer geöffnet. Bitte bewirb dich über die Pilot-Seite."
+          : "Aegisora is currently open to approved pilot users only. Please apply on the pilot page.");
+      } else {
+        setError(raw || t("common.genericError"));
+      }
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div>
+      <h1 className="bw-auth__h1">{t("signup.title")}</h1>
+      <p className="mt-3 text-sm">
+        <span className="text-muted-foreground">{t("signup.have")} </span>
+        <Link href="/login" className="font-semibold text-primary underline-offset-4 hover:underline">{t("signup.logIn")}</Link>
+      </p>
+
+      <div className="mt-8">
+        <SocialButtons onError={setError} />
+      </div>
+
+      {error ? (
+        <p role="alert" className="mt-5 rounded-sm border border-block/30 bg-block-muted px-3 py-2 text-xs text-block">
+          {error}
+        </p>
+      ) : null}
+      {notice ? (
+        <p role="status" className="mt-5 rounded-sm border border-cyan/30 bg-surface-3 px-3 py-2 text-xs text-cyan">
+          {notice}
+        </p>
+      ) : null}
+
+      <form className="mt-5 space-y-4" onSubmit={onSubmit} noValidate>
+        <div className="space-y-1.5">
+          <Label htmlFor="email">{t("common.email")}</Label>
+          <p className="text-xs text-muted-foreground">{t("signup.emailHint")}</p>
+          <Input id="email" name="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="first">{t("signup.first")}</Label>
+            <Input id="first" name="first" type="text" autoComplete="given-name" value={first} onChange={(e) => setFirst(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="last">{t("signup.last")}</Label>
+            <Input id="last" name="last" type="text" autoComplete="family-name" value={last} onChange={(e) => setLast(e.target.value)} />
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="password">{t("common.password")}</Label>
+          <div className="relative">
+            <Input
+              id="password"
+              name="password"
+              type={show ? "text" : "password"}
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShow((v) => !v)}
+              aria-label={show ? t("common.hide") : t("common.show")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              {show ? <EyeOff className="size-4" aria-hidden /> : <Eye className="size-4" aria-hidden />}
+            </button>
+          </div>
+          <ul className="space-y-1 pt-1">
+            <Rule ok={longEnough}>{t("signup.ruleLen")}</Rule>
+            <Rule ok={noEmail}>{t("signup.ruleEmail")}</Rule>
+          </ul>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="company">{t("signup.companyLabel")} <span className="text-xs font-normal text-muted-foreground">{t("signup.optional")}</span></Label>
+          <Input id="company" name="company" type="text" autoComplete="organization" value={company} onChange={(e) => setCompany(e.target.value)} />
+        </div>
+
+        <label className="flex items-start gap-3 text-sm leading-5">
+          <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5 size-4 accent-primary" />
+          <span>
+            {t.rich("signup.accept", {
+              privacy: (chunks) => (
+                <Link href="/trust/privacy" target="_blank" className="text-primary underline-offset-4 hover:underline">{chunks}</Link>
+              ),
+              terms: (chunks) => (
+                <Link href="/terms" target="_blank" className="text-primary underline-offset-4 hover:underline">{chunks}</Link>
+              ),
+            })}
+          </span>
+        </label>
+
+        <button type="submit" disabled={loading || !valid} className={`${btnPrimary} w-full disabled:opacity-60`}>
+          {loading ? t("common.wait") : t("signup.create")}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+##### src\components\aegx\brand.tsx #####
+/** Single source of truth for the logo: blue mark (masked from logo-mark.png) plus blue wordmark. */
+export function AegxBrand({ height = 22 }: { height?: number }) {
+  const width = Math.round((height * 369) / 256);
+  return (
+    <span className="aegx-logo">
+      <span className="aegx-logo__mark" data-logo="" role="img" aria-label="Aegisora" style={{ width, height }} />
+      <span className="aegx-logo__text">Aegisora</span>
+    </span>
+  );
+}
+
+##### 'sound' gecen satirlar #####
+src\app\globals.css:384: .aeg-sound-toggle {
+src\app\globals.css:404: .aeg-sound-toggle:hover { border-color: rgba(148, 163, 184, 0.7); }
+src\app\globals.css:405: .aeg-sound-toggle:active { transform: scale(0.94); }
+src\app\globals.css:406: .aeg-sound-toggle:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
+src\app\globals.css:407: .aeg-sound-toggle[aria-pressed="false"] { opacity: 0.6; }
+src\app\globals.css:422: /* keep the sound toggle clear of the bottom navigation */
+src\app\globals.css:423: .aeg-sound-toggle {
+src\app\globals.css:431: .aeg-sound-toggle { transition: none; }
+src\app\globals.css.bak-step27:384: .aeg-sound-toggle {
+src\app\globals.css.bak-step27:404: .aeg-sound-toggle:hover { border-color: rgba(148, 163, 184, 0.7); }
+src\app\globals.css.bak-step27:405: .aeg-sound-toggle:active { transform: scale(0.94); }
+src\app\globals.css.bak-step27:406: .aeg-sound-toggle:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
+src\app\globals.css.bak-step27:407: .aeg-sound-toggle[aria-pressed="false"] { opacity: 0.6; }
+src\app\globals.css.bak-step27:422: /* keep the sound toggle clear of the bottom navigation */
+src\app\globals.css.bak-step27:423: .aeg-sound-toggle {
+src\app\globals.css.bak-step27:431: .aeg-sound-toggle { transition: none; }
+src\app\layout.tsx:12: import { AegisoraSound } from '../components/aegisora-sound';
+src\app\layout.tsx:52: <AegisoraSound />
+src\app\layout.tsx.bak:12: import { AegisoraSound } from '../components/aegisora-sound';
+src\app\layout.tsx.bak:52: <AegisoraSound />
+src\app\[locale]\(app)\layout.tsx:7: import { SoundProvider } from "@/components/aegisora/live/sound-provider";
+src\app\[locale]\(app)\layout.tsx:22: <SoundProvider />
+src\components\aegisora-sound.tsx:6: isSoundEnabled,
+src\components\aegisora-sound.tsx:7: playSound,
+src\components\aegisora-sound.tsx:8: setSoundEnabled,
+src\components\aegisora-sound.tsx:9: subscribeSound,
+src\components\aegisora-sound.tsx:11: type SoundName,
+src\components\aegisora-sound.tsx:12: } from '../lib/aegisora-sound';
+src\components\aegisora-sound.tsx:17: const ALL_SOUNDS: readonly SoundName[] = [
+src\components\aegisora-sound.tsx:31: const PRIORITY: readonly SoundName[] = ['escalate', 'block', 'reject', 'approve'];
+src\components\aegisora-sound.tsx:34: const ROW_RULES: ReadonlyArray<readonly [RegExp, SoundName]> = [
+src\components\aegisora-sound.tsx:42: const CLICK_RULES: ReadonlyArray<readonly [RegExp, SoundName]> = [
+src\components\aegisora-sound.tsx:71: function classifyRow(text: string): SoundName | null {
+src\components\aegisora-sound.tsx:72: for (const [rx, sound] of ROW_RULES) {
+src\components\aegisora-sound.tsx:73: if (rx.test(text)) return sound;
+src\components\aegisora-sound.tsx:97: export function AegisoraSound() {
+src\components\aegisora-sound.tsx:100: const enabled = useSyncExternalStore(subscribeSound, isSoundEnabled, () => false);
+src\components\aegisora-sound.tsx:137: const el = target ? target.closest<HTMLElement>('[data-sound], button, [role="button"], a') : null;
+src\components\aegisora-sound.tsx:139: const explicit = el.getAttribute('data-sound');
+src\components\aegisora-sound.tsx:141: if ((ALL_SOUNDS as readonly string[]).includes(explicit)) playSound(explicit as SoundName);
+src\components\aegisora-sound.tsx:150: for (const [rx, sound] of CLICK_RULES) {
+src\components\aegisora-sound.tsx:152: playSound(sound);
+src\components\aegisora-sound.tsx:165: const pending = new Set<SoundName>();
+src\components\aegisora-sound.tsx:178: playSound(k);
+src\components\aegisora-sound.tsx:227: if (type === 'success') playSound('success');
+src\components\aegisora-sound.tsx:228: else if (type === 'error') playSound('error');
+src\components\aegisora-sound.tsx:229: else if (type === 'warning') playSound('alert');
+src\components\aegisora-sound.tsx:230: else if (type === 'info') playSound('notify');
+src\components\aegisora-sound.tsx:254: playSound('session');
+src\components\aegisora-sound.tsx:264: className="aeg-sound-toggle"
+src\components\aegisora-sound.tsx:266: aria-label={enabled ? 'Mute system sounds' : 'Enable system sounds'}
+src\components\aegisora-sound.tsx:267: title={enabled ? 'System sounds: on' : 'System sounds: off'}
+src\components\aegisora-sound.tsx:270: setSoundEnabled(next);
+src\components\aegisora-sound.tsx:279: playSound(first ? 'brand' : 'boot');
+src\components\aegisora\app-shell.tsx:8: TriangleAlert, UserCheck, Users, Volume2, VolumeX, Webhook, type LucideIcon,
+src\components\aegisora\app-shell.tsx:17: import { play, setSoundEnabled, soundEnabled } from "@/lib/aegisora/sound";
+src\components\aegisora\app-shell.tsx:151: const t = window.setTimeout(() => setSnd(soundEnabled()), 0);
+src\components\aegisora\app-shell.tsx:217: data-sound="off"
+src\components\aegisora\app-shell.tsx:218: onClick={() => { const next = !snd; setSoundEnabled(next); setSnd(next); if (next) play("on"); }}
+src\components\aegisora\app-shell.tsx:219: aria-label={snd ? "Mute interface sounds" : "Unmute interface sounds"}
+src\components\aegisora\app-shell.tsx:223: {snd ? <Volume2 aria-hidden="true" /> : <VolumeX aria-hidden="true" />}
+src\components\aegisora\topbar-actions.tsx:5: import { CircleHelp, Moon, Sun, Volume2, VolumeX } from "lucide-react";
+src\components\aegisora\topbar-actions.tsx:7: import { play, setSoundEnabled, soundEnabled } from "@/lib/aegisora/sound";
+src\components\aegisora\topbar-actions.tsx:18: const t = window.setTimeout(() => { setDark(document.documentElement.classList.contains("dark")); setSnd(soundEnabled()); }, 0);
+src\components\aegisora\topbar-actions.tsx:38: data-sound="off"
+src\components\aegisora\topbar-actions.tsx:39: onClick={() => { const next = !snd; setSoundEnabled(next); setSnd(next); if (next) play("on"); }}
+src\components\aegisora\topbar-actions.tsx:40: aria-label={snd ? "Mute interface sounds" : "Unmute interface sounds"}
+src\components\aegisora\topbar-actions.tsx:44: {snd ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+src\components\aegisora\live\sound-provider.tsx:4: import { Volume2, VolumeX } from "lucide-react";
+src\components\aegisora\live\sound-provider.tsx:5: import { play, setSoundEnabled, soundEnabled, type SoundKind } from "@/lib/aegisora/sound";
+src\components\aegisora\live\sound-provider.tsx:11: function pick(el: HTMLElement): SoundKind | null {
+src\components\aegisora\live\sound-provider.tsx:12: const mode = el.getAttribute("data-sound");
+src\components\aegisora\live\sound-provider.tsx:26: export function SoundProvider() {
+src\components\aegisora\live\sound-provider.tsx:43: export function SoundToggle() {
+src\components\aegisora\live\sound-provider.tsx:46: const id = window.setTimeout(() => setOn(soundEnabled()), 0);
+src\components\aegisora\live\sound-provider.tsx:49: const Icon = on ? Volume2 : VolumeX;
+src\components\aegisora\live\sound-provider.tsx:53: data-sound="off"
+src\components\aegisora\live\sound-provider.tsx:54: aria-label={on ? "Mute interface sounds" : "Unmute interface sounds"}
+src\components\aegisora\live\sound-provider.tsx:56: title={on ? "Sounds on" : "Sounds off"}
+src\components\aegisora\live\sound-provider.tsx:57: onClick={() => { const next = !on; setSoundEnabled(next); setOn(next); if (next) play("on"); }}
+src\lib\aegisora-sound.ts:1: /* Aegisora sound engine. Synthesized with the Web Audio API, no audio files needed. */
+src\lib\aegisora-sound.ts:3: export type SoundName =
+src\lib\aegisora-sound.ts:29: const STORE_KEY = 'aegisora:sound:v1';
+src\lib\aegisora-sound.ts:36: const lastPlayed = new Map<SoundName, number>();
+src\lib\aegisora-sound.ts:105: const SOUNDS: Record<SoundName, Note[]> = {
+src\lib\aegisora-sound.ts:195: function playSynth(name: SoundName): void {
+src\lib\aegisora-sound.ts:204: /* autoplay still blocked: do not queue stale sounds, wait for a user gesture */
+src\lib\aegisora-sound.ts:210: for (const note of SOUNDS[name]) playNote(c, out, t0, note);
+src\lib\aegisora-sound.ts:213: export function isSoundEnabled(): boolean {
+src\lib\aegisora-sound.ts:218: export function setSoundEnabled(on: boolean): void {
+src\lib\aegisora-sound.ts:225: export function setSoundVolume(v: number): void {
+src\lib\aegisora-sound.ts:233: export function subscribeSound(cb: () => void): () => void {
+src\lib\aegisora-sound.ts:240: /* ---- Aegisora sonic identity: recorded files override the synthesized sounds ---- */
+src\lib\aegisora-sound.ts:241: const FILE_SOUNDS: Partial<Record<SoundName, string>> = {
+src\lib\aegisora-sound.ts:242: block: '/sounds/threat-blocked.mp3',
+src\lib\aegisora-sound.ts:243: approve: '/sounds/policy-verified.mp3',
+src\lib\aegisora-sound.ts:244: success: '/sounds/policy-verified.mp3',
+src\lib\aegisora-sound.ts:245: boot: '/sounds/dashboard-startup.mp3',
+src\lib\aegisora-sound.ts:246: notify: '/sounds/agent-connected.mp3',
+src\lib\aegisora-sound.ts:247: brand: '/sounds/brand-logo.mp3',
+src\lib\aegisora-sound.ts:248: session: '/sounds/secure-session.mp3',
+src\lib\aegisora-sound.ts:254: export function playSound(...args: Parameters<typeof playSynth>): ReturnType<typeof playSynth> {
+src\lib\aegisora-sound.ts:255: const url = FILE_SOUNDS[args[0] as SoundName];
+src\lib\aegisora-sound.ts:276: /* fall through to the synthesized sound */
+src\lib\aegisora-sound.ts.bak:1: /* Aegisora sound engine. Synthesized with the Web Audio API, no audio files needed. */
+src\lib\aegisora-sound.ts.bak:3: export type SoundName =
+src\lib\aegisora-sound.ts.bak:27: const STORE_KEY = 'aegisora:sound:v1';
+src\lib\aegisora-sound.ts.bak:34: const lastPlayed = new Map<SoundName, number>();
+src\lib\aegisora-sound.ts.bak:103: const SOUNDS: Record<SoundName, Note[]> = {
+src\lib\aegisora-sound.ts.bak:191: export function playSound(name: SoundName): void {
+src\lib\aegisora-sound.ts.bak:200: /* autoplay still blocked: do not queue stale sounds, wait for a user gesture */
+src\lib\aegisora-sound.ts.bak:206: for (const note of SOUNDS[name]) playNote(c, out, t0, note);
+src\lib\aegisora-sound.ts.bak:209: export function isSoundEnabled(): boolean {
+src\lib\aegisora-sound.ts.bak:214: export function setSoundEnabled(on: boolean): void {
+src\lib\aegisora-sound.ts.bak:221: export function setSoundVolume(v: number): void {
+src\lib\aegisora-sound.ts.bak:229: export function subscribeSound(cb: () => void): () => void {
+src\lib\blog-posts.ts:106: { t: "p", text: "Putting a person in the loop sounds safe until every action waits for a click. Approvals only work when they are rare enough that people take them seriously and informative enough that they can decide quickly." },
+src\lib\aegisora\sound.ts:1: export type SoundKind = "click" | "nav" | "confirm" | "danger" | "on" | "off";
+src\lib\aegisora\sound.ts:3: const KEY = "aeg-sound";
+src\lib\aegisora\sound.ts:8: export function soundEnabled(): boolean {
+
+##### src\components\aegisora\live\sound-provider.tsx #####
+"use client";
+
+import { useEffect, useState } from "react";
+import { Volume2, VolumeX } from "lucide-react";
+import { play, setSoundEnabled, soundEnabled, type SoundKind } from "@/lib/aegisora/sound";
+
+const TARGET = 'button, a[href], [role="button"], [role="switch"], [role="tab"], [role="menuitem"], input[type="checkbox"], input[type="radio"], summary';
+const DANGER = /delete|remove|revoke|block|disable|cancel|reject|deny|sil\b|kald/i;
+const CONFIRM = /save|create|add|approve|confirm|send|invite|connect|import|apply|generate|export/i;
+
+function pick(el: HTMLElement): SoundKind | null {
+  const mode = el.getAttribute("data-sound");
+  if (mode === "off") return null;
+  if (mode === "confirm" || mode === "danger" || mode === "nav" || mode === "click") return mode;
+  if (el.matches('[role="switch"], input[type="checkbox"]')) {
+    const on = el.getAttribute("aria-checked") === "true" || (el as HTMLInputElement).checked;
+    return on ? "off" : "on";
+  }
+  const label = (el.getAttribute("aria-label") || el.textContent || "").trim().slice(0, 60);
+  if (DANGER.test(label)) return "danger";
+  if (el.matches("a[href]")) return "nav";
+  if ((el as HTMLButtonElement).type === "submit" || CONFIRM.test(label)) return "confirm";
+  return "click";
+}
+
+export function SoundProvider() {
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      const el = t.closest<HTMLElement>(TARGET);
+      if (!el) return;
+      if ((el as HTMLButtonElement).disabled || el.getAttribute("aria-disabled") === "true") return;
+      const kind = pick(el);
+      if (kind) play(kind);
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, []);
+  return null;
+}
+
+export function SoundToggle() {
+  const [on, setOn] = useState(true);
+  useEffect(() => {
+    const id = window.setTimeout(() => setOn(soundEnabled()), 0);
+    return () => window.clearTimeout(id);
+  }, []);
+  const Icon = on ? Volume2 : VolumeX;
+  return (
+    <button
+      type="button"
+      data-sound="off"
+      aria-label={on ? "Mute interface sounds" : "Unmute interface sounds"}
+      aria-pressed={!on}
+      title={on ? "Sounds on" : "Sounds off"}
+      onClick={() => { const next = !on; setSoundEnabled(next); setOn(next); if (next) play("on"); }}
+      className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-surface-3 hover:text-foreground"
+    >
+      <Icon className="size-4" aria-hidden="true" />
+    </button>
+  );
+}
+
+##### src\components\aegisora\live\feedback.tsx #####
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { btnGhost } from "@/components/aegisora/live/ui";
+import { cn } from "@/lib/utils";
+
+type ConfirmOptions = { title: string; body?: string; confirmLabel?: string; danger?: boolean };
+type ConfirmRequest = ConfirmOptions & { resolve: (value: boolean) => void };
+type Toast = { id: number; text: string; ok: boolean };
+type Listener = { onConfirm: (request: ConfirmRequest) => void; onToast: (toast: Toast) => void };
+
+let listener: Listener | null = null;
+let seq = 0;
+
+/** Replaces window.confirm. Resolves true only when the person confirms. */
+export function confirmDialog(options: ConfirmOptions): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (!listener) {
+      resolve(false);
+      return;
+    }
+    listener.onConfirm({ ...options, resolve });
+  });
+}
+
+/** Replaces window.alert. Shows a short message in the corner. */
+export function notify(text: string, ok = true) {
+  listener?.onToast({ id: ++seq, text, ok });
+}
+
+export function FeedbackHost() {
+  const [req, setReq] = useState<ConfirmRequest | null>(null);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const active = useRef<ConfirmRequest | null>(null);
+  const pending = useRef<ConfirmRequest[]>([]);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    listener = {
+      onConfirm: (request) => {
+        if (active.current) {
+          pending.current.push(request);
+        } else {
+          active.current = request;
+          setReq(request);
+        }
+      },
+      onToast: (toast) => {
+        setToasts((list) => [...list.slice(-2), toast]);
+        window.setTimeout(() => setToasts((list) => list.filter((x) => x.id !== toast.id)), toast.ok ? 4000 : 7000);
+      },
+    };
+    return () => {
+      listener = null;
+    };
+  }, []);
+
+  function answer(value: boolean) {
+    const current = active.current;
+    if (!current) return;
+    current.resolve(value);
+    const next = pending.current.shift() ?? null;
+    active.current = next;
+    setReq(next);
+  }
+
+  useEffect(() => {
+    if (!req) return;
+    cancelRef.current?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        const current = active.current;
+        if (!current) return;
+        current.resolve(false);
+        const next = pending.current.shift() ?? null;
+        active.current = next;
+        setReq(next);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [req]);
+
+  return (
+    <>
+      {req && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="alertdialog" aria-modal="true" aria-labelledby="fb-title" aria-describedby={req.body ? "fb-body" : undefined}>
+          <div className="absolute inset-0 bg-black/60" onClick={() => answer(false)} aria-hidden="true" />
+          <div className="aeg-panel relative w-full max-w-sm bg-popover p-5">
+            <h2 id="fb-title" className="text-base font-semibold">{req.title}</h2>
+            {req.body ? <p id="fb-body" className="mt-2 text-sm text-muted-foreground">{req.body}</p> : null}
+            <div className="mt-5 flex justify-end gap-2">
+              <button ref={cancelRef} type="button" onClick={() => answer(false)} className={btnGhost}>Cancel</button>
+              <button
+                type="button"
+                onClick={() => answer(true)}
+                className={cn(
+                  "inline-flex h-8 items-center rounded-sm px-3 text-xs font-medium",
+                  req.danger ? "bg-block text-white hover:opacity-90" : "bg-primary text-primary-foreground hover:bg-primary-hover",
+                )}
+              >
+                {req.confirmLabel ?? "Confirm"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <div aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-24 z-[85] flex flex-col items-center gap-2 px-4 md:bottom-6 md:items-end md:pr-6">
+        {toasts.map((t) => (
+          <p
+            key={t.id}
+            role={t.ok ? "status" : "alert"}
+            className={cn(
+              "pointer-events-auto max-w-sm rounded-md border bg-popover px-4 py-2.5 text-sm shadow-lg",
+              t.ok ? "border-allow/40 text-allow" : "border-block/40 text-block",
+            )}
+          >
+            {t.text}
+          </p>
+        ))}
+      </div>
+    </>
+  );
+}
+
+##### src\lib\aegisora\sound.ts #####
+export type SoundKind = "click" | "nav" | "confirm" | "danger" | "on" | "off";
+
+const KEY = "aeg-sound";
+const MASTER = 0.5;
+let ctx: AudioContext | null = null;
+let last = 0;
+
+export function soundEnabled(): boolean {
+  try { return localStorage.getItem(KEY) !== "off"; } catch { return true; }
+}
+
+export function setSoundEnabled(on: boolean) {
+  try { localStorage.setItem(KEY, on ? "on" : "off"); } catch { /* storage unavailable */ }
+}
+
+function tone(c: AudioContext, freq: number, start: number, dur: number, vol: number, endFreq?: number, type: OscillatorType = "sine") {
+  const o = c.createOscillator();
+  const g = c.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(freq, start);
+  if (endFreq) o.frequency.exponentialRampToValueAtTime(endFreq, start + dur);
+  g.gain.setValueAtTime(0.0001, start);
+  g.gain.exponentialRampToValueAtTime(vol * MASTER, start + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+  o.connect(g);
+  g.connect(c.destination);
+  o.start(start);
+  o.stop(start + dur + 0.02);
+}
+
+export function play(kind: SoundKind) {
+  if (typeof window === "undefined" || !soundEnabled()) return;
+  const now = performance.now();
+  if (now - last < 45) return;
+  last = now;
+  try {
+    const AC = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AC) return;
+    ctx = ctx ?? new AC();
+    if (ctx.state === "suspended") void ctx.resume();
+    const t = ctx.currentTime;
+    switch (kind) {
+      case "click": tone(ctx, 720, t, 0.07, 0.18, 560); break;
+      case "nav": tone(ctx, 520, t, 0.09, 0.16, 780); break;
+      case "confirm": tone(ctx, 660, t, 0.1, 0.2); tone(ctx, 990, t + 0.07, 0.16, 0.2); break;
+      case "danger": tone(ctx, 300, t, 0.16, 0.2, 200, "triangle"); break;
+      case "on": tone(ctx, 600, t, 0.07, 0.18); tone(ctx, 900, t + 0.05, 0.09, 0.18); break;
+      case "off": tone(ctx, 900, t, 0.07, 0.18); tone(ctx, 600, t + 0.05, 0.09, 0.18); break;
+    }
+  } catch { /* audio blocked: stay silent */ }
+}
+
+##### API rotalari #####
+src\app\api\auth\callback\route.ts
+src\app\api\billing\status\route.ts
+src\app\api\csp-report\route.ts
+src\app\api\demo\route.ts
+src\app\api\health\route.ts
+src\app\api\pilot-approve\route.ts
+src\app\api\pilot-request\route.ts
+src\app\api\stripe\checkout\route.ts
+src\app\api\stripe\portal\route.ts
+src\app\api\stripe\webhook\route.ts
+src\app\api\v1\agents\import\route.ts
+src\app\api\v1\decisions\[id]\route.ts
+src\app\api\v1\evaluate\route.ts
+src\app\api\v1\health\route.ts
+src\app\api\v1\traces\route.ts
+src\app\api\v1\workspace\agents\route.ts
+src\app\api\v1\workspace\approvals\[approvalId]\route.ts
+src\app\api\v1\workspace\evidence\export\route.ts
+src\app\api\v1\workspace\members\route.ts
+src\app\api\v1\workspace\members\accept\route.ts
+src\app\api\v1\workspace\policies\route.ts
+src\app\api\v1\workspace\usage\route.ts
+
+##### src\app\api\v1\workspace\agents\route.ts #####
+import { NextResponse } from "next/server";
+import { ApiError, admin, readJson } from "@/lib/aegisora/server";
+import { authenticateUser, requireAal2, requireWorkspacePermission } from "@/lib/aegisora/rbac-http";
+import { normalizeAgentInput, type AgentWrite } from "@/lib/aegisora/agent-input";
+import { assertWithinPlanLimit, assertAgentImportWithinLimit } from "@/lib/aegisora/plan-limits";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+function errorResponse(status: number, code: string, message: string) {
+  return NextResponse.json({ error: { code, message } }, { status });
+}
+
+export async function POST(req: Request) {
+  try {
+    const { user, aal } = await authenticateUser(req);
+    const body = await readJson(req, 512_000);
+    const workspaceId = typeof body.workspace_id === "string" ? body.workspace_id : "";
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(workspaceId)) {
+      throw new ApiError(400, "invalid_request", "'workspace_id' must be a UUID.");
+    }
+    await requireWorkspacePermission(user.id, workspaceId, "governance:manage");
+    requireAal2(aal);
+
+    const operation = body.operation;
+    const db = admin();
+    if (operation === "create") {
+      const normalized = normalizeAgentInput(body.agent, workspaceId, "manual");
+      if (!normalized.row) throw new ApiError(400, "invalid_agent", normalized.error ?? "Invalid agent.");
+      await assertWithinPlanLimit(workspaceId, "agents", 1);
+      const { data, error } = await db.from("agents").insert(normalized.row).select("id").single();
+      if (error) throw error;
+      return NextResponse.json({ id: data.id }, { status: 201 });
+    }
+
+    if (operation === "import") {
+      const agents = Array.isArray(body.agents) ? body.agents : null;
+      if (!agents || agents.length === 0 || agents.length > 500) {
+        throw new ApiError(400, "invalid_request", "'agents' must be an array of 1–500 items.");
+      }
+      const rows = new Map<string, AgentWrite>();
+      for (const agent of agents) {
+        const normalized = normalizeAgentInput(agent, workspaceId, "import");
+        if (!normalized.row) throw new ApiError(400, "invalid_agent", normalized.error ?? "Invalid agent in import.");
+        rows.set(normalized.row.name, normalized.row);
+      }
+      await assertAgentImportWithinLimit(workspaceId, [...rows.keys()]);
+      const { error } = await db.from("agents").upsert([...rows.values()], { onConflict: "workspace_id,name" });
+      if (error) throw error;
+      return NextResponse.json({ imported: rows.size });
+    }
+
+    if (operation === "update") {
+      const agentId = typeof body.agent_id === "string" ? body.agent_id : "";
+      const state = body.state;
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(agentId) || (state !== "ACTIVE" && state !== "DISABLED")) {
+        throw new ApiError(400, "invalid_request", "'agent_id' and a valid state are required.");
+      }
+      const { data, error } = await db.from("agents").update({ state }).eq("id", agentId).eq("workspace_id", workspaceId).select("id").maybeSingle();
+      if (error) throw error;
+      if (!data) throw new ApiError(404, "not_found", "Agent not found in this workspace.");
+      return NextResponse.json({ updated: true });
+    }
+
+    if (operation === "delete") {
+      const agentId = typeof body.agent_id === "string" ? body.agent_id : "";
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(agentId)) {
+        throw new ApiError(400, "invalid_request", "'agent_id' must be a UUID.");
+      }
+      const { data, error } = await db.from("agents").delete().eq("id", agentId).eq("workspace_id", workspaceId).select("id").maybeSingle();
+      if (error) throw error;
+      if (!data) throw new ApiError(404, "not_found", "Agent not found in this workspace.");
+      return NextResponse.json({ deleted: true });
+    }
+
+    throw new ApiError(400, "invalid_request", "Unsupported agent operation.");
+  } catch (error) {
+    const status = typeof error === "object" && error !== null && "status" in error && typeof (error as { status?: unknown }).status === "number"
+      ? Number((error as { status: number }).status)
+      : 500;
+    if (status === 401) return errorResponse(401, "unauthorized", "A valid Supabase session is required.");
+    if (status === 403) {
+      const mfaRequired = error instanceof Error && error.message.startsWith("Complete multi-factor");
+      return errorResponse(403, mfaRequired ? "mfa_required" : "forbidden", error instanceof Error ? error.message : "Forbidden.");
+    }
+    if (error instanceof ApiError) return errorResponse(error.status, error.code, error.message);
+    console.error("[aegisora] Workspace agent operation failed.", error);
+    return errorResponse(500, "internal_error", "Unable to complete the workspace agent operation.");
+  }
+}
+
+##### src\app\[locale]\layout.tsx #####
+import { notFound } from "next/navigation";
+import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
+import { routing } from "@/i18n/routing";
+import { CookieConsent } from "@/components/aegisora/cookie-consent";
+
+export default async function LocaleLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
+  setRequestLocale(locale);
+
+  return (
+    <NextIntlClientProvider>
+      {children}
+      <CookieConsent />
+    </NextIntlClientProvider>
+  );
+}
+
+##### src\app\layout.tsx #####
+import Script from "next/script";
+import PwaBoot from "@/components/pwa-boot";
+import type { Metadata, Viewport } from "next";
+import { Barlow_Condensed } from "next/font/google";
+import "@fontsource-variable/archivo";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+import "@fontsource/ibm-plex-mono/600.css";
+import "@fontsource/ibm-plex-mono/700.css";
+import "./globals.css";
+import { getLocale } from "next-intl/server";
+import { AegisoraSound } from '../components/aegisora-sound';
+import { ThemeBoot } from "@/components/aegisora/theme-boot";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
+
+const barlow = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  display: "swap",
+  variable: "--font-barlow",
+});
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+  viewportFit: "cover",
+};
+
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? "https://aegisora.org"),
+  alternates: { canonical: "./" },
+  openGraph: { siteName: "Aegisora", type: "website" },
+  title: {
+    default: "Aegisora | Runtime Security for AI Agents",
+    template: "%s | Aegisora",
+  },
+  description:
+    "Aegisora sits at the execution boundary of autonomous systems. Every sensitive action is evaluated against context, policy, risk and authorization before it executes.",
+};
+
+export default async function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
+  return (
+    <html data-scroll-behavior="smooth" lang={locale} className={barlow.variable} suppressHydrationWarning>
+      <head>
+        <Script id="theme-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
+      <body className="min-h-screen bg-background font-sans text-foreground antialiased">
+        {children}
+        <PwaBoot />
+        <AegisoraSound />
+        <ThemeBoot />
+      </body>
+    </html>
+  );
+}
+
+##### css: logo / cta / brand #####
+aegx.css 45: .aegx-logo { display: inline-flex; align-items: center; gap: 8px; color: #fff; font-weight: 600; font-size: 17px; letter-spacing: -0.01em; }
+aegx.css 46: .aegx-logo img { display: block; }
+aegx.css 72: .aegx-h2 { font-size: clamp(28px, 4vw, 42px); line-height: 1.1; letter-spacing: -0.028em; font-weight: 500; }
+aegx.css 75: .aegx-lead { max-width: 540px; margin: 20px auto 0; font-size: 16px; line-height: 1.6; color: var(--mut); }
+aegx.css 79: .aegx-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 30px; }
+aegx.css 80: .aegx-actions--left { justify-content: flex-start; }
+aegx.css 167: .aegx-cta { position: relative; overflow: hidden; isolation: isolate; padding: clamp(56px, 8vw, 96px) var(--pad); }
+aegx.css 168: .aegx-cta__art { position: absolute; inset: 0; z-index: -1; background:
+aegx.css 173: .aegx-cta__art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #000 14%, rgb(0 0 0 / 0.55) 55%, rgb(0 0 0 / 0.1) 100%); }
+aegx.css 174: .aegx-cta__in { max-width: 560px; }
+aegx.css 175: .aegx-cta .aegx-lead { margin-left: 0; }
+aegx.css 251: .aegx-cta__art { background:
+aegx.css 274: .aegx a.aegx-feature:hover .aegx-h2 { text-decoration: underline; text-underline-offset: 6px; text-decoration-color: rgb(255 255 255 / 0.3); }
+aegx.css 317: .aegx-logo__mark { display: block; flex: none; background: #1f7aff; -webkit-mask: url(/logo-mark.png) center / contain no-repeat; mask: url(/logo-mark.png) center / contain no-repeat; }
+aegx.css 318: .aegx-logo, .aegx-logo__text { color: #3d8bff; }
+aegx.css 348: .aegx-hero__in .aegx-lead { margin-left: auto; margin-right: auto; text-align: center; }
+aegx.css 349: .aegx-hero__in .aegx-actions { justify-content: center; }
+aegx.css 350: .aegx-cta__in { text-align: left; }
+aegx.css 351: .aegx-cta__in .aegx-lead { margin-left: 0; margin-right: 0; text-align: left; }
+aegx.css 352: .aegx-actions--left { justify-content: flex-start; }
+aegc.css 34: .aegc-brand { display: flex; align-items: center; gap: 10px; padding: 6px 8px 14px; color: #3d8bff; }
+aegc.css 36: .aegc-brand__t { display: block; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.15; color: #3d8bff; }
+aegc.css 37: .aegc-brand__t span { display: block; font-weight: 500; color: var(--muted-foreground); }
+aegc.css 61: .aegc-ibtn { position: relative; width: 32px; height: 32px; display: inline-grid; place-items: center; border: 0; border-radius: 8px; background: transparent; color: #a8a8a8; cursor: pointer; transition: background-color 0.15s, color 0.15s; }
+aegc.css 62: .aegc-ibtn:hover { background: #111; color: #fff; }
+aegc.css 63: .aegc-ibtn svg { width: 16px; height: 16px; }
+aegc.css 64: .aegc-ibtn i { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--escalate); }
+
+##### public/ #####
+aegisora-mark.svg (216 bayt)
+aegisora-shield.svg (255 bayt)
+apple-touch-icon.png (5856 bayt)
+discover1.png (51329 bayt)
+email-logo.png (30591 bayt)
+favicon-96x96.png (3740 bayt)
+favicon.svg (5187 bayt)
+file.svg (391 bayt)
+globe.svg (1035 bayt)
+hero1.png (500652 bayt)
+home.png (1416597 bayt)
+LOGO-icon-trimmed-420.webp (15876 bayt)
+LOGO-icon-trimmed.png (155120 bayt)
+LOGO-icon.png (218276 bayt)
+logo-mark.png (17713 bayt)
+LOGO.png (466143 bayt)
+next.svg (1375 bayt)
+offline.html (1421 bayt)
+robots.txt (233 bayt)
+sitemap.xml (1027 bayt)
+sw.js (1585 bayt)
+vercel.svg (128 bayt)
+web-app-manifest-192x192.png (5941 bayt)
+web-app-manifest-512x512.png (20415 bayt)
+window.svg (385 bayt)
