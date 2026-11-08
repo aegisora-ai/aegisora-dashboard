@@ -174,3 +174,9 @@ a.aegc-li:hover .aegc-li__t b { text-decoration: underline; text-decoration-colo
   --escalate: #a78bfa; --escalate-muted: rgb(167 139 250 / 0.12);
   --block: #ff6b7a; --block-muted: rgb(255 107 122 / 0.12);
 }
+/* aegc-decision-palette: allow green, escalate amber, block red (overrides aegc-blue-theme) */
+:root, html:has(.aegc), .aegc {
+  --allow: #34d399; --allow-muted: rgb(52 211 153 / 0.12);
+  --escalate: #fbbf24; --escalate-muted: rgb(251 191 36 / 0.12);
+  --block: #f87171; --block-muted: rgb(248 113 113 / 0.12);
+}
