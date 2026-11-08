@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, Settings } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Link } from "@/i18n/navigation";
 import { useWorkspace } from "@/components/aegisora/workspace-provider";
 import { focusRing } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -18,12 +18,12 @@ export function AccountSwitcher() {
   const { loading, workspaces, currentWorkspace, setCurrentWorkspaceId } = useWorkspace();
 
   if (loading) {
-    return <span className="hidden font-mono text-xs text-muted-foreground sm:inline">workspace / loading...</span>;
+    return <span className="font-mono text-xs text-muted-foreground">workspace / loading...</span>;
   }
 
   if (!currentWorkspace) {
     return (
-      <Link href="/onboarding" className="hidden font-mono text-xs text-cyan underline-offset-4 hover:underline sm:inline">
+      <Link href="/onboarding" className="font-mono text-xs text-cyan underline-offset-4 hover:underline">
         workspace / create one
       </Link>
     );
@@ -36,26 +36,27 @@ export function AccountSwitcher() {
           <button
             type="button"
             className={cn(
-              "hidden items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground hover:bg-surface-3 hover:text-foreground sm:flex",
+              "flex min-w-0 items-center gap-1.5 rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground hover:bg-surface-3 hover:text-foreground",
               focusRing,
             )}
           >
-            workspace / <span className="text-foreground">{currentWorkspace.slug}</span>
-            <ChevronsUpDown className="size-3.5" />
+            <span className="hidden sm:inline">workspace /</span>
+            <span className="max-w-[150px] truncate text-foreground sm:max-w-[240px]">{currentWorkspace.slug}</span>
+            <ChevronsUpDown className="size-3.5 shrink-0" />
           </button>
         }
       />
-      <DropdownMenuContent align="start" className="w-64">
+      <DropdownMenuContent align="start" className="max-h-[70vh] w-72 overflow-y-auto">
         <DropdownMenuLabel className="font-mono text-[10px] tracking-wider text-muted-foreground">
           WORKSPACES
         </DropdownMenuLabel>
         {workspaces.map((w) => (
           <DropdownMenuItem key={w.id} onClick={() => setCurrentWorkspaceId(w.id)} className="flex items-center justify-between gap-2">
-            <span>
-              <span className="block text-sm">{w.name}</span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm">{w.name}</span>
               <span className="block font-mono text-[10px] text-muted-foreground">{w.role}</span>
             </span>
-            {w.id === currentWorkspace.id && <Check className="size-4 text-cyan" />}
+            {w.id === currentWorkspace.id && <Check className="size-4 shrink-0 text-cyan" />}
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
@@ -63,6 +64,13 @@ export function AccountSwitcher() {
           render={
             <Link href="/onboarding" className="flex items-center gap-2">
               <Plus className="size-4" /> Create workspace
+            </Link>
+          }
+        />
+        <DropdownMenuItem
+          render={
+            <Link href="/dashboard/workspace" className="flex items-center gap-2">
+              <Settings className="size-4" /> Manage workspaces
             </Link>
           }
         />

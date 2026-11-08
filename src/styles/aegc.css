@@ -30,7 +30,7 @@ html:has(.aegc) ::-webkit-scrollbar-thumb:hover { background-color: #3a3a3a; }
 /* ---------- shell ---------- */
 .aegc-app { display: flex; min-height: 100vh; }
 .aegc-side { position: sticky; top: 0; z-index: 40; height: 100vh; width: 236px; flex: none; display: none; flex-direction: column; border-right: 1px solid var(--border); background: #000; padding: 14px 10px 10px; }
-@media (min-width: 1024px) { .aegc-side { display: flex; } }
+@media (min-width: 1280px) { .aegc-side { display: flex; } }
 .aegc-brand { display: flex; align-items: center; gap: 10px; padding: 6px 8px 14px; color: #3d8bff; }
 .aegc-mark { display: block; flex: none; width: 30px; height: 21px; background: var(--aegc-blue); -webkit-mask: url(/logo-mark.png) center / contain no-repeat; mask: url(/logo-mark.png) center / contain no-repeat; }
 .aegc-brand__t { display: block; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.15; color: #3d8bff; }
@@ -73,7 +73,7 @@ html:has(.aegc) ::-webkit-scrollbar-thumb:hover { background-color: #3a3a3a; }
 .aegc-search kbd { font-family: var(--font-mono, monospace); font-size: 10px; padding: 1px 5px; border: 1px solid var(--border); border-radius: 5px; }
 @media (min-width: 900px) { .aegc-search { display: inline-flex; } }
 .aegc-only-m { display: inline-grid; }
-@media (min-width: 1024px) { .aegc-only-m { display: none; } }
+@media (min-width: 1280px) { .aegc-only-m { display: none; } }
 .aegc-pop { position: absolute; right: 0; top: calc(100% + 8px); z-index: 50; width: 280px; padding: 6px; border: 1px solid var(--border); border-radius: 12px; background: #0c0c0c; box-shadow: 0 20px 50px -20px #000; }
 .aegc-pop a { display: block; padding: 10px 12px; border-radius: 8px; }
 .aegc-pop a:hover { background: #151515; }
