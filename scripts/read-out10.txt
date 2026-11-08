@@ -1,0 +1,4179 @@
+##### package.json bagimliliklari #####
+@supabase/ssr
+@supabase/supabase-js
+
+##### .env adlari (degerler yok) #####
+-- .env.local
+DEMO_TICKET_SECRET
+NEXT_PUBLIC_SALES_EMAIL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+NEXT_PUBLIC_SUPABASE_URL
+STRIPE_PRICE_BUSINESS
+STRIPE_PRICE_ENTERPRISE
+STRIPE_PRICE_FOUNDER_PILOT
+STRIPE_PRICE_PILOT
+STRIPE_PRICE_TEAM
+SUPABASE_SERVICE_ROLE_KEY
+VERCEL_OIDC_TOKEN
+STRIPE_SECRET_KEY
+STRIPE_PRICE_PRO
+STRIPE_WEBHOOK_SECRET
+NEXT_PUBLIC_SITE_URL
+NEXT_PUBLIC_BILLING_SELF_SERVE
+
+##### prisma\schema.prisma #####
+(YOK)
+
+##### .enterprise\phase3.2-20260927-004023\authoritative-schema.sql #####
+
+============================================================
+SOURCE TYPE: REPOSITORY
+SOURCE: C:\AI\AEGISORA\website4\supabase\002_onboarding.sql
+============================================================
+
+-- 002: onboarding flag, safe role default, workspace creation at signup
+
+alter table public.profiles add column if not exists onboarded_at timestamptz;
+
+-- the original default 'member' is not a value of workspace_role
+alter table public.workspace_members alter column role set default 'VIEWER';
+
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  company text := nullif(btrim(new.raw_user_meta_data ->> 'company'), '');
+  ws_id uuid;
+begin
+  insert into public.profiles (id, full_name)
+  values (new.id, new.raw_user_meta_data ->> 'full_name')
+  on conflict (id) do nothing;
+
+  if company is not null then
+    insert into public.workspaces (name, slug, created_by)
+    values (
+      company,
+      coalesce(nullif(btrim(regexp_replace(lower(company), '[^a-z0-9]+', '-', 'g'), '-'), ''), 'workspace')
+        || '-' || substr(replace(new.id::text, '-', ''), 1, 6),
+      new.id
+    )
+    returning id into ws_id;
+
+    insert into public.workspace_members (workspace_id, user_id, role)
+    values (ws_id, new.id, 'OWNER');
+  end if;
+
+  return new;
+end;
+$$;
+
+============================================================
+SOURCE TYPE: REPOSITORY
+SOURCE: C:\AI\AEGISORA\website4\supabase\003_core.sql
+============================================================
+
+-- 003: core governance data model
+
+create or replace function public.is_member(ws uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid());
+$$;
+
+create or replace function public.has_role(ws uuid, roles text[]) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid() and m.role::text = any(roles));
+$$;
+
+create table if not exists public.agents (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null check (char_length(name) between 1 and 120),
+  description text,
+  framework text,
+  external_id text,
+  source text not null default 'manual' check (source in ('manual','auto','import')),
+  status text not null default 'active' check (status in ('active','suspended')),
+  metadata jsonb not null default '{}'::jsonb,
+  last_seen_at timestamptz,
+  created_at timestamptz not null default now(),
+  unique (workspace_id, name)
+);
+
+create table if not exists public.api_keys (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null,
+  prefix text not null,
+  key_hash text not null unique,
+  created_by uuid references auth.users(id),
+  last_used_at timestamptz,
+  revoked_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.policies (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null,
+  description text,
+  agent_id uuid references public.agents(id) on delete cascade,
+  action_pattern text not null default '*',
+  resource_pattern text not null default '*',
+  effect text not null check (effect in ('ALLOW','BLOCK','ESCALATE')),
+  priority int not null default 100,
+  enabled boolean not null default true,
+  version int not null default 1,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.decisions (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text not null,
+  action text not null,
+  resource text not null default '',
+  effect text not null check (effect in ('ALLOW','BLOCK','ESCALATE')),
+  reason text,
+  policy_id uuid references public.policies(id) on delete set null,
+  risk_score int not null default 0,
+  trace_id text,
+  input jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists decisions_ws_created on public.decisions (workspace_id, created_at desc);
+
+create table if not exists public.approvals (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  decision_id uuid not null references public.decisions(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text,
+  action text,
+  resource text,
+  status text not null default 'pending' check (status in ('pending','approved','rejected','expired')),
+  note text,
+  requested_at timestamptz not null default now(),
+  expires_at timestamptz not null,
+  resolved_by uuid references auth.users(id),
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.incidents (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  decision_id uuid references public.decisions(id) on delete set null,
+  severity text not null default 'medium' check (severity in ('low','medium','high','critical')),
+  title text not null,
+  status text not null default 'open' check (status in ('open','resolved')),
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.evidence (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  seq bigint not null,
+  decision_id uuid,
+  trace_id text,
+  payload jsonb not null,
+  prev_hash text not null,
+  hash text not null,
+  created_at timestamptz not null default now(),
+  unique (workspace_id, seq)
+);
+
+create table if not exists public.audit_events (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  actor text not null,
+  action text not null,
+  target_type text,
+  target_id text,
+  meta jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists audit_ws_created on public.audit_events (workspace_id, created_at desc);
+
+create table if not exists public.traces (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text,
+  trace_id text not null,
+  name text,
+  decision_id uuid,
+  status text not null default 'ok',
+  duration_ms int,
+  spans jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists traces_ws_created on public.traces (workspace_id, created_at desc);
+
+create table if not exists public.webhooks (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  url text not null check (url ~ '^https://'),
+  events text[] not null default array['decision.block','decision.escalate'],
+  secret text not null,
+  enabled boolean not null default true,
+  last_status int,
+  last_delivery_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.workspace_settings (
+  workspace_id uuid primary key references public.workspaces(id) on delete cascade,
+  default_effect text not null default 'BLOCK' check (default_effect in ('ALLOW','BLOCK','ESCALATE')),
+  auto_register_agents boolean not null default true,
+  approval_expiry_hours int not null default 24 check (approval_expiry_hours between 1 and 720),
+  alert_on_block boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+-- ---------- evidence: hash chain, append-only ----------
+create or replace function public.evidence_chain() returns trigger
+language plpgsql security definer set search_path = public, extensions as $$
+declare prev_seq bigint; prev text;
+begin
+  perform pg_advisory_xact_lock(hashtext(new.workspace_id::text));
+  select e.seq, e.hash into prev_seq, prev from public.evidence e
+    where e.workspace_id = new.workspace_id order by e.seq desc limit 1;
+  new.seq := coalesce(prev_seq, 0) + 1;
+  new.prev_hash := coalesce(prev, 'GENESIS');
+  new.hash := encode(digest(new.prev_hash || '|' || new.id::text || '|' || coalesce(new.decision_id::text, '') || '|' || new.payload::text, 'sha256'), 'hex');
+  return new;
+end $$;
+drop trigger if exists evidence_chain_trg on public.evidence;
+create trigger evidence_chain_trg before insert on public.evidence for each row execute function public.evidence_chain();
+
+create or replace function public.evidence_immutable() returns trigger language plpgsql as $$
+begin raise exception 'evidence is append-only'; end $$;
+drop trigger if exists evidence_immutable_trg on public.evidence;
+create trigger evidence_immutable_trg before update or delete on public.evidence for each row execute function public.evidence_immutable();
+
+create or replace function public.verify_evidence_chain(ws uuid)
+returns table(total bigint, broken bigint)
+language plpgsql stable security definer set search_path = public, extensions as $$
+begin
+  if not public.is_member(ws) then raise exception 'forbidden'; end if;
+  return query
+  with o as (
+    select e.*, lag(e.hash) over (order by e.seq) as exp_prev from public.evidence e where e.workspace_id = ws
+  )
+  select count(*)::bigint,
+    (count(*) filter (where o.prev_hash is distinct from coalesce(o.exp_prev, 'GENESIS')
+      or o.hash is distinct from encode(digest(o.prev_hash || '|' || o.id::text || '|' || coalesce(o.decision_id::text, '') || '|' || o.payload::text, 'sha256'), 'hex')))::bigint
+  from o;
+end $$;
+
+-- ---------- api keys (plaintext shown once, only SHA-256 stored) ----------
+create or replace function public.create_api_key(ws uuid, key_name text) returns text
+
+##### .enterprise\phase3.2-20260927-004023\rls-statements.sql #####
+alter table public.profiles add column if not exists onboarded_at timestamptz;
+
+-- the original default 'member' is not a value of workspace_role
+alter table public.workspace_members alter column role set default 'VIEWER';
+
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  company text := nullif(btrim(new.raw_user_meta_data ->> 'company'), '');
+  ws_id uuid;
+begin
+  insert into public.profiles (id, full_name)
+  values (new.id, new.raw_user_meta_data ->> 'full_name')
+  on conflict (id) do nothing;
+
+  if company is not null then
+    insert into public.workspaces (name, slug, created_by)
+    values (
+      company,
+      coalesce(nullif(btrim(regexp_replace(lower(company), '[^a-z0-9]+', '-', 'g'), '-'), ''), 'workspace')
+        || '-' || substr(replace(new.id::text, '-', ''), 1, 6),
+      new.id
+    )
+    returning id into ws_id;
+
+    insert into public.workspace_members (workspace_id, user_id, role)
+    values (ws_id, new.id, 'OWNER');
+  end if;
+
+  return new;
+end;
+$$;
+
+============================================================
+SOURCE TYPE: REPOSITORY
+SOURCE: C:\AI\AEGISORA\website4\supabase\003_core.sql
+============================================================
+
+-- 003: core governance data model
+
+create or replace function public.is_member(ws uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid());
+$$;
+
+create or replace function public.has_role(ws uuid, roles text[]) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid() and m.role::text = any(roles));
+$$;
+
+create table if not exists public.agents (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null check (char_length(name) between 1 and 120),
+  description text,
+  framework text,
+  external_id text,
+  source text not null default 'manual' check (source in ('manual','auto','import')),
+  status text not null default 'active' check (status in ('active','suspended')),
+  metadata jsonb not null default '{}'::jsonb,
+  last_seen_at timestamptz,
+  created_at timestamptz not null default now(),
+  unique (workspace_id, name)
+);
+
+create table if not exists public.api_keys (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null,
+  prefix text not null,
+  key_hash text not null unique,
+  created_by uuid references auth.users(id),
+  last_used_at timestamptz,
+  revoked_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.policies (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null,
+  description text,
+  agent_id uuid references public.agents(id) on delete cascade,
+  action_pattern text not null default '*',
+  resource_pattern text not null default '*',
+  effect text not null check (effect in ('ALLOW','BLOCK','ESCALATE')),
+  priority int not null default 100,
+  enabled boolean not null default true,
+  version int not null default 1,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.decisions (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text not null,
+  action text not null,
+  resource text not null default '',
+  effect text not null check (effect in ('ALLOW','BLOCK','ESCALATE')),
+  reason text,
+  policy_id uuid references public.policies(id) on delete set null,
+  risk_score int not null default 0,
+  trace_id text,
+  input jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists decisions_ws_created on public.decisions (workspace_id, created_at desc);
+
+create table if not exists public.approvals (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  decision_id uuid not null references public.decisions(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text,
+  action text,
+  resource text,
+  status text not null default 'pending' check (status in ('pending','approved','rejected','expired')),
+  note text,
+  requested_at timestamptz not null default now(),
+  expires_at timestamptz not null,
+  resolved_by uuid references auth.users(id),
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.incidents (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  decision_id uuid references public.decisions(id) on delete set null,
+  severity text not null default 'medium' check (severity in ('low','medium','high','critical')),
+  title text not null,
+  status text not null default 'open' check (status in ('open','resolved')),
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.evidence (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  seq bigint not null,
+  decision_id uuid,
+  trace_id text,
+  payload jsonb not null,
+  prev_hash text not null,
+  hash text not null,
+  created_at timestamptz not null default now(),
+  unique (workspace_id, seq)
+);
+
+create table if not exists public.audit_events (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  actor text not null,
+  action text not null,
+  target_type text,
+  target_id text,
+  meta jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists audit_ws_created on public.audit_events (workspace_id, created_at desc);
+
+create table if not exists public.traces (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text,
+  trace_id text not null,
+  name text,
+  decision_id uuid,
+  status text not null default 'ok',
+  duration_ms int,
+  spans jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists traces_ws_created on public.traces (workspace_id, created_at desc);
+
+create table if not exists public.webhooks (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  url text not null check (url ~ '^https://'),
+  events text[] not null default array['decision.block','decision.escalate'],
+  secret text not null,
+  enabled boolean not null default true,
+  last_status int,
+  last_delivery_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.workspace_settings (
+  workspace_id uuid primary key references public.workspaces(id) on delete cascade,
+  default_effect text not null default 'BLOCK' check (default_effect in ('ALLOW','BLOCK','ESCALATE')),
+  auto_register_agents boolean not null default true,
+  approval_expiry_hours int not null default 24 check (approval_expiry_hours between 1 and 720),
+  alert_on_block boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+-- ---------- evidence: hash chain, append-only ----------
+create or replace function public.evidence_chain() returns trigger
+language plpgsql security definer set search_path = public, extensions as $$
+declare prev_seq bigint; prev text;
+begin
+  perform pg_advisory_xact_lock(hashtext(new.workspace_id::text));
+  select e.seq, e.hash into prev_seq, prev from public.evidence e
+    where e.workspace_id = new.workspace_id order by e.seq desc limit 1;
+  new.seq := coalesce(prev_seq, 0) + 1;
+  new.prev_hash := coalesce(prev, 'GENESIS');
+  new.hash := encode(digest(new.prev_hash || '|' || new.id::text || '|' || coalesce(new.decision_id::text, '') || '|' || new.payload::text, 'sha256'), 'hex');
+  return new;
+end $$;
+drop trigger if exists evidence_chain_trg on public.evidence;
+create trigger evidence_chain_trg before insert on public.evidence for each row execute function public.evidence_chain();
+
+create or replace function public.evidence_immutable() returns trigger language plpgsql as $$
+begin raise exception 'evidence is append-only'; end $$;
+drop trigger if exists evidence_immutable_trg on public.evidence;
+create trigger evidence_immutable_trg before update or delete on public.evidence for each row execute function public.evidence_immutable();
+
+create or replace function public.verify_evidence_chain(ws uuid)
+returns table(total bigint, broken bigint)
+language plpgsql stable security definer set search_path = public, extensions as $$
+begin
+  if not public.is_member(ws) then raise exception 'forbidden'; end if;
+  return query
+  with o as (
+    select e.*, lag(e.hash) over (order by e.seq) as exp_prev from public.evidence e where e.workspace_id = ws
+  )
+  select count(*)::bigint,
+    (count(*) filter (where o.prev_hash is distinct from coalesce(o.exp_prev, 'GENESIS')
+      or o.hash is distinct from encode(digest(o.prev_hash || '|' || o.id::text || '|' || coalesce(o.decision_id::text, '') || '|' || o.payload::text, 'sha256'), 'hex')))::bigint
+  from o;
+end $$;
+
+-- ---------- api keys (plaintext shown once, only SHA-256 stored) ----------
+create or replace function public.create_api_key(ws uuid, key_name text) returns text
+language plpgsql security definer set search_path = public, extensions as $$
+declare raw text;
+begin
+  if not public.has_role(ws, array['owner','admin','developer']) then raise exception 'forbidden'; end if;
+  raw := 'aeg_live_' || encode(gen_random_bytes(24), 'hex');
+  insert into public.api_keys (workspace_id, name, prefix, key_hash, created_by)
+  values (ws, coalesce(nullif(btrim(key_name), ''), 'default'), substr(raw, 1, 13), encode(digest(raw, 'sha256'), 'hex'), auth.uid());
+  return raw;
+
+##### .enterprise\phase3.3-backup-20260927-004143-supabase\migrations\20260922013901_remote_schema.sql #####
+
+
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+
+COMMENT ON SCHEMA "public" IS 'standard public schema';
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
+
+
+
+
+
+
+
+
+ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
+
+
+GRANT USAGE ON SCHEMA "public" TO "postgres";
+GRANT USAGE ON SCHEMA "public" TO "anon";
+GRANT USAGE ON SCHEMA "public" TO "authenticated";
+GRANT USAGE ON SCHEMA "public" TO "service_role";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "service_role";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "service_role";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "authenticated";
+
+##### .enterprise\phase3.3-backup-20260927-004143-supabase\migrations\20260922133117_add_create_workspace_function.sql #####
+-- ---------- atomik workspace olusturma (owner uyeligi ile birlikte) ----------
+create or replace function public.create_workspace(workspace_name text, workspace_slug text)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  new_id uuid;
+begin
+  insert into public.workspaces (name, slug, created_by)
+  values (workspace_name, workspace_slug, auth.uid())
+  returning id into new_id;
+
+  insert into public.workspace_members (workspace_id, user_id, role, status)
+  values (new_id, auth.uid(), 'owner', 'active');
+
+  return new_id;
+end;
+$$;
+
+##### .enterprise\phase3.3-backup-20260927-004143-supabase\002_onboarding.sql #####
+-- 002: onboarding flag, safe role default, workspace creation at signup
+
+alter table public.profiles add column if not exists onboarded_at timestamptz;
+
+-- the original default 'member' is not a value of workspace_role
+alter table public.workspace_members alter column role set default 'VIEWER';
+
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  company text := nullif(btrim(new.raw_user_meta_data ->> 'company'), '');
+  ws_id uuid;
+begin
+  insert into public.profiles (id, full_name)
+  values (new.id, new.raw_user_meta_data ->> 'full_name')
+  on conflict (id) do nothing;
+
+  if company is not null then
+    insert into public.workspaces (name, slug, created_by)
+    values (
+      company,
+      coalesce(nullif(btrim(regexp_replace(lower(company), '[^a-z0-9]+', '-', 'g'), '-'), ''), 'workspace')
+        || '-' || substr(replace(new.id::text, '-', ''), 1, 6),
+      new.id
+    )
+    returning id into ws_id;
+
+    insert into public.workspace_members (workspace_id, user_id, role)
+    values (ws_id, new.id, 'OWNER');
+  end if;
+
+  return new;
+end;
+$$;
+
+##### .enterprise\phase3.3-backup-20260927-004143-supabase\003_core.sql #####
+-- 003: core governance data model
+
+create or replace function public.is_member(ws uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid());
+$$;
+
+create or replace function public.has_role(ws uuid, roles text[]) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid() and m.role::text = any(roles));
+$$;
+
+create table if not exists public.agents (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null check (char_length(name) between 1 and 120),
+  description text,
+  framework text,
+  external_id text,
+  source text not null default 'manual' check (source in ('manual','auto','import')),
+  status text not null default 'active' check (status in ('active','suspended')),
+  metadata jsonb not null default '{}'::jsonb,
+  last_seen_at timestamptz,
+  created_at timestamptz not null default now(),
+  unique (workspace_id, name)
+);
+
+create table if not exists public.api_keys (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null,
+  prefix text not null,
+  key_hash text not null unique,
+  created_by uuid references auth.users(id),
+  last_used_at timestamptz,
+  revoked_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.policies (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null,
+  description text,
+  agent_id uuid references public.agents(id) on delete cascade,
+  action_pattern text not null default '*',
+  resource_pattern text not null default '*',
+  effect text not null check (effect in ('ALLOW','BLOCK','ESCALATE')),
+  priority int not null default 100,
+  enabled boolean not null default true,
+  version int not null default 1,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.decisions (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text not null,
+  action text not null,
+  resource text not null default '',
+  effect text not null check (effect in ('ALLOW','BLOCK','ESCALATE')),
+  reason text,
+  policy_id uuid references public.policies(id) on delete set null,
+  risk_score int not null default 0,
+  trace_id text,
+  input jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists decisions_ws_created on public.decisions (workspace_id, created_at desc);
+
+create table if not exists public.approvals (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  decision_id uuid not null references public.decisions(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text,
+  action text,
+  resource text,
+  status text not null default 'pending' check (status in ('pending','approved','rejected','expired')),
+  note text,
+  requested_at timestamptz not null default now(),
+  expires_at timestamptz not null,
+  resolved_by uuid references auth.users(id),
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.incidents (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  decision_id uuid references public.decisions(id) on delete set null,
+  severity text not null default 'medium' check (severity in ('low','medium','high','critical')),
+  title text not null,
+  status text not null default 'open' check (status in ('open','resolved')),
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.evidence (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  seq bigint not null,
+  decision_id uuid,
+  trace_id text,
+  payload jsonb not null,
+  prev_hash text not null,
+  hash text not null,
+  created_at timestamptz not null default now(),
+  unique (workspace_id, seq)
+);
+
+create table if not exists public.audit_events (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  actor text not null,
+  action text not null,
+  target_type text,
+  target_id text,
+  meta jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists audit_ws_created on public.audit_events (workspace_id, created_at desc);
+
+create table if not exists public.traces (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text,
+  trace_id text not null,
+  name text,
+  decision_id uuid,
+  status text not null default 'ok',
+  duration_ms int,
+  spans jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists traces_ws_created on public.traces (workspace_id, created_at desc);
+
+create table if not exists public.webhooks (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  url text not null check (url ~ '^https://'),
+  events text[] not null default array['decision.block','decision.escalate'],
+  secret text not null,
+  enabled boolean not null default true,
+  last_status int,
+  last_delivery_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.workspace_settings (
+  workspace_id uuid primary key references public.workspaces(id) on delete cascade,
+  default_effect text not null default 'BLOCK' check (default_effect in ('ALLOW','BLOCK','ESCALATE')),
+  auto_register_agents boolean not null default true,
+  approval_expiry_hours int not null default 24 check (approval_expiry_hours between 1 and 720),
+  alert_on_block boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+-- ---------- evidence: hash chain, append-only ----------
+create or replace function public.evidence_chain() returns trigger
+language plpgsql security definer set search_path = public, extensions as $$
+declare prev_seq bigint; prev text;
+begin
+  perform pg_advisory_xact_lock(hashtext(new.workspace_id::text));
+  select e.seq, e.hash into prev_seq, prev from public.evidence e
+    where e.workspace_id = new.workspace_id order by e.seq desc limit 1;
+  new.seq := coalesce(prev_seq, 0) + 1;
+  new.prev_hash := coalesce(prev, 'GENESIS');
+  new.hash := encode(digest(new.prev_hash || '|' || new.id::text || '|' || coalesce(new.decision_id::text, '') || '|' || new.payload::text, 'sha256'), 'hex');
+  return new;
+end $$;
+drop trigger if exists evidence_chain_trg on public.evidence;
+create trigger evidence_chain_trg before insert on public.evidence for each row execute function public.evidence_chain();
+
+create or replace function public.evidence_immutable() returns trigger language plpgsql as $$
+begin raise exception 'evidence is append-only'; end $$;
+drop trigger if exists evidence_immutable_trg on public.evidence;
+create trigger evidence_immutable_trg before update or delete on public.evidence for each row execute function public.evidence_immutable();
+
+create or replace function public.verify_evidence_chain(ws uuid)
+returns table(total bigint, broken bigint)
+language plpgsql stable security definer set search_path = public, extensions as $$
+begin
+  if not public.is_member(ws) then raise exception 'forbidden'; end if;
+  return query
+  with o as (
+    select e.*, lag(e.hash) over (order by e.seq) as exp_prev from public.evidence e where e.workspace_id = ws
+  )
+  select count(*)::bigint,
+    (count(*) filter (where o.prev_hash is distinct from coalesce(o.exp_prev, 'GENESIS')
+      or o.hash is distinct from encode(digest(o.prev_hash || '|' || o.id::text || '|' || coalesce(o.decision_id::text, '') || '|' || o.payload::text, 'sha256'), 'hex')))::bigint
+  from o;
+end $$;
+
+-- ---------- api keys (plaintext shown once, only SHA-256 stored) ----------
+create or replace function public.create_api_key(ws uuid, key_name text) returns text
+language plpgsql security definer set search_path = public, extensions as $$
+declare raw text;
+begin
+  if not public.has_role(ws, array['owner','admin','developer']) then raise exception 'forbidden'; end if;
+  raw := 'aeg_live_' || encode(gen_random_bytes(24), 'hex');
+  insert into public.api_keys (workspace_id, name, prefix, key_hash, created_by)
+  values (ws, coalesce(nullif(btrim(key_name), ''), 'default'), substr(raw, 1, 13), encode(digest(raw, 'sha256'), 'hex'), auth.uid());
+  return raw;
+end $$;
+
+-- ---------- approvals: stamp resolver ----------
+create or replace function public.approval_stamp() returns trigger language plpgsql as $$
+begin
+  if new.status in ('approved','rejected') and old.status = 'pending' then
+    new.resolved_by := auth.uid();
+    new.resolved_at := now();
+  end if;
+  return new;
+end $$;
+drop trigger if exists approval_stamp_trg on public.approvals;
+create trigger approval_stamp_trg before update on public.approvals for each row execute function public.approval_stamp();
+
+-- ---------- automatic audit trail for console changes ----------
+create or replace function public.audit_change() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare ws uuid; rid uuid;
+begin
+  if tg_op = 'DELETE' then ws := old.workspace_id; rid := old.id; else ws := new.workspace_id; rid := new.id; end if;
+  insert into public.audit_events (workspace_id, actor, action, target_type, target_id)
+  values (ws, coalesce(auth.uid()::text, 'system'), tg_table_name || '.' || lower(tg_op), tg_table_name, rid::text);
+  return null;
+end $$;
+do $$
+declare t text;
+begin
+  foreach t in array array['agents','policies','webhooks','approvals','incidents','api_keys'] loop
+    execute format('drop trigger if exists %I on public.%I', t || '_audit_trg', t);
+    execute format('create trigger %I after insert or update or delete on public.%I for each row execute function public.audit_change()', t || '_audit_trg', t);
+  end loop;
+end $$;
+
+-- ---------- RLS ----------
+do $$
+declare t text;
+begin
+  foreach t in array array['agents','api_keys','policies','decisions','approvals','incidents','evidence','audit_events','traces','webhooks','workspace_settings'] loop
+    execute format('alter table public.%I enable row level security', t);
+    execute format('drop policy if exists %I on public.%I', t || '_select', t);
+    if t in ('api_keys','webhooks') then
+      execute format('create policy %I on public.%I for select using (public.has_role(workspace_id, array[''owner'',''admin'',''developer'']))', t || '_select', t);
+
+##### .enterprise\phase3.3-backup-20260927-004143-supabase\schema.sql #####
+-- ============================================================
+-- AEGISORA: profiles, workspaces, workspace_members
+-- Supabase Dashboard -> SQL Editor -> New query -> yapistir -> Run
+-- ============================================================
+
+create extension if not exists "pgcrypto";
+
+-- ---------- profiles ----------
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  full_name text,
+  avatar_url text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.profiles enable row level security;
+
+create policy "profiles_select_own" on public.profiles
+  for select using (auth.uid() = id);
+
+create policy "profiles_update_own" on public.profiles
+  for update using (auth.uid() = id);
+
+-- yeni auth.users kaydi olustuğunda otomatik profile satiri ac
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, full_name)
+  values (new.id, new.raw_user_meta_data ->> 'full_name');
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
+-- ---------- workspaces ----------
+create table if not exists public.workspaces (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  slug text not null unique,
+  region text not null default 'eu-central-1',
+  created_by uuid not null references auth.users(id),
+  created_at timestamptz not null default now()
+);
+
+alter table public.workspaces enable row level security;
+
+-- ---------- workspace_members ----------
+create type public.workspace_role as enum ('owner', 'admin', 'developer', 'analyst', 'auditor', 'viewer');
+create type public.member_status as enum ('active', 'invited', 'suspended');
+
+create table if not exists public.workspace_members (
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  role public.workspace_role not null default 'member'::public.workspace_role,
+  status public.member_status not null default 'active',
+  created_at timestamptz not null default now(),
+  primary key (workspace_id, user_id)
+);
+
+alter table public.workspace_members enable row level security;
+
+-- kullanici kendi uyeliklerini gorebilsin
+create policy "members_select_own" on public.workspace_members
+  for select using (auth.uid() = user_id);
+
+-- workspace'i, o workspace'in aktif uyesi olanlar gorebilsin
+create policy "workspaces_select_member" on public.workspaces
+  for select using (
+    exists (
+      select 1 from public.workspace_members m
+      where m.workspace_id = workspaces.id
+        and m.user_id = auth.uid()
+        and m.status = 'active'
+    )
+  );
+
+-- ---------- atomik workspace olusturma (owner uyeligi ile birlikte) ----------
+create or replace function public.create_workspace(workspace_name text, workspace_slug text)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  new_id uuid;
+begin
+  insert into public.workspaces (name, slug, created_by)
+  values (workspace_name, workspace_slug, auth.uid())
+  returning id into new_id;
+
+  insert into public.workspace_members (workspace_id, user_id, role, status)
+  values (new_id, auth.uid(), 'owner', 'active');
+
+  return new_id;
+end;
+$$;
+
+##### .enterprise\phase3.3-repair-20260927-004250\policy-source.sql #####
+
+===== TABLE: agents =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy %I on public.%I for select using (public.has_role(workspace_id, array[''owner'',''admin'',''developer'']))', t || '_select', t);
+    else
+      execute format('create policy %I on public.%I for select using (public.is_member(workspace_id))', t || '_select', t);
+    end if;
+  end loop;
+end $$;
+
+drop policy if exists agents_write on public.agents;
+
+===== TABLE: agents =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy agents_write on public.agents for all
+  using (public.has_role(workspace_id, array['owner','admin','developer']))
+  with check (public.has_role(workspace_id, array['owner','admin','developer']));
+
+===== TABLE: api_keys =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy %I on public.%I for select using (public.has_role(workspace_id, array[''owner'',''admin'',''developer'']))', t || '_select', t);
+    else
+      execute format('create policy %I on public.%I for select using (public.is_member(workspace_id))', t || '_select', t);
+    end if;
+  end loop;
+end $$;
+
+drop policy if exists agents_write on public.agents;
+create policy agents_write on public.agents for all
+  using (public.has_role(workspace_id, array['owner','admin','developer']))
+  with check (public.has_role(workspace_id, array['owner','admin','developer']));
+
+drop policy if exists policies_write on public.policies;
+create policy policies_write on public.policies for all
+  using (public.has_role(workspace_id, array['owner','admin','developer']))
+  with check (public.has_role(workspace_id, array['owner','admin','developer']));
+
+drop policy if exists webhooks_write on public.webhooks;
+create policy webhooks_write on public.webhooks for all
+  using (public.has_role(workspace_id, array['owner','admin']))
+  with check (public.has_role(workspace_id, array['owner','admin']));
+
+drop policy if exists settings_write on public.workspace_settings;
+create policy settings_write on public.workspace_settings for all
+  using (public.has_role(workspace_id, array['owner','admin']))
+  with check (public.has_role(workspace_id, array['owner','admin']));
+
+drop policy if exists approvals_resolve on public.approvals;
+create policy approvals_resolve on public.approvals for update
+  using (public.has_role(workspace_id, array['owner','admin','analyst']))
+  with check (public.has_role(workspace_id, array['owner','admin','analyst']));
+
+drop policy if exists incidents_resolve on public.incidents;
+create policy incidents_resolve on public.incidents for update
+  using (public.has_role(workspace_id, array['owner','admin','analyst']))
+  with check (public.has_role(workspace_id, array['owner','admin','analyst']));
+
+drop policy if exists api_keys_revoke on public.api_keys;
+
+===== TABLE: api_keys =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy api_keys_revoke on public.api_keys for update
+  using (public.has_role(workspace_id, array['owner','admin']))
+  with check (public.has_role(workspace_id, array['owner','admin']));
+
+===== TABLE: api_keys =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy workspaces_update on public.workspaces for update
+  using (public.has_role(id, array['owner','admin']))
+  with check (public.has_role(id, array['owner','admin']));
+
+revoke update on public.approvals from authenticated;
+grant update (status, note) on public.approvals to authenticated;
+revoke update on public.incidents from authenticated;
+grant update (status, resolved_at) on public.incidents to authenticated;
+revoke update on public.api_keys from authenticated;
+
+===== TABLE: approvals =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy %I on public.%I for select using (public.has_role(workspace_id, array[''owner'',''admin'',''developer'']))', t || '_select', t);
+    else
+      execute format('create policy %I on public.%I for select using (public.is_member(workspace_id))', t || '_select', t);
+    end if;
+  end loop;
+end $$;
+
+drop policy if exists agents_write on public.agents;
+create policy agents_write on public.agents for all
+  using (public.has_role(workspace_id, array['owner','admin','developer']))
+  with check (public.has_role(workspace_id, array['owner','admin','developer']));
+
+drop policy if exists policies_write on public.policies;
+create policy policies_write on public.policies for all
+  using (public.has_role(workspace_id, array['owner','admin','developer']))
+  with check (public.has_role(workspace_id, array['owner','admin','developer']));
+
+drop policy if exists webhooks_write on public.webhooks;
+create policy webhooks_write on public.webhooks for all
+  using (public.has_role(workspace_id, array['owner','admin']))
+  with check (public.has_role(workspace_id, array['owner','admin']));
+
+drop policy if exists settings_write on public.workspace_settings;
+create policy settings_write on public.workspace_settings for all
+  using (public.has_role(workspace_id, array['owner','admin']))
+  with check (public.has_role(workspace_id, array['owner','admin']));
+
+drop policy if exists approvals_resolve on public.approvals;
+
+===== TABLE: approvals =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy approvals_resolve on public.approvals for update
+  using (public.has_role(workspace_id, array['owner','admin','analyst']))
+  with check (public.has_role(workspace_id, array['owner','admin','analyst']));
+
+===== TABLE: approvals =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy incidents_resolve on public.incidents for update
+  using (public.has_role(workspace_id, array['owner','admin','analyst']))
+  with check (public.has_role(workspace_id, array['owner','admin','analyst']));
+
+drop policy if exists api_keys_revoke on public.api_keys;
+create policy api_keys_revoke on public.api_keys for update
+  using (public.has_role(workspace_id, array['owner','admin']))
+  with check (public.has_role(workspace_id, array['owner','admin']));
+
+drop policy if exists workspaces_update on public.workspaces;
+create policy workspaces_update on public.workspaces for update
+  using (public.has_role(id, array['owner','admin']))
+  with check (public.has_role(id, array['owner','admin']));
+
+revoke update on public.approvals from authenticated;
+
+===== TABLE: incidents =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy %I on public.%I for select using (public.has_role(workspace_id, array[''owner'',''admin'',''developer'']))', t || '_select', t);
+    else
+      execute format('create policy %I on public.%I for select using (public.is_member(workspace_id))', t || '_select', t);
+    end if;
+  end loop;
+end $$;
+
+drop policy if exists agents_write on public.agents;
+create policy agents_write on public.agents for all
+  using (public.has_role(workspace_id, array['owner','admin','developer']))
+  with check (public.has_role(workspace_id, array['owner','admin','developer']));
+
+drop policy if exists policies_write on public.policies;
+create policy policies_write on public.policies for all
+  using (public.has_role(workspace_id, array['owner','admin','developer']))
+  with check (public.has_role(workspace_id, array['owner','admin','developer']));
+
+drop policy if exists webhooks_write on public.webhooks;
+create policy webhooks_write on public.webhooks for all
+  using (public.has_role(workspace_id, array['owner','admin']))
+  with check (public.has_role(workspace_id, array['owner','admin']));
+
+drop policy if exists settings_write on public.workspace_settings;
+create policy settings_write on public.workspace_settings for all
+  using (public.has_role(workspace_id, array['owner','admin']))
+  with check (public.has_role(workspace_id, array['owner','admin']));
+
+drop policy if exists approvals_resolve on public.approvals;
+create policy approvals_resolve on public.approvals for update
+  using (public.has_role(workspace_id, array['owner','admin','analyst']))
+  with check (public.has_role(workspace_id, array['owner','admin','analyst']));
+
+drop policy if exists incidents_resolve on public.incidents;
+
+===== TABLE: incidents =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy incidents_resolve on public.incidents for update
+  using (public.has_role(workspace_id, array['owner','admin','analyst']))
+  with check (public.has_role(workspace_id, array['owner','admin','analyst']));
+
+===== TABLE: incidents =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy api_keys_revoke on public.api_keys for update
+  using (public.has_role(workspace_id, array['owner','admin']))
+  with check (public.has_role(workspace_id, array['owner','admin']));
+
+drop policy if exists workspaces_update on public.workspaces;
+create policy workspaces_update on public.workspaces for update
+  using (public.has_role(id, array['owner','admin']))
+  with check (public.has_role(id, array['owner','admin']));
+
+revoke update on public.approvals from authenticated;
+grant update (status, note) on public.approvals to authenticated;
+revoke update on public.incidents from authenticated;
+
+===== TABLE: policies =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy %I on public.%I for select using (public.has_role(workspace_id, array[''owner'',''admin'',''developer'']))', t || '_select', t);
+    else
+      execute format('create policy %I on public.%I for select using (public.is_member(workspace_id))', t || '_select', t);
+    end if;
+  end loop;
+end $$;
+
+drop policy if exists agents_write on public.agents;
+create policy agents_write on public.agents for all
+  using (public.has_role(workspace_id, array['owner','admin','developer']))
+  with check (public.has_role(workspace_id, array['owner','admin','developer']));
+
+drop policy if exists policies_write on public.policies;
+
+===== TABLE: policies =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy policies_write on public.policies for all
+  using (public.has_role(workspace_id, array['owner','admin','developer']))
+  with check (public.has_role(workspace_id, array['owner','admin','developer']));
+
+===== TABLE: webhooks =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy %I on public.%I for select using (public.has_role(workspace_id, array[''owner'',''admin'',''developer'']))', t || '_select', t);
+    else
+      execute format('create policy %I on public.%I for select using (public.is_member(workspace_id))', t || '_select', t);
+    end if;
+  end loop;
+end $$;
+
+drop policy if exists agents_write on public.agents;
+create policy agents_write on public.agents for all
+  using (public.has_role(workspace_id, array['owner','admin','developer']))
+  with check (public.has_role(workspace_id, array['owner','admin','developer']));
+
+drop policy if exists policies_write on public.policies;
+create policy policies_write on public.policies for all
+  using (public.has_role(workspace_id, array['owner','admin','developer']))
+  with check (public.has_role(workspace_id, array['owner','admin','developer']));
+
+drop policy if exists webhooks_write on public.webhooks;
+
+===== TABLE: webhooks =====
+===== SOURCE: supabase\003_core.sql =====
+
+create policy webhooks_write on public.webhooks for all
+
+##### .enterprise\phase3.3-repair-20260927-004250\workspace-auth-functions.sql #####
+
+===== FUNCTION: public.is_member =====
+===== SOURCE: supabase\003_core.sql =====
+
+create or replace function public.is_member(ws uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid());
+$$;
+
+===== FUNCTION: public.has_role =====
+===== SOURCE: supabase\003_core.sql =====
+
+create or replace function public.has_role(ws uuid, roles text[]) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid() and m.role::text = any(roles));
+$$;
+
+##### .enterprise\phase3.4-backup-20260927-004403\supabase\migrations\20260922013901_remote_schema.sql #####
+
+
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+
+COMMENT ON SCHEMA "public" IS 'standard public schema';
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
+
+
+
+
+
+
+
+
+ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
+
+
+GRANT USAGE ON SCHEMA "public" TO "postgres";
+GRANT USAGE ON SCHEMA "public" TO "anon";
+GRANT USAGE ON SCHEMA "public" TO "authenticated";
+GRANT USAGE ON SCHEMA "public" TO "service_role";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "service_role";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "service_role";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "authenticated";
+
+##### .enterprise\phase3.4-backup-20260927-004403\supabase\migrations\20260922133117_add_create_workspace_function.sql #####
+-- ---------- atomik workspace olusturma (owner uyeligi ile birlikte) ----------
+create or replace function public.create_workspace(workspace_name text, workspace_slug text)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  new_id uuid;
+begin
+  insert into public.workspaces (name, slug, created_by)
+  values (workspace_name, workspace_slug, auth.uid())
+  returning id into new_id;
+
+  insert into public.workspace_members (workspace_id, user_id, role, status)
+  values (new_id, auth.uid(), 'owner', 'active');
+
+  return new_id;
+end;
+$$;
+
+##### .enterprise\phase3.4-backup-20260927-004403\supabase\002_onboarding.sql #####
+-- 002: onboarding flag, safe role default, workspace creation at signup
+
+alter table public.profiles add column if not exists onboarded_at timestamptz;
+
+-- the original default 'member' is not a value of workspace_role
+alter table public.workspace_members alter column role set default 'VIEWER';
+
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  company text := nullif(btrim(new.raw_user_meta_data ->> 'company'), '');
+  ws_id uuid;
+begin
+  insert into public.profiles (id, full_name)
+  values (new.id, new.raw_user_meta_data ->> 'full_name')
+  on conflict (id) do nothing;
+
+  if company is not null then
+    insert into public.workspaces (name, slug, created_by)
+    values (
+      company,
+      coalesce(nullif(btrim(regexp_replace(lower(company), '[^a-z0-9]+', '-', 'g'), '-'), ''), 'workspace')
+        || '-' || substr(replace(new.id::text, '-', ''), 1, 6),
+      new.id
+    )
+    returning id into ws_id;
+
+    insert into public.workspace_members (workspace_id, user_id, role)
+    values (ws_id, new.id, 'OWNER');
+  end if;
+
+  return new;
+end;
+$$;
+
+##### .enterprise\phase3.4-backup-20260927-004403\supabase\003_core.sql #####
+-- 003: core governance data model
+
+create or replace function public.is_member(ws uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid());
+$$;
+
+create or replace function public.has_role(ws uuid, roles text[]) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid() and m.role::text = any(roles));
+$$;
+
+create table if not exists public.agents (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null check (char_length(name) between 1 and 120),
+  description text,
+  framework text,
+  external_id text,
+  source text not null default 'manual' check (source in ('manual','auto','import')),
+  status text not null default 'active' check (status in ('active','suspended')),
+  metadata jsonb not null default '{}'::jsonb,
+  last_seen_at timestamptz,
+  created_at timestamptz not null default now(),
+  unique (workspace_id, name)
+);
+
+create table if not exists public.api_keys (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null,
+  prefix text not null,
+  key_hash text not null unique,
+  created_by uuid references auth.users(id),
+  last_used_at timestamptz,
+  revoked_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.policies (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null,
+  description text,
+  agent_id uuid references public.agents(id) on delete cascade,
+  action_pattern text not null default '*',
+  resource_pattern text not null default '*',
+  effect text not null check (effect in ('ALLOW','BLOCK','ESCALATE')),
+  priority int not null default 100,
+  enabled boolean not null default true,
+  version int not null default 1,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.decisions (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text not null,
+  action text not null,
+  resource text not null default '',
+  effect text not null check (effect in ('ALLOW','BLOCK','ESCALATE')),
+  reason text,
+  policy_id uuid references public.policies(id) on delete set null,
+  risk_score int not null default 0,
+  trace_id text,
+  input jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists decisions_ws_created on public.decisions (workspace_id, created_at desc);
+
+create table if not exists public.approvals (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  decision_id uuid not null references public.decisions(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text,
+  action text,
+  resource text,
+  status text not null default 'pending' check (status in ('pending','approved','rejected','expired')),
+  note text,
+  requested_at timestamptz not null default now(),
+  expires_at timestamptz not null,
+  resolved_by uuid references auth.users(id),
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.incidents (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  decision_id uuid references public.decisions(id) on delete set null,
+  severity text not null default 'medium' check (severity in ('low','medium','high','critical')),
+  title text not null,
+  status text not null default 'open' check (status in ('open','resolved')),
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.evidence (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  seq bigint not null,
+  decision_id uuid,
+  trace_id text,
+  payload jsonb not null,
+  prev_hash text not null,
+  hash text not null,
+  created_at timestamptz not null default now(),
+  unique (workspace_id, seq)
+);
+
+create table if not exists public.audit_events (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  actor text not null,
+  action text not null,
+  target_type text,
+  target_id text,
+  meta jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists audit_ws_created on public.audit_events (workspace_id, created_at desc);
+
+create table if not exists public.traces (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text,
+  trace_id text not null,
+  name text,
+  decision_id uuid,
+  status text not null default 'ok',
+  duration_ms int,
+  spans jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists traces_ws_created on public.traces (workspace_id, created_at desc);
+
+create table if not exists public.webhooks (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  url text not null check (url ~ '^https://'),
+  events text[] not null default array['decision.block','decision.escalate'],
+  secret text not null,
+  enabled boolean not null default true,
+  last_status int,
+  last_delivery_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.workspace_settings (
+  workspace_id uuid primary key references public.workspaces(id) on delete cascade,
+  default_effect text not null default 'BLOCK' check (default_effect in ('ALLOW','BLOCK','ESCALATE')),
+  auto_register_agents boolean not null default true,
+  approval_expiry_hours int not null default 24 check (approval_expiry_hours between 1 and 720),
+  alert_on_block boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+-- ---------- evidence: hash chain, append-only ----------
+create or replace function public.evidence_chain() returns trigger
+language plpgsql security definer set search_path = public, extensions as $$
+declare prev_seq bigint; prev text;
+begin
+  perform pg_advisory_xact_lock(hashtext(new.workspace_id::text));
+  select e.seq, e.hash into prev_seq, prev from public.evidence e
+    where e.workspace_id = new.workspace_id order by e.seq desc limit 1;
+  new.seq := coalesce(prev_seq, 0) + 1;
+  new.prev_hash := coalesce(prev, 'GENESIS');
+  new.hash := encode(digest(new.prev_hash || '|' || new.id::text || '|' || coalesce(new.decision_id::text, '') || '|' || new.payload::text, 'sha256'), 'hex');
+  return new;
+end $$;
+drop trigger if exists evidence_chain_trg on public.evidence;
+create trigger evidence_chain_trg before insert on public.evidence for each row execute function public.evidence_chain();
+
+create or replace function public.evidence_immutable() returns trigger language plpgsql as $$
+begin raise exception 'evidence is append-only'; end $$;
+drop trigger if exists evidence_immutable_trg on public.evidence;
+create trigger evidence_immutable_trg before update or delete on public.evidence for each row execute function public.evidence_immutable();
+
+create or replace function public.verify_evidence_chain(ws uuid)
+returns table(total bigint, broken bigint)
+language plpgsql stable security definer set search_path = public, extensions as $$
+begin
+  if not public.is_member(ws) then raise exception 'forbidden'; end if;
+  return query
+  with o as (
+    select e.*, lag(e.hash) over (order by e.seq) as exp_prev from public.evidence e where e.workspace_id = ws
+  )
+  select count(*)::bigint,
+    (count(*) filter (where o.prev_hash is distinct from coalesce(o.exp_prev, 'GENESIS')
+      or o.hash is distinct from encode(digest(o.prev_hash || '|' || o.id::text || '|' || coalesce(o.decision_id::text, '') || '|' || o.payload::text, 'sha256'), 'hex')))::bigint
+  from o;
+end $$;
+
+-- ---------- api keys (plaintext shown once, only SHA-256 stored) ----------
+create or replace function public.create_api_key(ws uuid, key_name text) returns text
+language plpgsql security definer set search_path = public, extensions as $$
+declare raw text;
+begin
+  if not public.has_role(ws, array['owner','admin','developer']) then raise exception 'forbidden'; end if;
+  raw := 'aeg_live_' || encode(gen_random_bytes(24), 'hex');
+  insert into public.api_keys (workspace_id, name, prefix, key_hash, created_by)
+  values (ws, coalesce(nullif(btrim(key_name), ''), 'default'), substr(raw, 1, 13), encode(digest(raw, 'sha256'), 'hex'), auth.uid());
+  return raw;
+end $$;
+
+-- ---------- approvals: stamp resolver ----------
+create or replace function public.approval_stamp() returns trigger language plpgsql as $$
+begin
+  if new.status in ('approved','rejected') and old.status = 'pending' then
+    new.resolved_by := auth.uid();
+    new.resolved_at := now();
+  end if;
+  return new;
+end $$;
+drop trigger if exists approval_stamp_trg on public.approvals;
+create trigger approval_stamp_trg before update on public.approvals for each row execute function public.approval_stamp();
+
+-- ---------- automatic audit trail for console changes ----------
+create or replace function public.audit_change() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare ws uuid; rid uuid;
+begin
+  if tg_op = 'DELETE' then ws := old.workspace_id; rid := old.id; else ws := new.workspace_id; rid := new.id; end if;
+  insert into public.audit_events (workspace_id, actor, action, target_type, target_id)
+  values (ws, coalesce(auth.uid()::text, 'system'), tg_table_name || '.' || lower(tg_op), tg_table_name, rid::text);
+  return null;
+end $$;
+do $$
+declare t text;
+begin
+  foreach t in array array['agents','policies','webhooks','approvals','incidents','api_keys'] loop
+    execute format('drop trigger if exists %I on public.%I', t || '_audit_trg', t);
+    execute format('create trigger %I after insert or update or delete on public.%I for each row execute function public.audit_change()', t || '_audit_trg', t);
+  end loop;
+end $$;
+
+-- ---------- RLS ----------
+do $$
+declare t text;
+begin
+  foreach t in array array['agents','api_keys','policies','decisions','approvals','incidents','evidence','audit_events','traces','webhooks','workspace_settings'] loop
+    execute format('alter table public.%I enable row level security', t);
+    execute format('drop policy if exists %I on public.%I', t || '_select', t);
+    if t in ('api_keys','webhooks') then
+      execute format('create policy %I on public.%I for select using (public.has_role(workspace_id, array[''owner'',''admin'',''developer'']))', t || '_select', t);
+
+##### .enterprise\phase3.4-backup-20260927-004403\supabase\schema.sql #####
+-- ============================================================
+-- AEGISORA: profiles, workspaces, workspace_members
+-- Supabase Dashboard -> SQL Editor -> New query -> yapistir -> Run
+-- ============================================================
+
+create extension if not exists "pgcrypto";
+
+-- ---------- profiles ----------
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  full_name text,
+  avatar_url text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.profiles enable row level security;
+
+create policy "profiles_select_own" on public.profiles
+  for select using (auth.uid() = id);
+
+create policy "profiles_update_own" on public.profiles
+  for update using (auth.uid() = id);
+
+-- yeni auth.users kaydi olustuğunda otomatik profile satiri ac
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, full_name)
+  values (new.id, new.raw_user_meta_data ->> 'full_name');
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
+-- ---------- workspaces ----------
+create table if not exists public.workspaces (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  slug text not null unique,
+  region text not null default 'eu-central-1',
+  created_by uuid not null references auth.users(id),
+  created_at timestamptz not null default now()
+);
+
+alter table public.workspaces enable row level security;
+
+-- ---------- workspace_members ----------
+create type public.workspace_role as enum ('owner', 'admin', 'developer', 'analyst', 'auditor', 'viewer');
+create type public.member_status as enum ('active', 'invited', 'suspended');
+
+create table if not exists public.workspace_members (
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  role public.workspace_role not null default 'member'::public.workspace_role,
+  status public.member_status not null default 'active',
+  created_at timestamptz not null default now(),
+  primary key (workspace_id, user_id)
+);
+
+alter table public.workspace_members enable row level security;
+
+-- kullanici kendi uyeliklerini gorebilsin
+create policy "members_select_own" on public.workspace_members
+  for select using (auth.uid() = user_id);
+
+-- workspace'i, o workspace'in aktif uyesi olanlar gorebilsin
+create policy "workspaces_select_member" on public.workspaces
+  for select using (
+    exists (
+      select 1 from public.workspace_members m
+      where m.workspace_id = workspaces.id
+        and m.user_id = auth.uid()
+        and m.status = 'active'
+    )
+  );
+
+-- ---------- atomik workspace olusturma (owner uyeligi ile birlikte) ----------
+create or replace function public.create_workspace(workspace_name text, workspace_slug text)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  new_id uuid;
+begin
+  insert into public.workspaces (name, slug, created_by)
+  values (workspace_name, workspace_slug, auth.uid())
+  returning id into new_id;
+
+  insert into public.workspace_members (workspace_id, user_id, role, status)
+  values (new_id, auth.uid(), 'owner', 'active');
+
+  return new_id;
+end;
+$$;
+
+##### .enterprise\phase3.5-20260927-004403\validated-migration.sql #####
+-- ============================================================
+-- AEGISORA ENTERPRISE TENANT ISOLATION HARDENING
+-- Generated by Phase 3.4
+--
+-- IMPORTANT:
+-- Review against the deployed schema before applying remotely.
+-- This migration intentionally does NOT alter application data.
+-- ============================================================
+
+begin;
+
+-- ============================================================
+-- 1. MEMBERSHIP HELPERS
+-- ============================================================
+
+create or replace function public.is_member(ws uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_catalog
+as $$
+  select exists (
+    select 1
+    from public.workspace_members m
+    where m.workspace_id = ws
+      and m.user_id = auth.uid()
+      and coalesce(m.status::text, 'active') = 'active'
+  );
+$$;
+
+create or replace function public.has_role(
+  ws uuid,
+  roles text[]
+)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_catalog
+as $$
+  select exists (
+    select 1
+    from public.workspace_members m
+    where m.workspace_id = ws
+      and m.user_id = auth.uid()
+      and coalesce(m.status::text, 'active') = 'active'
+      and upper(m.role::text) = any (
+        select upper(r)
+        from unnest(roles) as r
+      )
+  );
+$$;
+
+revoke all on function public.is_member(uuid) from public;
+revoke all on function public.has_role(uuid, text[]) from public;
+
+grant execute on function public.is_member(uuid) to authenticated;
+grant execute on function public.has_role(uuid, text[]) to authenticated;
+
+-- ============================================================
+-- 2. ENABLE + FORCE RLS
+-- ============================================================
+
+alter table public.agents enable row level security;
+alter table public.agents force row level security;
+
+alter table public.api_keys enable row level security;
+alter table public.api_keys force row level security;
+
+alter table public.approvals enable row level security;
+alter table public.approvals force row level security;
+
+alter table public.audit_events enable row level security;
+alter table public.audit_events force row level security;
+
+alter table public.decisions enable row level security;
+alter table public.decisions force row level security;
+
+alter table public.evidence enable row level security;
+alter table public.evidence force row level security;
+
+alter table public.incidents enable row level security;
+alter table public.incidents force row level security;
+
+alter table public.policies enable row level security;
+alter table public.policies force row level security;
+
+alter table public.traces enable row level security;
+alter table public.traces force row level security;
+
+alter table public.webhooks enable row level security;
+alter table public.webhooks force row level security;
+
+alter table public.workspace_settings enable row level security;
+alter table public.workspace_settings force row level security;
+
+alter table public.workspace_members enable row level security;
+alter table public.workspace_members force row level security;
+
+alter table public.workspaces enable row level security;
+alter table public.workspaces force row level security;
+
+alter table public.profiles enable row level security;
+alter table public.profiles force row level security;
+
+-- ============================================================
+-- 3. REMOVE OLD POLICIES
+-- ============================================================
+
+do $$
+declare
+  r record;
+begin
+  for r in
+    select schemaname, tablename, policyname
+    from pg_policies
+    where schemaname = 'public'
+      and tablename in (
+        'agents',
+        'api_keys',
+        'approvals',
+        'audit_events',
+        'decisions',
+        'evidence',
+        'incidents',
+        'policies',
+        'traces',
+        'webhooks',
+        'workspace_settings',
+        'workspace_members',
+        'workspaces',
+        'profiles'
+      )
+  loop
+    execute format(
+      'drop policy if exists %I on %I.%I',
+      r.policyname,
+      r.schemaname,
+      r.tablename
+    );
+  end loop;
+end
+$$;
+
+-- ============================================================
+-- 4. AGENTS
+-- ============================================================
+
+create policy agents_select
+on public.agents
+for select
+to authenticated
+using (
+  public.is_member(workspace_id)
+);
+
+create policy agents_insert
+on public.agents
+for insert
+to authenticated
+with check (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN','DEVELOPER']
+  )
+);
+
+create policy agents_update
+on public.agents
+for update
+to authenticated
+using (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN','DEVELOPER']
+  )
+)
+with check (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN','DEVELOPER']
+  )
+);
+
+create policy agents_delete
+on public.agents
+for delete
+to authenticated
+using (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN','DEVELOPER']
+  )
+);
+
+-- ============================================================
+-- 5. API KEYS
+-- ============================================================
+
+create policy api_keys_select
+on public.api_keys
+for select
+to authenticated
+using (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN']
+  )
+);
+
+create policy api_keys_update
+on public.api_keys
+for update
+to authenticated
+using (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN']
+  )
+)
+with check (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN']
+  )
+);
+
+-- API key creation remains through the controlled RPC.
+-- Direct client INSERT is intentionally not granted.
+
+-- ============================================================
+-- 6. POLICIES
+-- ============================================================
+
+create policy policies_select
+on public.policies
+for select
+to authenticated
+using (
+  public.is_member(workspace_id)
+);
+
+create policy policies_insert
+on public.policies
+for insert
+to authenticated
+with check (
+  public.has_role(
+    workspace_id,
+
+##### .enterprise\phase3.6-20260927-005136\all-sql-source.sql #####
+===== SOURCE: supabase\002_onboarding.sql =====
+-- 002: onboarding flag, safe role default, workspace creation at signup
+
+alter table public.profiles add column if not exists onboarded_at timestamptz;
+
+-- the original default 'member' is not a value of workspace_role
+alter table public.workspace_members alter column role set default 'VIEWER';
+
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  company text := nullif(btrim(new.raw_user_meta_data ->> 'company'), '');
+  ws_id uuid;
+begin
+  insert into public.profiles (id, full_name)
+  values (new.id, new.raw_user_meta_data ->> 'full_name')
+  on conflict (id) do nothing;
+
+  if company is not null then
+    insert into public.workspaces (name, slug, created_by)
+    values (
+      company,
+      coalesce(nullif(btrim(regexp_replace(lower(company), '[^a-z0-9]+', '-', 'g'), '-'), ''), 'workspace')
+        || '-' || substr(replace(new.id::text, '-', ''), 1, 6),
+      new.id
+    )
+    returning id into ws_id;
+
+    insert into public.workspace_members (workspace_id, user_id, role)
+    values (ws_id, new.id, 'OWNER');
+  end if;
+
+  return new;
+end;
+$$;
+===== SOURCE: supabase\003_core.sql =====
+-- 003: core governance data model
+
+create or replace function public.is_member(ws uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid());
+$$;
+
+create or replace function public.has_role(ws uuid, roles text[]) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid() and m.role::text = any(roles));
+$$;
+
+create table if not exists public.agents (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null check (char_length(name) between 1 and 120),
+  description text,
+  framework text,
+  external_id text,
+  source text not null default 'manual' check (source in ('manual','auto','import')),
+  status text not null default 'active' check (status in ('active','suspended')),
+  metadata jsonb not null default '{}'::jsonb,
+  last_seen_at timestamptz,
+  created_at timestamptz not null default now(),
+  unique (workspace_id, name)
+);
+
+create table if not exists public.api_keys (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null,
+  prefix text not null,
+  key_hash text not null unique,
+  created_by uuid references auth.users(id),
+  last_used_at timestamptz,
+  revoked_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.policies (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null,
+  description text,
+  agent_id uuid references public.agents(id) on delete cascade,
+  action_pattern text not null default '*',
+  resource_pattern text not null default '*',
+  effect text not null check (effect in ('ALLOW','BLOCK','ESCALATE')),
+  priority int not null default 100,
+  enabled boolean not null default true,
+  version int not null default 1,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.decisions (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text not null,
+  action text not null,
+  resource text not null default '',
+  effect text not null check (effect in ('ALLOW','BLOCK','ESCALATE')),
+  reason text,
+  policy_id uuid references public.policies(id) on delete set null,
+  risk_score int not null default 0,
+  trace_id text,
+  input jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists decisions_ws_created on public.decisions (workspace_id, created_at desc);
+
+create table if not exists public.approvals (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  decision_id uuid not null references public.decisions(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text,
+  action text,
+  resource text,
+  status text not null default 'pending' check (status in ('pending','approved','rejected','expired')),
+  note text,
+  requested_at timestamptz not null default now(),
+  expires_at timestamptz not null,
+  resolved_by uuid references auth.users(id),
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.incidents (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  decision_id uuid references public.decisions(id) on delete set null,
+  severity text not null default 'medium' check (severity in ('low','medium','high','critical')),
+  title text not null,
+  status text not null default 'open' check (status in ('open','resolved')),
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.evidence (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  seq bigint not null,
+  decision_id uuid,
+  trace_id text,
+  payload jsonb not null,
+  prev_hash text not null,
+  hash text not null,
+  created_at timestamptz not null default now(),
+  unique (workspace_id, seq)
+);
+
+create table if not exists public.audit_events (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  actor text not null,
+  action text not null,
+  target_type text,
+  target_id text,
+  meta jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists audit_ws_created on public.audit_events (workspace_id, created_at desc);
+
+create table if not exists public.traces (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text,
+  trace_id text not null,
+  name text,
+  decision_id uuid,
+  status text not null default 'ok',
+  duration_ms int,
+  spans jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists traces_ws_created on public.traces (workspace_id, created_at desc);
+
+create table if not exists public.webhooks (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  url text not null check (url ~ '^https://'),
+  events text[] not null default array['decision.block','decision.escalate'],
+  secret text not null,
+  enabled boolean not null default true,
+  last_status int,
+  last_delivery_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.workspace_settings (
+  workspace_id uuid primary key references public.workspaces(id) on delete cascade,
+  default_effect text not null default 'BLOCK' check (default_effect in ('ALLOW','BLOCK','ESCALATE')),
+  auto_register_agents boolean not null default true,
+  approval_expiry_hours int not null default 24 check (approval_expiry_hours between 1 and 720),
+  alert_on_block boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+-- ---------- evidence: hash chain, append-only ----------
+create or replace function public.evidence_chain() returns trigger
+language plpgsql security definer set search_path = public, extensions as $$
+declare prev_seq bigint; prev text;
+begin
+  perform pg_advisory_xact_lock(hashtext(new.workspace_id::text));
+  select e.seq, e.hash into prev_seq, prev from public.evidence e
+    where e.workspace_id = new.workspace_id order by e.seq desc limit 1;
+  new.seq := coalesce(prev_seq, 0) + 1;
+  new.prev_hash := coalesce(prev, 'GENESIS');
+  new.hash := encode(digest(new.prev_hash || '|' || new.id::text || '|' || coalesce(new.decision_id::text, '') || '|' || new.payload::text, 'sha256'), 'hex');
+  return new;
+end $$;
+drop trigger if exists evidence_chain_trg on public.evidence;
+create trigger evidence_chain_trg before insert on public.evidence for each row execute function public.evidence_chain();
+
+create or replace function public.evidence_immutable() returns trigger language plpgsql as $$
+begin raise exception 'evidence is append-only'; end $$;
+drop trigger if exists evidence_immutable_trg on public.evidence;
+create trigger evidence_immutable_trg before update or delete on public.evidence for each row execute function public.evidence_immutable();
+
+create or replace function public.verify_evidence_chain(ws uuid)
+returns table(total bigint, broken bigint)
+language plpgsql stable security definer set search_path = public, extensions as $$
+begin
+  if not public.is_member(ws) then raise exception 'forbidden'; end if;
+  return query
+  with o as (
+    select e.*, lag(e.hash) over (order by e.seq) as exp_prev from public.evidence e where e.workspace_id = ws
+  )
+  select count(*)::bigint,
+    (count(*) filter (where o.prev_hash is distinct from coalesce(o.exp_prev, 'GENESIS')
+      or o.hash is distinct from encode(digest(o.prev_hash || '|' || o.id::text || '|' || coalesce(o.decision_id::text, '') || '|' || o.payload::text, 'sha256'), 'hex')))::bigint
+  from o;
+end $$;
+
+-- ---------- api keys (plaintext shown once, only SHA-256 stored) ----------
+create or replace function public.create_api_key(ws uuid, key_name text) returns text
+language plpgsql security definer set search_path = public, extensions as $$
+declare raw text;
+begin
+  if not public.has_role(ws, array['owner','admin','developer']) then raise exception 'forbidden'; end if;
+  raw := 'aeg_live_' || encode(gen_random_bytes(24), 'hex');
+  insert into public.api_keys (workspace_id, name, prefix, key_hash, created_by)
+  values (ws, coalesce(nullif(btrim(key_name), ''), 'default'), substr(raw, 1, 13), encode(digest(raw, 'sha256'), 'hex'), auth.uid());
+  return raw;
+end $$;
+
+
+##### .enterprise\phase3.6-20260927-005136\remote-schema-snapshot.sql #####
+
+
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+
+COMMENT ON SCHEMA "public" IS 'standard public schema';
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
+
+
+
+
+
+
+
+
+ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
+
+
+GRANT USAGE ON SCHEMA "public" TO "postgres";
+GRANT USAGE ON SCHEMA "public" TO "anon";
+GRANT USAGE ON SCHEMA "public" TO "authenticated";
+GRANT USAGE ON SCHEMA "public" TO "service_role";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "service_role";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "service_role";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "authenticated";
+
+##### .enterprise\phase3.7b-20260927-005935\remote-schema-content.sql #####
+
+
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+
+COMMENT ON SCHEMA "public" IS 'standard public schema';
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
+
+
+
+
+
+
+
+
+ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
+
+
+GRANT USAGE ON SCHEMA "public" TO "postgres";
+GRANT USAGE ON SCHEMA "public" TO "anon";
+GRANT USAGE ON SCHEMA "public" TO "authenticated";
+GRANT USAGE ON SCHEMA "public" TO "service_role";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "service_role";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "service_role";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "authenticated";
+
+##### .enterprise\phase3.9-backup-20260927-011509\supabase\migrations\20260922013901_remote_schema.sql #####
+
+
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+
+COMMENT ON SCHEMA "public" IS 'standard public schema';
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
+
+
+
+
+
+
+
+
+ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
+
+
+GRANT USAGE ON SCHEMA "public" TO "postgres";
+GRANT USAGE ON SCHEMA "public" TO "anon";
+GRANT USAGE ON SCHEMA "public" TO "authenticated";
+GRANT USAGE ON SCHEMA "public" TO "service_role";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "service_role";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "service_role";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "authenticated";
+
+##### .enterprise\phase3.9-backup-20260927-011509\supabase\migrations\20260922133117_add_create_workspace_function.sql #####
+-- ---------- atomik workspace olusturma (owner uyeligi ile birlikte) ----------
+create or replace function public.create_workspace(workspace_name text, workspace_slug text)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  new_id uuid;
+begin
+  insert into public.workspaces (name, slug, created_by)
+  values (workspace_name, workspace_slug, auth.uid())
+  returning id into new_id;
+
+  insert into public.workspace_members (workspace_id, user_id, role, status)
+  values (new_id, auth.uid(), 'owner', 'active');
+
+  return new_id;
+end;
+$$;
+
+##### .enterprise\phase3.9-backup-20260927-011509\supabase\migrations\20260927004717_enterprise_tenant_isolation_hardening.sql #####
+-- ============================================================
+-- AEGISORA ENTERPRISE TENANT ISOLATION HARDENING
+-- Generated by Phase 3.4
+--
+-- IMPORTANT:
+-- Review against the deployed schema before applying remotely.
+-- This migration intentionally does NOT alter application data.
+-- ============================================================
+
+begin;
+
+-- ============================================================
+-- 1. MEMBERSHIP HELPERS
+-- ============================================================
+
+create or replace function public.is_member(ws uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_catalog
+as $$
+  select exists (
+    select 1
+    from public.workspace_members m
+    where m.workspace_id = ws
+      and m.user_id = auth.uid()
+      and coalesce(m.status::text, 'active') = 'active'
+  );
+$$;
+
+create or replace function public.has_role(
+  ws uuid,
+  roles text[]
+)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_catalog
+as $$
+  select exists (
+    select 1
+    from public.workspace_members m
+    where m.workspace_id = ws
+      and m.user_id = auth.uid()
+      and coalesce(m.status::text, 'active') = 'active'
+      and upper(m.role::text) = any (
+        select upper(r)
+        from unnest(roles) as r
+      )
+  );
+$$;
+
+revoke all on function public.is_member(uuid) from public;
+revoke all on function public.has_role(uuid, text[]) from public;
+
+grant execute on function public.is_member(uuid) to authenticated;
+grant execute on function public.has_role(uuid, text[]) to authenticated;
+
+-- ============================================================
+-- 2. ENABLE + FORCE RLS
+-- ============================================================
+
+alter table public.agents enable row level security;
+alter table public.agents force row level security;
+
+alter table public.api_keys enable row level security;
+alter table public.api_keys force row level security;
+
+alter table public.approvals enable row level security;
+alter table public.approvals force row level security;
+
+alter table public.audit_events enable row level security;
+alter table public.audit_events force row level security;
+
+alter table public.decisions enable row level security;
+alter table public.decisions force row level security;
+
+alter table public.evidence enable row level security;
+alter table public.evidence force row level security;
+
+alter table public.incidents enable row level security;
+alter table public.incidents force row level security;
+
+alter table public.policies enable row level security;
+alter table public.policies force row level security;
+
+alter table public.traces enable row level security;
+alter table public.traces force row level security;
+
+alter table public.webhooks enable row level security;
+alter table public.webhooks force row level security;
+
+alter table public.workspace_settings enable row level security;
+alter table public.workspace_settings force row level security;
+
+alter table public.workspace_members enable row level security;
+alter table public.workspace_members force row level security;
+
+alter table public.workspaces enable row level security;
+alter table public.workspaces force row level security;
+
+alter table public.profiles enable row level security;
+alter table public.profiles force row level security;
+
+-- ============================================================
+-- 3. REMOVE OLD POLICIES
+-- ============================================================
+
+do $$
+declare
+  r record;
+begin
+  for r in
+    select schemaname, tablename, policyname
+    from pg_policies
+    where schemaname = 'public'
+      and tablename in (
+        'agents',
+        'api_keys',
+        'approvals',
+        'audit_events',
+        'decisions',
+        'evidence',
+        'incidents',
+        'policies',
+        'traces',
+        'webhooks',
+        'workspace_settings',
+        'workspace_members',
+        'workspaces',
+        'profiles'
+      )
+  loop
+    execute format(
+      'drop policy if exists %I on %I.%I',
+      r.policyname,
+      r.schemaname,
+      r.tablename
+    );
+  end loop;
+end
+$$;
+
+-- ============================================================
+-- 4. AGENTS
+-- ============================================================
+
+create policy agents_select
+on public.agents
+for select
+to authenticated
+using (
+  public.is_member(workspace_id)
+);
+
+create policy agents_insert
+on public.agents
+for insert
+to authenticated
+with check (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN','DEVELOPER']
+  )
+);
+
+create policy agents_update
+on public.agents
+for update
+to authenticated
+using (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN','DEVELOPER']
+  )
+)
+with check (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN','DEVELOPER']
+  )
+);
+
+create policy agents_delete
+on public.agents
+for delete
+to authenticated
+using (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN','DEVELOPER']
+  )
+);
+
+-- ============================================================
+-- 5. API KEYS
+-- ============================================================
+
+create policy api_keys_select
+on public.api_keys
+for select
+to authenticated
+using (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN']
+  )
+);
+
+create policy api_keys_update
+on public.api_keys
+for update
+to authenticated
+using (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN']
+  )
+)
+with check (
+  public.has_role(
+    workspace_id,
+    array['OWNER','ADMIN']
+  )
+);
+
+-- API key creation remains through the controlled RPC.
+-- Direct client INSERT is intentionally not granted.
+
+-- ============================================================
+-- 6. POLICIES
+-- ============================================================
+
+create policy policies_select
+on public.policies
+for select
+to authenticated
+using (
+  public.is_member(workspace_id)
+);
+
+create policy policies_insert
+on public.policies
+for insert
+to authenticated
+with check (
+  public.has_role(
+    workspace_id,
+
+##### .enterprise\phase3.9-backup-20260927-011509\supabase\002_onboarding.sql #####
+-- 002: onboarding flag, safe role default, workspace creation at signup
+
+alter table public.profiles add column if not exists onboarded_at timestamptz;
+
+-- the original default 'member' is not a value of workspace_role
+alter table public.workspace_members alter column role set default 'VIEWER';
+
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  company text := nullif(btrim(new.raw_user_meta_data ->> 'company'), '');
+  ws_id uuid;
+begin
+  insert into public.profiles (id, full_name)
+  values (new.id, new.raw_user_meta_data ->> 'full_name')
+  on conflict (id) do nothing;
+
+  if company is not null then
+    insert into public.workspaces (name, slug, created_by)
+    values (
+      company,
+      coalesce(nullif(btrim(regexp_replace(lower(company), '[^a-z0-9]+', '-', 'g'), '-'), ''), 'workspace')
+        || '-' || substr(replace(new.id::text, '-', ''), 1, 6),
+      new.id
+    )
+    returning id into ws_id;
+
+    insert into public.workspace_members (workspace_id, user_id, role)
+    values (ws_id, new.id, 'OWNER');
+  end if;
+
+  return new;
+end;
+$$;
+
+##### .enterprise\phase3.9-backup-20260927-011509\supabase\003_core.sql #####
+-- 003: core governance data model
+
+create or replace function public.is_member(ws uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid());
+$$;
+
+create or replace function public.has_role(ws uuid, roles text[]) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.workspace_members m
+    where m.workspace_id = ws and m.user_id = auth.uid() and m.role::text = any(roles));
+$$;
+
+create table if not exists public.agents (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null check (char_length(name) between 1 and 120),
+  description text,
+  framework text,
+  external_id text,
+  source text not null default 'manual' check (source in ('manual','auto','import')),
+  status text not null default 'active' check (status in ('active','suspended')),
+  metadata jsonb not null default '{}'::jsonb,
+  last_seen_at timestamptz,
+  created_at timestamptz not null default now(),
+  unique (workspace_id, name)
+);
+
+create table if not exists public.api_keys (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null,
+  prefix text not null,
+  key_hash text not null unique,
+  created_by uuid references auth.users(id),
+  last_used_at timestamptz,
+  revoked_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.policies (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null,
+  description text,
+  agent_id uuid references public.agents(id) on delete cascade,
+  action_pattern text not null default '*',
+  resource_pattern text not null default '*',
+  effect text not null check (effect in ('ALLOW','BLOCK','ESCALATE')),
+  priority int not null default 100,
+  enabled boolean not null default true,
+  version int not null default 1,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.decisions (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text not null,
+  action text not null,
+  resource text not null default '',
+  effect text not null check (effect in ('ALLOW','BLOCK','ESCALATE')),
+  reason text,
+  policy_id uuid references public.policies(id) on delete set null,
+  risk_score int not null default 0,
+  trace_id text,
+  input jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists decisions_ws_created on public.decisions (workspace_id, created_at desc);
+
+create table if not exists public.approvals (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  decision_id uuid not null references public.decisions(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text,
+  action text,
+  resource text,
+  status text not null default 'pending' check (status in ('pending','approved','rejected','expired')),
+  note text,
+  requested_at timestamptz not null default now(),
+  expires_at timestamptz not null,
+  resolved_by uuid references auth.users(id),
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.incidents (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  decision_id uuid references public.decisions(id) on delete set null,
+  severity text not null default 'medium' check (severity in ('low','medium','high','critical')),
+  title text not null,
+  status text not null default 'open' check (status in ('open','resolved')),
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.evidence (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  seq bigint not null,
+  decision_id uuid,
+  trace_id text,
+  payload jsonb not null,
+  prev_hash text not null,
+  hash text not null,
+  created_at timestamptz not null default now(),
+  unique (workspace_id, seq)
+);
+
+create table if not exists public.audit_events (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  actor text not null,
+  action text not null,
+  target_type text,
+  target_id text,
+  meta jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists audit_ws_created on public.audit_events (workspace_id, created_at desc);
+
+create table if not exists public.traces (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  agent_id uuid references public.agents(id) on delete set null,
+  agent_name text,
+  trace_id text not null,
+  name text,
+  decision_id uuid,
+  status text not null default 'ok',
+  duration_ms int,
+  spans jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists traces_ws_created on public.traces (workspace_id, created_at desc);
+
+create table if not exists public.webhooks (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  url text not null check (url ~ '^https://'),
+  events text[] not null default array['decision.block','decision.escalate'],
+  secret text not null,
+  enabled boolean not null default true,
+  last_status int,
+  last_delivery_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.workspace_settings (
+  workspace_id uuid primary key references public.workspaces(id) on delete cascade,
+  default_effect text not null default 'BLOCK' check (default_effect in ('ALLOW','BLOCK','ESCALATE')),
+  auto_register_agents boolean not null default true,
+  approval_expiry_hours int not null default 24 check (approval_expiry_hours between 1 and 720),
+  alert_on_block boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+-- ---------- evidence: hash chain, append-only ----------
+create or replace function public.evidence_chain() returns trigger
+language plpgsql security definer set search_path = public, extensions as $$
+declare prev_seq bigint; prev text;
+begin
+  perform pg_advisory_xact_lock(hashtext(new.workspace_id::text));
+  select e.seq, e.hash into prev_seq, prev from public.evidence e
+    where e.workspace_id = new.workspace_id order by e.seq desc limit 1;
+  new.seq := coalesce(prev_seq, 0) + 1;
+  new.prev_hash := coalesce(prev, 'GENESIS');
+  new.hash := encode(digest(new.prev_hash || '|' || new.id::text || '|' || coalesce(new.decision_id::text, '') || '|' || new.payload::text, 'sha256'), 'hex');
+  return new;
+end $$;
+drop trigger if exists evidence_chain_trg on public.evidence;
+create trigger evidence_chain_trg before insert on public.evidence for each row execute function public.evidence_chain();
+
+create or replace function public.evidence_immutable() returns trigger language plpgsql as $$
+begin raise exception 'evidence is append-only'; end $$;
+drop trigger if exists evidence_immutable_trg on public.evidence;
+create trigger evidence_immutable_trg before update or delete on public.evidence for each row execute function public.evidence_immutable();
+
+create or replace function public.verify_evidence_chain(ws uuid)
+returns table(total bigint, broken bigint)
+language plpgsql stable security definer set search_path = public, extensions as $$
+begin
+  if not public.is_member(ws) then raise exception 'forbidden'; end if;
+  return query
+  with o as (
+    select e.*, lag(e.hash) over (order by e.seq) as exp_prev from public.evidence e where e.workspace_id = ws
+  )
+  select count(*)::bigint,
+    (count(*) filter (where o.prev_hash is distinct from coalesce(o.exp_prev, 'GENESIS')
+      or o.hash is distinct from encode(digest(o.prev_hash || '|' || o.id::text || '|' || coalesce(o.decision_id::text, '') || '|' || o.payload::text, 'sha256'), 'hex')))::bigint
+  from o;
+end $$;
+
+-- ---------- api keys (plaintext shown once, only SHA-256 stored) ----------
+create or replace function public.create_api_key(ws uuid, key_name text) returns text
+language plpgsql security definer set search_path = public, extensions as $$
+declare raw text;
+begin
+  if not public.has_role(ws, array['owner','admin','developer']) then raise exception 'forbidden'; end if;
+  raw := 'aeg_live_' || encode(gen_random_bytes(24), 'hex');
+  insert into public.api_keys (workspace_id, name, prefix, key_hash, created_by)
+  values (ws, coalesce(nullif(btrim(key_name), ''), 'default'), substr(raw, 1, 13), encode(digest(raw, 'sha256'), 'hex'), auth.uid());
+  return raw;
+end $$;
+
+-- ---------- approvals: stamp resolver ----------
+create or replace function public.approval_stamp() returns trigger language plpgsql as $$
+begin
+  if new.status in ('approved','rejected') and old.status = 'pending' then
+    new.resolved_by := auth.uid();
+    new.resolved_at := now();
+  end if;
+  return new;
+end $$;
+drop trigger if exists approval_stamp_trg on public.approvals;
+create trigger approval_stamp_trg before update on public.approvals for each row execute function public.approval_stamp();
+
+-- ---------- automatic audit trail for console changes ----------
+create or replace function public.audit_change() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare ws uuid; rid uuid;
+begin
+  if tg_op = 'DELETE' then ws := old.workspace_id; rid := old.id; else ws := new.workspace_id; rid := new.id; end if;
+  insert into public.audit_events (workspace_id, actor, action, target_type, target_id)
+  values (ws, coalesce(auth.uid()::text, 'system'), tg_table_name || '.' || lower(tg_op), tg_table_name, rid::text);
+  return null;
+end $$;
+do $$
+declare t text;
+begin
+  foreach t in array array['agents','policies','webhooks','approvals','incidents','api_keys'] loop
+    execute format('drop trigger if exists %I on public.%I', t || '_audit_trg', t);
+    execute format('create trigger %I after insert or update or delete on public.%I for each row execute function public.audit_change()', t || '_audit_trg', t);
+  end loop;
+end $$;
+
+-- ---------- RLS ----------
+do $$
+declare t text;
+begin
+  foreach t in array array['agents','api_keys','policies','decisions','approvals','incidents','evidence','audit_events','traces','webhooks','workspace_settings'] loop
+    execute format('alter table public.%I enable row level security', t);
+    execute format('drop policy if exists %I on public.%I', t || '_select', t);
+    if t in ('api_keys','webhooks') then
+      execute format('create policy %I on public.%I for select using (public.has_role(workspace_id, array[''owner'',''admin'',''developer'']))', t || '_select', t);
+
+##### .enterprise\phase3.9-backup-20260927-011509\supabase\schema.sql #####
+-- ============================================================
+-- AEGISORA: profiles, workspaces, workspace_members
+-- Supabase Dashboard -> SQL Editor -> New query -> yapistir -> Run
+-- ============================================================
+
+create extension if not exists "pgcrypto";
+
+-- ---------- profiles ----------
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  full_name text,
+  avatar_url text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.profiles enable row level security;
+
+create policy "profiles_select_own" on public.profiles
+  for select using (auth.uid() = id);
+
+create policy "profiles_update_own" on public.profiles
+  for update using (auth.uid() = id);
+
+-- yeni auth.users kaydi olustuğunda otomatik profile satiri ac
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, full_name)
+  values (new.id, new.raw_user_meta_data ->> 'full_name');
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
+-- ---------- workspaces ----------
+create table if not exists public.workspaces (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  slug text not null unique,
+  region text not null default 'eu-central-1',
+  created_by uuid not null references auth.users(id),
+  created_at timestamptz not null default now()
+);
+
+alter table public.workspaces enable row level security;
+
+-- ---------- workspace_members ----------
+create type public.workspace_role as enum ('owner', 'admin', 'developer', 'analyst', 'auditor', 'viewer');
+create type public.member_status as enum ('active', 'invited', 'suspended');
+
+create table if not exists public.workspace_members (
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  role public.workspace_role not null default 'member'::public.workspace_role,
+  status public.member_status not null default 'active',
+  created_at timestamptz not null default now(),
+  primary key (workspace_id, user_id)
+);
+
+alter table public.workspace_members enable row level security;
+
+-- kullanici kendi uyeliklerini gorebilsin
+create policy "members_select_own" on public.workspace_members
+  for select using (auth.uid() = user_id);
+
+-- workspace'i, o workspace'in aktif uyesi olanlar gorebilsin
+create policy "workspaces_select_member" on public.workspaces
+  for select using (
+    exists (
+      select 1 from public.workspace_members m
+      where m.workspace_id = workspaces.id
+        and m.user_id = auth.uid()
+        and m.status = 'active'
+    )
+  );
+
+-- ---------- atomik workspace olusturma (owner uyeligi ile birlikte) ----------
+create or replace function public.create_workspace(workspace_name text, workspace_slug text)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  new_id uuid;
+begin
+  insert into public.workspaces (name, slug, created_by)
+  values (workspace_name, workspace_slug, auth.uid())
+  returning id into new_id;
+
+  insert into public.workspace_members (workspace_id, user_id, role, status)
+  values (new_id, auth.uid(), 'owner', 'active');
+
+  return new_id;
+end;
+$$;
+
+##### .enterprise\privilege-probes\01_basic.sql #####
+SELECT current_database() AS database_name, current_user AS current_user;
+
+##### .enterprise\privilege-probes\02_table_privileges.sql #####
+SELECT count(*) AS row_count FROM information_schema.table_privileges WHERE table_schema = 'public';
+
+##### .enterprise\privilege-probes\03_column_privileges.sql #####
+SELECT count(*) AS row_count FROM information_schema.column_privileges WHERE table_schema = 'public';
+
+##### .enterprise\privilege-probes\04_sequence_privileges.sql #####
+SELECT count(*) AS row_count FROM information_schema.sequence_privileges WHERE sequence_schema = 'public';
+
+##### .enterprise\privilege-probes\05_routine_privileges.sql #####
+SELECT count(*) AS row_count FROM information_schema.routine_privileges WHERE specific_schema = 'public';
+
+##### .enterprise\privilege-probes\06_pg_namespace_acl.sql #####
+SELECT n.nspname AS schema_name, pg_get_userbyid(n.nspowner) AS owner_name, n.nspacl::text AS acl FROM pg_namespace n WHERE n.nspname = 'public';
+
+##### dashboard / api dosyalari #####
+src\app\api\auth\callback\route.ts
+src\app\api\billing\status\route.ts
+src\app\api\csp-report\route.ts
+src\app\api\demo\route.ts
+src\app\api\health\route.ts
+src\app\api\pilot-approve\route.ts
+src\app\api\pilot-request\route.ts
+src\app\api\stripe\checkout\route.ts
+src\app\api\stripe\portal\route.ts
+src\app\api\stripe\webhook\route.ts
+src\app\api\v1\agents\import\route.ts
+src\app\api\v1\decisions\[id]\route.ts
+src\app\api\v1\evaluate\route.ts
+src\app\api\v1\health\route.ts
+src\app\api\v1\traces\route.ts
+src\app\api\v1\workspace\agents\route.ts
+src\app\api\v1\workspace\approvals\[approvalId]\route.ts
+src\app\api\v1\workspace\evidence\export\route.ts
+src\app\api\v1\workspace\members\accept\route.ts
+src\app\api\v1\workspace\members\route.ts
+src\app\api\v1\workspace\policies\route.ts
+src\app\api\v1\workspace\usage\route.ts
+src\app\[locale]\(app)\dashboard\activity\page.tsx
+src\app\[locale]\(app)\dashboard\agents\[agentId]\page.tsx
+src\app\[locale]\(app)\dashboard\agents\page.tsx
+src\app\[locale]\(app)\dashboard\api-keys\page.tsx
+src\app\[locale]\(app)\dashboard\approvals\[approvalId]\page.tsx
+src\app\[locale]\(app)\dashboard\approvals\page.tsx
+src\app\[locale]\(app)\dashboard\audit\page.tsx
+src\app\[locale]\(app)\dashboard\billing\page.tsx
+src\app\[locale]\(app)\dashboard\decisions\[decisionId]\page.tsx
+src\app\[locale]\(app)\dashboard\decisions\page.tsx
+src\app\[locale]\(app)\dashboard\evidence\page.tsx
+src\app\[locale]\(app)\dashboard\identity\page.tsx
+src\app\[locale]\(app)\dashboard\incidents\[incidentId]\page.tsx
+src\app\[locale]\(app)\dashboard\incidents\page.tsx
+src\app\[locale]\(app)\dashboard\integrations\page.tsx
+src\app\[locale]\(app)\dashboard\policies\[policyId]\page.tsx
+src\app\[locale]\(app)\dashboard\policies\page.tsx
+src\app\[locale]\(app)\dashboard\providers\[providerId]\page.tsx
+src\app\[locale]\(app)\dashboard\providers\page.tsx
+src\app\[locale]\(app)\dashboard\risk\page.tsx
+src\app\[locale]\(app)\dashboard\settings\page.tsx
+src\app\[locale]\(app)\dashboard\team\page.tsx
+src\app\[locale]\(app)\dashboard\traces\[traceId]\page.tsx
+src\app\[locale]\(app)\dashboard\traces\page.tsx
+src\app\[locale]\(app)\dashboard\webhooks\[webhookId]\page.tsx
+src\app\[locale]\(app)\dashboard\webhooks\page.tsx
+src\app\[locale]\(app)\dashboard\workspace\page.tsx
+src\app\[locale]\(app)\dashboard\page.tsx
+src\app\[locale]\onboarding\page.tsx
+
+##### scripts klasoru #####
+add-careers-msg.cjs
+contrast-report.txt
+dump-1.txt
+dump-2.txt
+enterprise-readiness.ps1
+generate-enterprise-audit.mjs
+logo-check.mjs
+logo-report.txt
+patch-home-messages.mjs
+patch-onboarding-messages.mjs
+pilot-readiness.ps1
+preflight.mjs
+quickstart-demo.mjs
+read-out.txt
+read-out2.txt
+read-out3.txt
+read-out4.txt
+read-out5.txt
+read-out6.txt
+read-out7.txt
+read-out8.txt
+read-out9.txt
+reconcile-enterprise-audit.mjs
+reconcile-enterprise-audit.mjs.backup-20260928-145910
+reconcile-enterprise-audit.mjs.backup-reconciliation-array
+screenshots.mjs
+site-audit.mjs
+site-audit.ps1
+slices.mjs

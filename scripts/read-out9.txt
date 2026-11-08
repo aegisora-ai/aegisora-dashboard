@@ -1,0 +1,468 @@
+
+##### src\app\[locale]\(site)\docs\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { CodeBlock, DataTable, Eyebrow, Steps } from "@/components/aegx/kit";
+import { V1Canvas, V2Canvas, V3Canvas } from "@/components/aegisora/version-canvas";
+import { meta } from "@/lib/seo";
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "DocsIntro" });
+  return meta(t("metaTitle"), t("metaDesc"));
+}
+
+const BADGE = "rounded-full border border-border px-3 py-1 font-mono text-[11px] text-muted-foreground";
+
+const VERS = [
+  { id: "v1", n: 4, Canvas: V1Canvas, top: "mt-14", panel: "", badge: BADGE },
+  { id: "v2", n: 4, Canvas: V2Canvas, top: "mt-8", panel: "", badge: BADGE },
+  { id: "v3", n: 6, Canvas: V3Canvas, top: "mt-8", panel: "", badge: BADGE + " font-semibold" },
+  {
+    id: "v4",
+    n: 6,
+    Canvas: null,
+    top: "mt-8",
+    panel: " border-primary/30",
+    badge: "rounded-full border border-allow bg-allow-muted px-3 py-1 font-mono text-[11px] font-semibold text-allow",
+  },
+];
+
+const ROWS: string[][] = [
+  ["r1", "yes", "yes", "yes", "yes"],
+  ["r2", "dash", "yes", "yes", "yes"],
+  ["r3", "dash", "yes", "callerRisk", "unchanged"],
+  ["r4", "allowDeny", "abb", "abb", "abb"],
+  ["r5", "dash", "advisory", "decisionApi", "unchanged"],
+  ["r6", "dash", "nonDurable", "durable", "durable"],
+  ["r7", "dash", "dash", "yes", "yes"],
+  ["r8", "dash", "dash", "yes", "yes"],
+  ["r9", "dash", "dash", "dash", "yes"],
+  ["r10", "dash", "dash", "dash", "yes"],
+  ["r11", "dash", "dash", "dash", "yes"],
+];
+
+const POLICY_CODE = `agent:       finance-operator
+action:      external_transfer
+environment: production
+threshold:   elevated
+decision:    ESCALATE`;
+
+const API_CODE = `curl -X POST https://aegisora.org/api/v1/evaluate \\
+  -H "Authorization: Bearer aeg_live_<your-key>" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "agent": "customer-support-bot",
+    "action": "stripe_refund_api",
+    "resource": "invoice/INV-1042",
+    "risk": 40,
+    "input": { "amount_usd": 480 }
+  }'
+
+# 200 response
+{
+  "decision_id": "<uuid>",
+  "effect": "ESCALATE",
+  "reason": "<text>",
+  "policy_id": "<uuid or null>",
+  "approval_id": "<uuid or null>",
+  "execution_id": null,
+  "trace_id": "<id>",
+  "evidence_hash": "<hash>",
+  "agent_registered": false
+}`;
+
+export default async function DocsPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("DocsIntro");
+
+  return (
+    <div>
+      <h1 className="text-4xl font-light tracking-tight">{t("h1")}</h1>
+      <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{t("lead")}</p>
+
+      <h2 id="why" className="mt-12 scroll-mt-24 text-2xl font-medium">{t("whyTitle")}</h2>
+      <p className="mt-3 leading-relaxed text-muted-foreground">{t("whyP")}</p>
+      <div id="example" className="mt-8 scroll-mt-24">
+        <CodeBlock code={POLICY_CODE} caption={t("exampleCaption")} />
+      </div>
+
+      <h2 className="mt-20 text-2xl font-medium">{t("verTitle")}</h2>
+      <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">{t("verP")}</p>
+
+      {VERS.map((v) => (
+        <div key={v.id} id={v.id} className={v.top + " scroll-mt-24 aeg-panel p-6 md:p-8" + v.panel}>
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <div>
+              <Eyebrow accent>{t(v.id + ".eyebrow")}</Eyebrow>
+              <h3 className="mt-2 text-xl font-medium">{t(v.id + ".title")}</h3>
+            </div>
+            <span className={v.badge}>{t(v.id + ".badge")}</span>
+          </div>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">{t(v.id + ".p")}</p>
+          {v.Canvas ? (
+            <div className="mt-6 overflow-x-auto"><v.Canvas /></div>
+          ) : null}
+          <ul className="mt-6 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
+            {Array.from({ length: v.n }, (_, i) => (
+              <li key={i}>&bull; {t(v.id + ".b" + (i + 1))}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+      <h2 id="capability" className="mt-20 scroll-mt-24 text-2xl font-medium">{t("capTitle")}</h2>
+      <div className="mt-6">
+        <DataTable
+          head={[t("capHead"), "1.0", "2.0", "3.0", "4.0"]}
+          rows={ROWS.map(([k, ...cells]) => [t("rows." + k), ...cells.map((c) => t("cell." + c))])}
+        />
+
+##### src\components\aegisora\docs-nav.tsx #####
+'use client';
+
+import { useState } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/i18n/navigation';
+import { cn } from '@/lib/utils';
+
+export type NavItem = { key?: string; title: string; href: string };
+export type NavGroup = { key?: string; title: string; items: NavItem[] };
+
+export const NAV_TREE: NavGroup[] = [
+  {
+    key: 'start',
+    title: 'Getting Started',
+    items: [
+      { key: 'intro', title: 'Introduction', href: '/docs' },
+      { key: 'quickstart', title: 'Quickstart', href: '/docs/quickstart' },
+      { key: 'policyExample', title: 'Policy Example', href: '/docs#example' },
+      { key: 'technical', title: 'Technical reference', href: '/docs/technical' },
+    ],
+  },
+  {
+    key: 'arch',
+    title: 'Architecture',
+    items: [
+      { key: 'pipeline', title: 'Runtime Pipeline', href: '/docs#v3' },
+      { key: 'pde', title: 'Policies, decisions and evidence', href: '/docs/technical' },
+    ],
+  },
+  {
+    key: 'versions',
+    title: 'Version History',
+    items: [
+      { key: 'v1', title: '1.0 - Foundation', href: '/docs#v1' },
+      { key: 'v2', title: '2.0 - Context & Risk', href: '/docs#v2' },
+      { key: 'v3', title: '3.0 - Enterprise Runtime', href: '/docs#v3' },
+      { key: 'v4', title: '4.0 - Current', href: '/docs#v4' },
+    ],
+  },
+  {
+    key: 'ref',
+    title: 'Reference',
+    items: [
+      { key: 'capability', title: 'Capability Matrix', href: '/docs#capability' },
+      { key: 'api', title: 'API Contract', href: '/docs#api' },
+    ],
+  },
+];
+
+function NavGroupBlock({ group, defaultOpen }: { group: NavGroup; defaultOpen: boolean }) {
+  const pathname = usePathname();
+  const t = useTranslations('Docs');
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border-b border-border/60 pb-1 last:border-0">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between py-2.5 text-left transition-colors hover:text-foreground"
+      >
+        <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {group.key ? t('groups.' + group.key) : group.title}
+        </span>
+        <ChevronRight
+          size={14}
+          aria-hidden
+          className={cn(
+            'shrink-0 text-muted-foreground transition-transform duration-300 ease-out',
+            open && 'rotate-90'
+          )}
+        />
+      </button>
+
+      <div
+        className={cn(
+          'grid transition-[grid-template-rows] duration-300 ease-in-out',
+          open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+
+##### src\components\aegisora\bw\bw.css #####
+/* Aegisora public site, v19. Scoped under .bw-root. No Tailwind utilities needed. */
+
+.bw-root {
+  --bw-bg: #f7f6f4;
+  --bw-bg-2: #efece9;
+  --bw-card: #ffffff;
+  --bw-ink: #1b1b1d;
+  --bw-ink-2: #5a5857;
+  --bw-ink-3: #8c8987;
+  --bw-line: #e0dcd8;
+  --bw-line-2: #cfc9c4;
+  --bw-blue: #3432ef;
+  --bw-blue-2: #4b49f6;
+  --bw-blue-soft: #e7e6ff;
+  --bw-allow-bg: #e2f4eb;
+  --bw-allow: #0f7b4f;
+  --bw-esc-bg: #fff1d6;
+  --bw-esc: #9a6400;
+  --bw-block-bg: #fde4e4;
+  --bw-block: #b42318;
+  --bw-shadow: 0 1px 2px rgba(25, 25, 50, 0.06), 0 10px 28px rgba(25, 25, 50, 0.07);
+  --bw-display: var(--bw-f-display), "Inter Tight", "Inter Display", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bw-body: var(--bw-f-body), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bw-mono: var(--bw-f-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --bw-serif: var(--bw-f-serif), "Instrument Serif", Georgia, serif;
+  --bw-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.1 0 0 0 -.48'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --bw-noise-soft: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0.7 0 0 0 -.27'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --bw-hatch: repeating-linear-gradient(135deg, var(--bw-line) 0 1px, transparent 1px 5px);
+  color: var(--bw-ink);
+  background: var(--bw-bg);
+  font-family: var(--bw-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:is(.dark, [data-theme="dark"]) .bw-root {
+  --bw-bg: #121214;
+  --bw-bg-2: #1d1d21;
+  --bw-card: #1a1a1e;
+  --bw-ink: #f3f3f5;
+  --bw-ink-2: #a9a8b0;
+  --bw-ink-3: #77767e;
+  --bw-line: #2a2a31;
+  --bw-line-2: #3a3a43;
+  --bw-blue-soft: #25244f;
+  --bw-allow-bg: #12342a;
+  --bw-allow: #59d9a2;
+  --bw-esc-bg: #3b2e10;
+  --bw-esc: #f2b84b;
+  --bw-block-bg: #3d1c1c;
+  --bw-block: #ff8b8b;
+  --bw-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+.bw-root *,
+.bw-root *::before,
+.bw-root *::after {
+  box-sizing: border-box;
+}
+.bw-root :where(h1, h2, h3, p, ul, ol, dl, dd, figure, pre) {
+  margin: 0;
+}
+.bw-root :where(ul, ol) {
+  list-style: none;
+  padding: 0;
+}
+.bw-root :where(a) {
+  color: inherit;
+  text-decoration: none;
+}
+.bw-root :where(button) {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.bw-root :where(svg) {
+  display: block;
+  flex: none;
+}
+.bw-root :where(code, pre) {
+  font-family: var(--bw-mono);
+}
+.bw-root :where(table) {
+  border-collapse: collapse;
+}
+.bw-root :where(textarea) {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  outline: 0;
+  resize: none;
+}
+.bw-root :focus-visible {
+  outline: 2px solid var(--bw-blue);
+  outline-offset: 2px;
+}
+.bw-page {
+  overflow-x: clip;
+}
+
+.bw-sr {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------ layout ------------------------------ */
+
+.bw-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 1140px;
+  margin-inline: auto;
+  border-inline: 1px solid var(--bw-line);
+}
+.bw-wrap--flush {
+  padding: 0;
+}
+.bw-sec {
+  position: relative;
+  border-bottom: 1px dashed var(--bw-line-2);
+  background: var(--bw-bg);
+}
+.bw-sec--soft {
+  background: linear-gradient(180deg, var(--bw-bg), var(--bw-bg-2));
+}
+.bw-sec--tight {
+  padding: 0;
+
+##### src\components\aegisora\page-kit.tsx #####
+"use client";
+import "@/styles/aeg-calm-kit.css";
+import { LiquidBackdrop } from "@/components/aegisora/calm/liquid-backdrop";
+
+import { useMemo, type ReactNode } from "react"; import { useTranslations } from "next-intl";
+import "@/styles/zp.css"; import "@/components/aegisora/bw/aeg-chrome.css";
+import { TypedLine } from "@/components/aegisora/typed-line";
+import { VerdictBadge } from "@/components/zp/ui";
+import { Link } from "@/i18n/navigation";
+import {
+  ArrowRight, BookOpen, Clock, Eye, FileText, Fingerprint, Gauge, GitBranch,
+  KeyRound, Layers, Lock, Scale, ScrollText, ShieldCheck, Terminal, UserCheck,
+  Users, Webhook, Workflow, Zap,
+} from "lucide-react";
+
+const ICONS = {
+  BookOpen, Clock, Eye, FileText, Fingerprint, Gauge, GitBranch, KeyRound, Layers,
+  Lock, Scale, ScrollText, ShieldCheck, Terminal, UserCheck, Users, Webhook, Workflow, Zap,
+};
+
+export type IconName = keyof typeof ICONS;
+export type Cta = { label: string; href: string };
+export type Row = { action: string; meta: string; v: "ALLOW" | "ESCALATE" | "BLOCK" };
+export type CardItem = { icon?: IconName; n?: string; title: string; body: string; href?: string };
+
+
+
+export function PageHero({
+  eyebrow, title, phrases, intro, lead, primary, secondary, rows, children,
+}: {
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  lead?: string;
+  phrases?: string[];
+  primary?: Cta;
+  secondary?: Cta;
+  rows?: Row[];
+  children?: ReactNode;
+}) {
+  const text = intro ?? lead; const t = useTranslations("Kit"); const defaultPhrases = useMemo(() => [t("p1"), t("p2"), t("p3"), t("p4")], [t]);
+  return (
+    <section className="zp zpk-hero"><LiquidBackdrop />
+      <div className={"zpk-wrap zpk-hero-in" + (rows ? " zpk-hero-in--split" : "")}>
+        <div className="zpk-hero-text">
+          <p className="zp-eyebrow">{eyebrow}</p>
+          <h1 className="zpk-h1">{title}</h1>
+          <p className="zpk-typed">
+            <TypedLine decorative phrases={phrases?.length ? phrases : defaultPhrases} />
+          </p>
+          {text ? <p className="zpk-lead">{text}</p> : null}
+          {primary || secondary ? (
+            <div className="zpk-actions">
+              {primary ? (
+                <Link href={primary.href} className="zp-btn zp-btn--primary">
+                  {primary.label}
+                </Link>
+              ) : null}
+              {secondary ? (
+                <Link href={secondary.href} className="zp-btn zp-btn--outline">
+                  {secondary.label}
+                  <ArrowRight size={16} aria-hidden />
+                </Link>
+              ) : null}
+            </div>
+          ) : null}
+          {children}
+        </div>
+        {rows ? (
+          <div className="zpk-art">
+            <div className="zp-mock">
+              <div className="zp-mock-bar">
+                <b>{t("runtimeDecisions")}</b>
+                <span className="zp-tag">{t("live")}</span>
+              </div>
+              {rows.map((r) => (
+                <div key={r.action} className="zp-mock-row">
+                  <div style={{ minWidth: 0 }}>
+                    <div className="zp-mock-act">{r.action}</div>
+                    <div className="zp-mock-sub">{r.meta}</div>
+                  </div>
+                  <VerdictBadge v={r.v} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+export function Section({
+  eyebrow, title, intro, lead, tone = "base", children,
+}: {
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  lead?: string;
+  tone?: "base" | "alt" | "tinted";
+  children: ReactNode;
+}) {
+  const text = intro ?? lead;
+  const hasHeader = Boolean(eyebrow || title || text);
+  return (
+    <section className={"zp zpk-section" + (tone === "base" ? "" : " zpk-section--alt")}>
+      <div className="zpk-wrap">
+        {hasHeader ? (
+          <div className="zpk-head">
+            {eyebrow ? <p className="zp-eyebrow">{eyebrow}</p> : null}
+            {title ? <h2 className="zpk-h2">{title}</h2> : null}
+            {text ? <p className="zpk-sub">{text}</p> : null}
+          </div>
+        ) : null}
+        {children}
+      </div>
+    </section>
+  );
+}
+

@@ -1,0 +1,1382 @@
+
+##### src\app\[locale]\(app)\dashboard\page.tsx #####
+"use client";
+
+import { useEffect, useState } from "react";
+import { Activity, ArrowRight, Bot, UserCheck, X } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import type { Workspace } from "@/lib/aegisora/use-workspace";
+import { useWorkspace } from "@/components/aegisora/workspace-provider";
+import { Badge, WorkspaceGate, fmt } from "@/components/aegisora/live/ui";
+import type { Row } from "@/components/aegisora/live/live-table";
+
+type Counts = { agents: number | null; policies: number | null; pending: number | null; incidents: number | null; total: number | null; block: number | null; escalate: number | null };
+type Bucket = { allow: number; escalate: number; block: number };
+type Point = { created_at: string; decision: string | null };
+
+const HOUR = 36e5;
+const num = (v: number | null) => (v === null ? "-" : v.toLocaleString("en-US"));
+const cnt = (r: { count: number | null; error: unknown }) => (r.error ? null : (r.count ?? 0));
+
+function bucketize(points: Point[]): { buckets: Bucket[]; labels: string[] } {
+  const now = Date.now();
+  const buckets: Bucket[] = Array.from({ length: 24 }, () => ({ allow: 0, escalate: 0, block: 0 }));
+  const labels = Array.from({ length: 24 }, (_, i) => String(new Date(now - (23 - i) * HOUR).getHours()).padStart(2, "0"));
+  for (const p of points) {
+    const idx = 23 - Math.floor((now - new Date(p.created_at).getTime()) / HOUR);
+    if (idx < 0 || idx > 23) continue;
+    if (p.decision === "ALLOW") buckets[idx].allow++;
+    else if (p.decision === "ESCALATE") buckets[idx].escalate++;
+    else if (p.decision === "BLOCK") buckets[idx].block++;
+  }
+  return { buckets, labels };
+}
+
+function timeLeft(iso: string) {
+  const mins = Math.round((Date.parse(iso) - Date.now()) / 6e4);
+  if (mins < 1) return "expires now";
+  if (mins < 60) return mins + "m left";
+  return Math.round(mins / 60) + "h left";
+}
+
+function Bars({ buckets, labels }: { buckets: Bucket[]; labels: string[] }) {
+  const totals = buckets.map((b) => b.allow + b.escalate + b.block);
+  const max = Math.max(1, ...totals);
+  return (
+    <>
+      <div className="aegc-bars" role="img" aria-label="Decisions per hour, last 24 hours">
+        {buckets.map((b, i) => {
+          const t = totals[i];
+          const h = t === 0 ? 1 : Math.max(6, (t / max) * 100);
+          return (
+            <div key={i} className="aegc-bar" title={labels[i] + ":00 \u00b7 " + t + (t === 1 ? " decision" : " decisions")}>
+              <div className="aegc-bar__area">
+                <div className="aegc-bar__col" style={{ height: h + "%", animationDelay: i * 20 + "ms" }}>
+                  {t > 0 ? (
+                    <>
+                      <i style={{ flex: b.block, background: "var(--block)" }} />
+                      <i style={{ flex: b.escalate, background: "var(--escalate)" }} />
+                      <i style={{ flex: b.allow, background: "var(--allow)" }} />
+                    </>
+                  ) : null}
+                </div>
+              </div>
+              <span>{i % 3 === 0 ? labels[i] : ""}</span>
+            </div>
+          );
+        })}
+      </div>
+      <div className="aegc-legend">
+        <span><i style={{ background: "var(--allow)" }} />Allow</span>
+        <span><i style={{ background: "var(--escalate)" }} />Escalate</span>
+        <span><i style={{ background: "var(--block)" }} />Block</span>
+      </div>
+    </>
+  );
+}
+
+function Overview({ ws }: { ws: Workspace }) {
+  const { userName, userEmail } = useWorkspace();
+  const [c, setC] = useState<Counts | null>(null);
+  const [series, setSeries] = useState<{ buckets: Bucket[]; labels: string[] } | null>(null);
+  const [recent, setRecent] = useState<Row[]>([]);
+  const [agents, setAgents] = useState<Row[]>([]);
+  const [pend, setPend] = useState<Row[]>([]);
+  const [hide, setHide] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    const load = async () => {
+      const sb = createClient();
+      const now = new Date();
+      const nowIso = now.toISOString();
+      const since = new Date(now.getTime() - 24 * HOUR).toISOString();
+      const w = ws.id;
+      const [ag, po, pe, inc, tot, blk, esc, ser, rec, agl, pel] = await Promise.all([
+        sb.from("agents").select("id", { count: "exact", head: true }).eq("workspace_id", w),
+        sb.from("policies").select("id", { count: "exact", head: true }).eq("workspace_id", w),
+        sb.from("approvals").select("id", { count: "exact", head: true }).eq("workspace_id", w).eq("status", "pending").gt("expires_at", nowIso),
+        sb.from("incidents").select("id", { count: "exact", head: true }).eq("workspace_id", w).eq("status", "open"),
+        sb.from("decisions").select("id", { count: "exact", head: true }).eq("workspace_id", w).gte("created_at", since),
+        sb.from("decisions").select("id", { count: "exact", head: true }).eq("workspace_id", w).gte("created_at", since).eq("decision", "BLOCK"),
+        sb.from("decisions").select("id", { count: "exact", head: true }).eq("workspace_id", w).gte("created_at", since).eq("decision", "ESCALATE"),
+        sb.from("decisions").select("created_at,decision").eq("workspace_id", w).gte("created_at", since).order("created_at", { ascending: false }).limit(1000),
+        sb.from("decisions").select("id,created_at,agent_name,action,resource,decision").eq("workspace_id", w).order("created_at", { ascending: false }).limit(8),
+        sb.from("agents").select("id,name,framework").eq("workspace_id", w).order("name").limit(5),
+        sb.from("approvals").select("id,agent_name,action,requested_at,expires_at").eq("workspace_id", w).eq("status", "pending").gt("expires_at", nowIso).order("requested_at", { ascending: false }).limit(4),
+      ]);
+      if (!alive) return;
+      setC({ agents: cnt(ag), policies: cnt(po), pending: cnt(pe), incidents: cnt(inc), total: cnt(tot), block: cnt(blk), escalate: cnt(esc) });
+      setSeries(bucketize((ser.data ?? []) as Point[]));
+      setRecent((rec.data ?? []) as Row[]);
+      setAgents((agl.data ?? []) as Row[]);
+      setPend((pel.data ?? []) as Row[]);
+    };
+    void load();
+    const t = window.setInterval(() => { void load(); }, 30000);
+    return () => { alive = false; window.clearInterval(t); };
+  }, [ws.id]);
+
+  const name = userName || (userEmail ? userEmail.split("@")[0] : "there");
+  const reco =
+    c && c.agents === 0
+      ? { text: "Connect your first agent to start evaluating actions.", href: "/dashboard/agents", cta: "Register agent" }
+      : c && c.policies === 0
+        ? { text: "Define a policy so your agents have rules to follow.", href: "/dashboard/policies", cta: "Create policy" }
+        : null;
+  const anyData = series ? series.buckets.some((b) => b.allow + b.escalate + b.block > 0) : false;
+
+  return (
+    <div>
+      {reco && !hide ? (
+        <div className="aegc-reco" role="note">
+          <b>Recommended:</b>
+          <span>{reco.text}</span>
+          <span className="aegc-reco__sp" />
+          <Link href={reco.href}>{reco.cta}<ArrowRight aria-hidden="true" /></Link>
+          <button type="button" aria-label="Dismiss" onClick={() => setHide(true)}><X aria-hidden="true" /></button>
+        </div>
+      ) : null}
+
+      <div className="aegc-hello">
+        <div>
+          <h1>Hello, {name}</h1>
+          <p>{ws.name}</p>
+        </div>
+        <Link href="/dashboard/agents" className="aegc-btn aegc-btn--solid">Register agent</Link>
+      </div>
+
+      <div className="aegc-stats">
+        <Link href="/dashboard/decisions" className="aegc-stat"><span className="aegc-stat__l">Decisions (24h)</span><span className="aegc-stat__v">{num(c?.total ?? null)}</span></Link>
+        <Link href="/dashboard/decisions" className="aegc-stat"><span className="aegc-stat__l">Blocked (24h)</span><span className="aegc-stat__v">{num(c?.block ?? null)}</span></Link>
+        <Link href="/dashboard/approvals" className="aegc-stat"><span className="aegc-stat__l">Pending approvals</span><span className={"aegc-stat__v" + ((c?.pending ?? 0) > 0 ? " aegc-stat__v--warn" : "")}>{num(c?.pending ?? null)}</span></Link>
+        <Link href="/dashboard/agents" className="aegc-stat"><span className="aegc-stat__l">Agents</span><span className="aegc-stat__v">{num(c?.agents ?? null)}</span></Link>
+      </div>
+
+      <div className="aegc-grid">
+        <section className="aegc-card">
+          <div className="aegc-card__h">
+            <h2>Decisions<small>per hour, last 24 hours</small></h2>
+            <Link href="/dashboard/activity">Live activity</Link>
+          </div>
+          {series && anyData ? (
+            <Bars buckets={series.buckets} labels={series.labels} />
+          ) : (
+            <div className="aegc-empty">
+              <Activity aria-hidden="true" />
+              <span>{series ? "No decisions in the last 24 hours." : "Loading..."}</span>
+            </div>
+          )}
+        </section>
+
+        <div className="aegc-stack">
+          <section className="aegc-card">
+            <div className="aegc-card__h">
+              <h2>Agents</h2>
+              <Link href="/dashboard/agents">Manage agents</Link>
+            </div>
+            {agents.length > 0 ? (
+              <div className="aegc-list">
+                {agents.map((a) => (
+                  <Link key={String(a.id)} href={"/dashboard/agents/" + a.id} className="aegc-li">
+                    <span className="aegc-li__ic"><Bot aria-hidden="true" /></span>
+                    <span className="aegc-li__t"><b>{String(a.name)}</b><small>{a.framework ? String(a.framework) : "agent"}</small></span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="aegc-note">No agents yet. <Link href="/dashboard/agents">Register your first agent</Link>.</p>
+            )}
+          </section>
+
+          <section className="aegc-card">
+            <div className="aegc-card__h">
+              <h2>Needs your attention</h2>
+              <Link href="/dashboard/approvals">Open queue</Link>
+            </div>
+            {pend.length > 0 ? (
+              <div className="aegc-list">
+                {pend.map((p) => (
+                  <Link key={String(p.id)} href={"/dashboard/approvals/" + p.id} className="aegc-li">
+                    <span className="aegc-li__ic"><UserCheck aria-hidden="true" /></span>
+                    <span className="aegc-li__t"><b className="aegc-mono">{String(p.action ?? "action")}</b><small>{String(p.agent_name ?? "agent")}</small></span>
+                    <span className="aegc-li__r">{timeLeft(String(p.expires_at))}</span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="aegc-note">All clear. No action is waiting for a decision.</p>
+            )}
+            {c && c.incidents !== null && c.incidents > 0 ? (
+              <p className="aegc-note"><Link href="/dashboard/incidents">{num(c.incidents)} open incidents</Link> to review.</p>
+            ) : null}
+          </section>
+        </div>
+      </div>
+
+      <section className="aegc-card" style={{ marginTop: 14 }}>
+        <div className="aegc-card__h">
+          <h2>Recent decisions</h2>
+          <Link href="/dashboard/decisions">View all</Link>
+        </div>
+        {recent.length > 0 ? (
+          <div className="aegc-tablewrap">
+            <div className="aegc-rows">
+              <div className="aegc-row aegc-row--h"><span>Time</span><span>Agent</span><span>Action</span><span>Resource</span><span>Decision</span></div>
+              {recent.map((r) => (
+                <div key={String(r.id)} className="aegc-row">
+                  <span className="aegc-dim">{fmt(r.created_at)}</span>
+                  <span>{String(r.agent_name ?? "-")}</span>
+                  <span className="aegc-mono">{String(r.action ?? "-")}</span>
+                  <span className="aegc-dim">{r.resource ? String(r.resource) : "-"}</span>
+                  <span><Badge value={r.decision} /></span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="aegc-note">No decisions yet. Send a test action from an agent and it will show up here.</p>
+        )}
+      </section>
+    </div>
+  );
+}
+
+export default function DashboardPage() {
+  return <WorkspaceGate>{(ws) => <Overview key={ws.id} ws={ws} />}</WorkspaceGate>;
+}
+
+##### src\app\[locale]\(app)\dashboard\workspace\page.tsx #####
+"use client";
+
+import { useState } from "react";
+import { Check, Pencil, Plus, Trash2 } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { useWorkspace } from "@/components/aegisora/workspace-provider";
+
+const BTN = "inline-flex h-8 items-center gap-1.5 rounded-full border border-border px-3 text-xs hover:bg-surface-3 disabled:opacity-50";
+const RED = { color: "var(--block)", borderColor: "rgb(255 92 92 / 0.4)" } as const;
+
+export default function WorkspacePage() {
+  const { workspaces, currentWorkspace, loading, setCurrentWorkspaceId, refresh } = useWorkspace();
+  const [editId, setEditId] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [delId, setDelId] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const isOwner = (r: string) => r.toUpperCase() === "OWNER";
+  const canEdit = (r: string) => isOwner(r) || r.toUpperCase() === "ADMIN";
+
+  async function rename(id: string) {
+    const v = name.trim();
+    if (v.length < 2) { setMsg({ ok: false, text: "Name must be at least 2 characters." }); return; }
+    setBusy(true);
+    setMsg(null);
+    const { data, error } = await createClient().from("workspaces").update({ name: v }).eq("id", id).select("id");
+    setBusy(false);
+    if (error || !data || data.length === 0) {
+      setMsg({ ok: false, text: error?.message ?? "Rename was not permitted for this workspace." });
+      return;
+    }
+    setEditId(null);
+    setMsg({ ok: true, text: "Workspace renamed." });
+    refresh();
+  }
+
+  async function remove(id: string) {
+    setBusy(true);
+    setMsg(null);
+    const { data, error } = await createClient().from("workspaces").delete().eq("id", id).select("id");
+    setBusy(false);
+    if (error || !data || data.length === 0) {
+      setMsg({ ok: false, text: error?.message ?? "Delete was not permitted. Only owners can delete a workspace." });
+      return;
+    }
+    setDelId(null);
+    setConfirm("");
+    setMsg({ ok: true, text: "Workspace deleted." });
+    refresh();
+  }
+
+  if (loading) {
+    return <div className="mx-auto max-w-4xl py-12 text-sm text-muted-foreground">Loading workspaces...</div>;
+  }
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-6">
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-light tracking-tight">Workspaces</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Switch, rename, delete or create workspaces.</p>
+        </div>
+        <Link href="/onboarding" className="aegc-btn aegc-btn--solid"><Plus aria-hidden="true" />New workspace</Link>
+      </header>
+
+      {msg ? (
+        <p role="status" className="rounded-lg border border-border px-4 py-3 text-sm" style={{ color: msg.ok ? "var(--allow)" : "var(--block)" }}>{msg.text}</p>
+      ) : null}
+
+      {workspaces.length === 0 ? (
+        <p className="aeg-panel p-5 text-sm text-muted-foreground">No workspace yet. Create one to get started.</p>
+      ) : (
+        <ul className="aeg-panel divide-y divide-border/60">
+          {workspaces.map((w) => {
+            const current = currentWorkspace?.id === w.id;
+            return (
+              <li key={w.id} className="p-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="min-w-0 flex-1">
+                    {editId === w.id ? (
+                      <input
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        maxLength={60}
+                        autoFocus
+                        aria-label="Workspace name"
+                        className="h-9 w-full max-w-xs rounded-md border border-border bg-transparent px-3 text-sm"
+                      />
+                    ) : (
+                      <p className="truncate text-sm font-medium">{w.name}{current ? <Check className="ml-2 inline size-4 text-cyan" aria-label="Current" /> : null}</p>
+                    )}
+                    <p className="mt-0.5 truncate font-mono text-[11px] text-muted-foreground">{w.slug} &middot; {w.role}</p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {editId === w.id ? (
+                      <>
+                        <button type="button" className={BTN} disabled={busy} onClick={() => rename(w.id)}>Save</button>
+                        <button type="button" className={BTN} disabled={busy} onClick={() => setEditId(null)}>Cancel</button>
+                      </>
+                    ) : (
+                      <>
+                        {!current ? <button type="button" className={BTN} onClick={() => setCurrentWorkspaceId(w.id)}>Switch</button> : null}
+                        {canEdit(w.role) ? (
+                          <button type="button" className={BTN} onClick={() => { setEditId(w.id); setName(w.name); setDelId(null); setMsg(null); }}>
+                            <Pencil className="size-3.5" aria-hidden="true" />Rename
+                          </button>
+                        ) : null}
+                        {isOwner(w.role) ? (
+                          <button type="button" className={BTN} style={RED} onClick={() => { setDelId(w.id); setConfirm(""); setEditId(null); setMsg(null); }}>
+                            <Trash2 className="size-3.5" aria-hidden="true" />Delete
+                          </button>
+                        ) : null}
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {delId === w.id ? (
+                  <div className="mt-4 rounded-lg border p-4" style={{ borderColor: "rgb(255 92 92 / 0.35)" }}>
+                    <p className="text-sm">
+                      This permanently deletes <b>{w.name}</b> with all its agents, policies, decisions, evidence and keys. This cannot be undone.
+                    </p>
+                    <p className="mt-2 text-xs text-muted-foreground">Type DELETE to confirm.</p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <input
+                        value={confirm}
+                        onChange={(e) => setConfirm(e.target.value)}
+                        aria-label="Type DELETE to confirm"
+                        className="h-9 w-40 rounded-md border border-border bg-transparent px-3 text-sm"
+                      />
+                      <button type="button" className={BTN} style={RED} disabled={busy || confirm !== "DELETE"} onClick={() => remove(w.id)}>Delete workspace</button>
+                      <button type="button" className={BTN} disabled={busy} onClick={() => { setDelId(null); setConfirm(""); }}>Cancel</button>
+                    </div>
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <p className="text-sm text-muted-foreground">
+        Members and roles are managed under <Link className="underline underline-offset-4" href="/dashboard/team">Team</Link>.
+      </p>
+    </div>
+  );
+}
+
+##### src\app\[locale]\(app)\dashboard\api-keys\page.tsx #####
+"use client";
+
+import { useState, type FormEvent } from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { LiveTable } from "@/components/aegisora/live/live-table";
+import { Badge, Notice, Panel, btnGhost, fmt } from "@/components/aegisora/live/ui";
+import type { Workspace } from "@/lib/aegisora/use-workspace";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { btnPrimary } from "@/lib/ui";
+import { confirmDialog, notify } from "@/components/aegisora/live/feedback";
+
+function KeyTools({ ws, reload }: { ws: Workspace; reload: () => void }) {
+  const [name, setName] = useState("");
+  const [fresh, setFresh] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [needsMfa, setNeedsMfa] = useState(false);
+
+  async function create(e: FormEvent) {
+    e.preventDefault();
+    setErr(null); setCopied(false); setNeedsMfa(false);
+    const { data, error } = await createClient().rpc("create_api_key", { ws: ws.id, key_name: name.trim() });
+    if (error) {
+      if (/forbidden/i.test(error.message)) {
+        const { data: lvl } = await createClient().auth.mfa.getAuthenticatorAssuranceLevel();
+        const mfaMissing = lvl?.currentLevel !== "aal2";
+        setNeedsMfa(mfaMissing);
+        return setErr(mfaMissing ? "Multi-factor verification is required before you can manage API keys." : "Only workspace owners and admins can create API keys.");
+      }
+      return setErr(error.message);
+    }
+    setFresh(String(data)); setName(""); reload();
+  }
+
+  return (
+    <div className="space-y-4">
+      <Panel>
+        <form onSubmit={create} className="flex flex-wrap items-end gap-3">
+          <div className="min-w-56 flex-1 space-y-1.5"><Label htmlFor="k-name">Key name</Label><Input id="k-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="production-runtime" required maxLength={80} /></div>
+          <button type="submit" className={btnPrimary}>Create API key</button>
+        </form>
+      </Panel>
+      {err && (
+        <Notice>
+          {err}
+          {needsMfa && <>{" "}<Link href="/dashboard/identity" className="underline underline-offset-2">Verify on the Identity page</Link>.</>}
+        </Notice>
+      )}
+      {fresh && (
+        <Panel>
+          <p className="text-sm font-medium">Copy your key now. It is shown only once and cannot be recovered.</p>
+          <div className="mt-3 flex items-center gap-2">
+            <code className="flex-1 overflow-x-auto rounded-sm bg-surface-3 px-3 py-2 font-mono text-xs">{fresh}</code>
+            <button className={btnGhost} onClick={async () => { await navigator.clipboard.writeText(fresh); setCopied(true); }}>{copied ? "Copied" : "Copy"}</button>
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">Keep it server-side. Never ship it in browser code or commit it to git.</p>
+        </Panel>
+      )}
+    </div>
+  );
+}
+
+export default function ApiKeysPage() {
+  return (
+    <LiveTable
+      table="api_keys"
+      title="API Keys"
+      description="Runtime credentials your agents use to call Aegisora. Only a hash is stored."
+      select="id,name,prefix,last_used_at,revoked_at,created_at"
+      above={(ws, reload) => <KeyTools ws={ws} reload={reload} />}
+      columns={[
+        { label: "Name", render: (r) => r.name },
+        { label: "Key", render: (r) => <span className="font-mono text-xs">{r.prefix}...</span> },
+        { label: "Created", render: (r) => fmt(r.created_at) },
+        { label: "Last used", render: (r) => fmt(r.last_used_at) },
+        { label: "Status", render: (r) => <Badge value={r.revoked_at ? "suspended" : "active"} /> },
+      ]}
+      actions={(r, reload) =>
+        r.revoked_at ? (
+          <button
+            className={btnGhost}
+            onClick={async () => {
+              if (!(await confirmDialog({ title: `Delete "${r.name}"?`, body: "This revoked key is removed from the list permanently. Audit records are kept.", confirmLabel: "Delete key", danger: true }))) return;
+              const { data, error } = await createClient().from("api_keys").delete().eq("id", r.id).not("revoked_at", "is", null).select("id");
+              if (error) notify(error.message, false);
+              else if (!data || data.length === 0) notify("Delete not permitted. Only workspace owners and admins can delete keys.", false);
+              else notify("Key deleted.");
+              reload();
+            }}
+          >
+            Delete
+          </button>
+        ) : (
+          <button className={btnGhost} onClick={async () => { if (!(await confirmDialog({ title: `Revoke "${r.name}"?`, body: "Agents using this key stop working immediately.", confirmLabel: "Revoke key", danger: true }))) return; const { error } = await createClient().from("api_keys").update({ revoked_at: new Date().toISOString() }).eq("id", r.id); if (error) notify(error.message, false); reload(); }}>
+            Revoke
+          </button>
+        )
+      }
+      empty={{ title: "No API keys", body: "Create a key to let an agent call POST /api/v1/evaluate." }}
+    />
+  );
+}
+
+##### src\app\[locale]\(app)\dashboard\billing\usage-card.tsx #####
+"use client";
+
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useWorkspace } from "@/lib/aegisora/use-workspace";
+
+type Usage = {
+  window: { start: string; end: string };
+  evaluations: { total: number; allow: number; block: number; escalate: number };
+  source: string;
+  billing_status: "not_connected";
+};
+
+export function UsageCard() {
+  const { ws, loading: workspaceLoading } = useWorkspace();
+  const [usage, setUsage] = useState<Usage | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      if (workspaceLoading) return;
+      if (!ws) {
+        setError("No active workspace is available.");
+        setLoading(false);
+        return;
+      }
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        if (!cancelled) { setError("Sign in to view workspace usage."); setLoading(false); }
+        return;
+      }
+      try {
+        const response = await fetch("/api/v1/workspace/usage", {
+          headers: { Authorization: `Bearer ${session.access_token}`, "X-Workspace-Id": ws.id },
+          cache: "no-store",
+        });
+        const body = await response.json();
+        if (!response.ok) throw new Error(body?.error?.message ?? "Unable to load usage.");
+        if (!cancelled) { setUsage(body as Usage); setError(null); }
+      } catch (cause) {
+        if (!cancelled) setError(cause instanceof Error ? cause.message : "Unable to load usage.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    void load();
+    return () => { cancelled = true; };
+  }, [ws, workspaceLoading]);
+
+  const metric = (label: string, value?: number) => (
+    <div className="rounded-lg border border-border/70 p-4" key={label}>
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="mt-2 text-2xl font-medium tabular-nums">{loading ? "—" : (value ?? 0).toLocaleString()}</p>
+    </div>
+  );
+
+  return (
+    <section aria-labelledby="usage-heading" className="aeg-panel space-y-4 p-5">
+      <div>
+        <h2 id="usage-heading" className="text-sm font-medium">Governance activity</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Persisted decisions recorded this UTC calendar month. These counts are operational telemetry, not billable usage.</p>
+      </div>
+      {error ? <p role="status" className="text-sm text-destructive">{error}</p> : (
+        <>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {metric("Evaluations", usage?.evaluations.total)}
+            {metric("Allowed", usage?.evaluations.allow)}
+            {metric("Blocked", usage?.evaluations.block)}
+            {metric("Escalated", usage?.evaluations.escalate)}
+          </div>
+          {usage && <p className="text-xs text-muted-foreground">UTC window: {new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(usage.window.start))} up to (but not including) {new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(usage.window.end))}. Source: {usage.source}.</p>}
+        </>
+      )}
+    </section>
+  );
+}
+
+##### src\app\[locale]\(site)\blog\[slug]\page.tsx #####
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { POSTS } from "@/lib/blog-posts";
+import { BlogCover } from "@/components/aegx/blog-cover";
+import { Cta, Hero, Sec } from "@/components/aegx/ui";
+
+type Props = { params: Promise<{ locale: string; slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const post = POSTS.find((p) => p.slug === slug);
+  return post ? { title: post.title, description: post.excerpt } : {};
+}
+
+export default async function BlogPost({ params }: Props) {
+  const { locale, slug } = await params;
+  const post = POSTS.find((p) => p.slug === slug);
+  if (!post) notFound();
+  const t = await getTranslations({ locale, namespace: "Blog" });
+  const de = locale === "de";
+  const fmt = (iso: string) =>
+    new Date(iso + "T00:00:00Z").toLocaleDateString(de ? "de-DE" : "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+  const more = POSTS.filter((p) => p.slug !== post.slug).slice(0, 3);
+
+  return (
+    <>
+      <Hero
+        compact
+        badge={post.category + " \u00b7 " + fmt(post.date) + " \u00b7 " + t("minRead", { n: post.readMinutes })}
+        title={post.title}
+        intro={post.excerpt}
+      />
+      <Sec flush>
+        <article className="aegx-art">
+          {locale !== "en" ? <p className="aegx-art__note">{t("enOnly")}</p> : null}
+          {post.body.map((b, i) => {
+            if (b.t === "h2") return <h2 key={i} className="aegx-art__h2">{b.text}</h2>;
+            if (b.t === "p") return <p key={i} className="aegx-art__p">{b.text}</p>;
+            if (b.t === "ul")
+              return (
+                <ul key={i} className="aegx-art__ul">
+                  {b.items.map((it) => <li key={it}>{it}</li>)}
+                </ul>
+              );
+            return <pre key={i} className="aegx-art__code">{b.text}</pre>;
+          })}
+        </article>
+      </Sec>
+      {more.length > 0 ? (
+        <Sec flush>
+          <div className="aegx-tabs"><span style={{ fontSize: 13, color: "#a3a3a3" }}>{t("more")}</span></div>
+          <div className="aegx-cells aegx-cells--3">
+            {more.map((p) => (
+              <Link key={p.slug} href={"/blog/" + p.slug} className="aegx-cell aegx-post">
+                <div className="aegx-post__cover"><BlogCover seed={p.slug} label={p.category} /></div>
+                <div className="aegx-post__b">
+                  <span className="aegx-post__cat">{p.category}</span>
+                  <h3 className="aegx-h3">{p.title}</h3>
+                  <span className="aegx-post__meta">{fmt(p.date) + " \u00b7 " + t("minRead", { n: p.readMinutes })}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </Sec>
+      ) : null}
+      <Cta
+        title={t("postCtaTitle")}
+        body={t("postCtaBody")}
+        primary={{ label: t("test"), href: "/signup" }}
+        secondary={{ label: t("enterprise"), href: "/enterprise" }}
+      />
+    </>
+  );
+}
+
+##### src\app\[locale]\(site)\blog\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { POSTS } from "@/lib/blog-posts";
+import { BlogCover } from "@/components/aegx/blog-cover";
+import { BlogGrid } from "@/components/aegx/blog-grid";
+import { Cta, Hero, Sec } from "@/components/aegx/ui";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Blog" });
+  return { title: t("metaTitle"), description: t("metaDesc") };
+}
+
+export default async function BlogIndex({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Blog" });
+  const de = locale === "de";
+  const fmt = (iso: string) =>
+    new Date(iso + "T00:00:00Z").toLocaleDateString(de ? "de-DE" : "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+  const [first, ...rest] = POSTS;
+  const posts = rest.map((p) => ({
+    slug: p.slug, title: p.title, excerpt: p.excerpt, category: p.category, date: fmt(p.date), read: t("minRead", { n: p.readMinutes }),
+  }));
+  return (
+    <>
+      <Hero compact badge={t("metaTitle")} title={t("title")} intro={t("intro")} />
+      {first ? (
+        <Sec flush>
+          <Link href={"/blog/" + first.slug} className="aegx-feature">
+            <div className="aegx-feature__cover"><BlogCover seed={first.slug} label={first.category} /></div>
+            <div className="aegx-feature__b">
+              <span className="aegx-post__cat">{first.category}</span>
+              <h2 className="aegx-h2">{first.title}</h2>
+              <p className="aegx-p">{first.excerpt}</p>
+              <span className="aegx-post__meta">{fmt(first.date) + " \u00b7 " + t("minRead", { n: first.readMinutes })}</span>
+            </div>
+          </Link>
+          {posts.length > 0 ? <BlogGrid posts={posts} allLabel={de ? "Alle" : "All"} /> : null}
+        </Sec>
+      ) : null}
+      <Cta
+        title={t("ctaTitle")}
+        body={t("ctaBody")}
+        primary={{ label: t("test"), href: "/signup" }}
+        secondary={{ label: t("quick"), href: "/docs/quickstart" }}
+      />
+    </>
+  );
+}
+
+##### src\components\aegisora\live\decision-charts.tsx #####
+export type Bucket = { allow: number; escalate: number; block: number };
+
+export function DecisionSplit({ allow, escalate, block }: Bucket) {
+  const total = allow + escalate + block;
+  if (total === 0) {
+    return <p className="mt-3 text-sm text-muted-foreground">No decisions in the last 24 hours.</p>;
+  }
+  const parts = [
+    { key: "allowed", n: allow, bar: "bg-allow", text: "text-allow" },
+    { key: "escalated", n: escalate, bar: "bg-escalate", text: "text-escalate" },
+    { key: "blocked", n: block, bar: "bg-block", text: "text-block" },
+  ];
+  return (
+    <div className="mt-4">
+      <div
+        className="flex h-3 w-full overflow-hidden rounded-full bg-surface-3"
+        role="img"
+        aria-label={`${allow} allowed, ${escalate} escalated, ${block} blocked`}
+      >
+        {parts.map((p) =>
+          p.n > 0 ? <div key={p.key} className={p.bar} style={{ width: `${(p.n / total) * 100}%` }} title={`${p.n} ${p.key}`} /> : null,
+        )}
+      </div>
+      <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm">
+        {parts.map((p) => (
+          <span key={p.key}>
+            <span className={`text-2xl font-semibold ${p.text}`}>{p.n}</span>{" "}
+            <span className="text-muted-foreground">
+              {p.key} ({Math.round((p.n / total) * 100)}%)
+            </span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function HourlyChart({ buckets, labels }: { buckets: Bucket[]; labels: string[] }) {
+  const W = 720, H = 190, base = 150, top = 12, step = 30, bw = 20, left = 8;
+  const max = Math.max(1, ...buckets.map((b) => b.allow + b.escalate + b.block));
+  const scale = (base - top) / max;
+  return (
+    <div className="mt-4 overflow-x-auto">
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Decisions per hour, last 24 hours" className="h-auto w-full min-w-[560px]">
+        {[0.25, 0.5, 0.75, 1].map((f) => (
+          <line key={f} x1={0} x2={W} y1={base - (base - top) * f} y2={base - (base - top) * f} stroke="var(--border)" strokeDasharray="3 4" />
+        ))}
+        <line x1={0} x2={W} y1={base} y2={base} stroke="var(--border)" />
+        <text x={W} y={top - 2} textAnchor="end" fontSize={10} fill="var(--muted-foreground)">{max}</text>
+        {buckets.map((b, i) => {
+          const x = left + i * step;
+          const hA = b.allow * scale, hE = b.escalate * scale, hB = b.block * scale;
+          const total = b.allow + b.escalate + b.block;
+          return (
+            <g key={i}>
+              <title>{`${labels[i]}:00 - ${total} decisions (${b.allow} allow, ${b.escalate} escalate, ${b.block} block)`}</title>
+              <rect x={x - 4} y={top} width={bw + 8} height={base - top} fill="transparent" />
+              {hA > 0 && <rect x={x} y={base - hA} width={bw} height={hA} rx={2} fill="var(--allow)" />}
+              {hE > 0 && <rect x={x} y={base - hA - hE} width={bw} height={hE} rx={2} fill="var(--escalate)" />}
+              {hB > 0 && <rect x={x} y={base - hA - hE - hB} width={bw} height={hB} rx={2} fill="var(--block)" />}
+              {i % 3 === 0 && (
+                <text x={x + bw / 2} y={base + 18} textAnchor="middle" fontSize={10} fill="var(--muted-foreground)">
+                  {labels[i]}:00
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+      <div className="mt-2 flex gap-4 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1.5"><span className="size-2 rounded-sm bg-allow" />Allow</span>
+        <span className="flex items-center gap-1.5"><span className="size-2 rounded-sm bg-escalate" />Escalate</span>
+        <span className="flex items-center gap-1.5"><span className="size-2 rounded-sm bg-block" />Block</span>
+      </div>
+    </div>
+  );
+}
+
+##### src\components\aegisora\live\overview-insights.tsx #####
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { AlertTriangle, ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
+import {
+  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart,
+  PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ReferenceLine, ResponsiveContainer,
+  Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis,
+} from "recharts";
+import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+
+type Row = { created_at: string; decision: string | null; agent_name: string | null; action: string | null; risk_score: number | null; policy_id: string | null };
+type Pending = { id: string; agent_name: string | null; action: string | null; requested_at: string; expires_at: string };
+type Bubble = { name: string; x: number; y: number; z: number; esc: number };
+
+const DAY = 864e5;
+const PAGE = 1000;
+const MAX_PAGES = 5;
+const C = { allow: "var(--allow)", escalate: "var(--escalate)", block: "var(--block)", primary: "var(--primary)", grid: "var(--border)", text: "var(--muted-foreground)" };
+const PALETTE = ["#3a85f8", "#34d399", "#fbbf24", "#f87171", "#a78bfa", "#94a3b8"];
+const WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+const tip = {
+  contentStyle: { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 10, fontSize: 12, color: "var(--popover-foreground)", boxShadow: "0 8px 24px rgba(0,0,0,0.18)" },
+  labelStyle: { color: "var(--popover-foreground)", fontWeight: 600 },
+  itemStyle: { color: "var(--popover-foreground)" },
+};
+const axis = { tick: { fontSize: 11, fill: "var(--muted-foreground)" }, axisLine: false, tickLine: false };
+
+const pct = (a: number, b: number) => (b > 0 ? Math.round((a / b) * 1000) / 10 : 0);
+const dayKey = (d: Date) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+
+function stat(rows: Row[]) {
+  let allow = 0, block = 0, esc = 0, policy = 0, high = 0;
+  for (const r of rows) {
+    if (r.decision === "ALLOW") allow++;
+    else if (r.decision === "BLOCK") block++;
+    else if (r.decision === "ESCALATE") esc++;
+    if (r.policy_id) policy++;
+    if ((r.risk_score ?? 0) >= 70) high++;
+  }
+  return { total: rows.length, allow, block, esc, policy, high };
+}
+
+function build(rows: Row[]) {
+  const days = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    d.setDate(d.getDate() - (13 - i));
+    return { key: dayKey(d), label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }), allow: 0, escalate: 0, block: 0, total: 0, blockRate: 0, allowRate: 0, escRate: 0 };
+  });
+  const idx = new Map(days.map((d, i) => [d.key, i]));
+  const cur: Row[] = [];
+  const prev: Row[] = [];
+  const week = [0, 0, 0, 0, 0, 0, 0];
+  for (const r of rows) {
+    const t = new Date(r.created_at);
+    const i = idx.get(dayKey(t));
+    if (i === undefined) continue;
+    const d = days[i];
+    d.total++;
+    if (r.decision === "ALLOW") d.allow++;
+    else if (r.decision === "BLOCK") d.block++;
+    else if (r.decision === "ESCALATE") d.escalate++;
+    (i >= 7 ? cur : prev).push(r);
+    week[(t.getDay() + 6) % 7]++;
+  }
+  for (const d of days) {
+    d.blockRate = pct(d.block, d.total);
+    d.allowRate = pct(d.allow, d.total);
+    d.escRate = pct(d.escalate, d.total);
+  }
+  const sc = stat(cur);
+  const sp = stat(prev);
+
+  const ag = new Map<string, { name: string; allow: number; escalate: number; block: number; total: number }>();
+  const cat = new Map<string, number>();
+  const blocked = new Map<string, number>();
+  for (const r of cur) {
+    const name = r.agent_name || "Unknown";
+    const a = ag.get(name) ?? { name, allow: 0, escalate: 0, block: 0, total: 0 };
+    a.total++;
+    if (r.decision === "ALLOW") a.allow++;
+    else if (r.decision === "BLOCK") a.block++;
+    else if (r.decision === "ESCALATE") a.escalate++;
+    ag.set(name, a);
+    const fam = (r.action || "unknown").split(".")[0] || "unknown";
+    cat.set(fam, (cat.get(fam) ?? 0) + 1);
+    if (r.decision === "BLOCK") blocked.set(r.action || "unknown", (blocked.get(r.action || "unknown") ?? 0) + 1);
+  }
+  const agents = [...ag.values()].sort((a, b) => b.total - a.total);
+  const bubbles: Bubble[] = agents.slice(0, 12).map((a) => ({ name: a.name, x: a.total, y: pct(a.block, a.total), z: Math.max(a.escalate, 1), esc: a.escalate }));
+  const catSorted = [...cat.entries()].sort((a, b) => b[1] - a[1]);
+  const cats = catSorted.slice(0, 5).map(([name, value]) => ({ name, value }));
+  const rest = catSorted.slice(5).reduce((s, [, v]) => s + v, 0);
+  if (rest > 0) cats.push({ name: "other", value: rest });
+  const topBlocked = [...blocked.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([action, count]) => ({ action, count }));
+  const avgBlock = pct(sc.block, sc.total);
+  const radar = [
+    { axis: "Policy coverage", cur: pct(sc.policy, sc.total), prev: pct(sp.policy, sp.total) },
+    { axis: "Allowed", cur: pct(sc.allow, sc.total), prev: pct(sp.allow, sp.total) },
+    { axis: "Blocked", cur: pct(sc.block, sc.total), prev: pct(sp.block, sp.total) },
+    { axis: "Escalated", cur: pct(sc.esc, sc.total), prev: pct(sp.esc, sp.total) },
+    { axis: "High risk", cur: pct(sc.high, sc.total), prev: pct(sp.high, sp.total) },
+  ];
+  const today = (new Date().getDay() + 6) % 7;
+  const weekData = WEEK.map((name, i) => ({ name, value: week[i], today: i === today }));
+  return { days, sc, sp, agents: agents.slice(0, 6), bubbles, cats, topBlocked, avgBlock, radar, weekData, total: rows.length };
+}
+
+function Card({ title, hint, className, children }: { title: string; hint?: string; className?: string; children: React.ReactNode }) {
+  return (
+    <section className={cn("aeg-panel min-w-0 p-4 sm:p-5", className)}>
+      <h2 className="text-sm font-semibold">{title}</h2>
+      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+function Empty() {
+  return <p className="py-10 text-center text-sm text-muted-foreground">Not enough data yet.</p>;
+}
+
+function Kpi({ label, value, deltaText, dir, tone, spark, color }: { label: string; value: string; deltaText: string | null; dir: number; tone: "good" | "bad" | "neutral"; spark: { v: number }[]; color: string }) {
+  const Icon = dir > 0 ? ArrowUpRight : dir < 0 ? ArrowDownRight : Minus;
+  const cls = dir === 0 || tone === "neutral" ? "text-muted-foreground" : (tone === "good") === (dir > 0) ? "text-allow" : "text-block";
+  return (
+    <div className="aeg-panel min-w-0 p-4 sm:p-5">
+      <div className="text-xs font-medium text-muted-foreground">{label}</div>
+      <div className="mt-2 text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">{value}</div>
+      <div className={cn("mt-1 flex items-center gap-1 text-xs", cls)}>
+        <Icon className="size-3.5" aria-hidden="true" />
+        {deltaText ?? "no prior week"}
+      </div>
+      <div className="mt-3 h-9">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={spark} margin={{ top: 2, right: 0, bottom: 0, left: 0 }}>
+            <Area type="monotone" dataKey="v" stroke={color} strokeWidth={1.5} fill={color} fillOpacity={0.14} dot={false} isAnimationActive={false} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+function BubbleTip({ active, payload }: { active?: boolean; payload?: ReadonlyArray<{ payload?: Bubble }> }) {
+  const b = active && payload && payload.length > 0 ? payload[0].payload : undefined;
+  if (!b) return null;
+  return (
+    <div style={tip.contentStyle}>
+      <div className="px-3 py-2">
+        <div className="font-semibold">{b.name}</div>
+        <div className="mt-1 text-muted-foreground">{b.x} decisions</div>
+        <div className="text-muted-foreground">{b.y}% blocked</div>
+        <div className="text-muted-foreground">{b.esc} escalations</div>
+      </div>
+    </div>
+  );
+}
+
+function hoursLeft(iso: string) {
+  const h = Math.round((Date.parse(iso) - Date.now()) / 36e5);
+  return h < 1 ? "under 1h left" : h + "h left";
+}
+
+export function OverviewInsights({ wsId }: { wsId: string }) {
+  const [rows, setRows] = useState<Row[] | null>(null);
+  const [pending, setPending] = useState<Pending[]>([]);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const sb = createClient();
+        const since = new Date();
+        since.setHours(0, 0, 0, 0);
+        since.setDate(since.getDate() - 13);
+        const out: Row[] = [];
+        for (let p = 0; p < MAX_PAGES; p++) {
+          const { data, error } = await sb
+            .from("decisions")
+            .select("created_at,decision,agent_name,action,risk_score,policy_id")
+            .eq("workspace_id", wsId)
+            .gte("created_at", since.toISOString())
+            .order("created_at", { ascending: false })
+            .range(p * PAGE, p * PAGE + PAGE - 1);
+          if (error) throw error;
+          const batch = (data ?? []) as Row[];
+          out.push(...batch);
+          if (batch.length < PAGE) break;
+        }
+        const ap = await sb
+          .from("approvals")
+          .select("id,agent_name,action,requested_at,expires_at")
+          .eq("workspace_id", wsId)
+          .eq("status", "pending")
+          .gt("expires_at", new Date().toISOString())
+          .order("requested_at", { ascending: false })
+          .limit(25);
+        if (!alive) return;
+        setRows(out);
+        setPending(ap.error ? [] : ((ap.data ?? []) as Pending[]));
+      } catch {
+        if (!alive) return;
+        setFailed(true);
+        setRows([]);
+      }
+    })();
+    return () => { alive = false; };
+  }, [wsId]);
+
+  const m = useMemo(() => (rows ? build(rows) : null), [rows]);
+
+  if (!m) {
+    return (
+      <div className="space-y-4" aria-busy="true">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {[0, 1, 2, 3].map((i) => <div key={i} className="h-36 animate-pulse rounded-xl bg-surface-3" />)}
+        </div>
+        <div className="h-72 animate-pulse rounded-xl bg-surface-3" />
+      </div>
+    );
+  }
+  if (failed) {
+    return <p className="rounded-lg border border-border bg-surface-1 p-4 text-sm text-muted-foreground">The trend charts could not be loaded. Refresh the page, or contact support if this continues.</p>;
+  }
+  if (m.total === 0) {
+    return <Card title="Trends"><p className="py-6 text-sm text-muted-foreground">No decisions in the last 14 days. Charts appear here after your agents send their first actions.</p></Card>;
+  }
+
+  const { sc, sp } = m;
+  const hasPrev = sp.total > 0;
+  const dTotal = hasPrev ? Math.round(((sc.total - sp.total) / sp.total) * 100) : null;
+  const rateDelta = (a: number, b: number) => (hasPrev ? Math.round((a - b) * 10) / 10 : null);
+  const dAllow = rateDelta(pct(sc.allow, sc.total), pct(sp.allow, sp.total));
+  const dBlock = rateDelta(pct(sc.block, sc.total), pct(sp.block, sp.total));
+  const dEsc = rateDelta(pct(sc.esc, sc.total), pct(sp.esc, sp.total));
+  const sign = (n: number) => (n > 0 ? "+" : "");
+  const fmtPct = (n: number | null) => (n === null ? null : sign(n) + n + " pp vs previous 7 days");
+  const dir = (n: number | null) => (n === null || n === 0 ? 0 : n > 0 ? 1 : -1);
+  const sparkOf = (k: "total" | "allowRate" | "blockRate" | "escRate") => m.days.map((d) => ({ v: d[k] }));
+  const catTotal = m.cats.reduce((s, c) => s + c.value, 0);
+  const agentsH = Math.max(200, m.agents.length * 46 + 40);
+  const bubbleColor = (y: number) => (y >= 40 ? C.block : y >= 15 ? C.escalate : C.allow);
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        <Kpi label="Decisions, 7 days" value={sc.total.toLocaleString()} deltaText={dTotal === null ? null : sign(dTotal) + dTotal + "% vs previous 7 days"} dir={dir(dTotal)} tone="neutral" spark={sparkOf("total")} color={C.primary} />
+        <Kpi label="Allow rate" value={pct(sc.allow, sc.total) + "%"} deltaText={fmtPct(dAllow)} dir={dir(dAllow)} tone="good" spark={sparkOf("allowRate")} color={C.allow} />
+        <Kpi label="Block rate" value={pct(sc.block, sc.total) + "%"} deltaText={fmtPct(dBlock)} dir={dir(dBlock)} tone="neutral" spark={sparkOf("blockRate")} color={C.block} />
+        <Kpi label="Escalation rate" value={pct(sc.esc, sc.total) + "%"} deltaText={fmtPct(dEsc)} dir={dir(dEsc)} tone="bad" spark={sparkOf("escRate")} color={C.escalate} />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <Card title="Decisions per day" hint="Last 14 days. Tap or hover for exact counts.">
+
+##### src\components\aegisora\live\overview-v2.tsx #####
+"use client";
+
+import { useState } from "react";
+import { Link } from "@/i18n/navigation";
+import { focusRing } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+import type { Bucket } from "./decision-charts";
+
+export function StatCard({ label, value, href, warn }: { label: string; value: string; href: string; warn?: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={cn("block rounded-2xl border border-[color:var(--aeg-card-line)] bg-surface-1 p-4 transition-colors hover:bg-surface-2", focusRing)}
+    >
+      <span className="block text-xs text-muted-foreground">{label}</span>
+      <span className={cn("mt-2 block text-3xl font-semibold tabular-nums tracking-tight", warn ? "text-escalate" : "text-foreground")}>{value}</span>
+    </Link>
+  );
+}
+
+export function HourlyBars({ buckets, labels }: { buckets: Bucket[]; labels: string[] }) {
+  const totals = buckets.map((b) => b.allow + b.escalate + b.block);
+  const max = Math.max(1, ...totals);
+  const peak = totals.some((t) => t > 0) ? totals.indexOf(Math.max(...totals)) : null;
+  const [hover, setHover] = useState<number | null>(null);
+  const active = hover ?? peak;
+  const heightOf = (t: number) => (t === 0 ? 1.5 : Math.max(5, (t / max) * 100));
+  const b = active !== null ? buckets[active] : null;
+
+  return (
+    <div>
+      <div className="relative h-56" onPointerLeave={() => setHover(null)}>
+        <div role="img" aria-label="Decisions per hour, last 24 hours" className="flex h-full items-end gap-1.5 sm:gap-2">
+          {totals.map((t, i) => (
+            <div key={i} className="flex h-full flex-1 cursor-pointer items-end" onPointerEnter={() => setHover(i)} onClick={() => setHover(i)}>
+              <span
+                className={cn("block w-full rounded-t-md transition-colors", i === active ? "bg-[#22d3ee] shadow-[0_0_28px_rgb(34_211_238/0.5)]" : "bg-[#1a6b78]")}
+                style={{ height: heightOf(t) + "%" }}
+              />
+            </div>
+          ))}
+        </div>
+        {active !== null && b && totals[active] > 0 && (
+          <div
+            className="pointer-events-none absolute z-10 w-40 -translate-x-1/2 rounded-xl border border-border bg-popover p-3 text-xs shadow-xl"
+            style={{
+              left: "clamp(5rem, " + ((active + 0.5) / 24) * 100 + "%, calc(100% - 5rem))",
+              bottom: "min(calc(" + heightOf(totals[active]) + "% + 12px), calc(100% - 96px))",
+            }}
+          >
+            <p className="font-medium text-foreground">{labels[active]}:00</p>
+            <p className="mt-1 text-muted-foreground">{totals[active] + (totals[active] === 1 ? " decision" : " decisions")}</p>
+            <p className="mt-1.5 flex justify-between text-allow"><span>Allow</span><span>{b.allow}</span></p>
+            <p className="flex justify-between text-escalate"><span>Escalate</span><span>{b.escalate}</span></p>
+            <p className="flex justify-between text-block"><span>Block</span><span>{b.block}</span></p>
+          </div>
+        )}
+      </div>
+      <div className="mt-2 flex gap-1.5 text-[10px] text-muted-foreground sm:gap-2">
+        {labels.map((l, i) => (
+          <span key={i} className="min-w-0 flex-1 text-center">{i % 3 === 0 ? l : ""}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+##### src\components\aegisora\live\page-charts.tsx #####
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+
+type R = { created_at: string; decision: string | null; action: string | null; risk_score: number | null };
+
+const DAY = 864e5;
+const C = { allow: "var(--allow)", escalate: "var(--escalate)", block: "var(--block)", primary: "var(--primary)", grid: "var(--border)" };
+const tip = {
+  contentStyle: { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 10, fontSize: 12, color: "var(--popover-foreground)", boxShadow: "0 8px 24px rgba(0,0,0,0.18)" },
+  labelStyle: { color: "var(--popover-foreground)", fontWeight: 600 },
+  itemStyle: { color: "var(--popover-foreground)" },
+};
+const axis = { tick: { fontSize: 11, fill: "var(--muted-foreground)" }, axisLine: false, tickLine: false };
+const dayKey = (d: Date) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+
+function Card({ title, hint, className, children }: { title: string; hint?: string; className?: string; children: React.ReactNode }) {
+  return (
+    <section className={cn("aeg-panel min-w-0 p-4 sm:p-5", className)}>
+      <h2 className="text-sm font-semibold">{title}</h2>
+      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+function build(rows: R[]) {
+  const days = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    d.setDate(d.getDate() - (13 - i));
+    return { key: dayKey(d), label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }), allow: 0, escalate: 0, block: 0 };
+  });
+  const idx = new Map(days.map((d, i) => [d.key, i]));
+  const acts = new Map<string, { name: string; allow: number; escalate: number; block: number; total: number }>();
+  const risk = [
+    { name: "0-19", value: 0 }, { name: "20-39", value: 0 }, { name: "40-59", value: 0 },
+    { name: "60-79", value: 0 }, { name: "80-100", value: 0 },
+  ];
+  for (const r of rows) {
+    const i = idx.get(dayKey(new Date(r.created_at)));
+    const k = r.decision === "ALLOW" ? "allow" : r.decision === "BLOCK" ? "block" : r.decision === "ESCALATE" ? "escalate" : null;
+    if (i !== undefined && k) days[i][k]++;
+    const name = r.action || "unknown";
+    const a = acts.get(name) ?? { name, allow: 0, escalate: 0, block: 0, total: 0 };
+    a.total++;
+    if (k) a[k]++;
+    acts.set(name, a);
+    if (typeof r.risk_score === "number") risk[Math.min(4, Math.floor(r.risk_score / 20))].value++;
+  }
+  const top = [...acts.values()].sort((a, b) => b.total - a.total).slice(0, 6);
+  return { days, top, risk, hasRisk: risk.some((x) => x.value > 0) };
+}
+
+export function DecisionCharts({ wsId }: { wsId: string }) {
+  const [rows, setRows] = useState<R[] | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const sb = createClient();
+        const since = new Date(Date.now() - 14 * DAY).toISOString();
+        const { data, error } = await sb
+          .from("decisions")
+          .select("created_at,decision,action,risk_score")
+          .eq("workspace_id", wsId)
+          .gte("created_at", since)
+          .order("created_at", { ascending: false })
+          .limit(1000);
+        if (!alive) return;
+        setRows(error ? [] : ((data ?? []) as R[]));
+      } catch {
+        if (alive) setRows([]);
+      }
+    })();
+    return () => { alive = false; };
+  }, [wsId]);
+
+  const m = useMemo(() => (rows && rows.length > 0 ? build(rows) : null), [rows]);
+
+  if (rows === null) return <div className="h-64 animate-pulse rounded-xl bg-surface-3" aria-busy="true" />;
+  if (!m) return null;
+
+  const topH = Math.max(200, m.top.length * 46 + 40);
+  const riskColor = ["var(--allow)", "var(--allow)", "var(--escalate)", "var(--block)", "var(--block)"];
+
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <Card title="Decisions per day" hint="Last 14 days. Tap or hover for exact counts.">
+          <div className="h-60 sm:h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={m.days} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                <CartesianGrid stroke={C.grid} strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="label" {...axis} interval="preserveStartEnd" minTickGap={18} />
+                <YAxis {...axis} width={34} allowDecimals={false} />
+                <Tooltip {...tip} />
+                <Legend wrapperStyle={{ fontSize: 12 }} iconType="circle" />
+                <Area type="monotone" dataKey="allow" name="Allowed" stackId="d" stroke={C.allow} strokeWidth={2} fill={C.allow} fillOpacity={0.25} />
+                <Area type="monotone" dataKey="escalate" name="Escalated" stackId="d" stroke={C.escalate} strokeWidth={2} fill={C.escalate} fillOpacity={0.25} />
+                <Area type="monotone" dataKey="block" name="Blocked" stackId="d" stroke={C.block} strokeWidth={2} fill={C.block} fillOpacity={0.25} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card title="Risk score spread" hint={m.hasRisk ? "How risky the actions were, last 14 days." : "No risk scores recorded yet."}>
+          <div className="h-60 sm:h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={m.risk} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                <CartesianGrid stroke={C.grid} strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" {...axis} />
+                <YAxis {...axis} width={34} allowDecimals={false} />
+                <Tooltip {...tip} cursor={{ fill: "var(--surface-3)", opacity: 0.5 }} />
+                <Bar dataKey="value" name="Decisions" radius={[6, 6, 0, 0]}>
+                  {m.risk.map((b, i) => <Cell key={b.name} fill={riskColor[i]} />)}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
+
+      <Card title="Top actions by outcome" hint="Most frequent actions, last 14 days.">
+        <div style={{ height: topH }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={m.top} layout="vertical" margin={{ top: 0, right: 12, bottom: 0, left: 0 }}>
+              <CartesianGrid stroke={C.grid} strokeDasharray="3 3" horizontal={false} />
+              <XAxis type="number" {...axis} allowDecimals={false} />
+              <YAxis type="category" dataKey="name" {...axis} width={120} tickFormatter={(v: string) => (v.length > 20 ? v.slice(0, 19) + "\u2026" : v)} />
+              <Tooltip {...tip} cursor={{ fill: "var(--surface-3)", opacity: 0.5 }} />
+              <Legend wrapperStyle={{ fontSize: 12 }} iconType="circle" />
+              <Bar dataKey="allow" name="Allowed" stackId="a" fill={C.allow} />
+              <Bar dataKey="escalate" name="Escalated" stackId="a" fill={C.escalate} />
+              <Bar dataKey="block" name="Blocked" stackId="a" fill={C.block} radius={[0, 6, 6, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+##### css: src\app\globals.css #####
+213: /* ---------- Scrollbar ---------- */
+215: scrollbar-width: thin;
+216: scrollbar-color: rgba(10, 18, 32, 0.25) transparent;
+218: ::-webkit-scrollbar { width: 8px; height: 8px; }
+219: ::-webkit-scrollbar-track { background: transparent; }
+220: ::-webkit-scrollbar-thumb { background-color: rgba(10, 18, 32, 0.22); border-radius: 999px; }
+221: ::-webkit-scrollbar-thumb:hover { background-color: rgba(10, 18, 32, 0.4); }
+222: ::-webkit-scrollbar-corner { background: transparent; }
+234: @keyframes loading-bar {
+247: /* aeg-dark-scrollbar */
+248: html.dark { scrollbar-color: rgba(255,255,255,0.28) transparent; }
+249: .dark ::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.22); }
+250: .dark ::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
+302: html.dark { scrollbar-color: rgba(255,255,255,0.28) transparent; }
+303: .dark ::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.22); }
+304: .dark ::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
+410: /* desktop sidebar is replaced by the bottom navigation on phones */
+411: [data-app-sidebar] { display: none !important; }
+412: /* the content must not keep the sidebar's left offset */
+437: /* the shell keeps no column for the hidden sidebar: content gets the whole width */
+439: *:has(> [data-app-sidebar]) {
+510: :root:not(.dark){--background:#ffffff;--foreground:#0a2540;--primary:#1d6bff;--primary-foreground:#ffffff;--ring:#1d6bff;--sidebar-primary:#1d6bff;--sidebar-primary-foreground:#ffffff;--chart-1:#1d6bff;--chart-2:#38bdf8;--chart-3:#0b4fd6;--chart-4:#7dd3fc;--chart-5:#1e3a8a}
+
+##### css: src\components\aegisora\bw\aeg-chrome.css #####
+36: .aegh__bar { max-width: 1280px; margin: 0 auto; height: 68px; padding: 0 24px; display: flex; align-items: center; gap: 20px; }
+99: .aegh__bar { padding: 0 16px; }
+
+##### css: src\components\aegisora\bw\bw.css #####
+494: .bw-nav__bar {
+1001: .bw-chat__bar {
+1046: scrollbar-width: none;
+1048: .bw-chips__track::-webkit-scrollbar {
+1294: .bw-vis--chart {
+1297: .bw-mini--chart {
+1305: .bw-mini--chart svg {
+1311: .bw-chart__tip--e {
+1682: .bw-chart {
+1692: .bw-chart svg {
+1698: .bw-chart--bad {
+1701: .bw-chart--good {
+1724: .bw-chart__tip {
+1736: .bw-chart__tip b {
+1740: .bw-chart__tip em {
+1745: .bw-chart__tip--a {
+1749: .bw-chart__tip--b {
+1753: .bw-chart__tip--c {
+1757: .bw-chart__tip--d {
+1834: .bw-plat__bar {
+1842: .bw-plat__bar.is-run {
+1843: animation: bw-bar 6s linear forwards;
+1845: @keyframes bw-bar {
+3063: .bw-faq__bar {
+3073: .bw-faq__bar > p {
+3078: .bw-faq__bar > div {
+3516: .bw-faq__bar {
+3528: .bw-nav__bar {
+3565: .bw-faq__bar > div {
+3568: .bw-faq__bar > div .bw-btn {
+
+##### css: src\styles\aeg-calm-kit.css #####
+42: .aeg-public .zp-mock-bar { border-bottom: 1px solid var(--vc-line) !important; color: var(--foreground) !important; }
+
+##### css: src\styles\aeg-calm.css #####
+141: .vc-feed__bar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 13px; font-weight: 600; color: var(--foreground); }
+150: .vc-code__bar { padding: 10px 18px; border-bottom: 1px solid var(--vc-line); font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-foreground); }
+
+##### css: src\styles\aeg-dash-teal.css #####
+53: /* static teal bar glow behind the top of the page: pure CSS, no WebGL */
+
+##### css: src\styles\aeg-premium.css #####
+76: /* liquid glass sidebar */
+
+##### css: src\styles\aegc.css #####
+13: --allow: #3ecf8e; --allow-muted: rgb(62 207 142 / 0.1);
+15: --escalate: #f5b942; --escalate-muted: rgb(245 185 66 / 0.1);
+22: html:has(.aegc) { scrollbar-color: #2a2a2a transparent; }
+23: html:has(.aegc) ::-webkit-scrollbar-thumb { background-color: #2a2a2a; }
+24: html:has(.aegc) ::-webkit-scrollbar-thumb:hover { background-color: #3a3a3a; }
+38: .aegc-nav { flex: 1; overflow-y: auto; padding-bottom: 12px; scrollbar-width: none; }
+39: .aegc-nav::-webkit-scrollbar { display: none; }
+136: .aegc-bars { display: flex; align-items: stretch; gap: 6px; height: 200px; margin-top: 20px; }
+137: .aegc-bar { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+138: .aegc-bar__area { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+139: .aegc-bar__col { width: 100%; min-height: 2px; display: flex; flex-direction: column; border-radius: 4px 4px 0 0; overflow: hidden; background: #181818; transform-origin: bottom; animation: aegc-grow 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+140: .aegc-bar__col i { display: block; min-height: 0; }
+141: .aegc-bar span { height: 12px; font-size: 10px; line-height: 12px; color: #6a6a6a; }
+167: @media (prefers-reduced-motion: reduce) { .aegc-bar__col { animation: none; } .aegc *, .aegc *::before { transition: none !important; } }
+
+##### css: src\styles\aegx.css #####
+100: .aegx-feed__bar { display: flex; align-items: center; gap: 12px; padding: 13px 18px; font-size: 12.5px; color: var(--mut); }
+306: .aegx-cp__bars { display: flex; align-items: flex-end; gap: 4px; height: 120px; margin-top: 12px; }
+307: .aegx-cp__bars i { flex: 1; border-radius: 3px 3px 0 0; background: linear-gradient(to top, #1448d8, #4da3ff); transform-origin: bottom; animation: aegx-pulse 3.6s ease-in-out infinite alternate; }
+315: @media (prefers-reduced-motion: reduce) { .aegx-cover__s, .aegx-cp__bars i { animation: none; } }
+
+##### css: src\styles\home-page.css #####
+119: .hm-frame-bar {
+128: .hm-frame-bar b {
+
+##### css: src\styles\zp.css #####
+195: .zp-mock-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid var(--zp-line);font-size:12px;font-weight:500;color:var(--zp-muted)}
+196: .zp-mock-bar b{display:inline-flex;align-items:center;gap:8px;color:var(--zp-ink);font-weight:600}
+270: .zp-code-bar{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.1);font-family:var(--zp-mono);font-size:12px;color:rgba(255,255,255,.6)}
+271: .zp-code-bar i{width:10px;height:10px;border-radius:50%;display:block}
+283: .zp-footer-bar{border-top:1px solid var(--zp-line)}
+284: .zp-footer-bar-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;padding-bottom:20px;font-size:12px;color:var(--zp-muted)}
+486: html .zp-footer-bar { border-top-color:var(--zp-line); }
