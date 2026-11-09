@@ -28,13 +28,47 @@ type BillingState = {
 // To show plans and enable checkout, set NEXT_PUBLIC_BILLING_SELF_SERVE=true and rebuild.
 const SELF_SERVE = process.env.NEXT_PUBLIC_BILLING_SELF_SERVE === "true";
 
-const plans: Array<{ key: Plan; title: string; price: string; detail: string }> = [
-  { key: "pro", title: "Pro", price: "$49", detail: "per month" },
-  { key: "founder_pilot", title: "Founder Pilot", price: "$1,250", detail: "one-time" },
-  { key: "pilot", title: "Pilot", price: "$2,500", detail: "one-time" },
-  { key: "team", title: "Team", price: "$299", detail: "per month" },
-  { key: "business", title: "Business", price: "$999", detail: "per month" },
-  { key: "enterprise", title: "Enterprise", price: "$2,500+", detail: "starting per month" },
+type PlanCard = {
+  id: string;
+  title: string;
+  price: string;
+  detail: string;
+  blurb: string;
+  activeKeys: string[];
+  action:
+    | { type: "none" }
+    | { type: "checkout"; plan: Plan }
+    | { type: "contact"; label: string };
+};
+
+const cards: PlanCard[] = [
+  {
+    id: "free", title: "Free", price: "$0", detail: "no card needed",
+    blurb: "1 agent, 1,000 decisions per month, 2 members.",
+    activeKeys: ["free"], action: { type: "none" },
+  },
+  {
+    id: "pro", title: "Pro", price: "$49", detail: "per month",
+    blurb: "5 agents, 25,000 decisions per month, 5 members.",
+    activeKeys: ["pro"], action: { type: "checkout", plan: "pro" },
+  },
+  {
+    id: "team", title: "Team", price: "$299", detail: "per month",
+    blurb: "25 agents, 250,000 decisions per month, 25 members.",
+    activeKeys: ["team"], action: { type: "checkout", plan: "team" },
+  },
+  {
+    id: "pilot", title: "Pilot", price: "Free pilot", detail: "scoped with you",
+    blurb: "For companies evaluating Aegisora. Scope and duration are agreed together.",
+    activeKeys: ["pilot", "founder_pilot"],
+    action: { type: "contact", label: "Request pilot access" },
+  },
+  {
+    id: "enterprise", title: "Business & Enterprise", price: "Custom pricing", detail: "based on team size and volume",
+    blurb: "Higher limits, tailored policies and support. Pricing is agreed after a short conversation.",
+    activeKeys: ["business", "enterprise"],
+    action: { type: "contact", label: "Contact sales" },
+  },
 ];
 
 export default function BillingPage() {
@@ -194,13 +228,14 @@ export default function BillingPage() {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {plans.map((plan) => {
-              const active = activePlan === plan.key;
-              const busy = working === plan.key;
+            {cards.map((card) => {
+              const action = card.action;
+              const active = card.activeKeys.includes(activePlan ?? "");
+              const busy = action.type === "checkout" && working === action.plan;
               return (
-                <article key={plan.key} className="flex min-h-[245px] flex-col rounded-xl border border-border bg-card p-5">
+                <article key={card.id} className="flex min-h-[245px] flex-col rounded-xl border border-border bg-card p-5">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-base font-semibold">{plan.title}</h3>
+                    <h3 className="text-base font-semibold">{card.title}</h3>
                     {active ? (
                       <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase text-emerald-700 dark:text-emerald-300">
                         Active
@@ -208,20 +243,31 @@ export default function BillingPage() {
                     ) : null}
                   </div>
                   <div className="mt-7">
-                    <div className="text-2xl font-semibold tracking-tight">{plan.price}</div>
-                    <div className="mt-1 text-xs text-muted-foreground">{plan.detail}</div>
+                    <div className="text-2xl font-semibold tracking-tight">{card.price}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">{card.detail}</div>
                   </div>
-                  <p className="mt-5 text-xs leading-5 text-muted-foreground">
-                    Governed agent execution, policy enforcement, decisions and audit evidence.
-                  </p>
-                  <button
-                    type="button"
-                    disabled={active || Boolean(working)}
-                    onClick={() => void checkout(plan.key)}
-                    className="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
-                  >
-                    {active ? "Current plan" : busy ? "Starting checkout..." : "Continue to payment"}
-                  </button>
+                  <p className="mt-5 text-xs leading-5 text-muted-foreground">{card.blurb}</p>
+                  {action.type === "checkout" ? (
+                    <button
+                      type="button"
+                      disabled={active || Boolean(working)}
+                      onClick={() => void checkout(action.plan)}
+                      className="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
+                    >
+                      {active ? "Current plan" : busy ? "Starting checkout..." : "Continue to payment"}
+                    </button>
+                  ) : action.type === "contact" ? (
+                    <Link
+                      href="/pilot"
+                      className="mt-auto inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+                    >
+                      {action.label}
+                    </Link>
+                  ) : (
+                    <div className="mt-auto inline-flex h-10 items-center text-sm text-muted-foreground">
+                      {active ? "Current plan" : "Included for every workspace"}
+                    </div>
+                  )}
                 </article>
               );
             })}
