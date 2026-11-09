@@ -70,6 +70,18 @@ export async function POST(
 
     const plan = body.plan;
 
+    // Self-service checkout is limited to Pro and Team.
+    // Pilot, Business and Enterprise are arranged with the team.
+    if (plan !== "pro" && plan !== "team") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "This plan is arranged with the team. Please contact us.",
+        },
+        { status: 403 },
+      );
+    }
+
     const priceId =
       getPriceId(plan);
 
