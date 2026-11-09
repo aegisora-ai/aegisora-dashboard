@@ -549,3 +549,9 @@ html, body { max-width: 100%; overflow-x: clip; }
   .aegx-pad { padding-top: 48px; padding-bottom: 48px; }
   .aegx-cell { padding: 24px 20px; }
 }
+/* === NAV SPACING FIX: esit bosluk, menu ortada === */
+.aegx-head__in { display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: 24px; }
+.aegx-head__brand { grid-column: 1; }
+.aegx-nav { grid-column: 2; justify-self: center; gap: 28px; margin: 0; }
+.aegx-head__right { grid-column: 3; justify-self: end; gap: 16px; margin: 0; }
+/* === /NAV SPACING FIX === */
