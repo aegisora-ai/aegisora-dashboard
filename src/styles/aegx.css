@@ -1,4 +1,4 @@
-/* aegx: the single design system of the rebuilt site. Pure black, hairline grid, white pills. */
+﻿/* aegx: the single design system of the rebuilt site. Pure black, hairline grid, white pills. */
 
 .aegx {
   --bg: #000; --fg: #f5f5f5; --mut: #a3a3a3; --dim: #8c8c8c;
@@ -549,9 +549,12 @@ html, body { max-width: 100%; overflow-x: clip; }
   .aegx-pad { padding-top: 48px; padding-bottom: 48px; }
   .aegx-cell { padding: 24px 20px; }
 }
-/* === NAV SPACING FIX: esit bosluk, menu ortada === */
-.aegx-head__in { display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: 24px; }
-.aegx-head__brand { grid-column: 1; }
-.aegx-nav { grid-column: 2; justify-self: center; gap: 28px; margin: 0; }
-.aegx-head__right { grid-column: 3; justify-self: end; gap: 16px; margin: 0; }
-/* === /NAV SPACING FIX === */
+
+/* === NAV SPACING FIX v2: menu, logo ile sag blok arasinda tam ortada === */
+@media (min-width: 1101px) {
+  .aegx-head__in { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 24px; align-items: center; }
+  .aegx-head__brand { justify-self: start; }
+  .aegx-nav { display: flex; justify-content: center; align-items: center; justify-self: stretch; gap: 4px; margin: 0; min-width: 0; }
+  .aegx-head__right { justify-self: end; margin-left: 0; gap: 12px; flex-shrink: 0; }
+}
+/* === /NAV SPACING FIX v2 === */
