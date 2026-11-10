@@ -112,8 +112,10 @@ function Overview({ ws }: { ws: Workspace }) {
       setPend((pel.data ?? []) as Row[]);
     };
     void load();
-    const t = window.setInterval(() => { void load(); }, 30000);
-    return () => { alive = false; window.clearInterval(t); };
+    const t = window.setInterval(() => { if (!document.hidden) void load(); }, 60000);
+    const onVis = () => { if (!document.hidden) void load(); };
+    document.addEventListener("visibilitychange", onVis);
+    return () => { alive = false; window.clearInterval(t); document.removeEventListener("visibilitychange", onVis); };
   }, [ws.id]);
 
   const name = userName || (userEmail ? userEmail.split("@")[0] : "there");
