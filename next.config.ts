@@ -8,6 +8,16 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const nextConfig: NextConfig = {
   experimental: { cpus: 2 },
   poweredByHeader: false,
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.aegisora.org" }],
+        destination: "https://aegisora.org/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
