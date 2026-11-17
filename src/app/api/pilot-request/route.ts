@@ -97,7 +97,7 @@ export async function POST(req: Request) {
   try {
     const rk = process.env.RESEND_API_KEY;
     const from = process.env.NOTIFY_FROM;
-    if (rk && from) {
+    if (rk && from && process.env.PILOT_NOTIFY_EMAIL) {
       const safe = (s: string) => s.replace(/[\r\n]+/g, " ");
       const link = approveUrl(savedId);
       const approveLine = link ? "Approve: " + link : "Approve: Supabase > pilot_requests > set status to approved";
@@ -122,7 +122,7 @@ export async function POST(req: Request) {
         headers: { Authorization: "Bearer " + rk, "Content-Type": "application/json" },
         body: JSON.stringify({
           from,
-          to: ["ozereray44@gmail.com"],
+          to: [process.env.PILOT_NOTIFY_EMAIL as string],
           reply_to: row.work_email,
           subject: "New pilot application: " + safe(row.company),
           text: [

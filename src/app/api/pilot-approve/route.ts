@@ -25,7 +25,8 @@ export async function GET(req: Request) {
   const u = new URL(req.url);
   const id = u.searchParams.get("id") ?? "";
   const t = u.searchParams.get("t") ?? "";
-  if (!verify(id, t)) return page("Invalid link", "<p>This approval link is not valid.</p>", 403);
+  const exp = u.searchParams.get("exp") ?? "";
+  if (!verify(id, t, exp)) return page("Invalid link", "<p>This approval link is invalid or has expired.</p>", 403);
   const s = supa();
   if (!s) return page("Unavailable", "<p>Server is not configured.</p>", 503);
 
@@ -45,6 +46,7 @@ export async function GET(req: Request) {
     "<form method=\"post\" action=\"/api/pilot-approve\">" +
     "<input type=\"hidden\" name=\"id\" value=\"" + esc(id) + "\">" +
     "<input type=\"hidden\" name=\"t\" value=\"" + esc(t) + "\">" +
+    "<input type=\"hidden\" name=\"exp\" value=\"" + esc(exp) + "\">" +
     "<button type=\"submit\" style=\"background:#1a8cff;color:#fff;border:0;border-radius:999px;padding:12px 26px;font-size:16px;font-weight:bold;cursor:pointer\">Approve</button></form>";
   return page("Approve this application?", info + form);
 }
@@ -53,7 +55,8 @@ export async function POST(req: Request) {
   const form = await req.formData();
   const id = String(form.get("id") ?? "");
   const t = String(form.get("t") ?? "");
-  if (!UUID_RE.test(id) || !verify(id, t)) return page("Invalid link", "<p>This approval link is not valid.</p>", 403);
+  const exp = String(form.get("exp") ?? "");
+  if (!UUID_RE.test(id) || !verify(id, t, exp)) return page("Invalid link", "<p>This approval link is invalid or has expired.</p>", 403);
   const s = supa();
   if (!s) return page("Unavailable", "<p>Server is not configured.</p>", 503);
 
