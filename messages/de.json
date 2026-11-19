@@ -1098,7 +1098,7 @@
     },
     "finish": {
       "title": "Bereit zur Anbindung",
-      "desc": "API-Schlüssel erstellen und Aegisora vor jeder sensiblen Aktion aus dem Backend aufrufen.",
+      "desc": "API-Schlüssel erstellen und Aegisora vor jeder sensiblen Aktion aus dem Backend aufrufen. Dieser Browser-Ablauf simuliert keine Entscheidung und keine Ausführung.",
       "ws": "Workspace",
       "agent": "Agent",
       "policy": "Regel",
