@@ -1098,7 +1098,7 @@
     },
     "finish": {
       "title": "You’re ready to connect",
-      "desc": "Create an API key and call Aegisora from your backend before each sensitive action.",
+      "desc": "Create an API key and call Aegisora from your backend before each sensitive action. This browser flow does not simulate a decision or execution.",
       "ws": "Workspace",
       "agent": "Agent",
       "policy": "Rule",
