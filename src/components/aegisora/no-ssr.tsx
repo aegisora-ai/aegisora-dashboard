@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
+import { useSyncExternalStore, type ReactNode } from "react";
 
-import { useEffect, useState, type ReactNode } from "react";
+const subscribe = () => () => {};
 
 export function NoSsr({ children }: { children: ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
   return mounted ? <>{children}</> : null;
 }
