@@ -160,6 +160,7 @@ export async function POST(req: Request) {
           risk_score: risk,
           input: safeInput,
           decided_at: new Date().toISOString(),
+          event: "decision.evaluated",
         },
       })
       .select("hash")
