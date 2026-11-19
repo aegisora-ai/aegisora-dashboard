@@ -178,9 +178,11 @@ export async function POST(req: Request) {
     let approvalId: string | null = null;
     if (effect === "ESCALATE") {
       const exp = new Date(Date.now() + settings.expiry_hours * 3600_000).toISOString();
+      const keyOwner = await db.from("api_keys").select("created_by").eq("id", auth.keyId).maybeSingle();
+      const requesterUser = (keyOwner.data?.created_by as string | null) ?? null;
       const ap = await db
         .from("approvals")
-        .insert({ workspace_id: ws, decision_id: decisionId, agent_id: agent?.id ?? null, agent_name: safeAgentName, action: safeAction, resource: safeResource, expires_at: exp })
+        .insert({ workspace_id: ws, decision_id: decisionId, agent_id: agent?.id ?? null, agent_name: safeAgentName, action: safeAction, resource: safeResource, expires_at: exp, requested_by_key_id: auth.keyId, requested_by_user: requesterUser })
         .select("id")
         .single();
       if (!ap.error) approvalId = ap.data.id as string;
