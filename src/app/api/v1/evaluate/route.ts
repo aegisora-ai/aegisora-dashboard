@@ -185,7 +185,8 @@ export async function POST(req: Request) {
         .insert({ workspace_id: ws, decision_id: decisionId, agent_id: agent?.id ?? null, agent_name: safeAgentName, action: safeAction, resource: safeResource, expires_at: exp, requested_by_key_id: auth.keyId, requested_by_user: requesterUser })
         .select("id")
         .single();
-      if (!ap.error) approvalId = ap.data.id as string;
+      if (ap.error) { console.error("approvals insert failed:", ap.error.message); throw ap.error; }
+      approvalId = ap.data.id as string;
       after(() => notifyDecision({ workspaceId: ws, effect: "ESCALATE", agent: safeAgentName, action: safeAction, resource: safeResource, reason, risk, decisionId }));
     }
     if (effect === "BLOCK" && settings.alert_on_block) {

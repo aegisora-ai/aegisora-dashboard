@@ -64,7 +64,8 @@ export async function PATCH(
     }
 
     if (status === "approved" && existing.requested_by_user === user.id) {
-      const { data: wsSettings } = await db.from("workspace_settings").select("require_separate_approver").eq("workspace_id", existing.workspace_id).maybeSingle();
+      const { data: wsSettings, error: wsSettingsError } = await db.from("workspace_settings").select("require_separate_approver").eq("workspace_id", existing.workspace_id).maybeSingle();
+      if (wsSettingsError) throw wsSettingsError;
       if (wsSettings?.require_separate_approver) {
         throw new ApiError(403, "separation_of_duties", "The person who initiated this request cannot approve it.");
       }
