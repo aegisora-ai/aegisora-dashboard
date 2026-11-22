@@ -42,6 +42,7 @@ export async function deliverSignedWebhook(input: {
           "idempotency-key": input.eventId,
         },
         body: input.body,
+        redirect: "manual",
         signal: AbortSignal.timeout(options.timeoutMs ?? 3_000),
       });
       status = response.status;
