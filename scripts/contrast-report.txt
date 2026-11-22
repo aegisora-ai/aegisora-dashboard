@@ -1,0 +1,64 @@
+
+[dark] /dashboard  (gercek-dugme)  axe sorun: 0
+
+[light] /dashboard  (YEDEK(sinif))  axe sorun: 0
+
+[dark] /dashboard/approvals  (gercek-dugme)  axe sorun: 0
+
+[light] /dashboard/approvals  (YEDEK(sinif))  axe sorun: 0
+
+[dark] /dashboard/billing  (gercek-dugme)  axe sorun: 0
+
+[light] /dashboard/billing  (YEDEK(sinif))  axe sorun: 0
+
+[dark] /dashboard/agents  (gercek-dugme)  axe sorun: 0
+
+[light] /dashboard/agents  (YEDEK(sinif))  axe sorun: 0
+
+[dark] /dashboard/policies  (gercek-dugme)  axe sorun: 0
+
+[light] /dashboard/policies  (YEDEK(sinif))  axe sorun: 0
+
+[dark] /dashboard/evidence  (gercek-dugme)  axe sorun: 0
+
+[light] /dashboard/evidence  (YEDEK(sinif))  axe sorun: 0
+
+[dark] /dashboard/team  (gercek-dugme)  axe sorun: 0
+
+[light] /dashboard/team  (YEDEK(sinif))  axe sorun: 0
+
+[dark] /dashboard/settings  (gercek-dugme)  axe sorun: 0
+
+[light] /dashboard/settings  (YEDEK(sinif))  axe sorun: 0
+
+[dark] /dashboard/api-keys  (gercek-dugme)  axe sorun: 0
+
+[light] /dashboard/api-keys  (YEDEK(sinif))  axe sorun: 0
+
+[dark] /dashboard/webhooks  (gercek-dugme)  axe sorun: 0
+
+[light] /dashboard/webhooks  (YEDEK(sinif))  axe sorun: 0
+
+[dark] /onboarding  (YEDEK(sinif))  axe sorun: 0
+
+[light] /onboarding  (YEDEK(sinif))  axe sorun: 0
+
+[dark] /  (gercek-dugme)  axe sorun: 0
+
+[light] /  (gercek-dugme)  axe sorun: 0
+
+[dark] /pricing  (gercek-dugme)  axe sorun: 0
+
+[light] /pricing  (gercek-dugme)  axe sorun: 0
+
+[dark] /product  (gercek-dugme)  axe sorun: 0
+
+[light] /product  (gercek-dugme)  axe sorun: 0
+
+[dark] /docs  (gercek-dugme)  axe sorun: 0
+
+[light] /docs  (gercek-dugme)  axe sorun: 0
+
+[dark] /enterprise  (gercek-dugme)  axe sorun: 0
+
+[light] /enterprise  (gercek-dugme)  axe sorun: 0

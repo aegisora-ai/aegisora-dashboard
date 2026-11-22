@@ -1,0 +1,354 @@
+=== components.json ===
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-nova",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "rtl": false,
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "menuColor": "default",
+  "menuAccent": "subtle",
+  "registries": {}
+}
+
+=== paketler ===
+@base-ui/react ^1.8.0
+@radix-ui/react-dialog ^1.1.23
+@radix-ui/react-dropdown-menu ^2.1.24
+@radix-ui/react-tabs ^1.1.21
+@radix-ui/react-tooltip ^1.2.16
+@supabase/ssr ^0.12.7
+@supabase/supabase-js ^2.116.0
+class-variance-authority ^0.7.1
+clsx ^2.1.1
+lucide-react ^1.47.0
+motion ^13.4.1
+next ^16.4.3
+next-intl ^4.14.6
+react 19.2.8
+recharts ^3.10.1
+tailwind-merge ^3.7.0
+tw-animate-css ^1.4.0
+@tailwindcss/postcss ^4.3.3
+shadcn 4.21.4
+tailwindcss ^4.3.3
+=== src\components\ui ===
+badge.tsx  1975
+button.tsx  3296
+card.tsx  2731
+dialog.tsx  4235
+dropdown-menu.tsx  8981
+input.tsx  1058
+label.tsx  536
+select.tsx  6854
+switch.tsx  1841
+table.tsx  2516
+tabs.tsx  3577
+textarea.tsx  858
+=== button.tsx (ilk 45 satir) ===
+import { Button as ButtonPrimitive } from "@base-ui/react/button"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
+
+const buttonVariants = cva(
+  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        outline:
+          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+        ghost:
+          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+        destructive:
+          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default:
+          "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+        lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        icon: "size-8",
+        "icon-xs":
+          "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm":
+          "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
+        "icon-lg": "size-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+function Button({
+  className,
+  variant = "default",
+  size = "default",
+=== src\app\globals.css (ilk 70 satir) ===
+@import "tailwindcss";
+@import "tw-animate-css";
+@custom-variant dark (&:is(.dark *));
+
+/* =========================================================
+   AEGISORA DESIGN SYSTEM (light, single blue accent)
+   ========================================================= */
+
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --surface-1: #f6f9fc;
+  --surface-2: #ffffff;
+  --surface-3: #eef3f8;
+  --surface-4: #e1e8f0;
+  --foreground: #0a1220;
+  --muted-foreground: #58657c;
+  --primary: #0f63e0;
+  --primary-hover: #0b54c4;
+  --primary-foreground: #ffffff;
+  --cyan: #0b6fb5;
+  --card: #ffffff;
+  --card-foreground: #0a1220;
+  --popover: #ffffff;
+  --popover-foreground: #0a1220;
+  --secondary: #eef3f8;
+  --secondary-foreground: #0a1220;
+  --muted: #f6f9fc;
+  --accent: #e1e8f0;
+  --accent-foreground: #0a1220;
+  --border: #dbe3ed;
+  --input: #dbe3ed;
+  --ring: #0f63e0;
+  --destructive: #c2262e;
+  --destructive-foreground: #ffffff;
+  --allow: #0f7b4f;
+  --allow-muted: #e2f4eb;
+  --block: #c2262e;
+  --block-muted: #fbe8e9;
+  --escalate: #9a6400;
+  --escalate-muted: #fbf0d9;
+  --grid-line: rgb(10 18 32 / 0.05);
+  --panel-shadow: 0 1px 2px rgb(10 18 32 / 0.04), 0 14px 30px -18px rgb(10 18 32 / 0.16);
+  --aeg-body: #58657c;
+  --radius: 0.375rem;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #020611;
+  --surface-1: #061022;
+  --surface-2: #09162e;
+  --surface-3: #0c1c3a;
+  --surface-4: #102347;
+  --foreground: #ffffff;
+  --muted-foreground: #8a9fc2;
+  --primary: #1677ff;
+  --primary-hover: #2188ff;
+  --primary-foreground: #ffffff;
+  --cyan: #00b8ff;
+  --card: #061022;
+  --card-foreground: #ffffff;
+  --popover: #061022;
+  --popover-foreground: #ffffff;
+  --secondary: #0c1c3a;
+  --secondary-foreground: #ffffff;
+  --muted: #09162e;
+  --accent: #102347;
+  --accent-foreground: #f5f7fa;
+  --border: #1a2738;
+=== layout/page dosyalari ===
+src\app\apple-icon.png
+src\app\error.tsx
+src\app\favicon.ico
+src\app\global-error.tsx
+src\app\globals.css
+src\app\layout.tsx
+src\app\manifest.ts
+src\app\not-found.tsx
+src\app\sitemap.ts
+src\app\api\auth\callback\route.ts
+src\app\api\billing\status\route.ts
+src\app\api\csp-report\route.ts
+src\app\api\health\route.ts
+src\app\api\og\route.tsx
+src\app\api\pilot-request\route.ts
+src\app\api\stripe\checkout\route.ts
+src\app\api\stripe\portal\route.ts
+src\app\api\stripe\webhook\route.ts
+src\app\api\v1\agents\import\route.ts
+src\app\api\v1\decisions\[id]\route.ts
+src\app\api\v1\evaluate\route.ts
+src\app\api\v1\health\route.ts
+src\app\api\v1\traces\route.ts
+src\app\api\v1\workspace\agents\route.ts
+src\app\api\v1\workspace\approvals\[approvalId]\route.ts
+src\app\api\v1\workspace\evidence\export\route.ts
+src\app\api\v1\workspace\members\route.ts
+src\app\api\v1\workspace\members\route.ts.backup-c13-20261012-021551
+src\app\api\v1\workspace\members\accept\route.ts
+src\app\api\v1\workspace\policies\route.ts
+src\app\api\v1\workspace\usage\route.ts
+src\app\auth\confirm\route.ts
+src\app\[locale]\layout.tsx
+src\app\[locale]\opengraph-image.tsx
+src\app\[locale]\(app)\layout.tsx
+src\app\[locale]\(app)\template.tsx
+src\app\[locale]\(app)\dashboard\loading.tsx
+src\app\[locale]\(app)\dashboard\page.tsx
+src\app\[locale]\(app)\dashboard\activity\page.tsx
+src\app\[locale]\(app)\dashboard\agents\page.tsx
+src\app\[locale]\(app)\dashboard\agents\[agentId]\page.tsx
+src\app\[locale]\(app)\dashboard\api-keys\page.tsx
+src\app\[locale]\(app)\dashboard\approvals\page.tsx
+src\app\[locale]\(app)\dashboard\approvals\[approvalId]\page.tsx
+src\app\[locale]\(app)\dashboard\audit\page.tsx
+src\app\[locale]\(app)\dashboard\billing\page.tsx
+src\app\[locale]\(app)\dashboard\billing\usage-card.tsx
+src\app\[locale]\(app)\dashboard\decisions\page.tsx
+src\app\[locale]\(app)\dashboard\decisions\[decisionId]\page.tsx
+src\app\[locale]\(app)\dashboard\evidence\page.tsx
+src\app\[locale]\(app)\dashboard\identity\page.tsx
+src\app\[locale]\(app)\dashboard\incidents\page.tsx
+src\app\[locale]\(app)\dashboard\incidents\[incidentId]\page.tsx
+src\app\[locale]\(app)\dashboard\integrations\page.tsx
+src\app\[locale]\(app)\dashboard\policies\page.tsx
+src\app\[locale]\(app)\dashboard\policies\[policyId]\page.tsx
+src\app\[locale]\(app)\dashboard\providers\page.tsx
+src\app\[locale]\(app)\dashboard\providers\[providerId]\page.tsx
+src\app\[locale]\(app)\dashboard\risk\page.tsx
+src\app\[locale]\(app)\dashboard\settings\page.tsx
+src\app\[locale]\(app)\dashboard\team\page.tsx
+src\app\[locale]\(app)\dashboard\traces\page.tsx
+src\app\[locale]\(app)\dashboard\traces\[traceId]\page.tsx
+src\app\[locale]\(app)\dashboard\webhooks\page.tsx
+src\app\[locale]\(app)\dashboard\webhooks\[webhookId]\page.tsx
+src\app\[locale]\(app)\dashboard\workspace\page.tsx
+src\app\[locale]\(auth)\layout.tsx
+src\app\[locale]\(auth)\accept-invite\page.tsx
+src\app\[locale]\(auth)\forgot-password\page.tsx
+src\app\[locale]\(auth)\login\page.tsx
+src\app\[locale]\(auth)\reset-password\page.tsx
+src\app\[locale]\(auth)\signup\page.tsx
+src\app\[locale]\(auth)\verify-email\page.tsx
+src\app\[locale]\(public)\layout.tsx
+src\app\[locale]\(public)\page.tsx
+src\app\[locale]\(public)\about\page.tsx
+src\app\[locale]\(public)\blog\page.tsx
+src\app\[locale]\(public)\blog\[slug]\page.tsx
+src\app\[locale]\(public)\changelog\page.tsx
+src\app\[locale]\(public)\contact\page.tsx
+src\app\[locale]\(public)\docs\layout.tsx
+src\app\[locale]\(public)\docs\page.tsx
+src\app\[locale]\(public)\docs\quickstart\page.tsx
+src\app\[locale]\(public)\docs\technical\page.tsx
+src\app\[locale]\(public)\legal\dpa\page.tsx
+src\app\[locale]\(public)\pilot\page.tsx
+src\app\[locale]\(public)\pricing\page.tsx
+src\app\[locale]\(public)\proof\page.tsx
+src\app\[locale]\(public)\resources\page.tsx
+src\app\[locale]\(public)\solutions\page.tsx
+src\app\[locale]\(public)\terms\page.tsx
+src\app\[locale]\(public)\trust\page.tsx
+src\app\[locale]\(public)\trust\privacy\page.tsx
+src\app\[locale]\(public)\trust\subprocessors\page.tsx
+src\app\[locale]\developers\page.tsx
+src\app\[locale]\developers\quickstart\page.tsx
+src\app\[locale]\enterprise\page.tsx
+src\app\[locale]\evidence\page.tsx
+src\app\[locale]\impressum\page.tsx
+src\app\[locale]\onboarding\page.tsx
+src\app\[locale]\product\page.tsx
+src\app\[locale]\product\approvals\page.tsx
+src\app\[locale]\product\decisions\page.tsx
+src\app\[locale]\product\evidence\page.tsx
+src\app\[locale]\product\policies\page.tsx
+src\app\[locale]\product\runtime\page.tsx
+src\app\[locale]\security\page.tsx
+src\app\[locale]\set-password\page.tsx
+src\app\[locale]\support\page.tsx
+src\app\[locale]\support\[collection]\page.tsx
+src\app\[locale]\support\[collection]\[article]\page.tsx
+=== src\components\aegisora ===
+account-switcher.tsx  2532
+ambient-grid-cells.tsx  3176
+app-shell.tsx  9410
+app-sidebar.tsx  5647
+approval-resolver.tsx  3289
+aurora-canvas.tsx  5890
+auth-canvas.tsx  12277
+auth-form.tsx  5039
+auth-shell.tsx  2541
+auth-side-panel.tsx  2366
+changelog-timeline.tsx  5038
+charts.tsx  6789
+command-palette.tsx  7273
+cookie-consent.tsx  3535
+decision-demo.tsx  3237
+decisions-table.tsx  2444
+docs-mega-menu.tsx  1657
+docs-nav.tsx  3645
+docs-viz.tsx  2529
+draft-notice.tsx  250
+hero-blue.tsx  4668
+hero-canvas.tsx  4240
+hero-top.tsx  5853
+home-hero.tsx  5771
+home-page.tsx  13570
+home.tsx  66
+hv2-page.tsx  8031
+login-form.tsx  5275
+logo.tsx  1156
+mfa-settings.tsx  6691
+mobile-nav.tsx  16740
+mobile-table-cards.tsx  1453
+nav-dropdown.tsx  1131
+onboarding-flow.tsx  13389
+onboarding-intro.tsx  8694
+page-kit.tsx  7119
+platform-tabs.tsx  3851
+product-page.tsx  975
+public-shell.tsx  386
+reveal.tsx  1341
+risk-charts.tsx  5448
+route-loader.tsx  2312
+runtime-simulator.tsx  6688
+scramble-text.tsx  1750
+signup-form.tsx  7149
+site-footer-legacy.tsx  3638
+site-footer.tsx  199
+site-header-legacy.tsx  8469
+site-header.tsx  216
+social-buttons.tsx  2739
+social-icon.tsx  3349
+social-links.tsx  1996
+start-building.tsx  4164
+state-badge.tsx  2055
+theme-boot.tsx  577
+theme-toggle.tsx  1387
+topbar-actions.tsx  1401
+trust-ui.tsx  1307
+typed-line.tsx  1722
+user-menu.tsx  2248
+version-canvas.tsx  4965
+welcome-tour.tsx  5200
+workspace-provider.tsx  3850

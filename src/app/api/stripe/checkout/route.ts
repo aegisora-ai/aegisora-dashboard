@@ -15,6 +15,13 @@ export async function POST(
   request: Request,
 ) {
   try {
+    if (process.env.NEXT_PUBLIC_BILLING_SELF_SERVE !== "true") {
+      return NextResponse.json(
+        { success: false, error: "Self-service checkout is not enabled. Please contact us." },
+        { status: 503 },
+      );
+    }
+
     const body =
       (await request.json().catch(() => ({}))) as {
         plan?: unknown;
@@ -63,6 +70,18 @@ export async function POST(
 
     const plan = body.plan;
 
+    // Self-service checkout is limited to Pro and Team.
+    // Pilot, Business and Enterprise are arranged with the team.
+    if (plan !== "pro" && plan !== "team") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "This plan is arranged with the team. Please contact us.",
+        },
+        { status: 403 },
+      );
+    }
+
     const priceId =
       getPriceId(plan);
 
@@ -99,6 +118,25 @@ export async function POST(
       }
     }
 
+    if (BILLING_PLANS[plan].mode === "payment") { // ACTIVE_SUB_GUARD_PAYMENT
+      const { data: subForPilot } = await getAdminClient()
+        .from("billing_subscriptions")
+        .select("stripe_subscription_id")
+        .eq("workspace_id", auth.workspaceId)
+        .in("status", ["active", "trialing", "past_due", "unpaid"])
+        .limit(1)
+        .maybeSingle();
+
+      if (subForPilot) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "This workspace already has an active subscription. A one-time pilot cannot replace it.",
+          },
+          { status: 409 },
+        );
+      }
+    }
     const customerId = await ensureStripeCustomer({
         workspaceId:
           auth.workspaceId,

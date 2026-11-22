@@ -1,0 +1,1358 @@
+=== src\app\[locale]\(public)\layout.tsx ===
+import { SiteFooter } from "@/components/aegisora/site-footer";
+import { SiteHeader } from "@/components/aegisora/site-header";
+
+export default function PublicLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <div className="aeg-public">
+      <SiteHeader />
+      <main className="min-h-screen">{children}</main>
+      <SiteFooter />
+    </div>
+  );
+}
+=== src\app\[locale]\layout.tsx ===
+import { notFound } from "next/navigation";
+import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
+import { routing } from "@/i18n/routing";
+import { CookieConsent } from "@/components/aegisora/cookie-consent";
+
+export default async function LocaleLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
+  setRequestLocale(locale);
+
+  return (
+    <NextIntlClientProvider>
+      {children}
+      <CookieConsent />
+    </NextIntlClientProvider>
+  );
+}
+=== src\components\aegisora\site-header.tsx ===
+"use client";
+
+import { ZpHeader } from "@/components/zp/header";
+
+/** Tum sayfalarda yeni (Zapier duzenli) header. Eski header dosyasi yedek olarak duruyor. */
+export function SiteHeader() {
+  return <ZpHeader />;
+}
+=== src\components\aegisora\site-footer.tsx ===
+"use client";
+
+import { ZpFooter } from "@/components/zp/footer";
+
+/** Tum sayfalarda yeni footer. Eski footer dosyasi yedek olarak duruyor. */
+export function SiteFooter() {
+  return <ZpFooter />;
+}
+=== src\components\aegisora\public-shell.tsx ===
+import { SiteHeader } from "@/components/aegisora/site-header";
+import { SiteFooter } from "@/components/aegisora/site-footer";
+
+export function PublicShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="zp flex min-h-screen flex-col">
+      <SiteHeader />
+      <main className="flex-1">{children}</main>
+      <SiteFooter />
+    </div>
+  );
+}
+=== src\components\aegisora\home.tsx ===
+export * from "./hv2-page";
+export { default } from "./home-page";
+=== src\components\aegisora\site-header-legacy.tsx ===
+"use client";
+
+import { Link, usePathname } from "@/i18n/navigation";
+import { useEffect, useState } from "react";
+import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
+import { Logo } from "@/components/aegisora/logo";
+import { ThemeToggle } from "@/components/aegisora/theme-toggle";
+import { SOCIALS } from "@/lib/socials";
+import { announcement, headerCtas, mainNav } from "@/lib/main-nav";
+import { supportsLight } from "@/lib/theme";
+
+const GITHUB_URL = SOCIALS.find((s) => s.label === "GitHub")?.href ?? "";
+
+const navLink = "text-sm font-medium text-muted-foreground transition-colors hover:text-foreground";
+const btnPrimary =
+  "inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover";
+
+function isActive(pathname: string, href: string): boolean {
+  return pathname === href || pathname.startsWith(href + "/");
+}
+
+export function LegacySiteHeader() {
+  const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const lightOk = supportsLight(pathname);
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setMobileOpen(false), 0);
+    return () => window.clearTimeout(t);
+  }, [pathname]);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "unset";
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  return (
+    <>
+      <div className="border-b border-border bg-surface-1 text-foreground">
+        <div className="mx-auto flex min-h-10 max-w-[1280px] items-center justify-center gap-3 px-4 py-2 text-sm sm:px-6">
+          <span className="hidden rounded border border-border bg-background px-2 py-0.5 text-xs font-medium text-muted-foreground sm:inline">
+            {announcement.badge}
+          </span>
+          <span className="text-muted-foreground">{announcement.text}</span>
+          <Link
+            href={announcement.href}
+            className="inline-flex shrink-0 items-center gap-1 font-medium text-primary underline-offset-4 hover:underline"
+          >
+            {announcement.label} <ArrowRight size={14} />
+          </Link>
+        </div>
+      </div>
+
+      <header className="sticky top-0 z-[100] w-full border-b border-border bg-background/85 text-foreground backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 sm:px-6">
+          <div className="flex items-center gap-8">
+            <Logo />
+            <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+              {mainNav.map((entry) =>
+                entry.items ? (
+                  <div key={entry.label} className="group relative">
+                    <Link
+                      href={entry.href}
+                      aria-haspopup="true"
+                      aria-current={isActive(pathname, entry.href) ? "page" : undefined}
+                      className={
+                        "flex items-center gap-1 rounded-md px-3 py-1.5 " +
+                        navLink +
+                        (isActive(pathname, entry.href) ? " text-foreground" : "")
+                      }
+                    >
+                      {entry.label}
+                      <ChevronDown
+                        size={14}
+                        className="transition-transform duration-200 group-focus-within:rotate-180 group-hover:rotate-180"
+                      />
+                    </Link>
+                    <div className="invisible absolute left-0 top-full z-50 w-80 pt-2 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                      <ul className="rounded-xl border border-border bg-popover p-2 shadow-[0_20px_50px_rgba(0,0,0,0.25)]">
+                        {entry.items.map((item) => (
+                          <li key={item.href + item.label}>
+                            <Link href={item.href} className="block rounded-lg p-2.5 transition hover:bg-accent">
+                              <span className="block text-[15px] font-medium text-foreground">{item.label}</span>
+                              {item.desc ? (
+                                <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{item.desc}</span>
+                              ) : null}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={entry.label}
+                    href={entry.href}
+                    aria-current={isActive(pathname, entry.href) ? "page" : undefined}
+                    className={
+                      "rounded-md px-3 py-1.5 " + navLink + (isActive(pathname, entry.href) ? " text-foreground" : "")
+                    }
+                  >
+                    {entry.label}
+                  </Link>
+                ),
+              )}
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden items-center gap-4 lg:flex">
+              {lightOk ? <ThemeToggle /> : null}
+              {GITHUB_URL ? (
+                <a
+                  href={GITHUB_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-9 items-center rounded-md border border-border px-3 text-sm font-medium text-foreground transition hover:border-primary hover:text-primary"
+                >
+                  GitHub
+                </a>
+              ) : null}
+              <Link href={headerCtas.login.href} className={navLink}>
+                {headerCtas.login.label}
+              </Link>
+              <Link href={headerCtas.primary.href} className={btnPrimary}>
+                {headerCtas.primary.label}
+              </Link>
+            </div>
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-md border border-border p-2 text-foreground transition-colors hover:border-primary focus:outline-none lg:hidden"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {mobileOpen ? (
+        <div className="fixed inset-0 z-[90] overflow-y-auto bg-background px-6 pb-10 pt-28 text-foreground lg:hidden">
+          <nav className="flex flex-col">
+            {mainNav.map((entry) => (
+              <div key={entry.label} className="border-b border-border py-3">
+                <Link href={entry.href} className="block py-1 text-lg font-medium text-foreground">
+                  {entry.label}
+                </Link>
+                {entry.items ? (
+                  <ul className="mt-1 space-y-0.5">
+                    {entry.items.map((item) => (
+                      <li key={item.href + item.label}>
+                        <Link href={item.href} className="block rounded-md px-2 py-1.5 text-base text-muted-foreground hover:bg-accent">
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            ))}
+            <Link href={headerCtas.login.href} className="py-3 text-lg font-medium text-foreground">
+              {headerCtas.login.label}
+            </Link>
+            <Link
+              href={headerCtas.primary.href}
+              className="inline-flex h-12 w-full items-center justify-center rounded-md bg-primary text-base font-medium text-primary-foreground"
+            >
+              {headerCtas.primary.label}
+            </Link>
+            {lightOk ? (
+              <div className="mt-6 flex items-center justify-between text-sm text-muted-foreground">
+                <span>Theme</span>
+                <ThemeToggle />
+              </div>
+            ) : null}
+          </nav>
+        </div>
+      ) : null}
+    </>
+  );
+}
+=== src\components\aegisora\site-footer-legacy.tsx ===
+import { Link } from "@/i18n/navigation";
+import { Logo } from "@/components/aegisora/logo";
+import { SocialIcon } from "@/components/aegisora/social-icon";
+import { SOCIALS } from "@/lib/socials";
+import { footerGroups } from "@/lib/main-nav";
+
+export function LegacySiteFooter() {
+  return (
+    <footer className="border-t border-border bg-background text-foreground">
+      <div className="mx-auto grid max-w-[1280px] gap-10 px-4 py-16 sm:px-6 md:grid-cols-[1.4fr_repeat(4,1fr)]">
+        <div>
+          <Logo />
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
+            Runtime security and execution control for autonomous AI agents.
+          </p>
+          <Link
+            href="/pilot"
+            className="mt-6 inline-flex h-10 items-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover"
+          >
+            Apply for Enterprise Pilot
+          </Link>
+          <p className="mt-3 text-xs text-muted-foreground">
+            <Link href="/signup" className="underline-offset-4 hover:text-primary hover:underline">
+              Or create a test workspace
+            </Link>
+          </p>
+        </div>
+        {footerGroups.map((g) => (
+          <nav key={g.title} aria-label={g.title}>
+            <h2 className="text-sm font-medium text-foreground">{g.title}</h2>
+            <ul className="mt-4 space-y-2.5 text-sm">
+              {g.links.map((l) => (
+                <li key={l.href + l.label}>
+                  <Link href={l.href} className="text-muted-foreground transition hover:text-primary">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))}
+      </div>
+
+      <div className="border-t border-border">
+        <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-3 px-4 py-5 text-xs text-muted-foreground sm:px-6">
+          <span>Aegisora 4.0. Examples on this site use illustrative sample data.</span>
+          <span className="flex gap-5">
+            <Link href="/trust/privacy" className="hover:text-foreground">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-foreground">
+              Terms
+            </Link>
+            <Link href="/impressum" className="hover:text-foreground">
+              Impressum
+            </Link>
+          </span>
+        </div>
+      </div>
+
+      <div className="border-t border-border">
+        <div className="mx-auto flex max-w-[1280px] items-center justify-center gap-3 px-4 py-6 sm:px-6">
+          {SOCIALS.map((s) =>
+            s.href ? (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.label}
+                className="inline-flex size-10 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:border-primary hover:text-primary"
+              >
+                <SocialIcon name={s.label} className="size-[18px]" />
+              </a>
+            ) : (
+              <span
+                key={s.label}
+                aria-label={s.label + " (link not set)"}
+                className="inline-flex size-10 cursor-not-allowed items-center justify-center rounded-full border border-border text-muted-foreground/40"
+              >
+                <SocialIcon name={s.label} className="size-[18px]" />
+              </span>
+            ),
+          )}
+        </div>
+      </div>
+    </footer>
+  );
+}
+=== src\components\aegisora\logo.tsx ===
+/* eslint-disable @next/next/no-img-element */
+import React from 'react';
+import Link from 'next/link';
+
+// Acik temada ikon orijinal renginde (mavi), yazi siyah. Dark temada orijinal logo.
+// Ikon/yazi siniri: inset(0 67% 0 0) ve inset(0 0 0 33%). Sinir kayarsa iki yuzdeyi birlikte degistir.
+export function Logo({ className = '' }: { className?: string }) {
+  return (
+    <Link
+      href="/"
+      className={"flex items-center shrink-0 cursor-pointer transition-opacity hover:opacity-85 " + className}
+      title="Aegisora"
+    >
+      <span className="relative inline-block">
+        <img
+          src="/LOGO-icon-trimmed-420.webp"
+          width={420}
+          height={89}
+          alt="Aegisora Logo"
+          className="block h-6 w-auto object-contain md:h-7 [clip-path:inset(0_67%_0_0)] dark:[clip-path:none]"
+        />
+        <img
+          src="/LOGO-icon-trimmed-420.webp"
+          width={420}
+          height={89}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 block h-full w-full object-contain brightness-0 [clip-path:inset(0_0_0_33%)] dark:hidden"
+        />
+      </span>
+    </Link>
+  );
+}
+=== src\components\aegisora\theme-toggle.tsx ===
+"use client";
+
+import { Moon, Sun } from "lucide-react";
+import { useSyncExternalStore } from "react";
+import { cn } from "@/lib/utils";
+
+function subscribe(cb: () => void) {
+  const o = new MutationObserver(cb);
+  o.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  return () => o.disconnect();
+}
+const isDark = () => document.documentElement.classList.contains("dark");
+
+export function ThemeToggle({ floating = false, className }: { floating?: boolean; className?: string }) {
+  const dark = useSyncExternalStore(subscribe, isDark, () => false);
+
+  function toggle() {
+    const next = !isDark();
+    document.documentElement.classList.toggle("dark", next);
+    try { localStorage.setItem("aeg-theme-v2", next ? "dark" : "light"); } catch {}
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      title={dark ? "Light theme" : "Dark theme"}
+      className={cn(
+        "inline-flex size-9 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:border-primary hover:text-primary",
+        floating && "fixed bottom-4 right-4 z-[55] size-10 rounded-full shadow-lg",
+        className,
+      )}
+    >
+      {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+    </button>
+  );
+}
+=== src\components\aegisora\page-kit.tsx ===
+"use client";
+
+import type { ReactNode } from "react";
+import "@/styles/zp.css";
+import { TypedLine } from "@/components/aegisora/typed-line";
+import { VerdictBadge } from "@/components/zp/ui";
+import { Link } from "@/i18n/navigation";
+import {
+  ArrowRight, BookOpen, Clock, Eye, FileText, Fingerprint, Gauge, GitBranch,
+  KeyRound, Layers, Lock, Scale, ScrollText, ShieldCheck, Terminal, UserCheck,
+  Users, Webhook, Workflow, Zap,
+} from "lucide-react";
+
+const ICONS = {
+  BookOpen, Clock, Eye, FileText, Fingerprint, Gauge, GitBranch, KeyRound, Layers,
+  Lock, Scale, ScrollText, ShieldCheck, Terminal, UserCheck, Users, Webhook, Workflow, Zap,
+};
+
+export type IconName = keyof typeof ICONS;
+export type Cta = { label: string; href: string };
+export type Row = { action: string; meta: string; v: "ALLOW" | "ESCALATE" | "BLOCK" };
+export type CardItem = { icon?: IconName; n?: string; title: string; body: string; href?: string };
+
+const DEFAULT_PHRASES = ["Decide before it runs.", "Evidence you can verify.", "Fail closed by default.", "Built for security teams."];
+
+export function PageHero({
+  eyebrow, title, phrases, intro, lead, primary, secondary, rows, children,
+}: {
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  lead?: string;
+  phrases?: string[];
+  primary?: Cta;
+  secondary?: Cta;
+  rows?: Row[];
+  children?: ReactNode;
+}) {
+  const text = intro ?? lead;
+  return (
+    <section className="zp zpk-hero">
+      <div className={"zpk-wrap zpk-hero-in" + (rows ? " zpk-hero-in--split" : "")}>
+        <div className="zpk-hero-text">
+          <p className="zp-eyebrow">{eyebrow}</p>
+          <h1 className="zpk-h1">{title}</h1>
+          <p className="zpk-typed">
+            <TypedLine decorative phrases={phrases?.length ? phrases : DEFAULT_PHRASES} />
+          </p>
+          {text ? <p className="zpk-lead">{text}</p> : null}
+          {primary || secondary ? (
+            <div className="zpk-actions">
+              {primary ? (
+                <Link href={primary.href} className="zp-btn zp-btn--primary">
+                  {primary.label}
+                </Link>
+              ) : null}
+              {secondary ? (
+                <Link href={secondary.href} className="zp-btn zp-btn--outline">
+                  {secondary.label}
+                  <ArrowRight size={16} aria-hidden />
+                </Link>
+              ) : null}
+            </div>
+          ) : null}
+          {children}
+        </div>
+        {rows ? (
+          <div className="zpk-art">
+            <div className="zp-mock">
+              <div className="zp-mock-bar">
+                <b>Runtime decisions</b>
+                <span className="zp-tag">Live</span>
+              </div>
+              {rows.map((r) => (
+                <div key={r.action} className="zp-mock-row">
+                  <div style={{ minWidth: 0 }}>
+                    <div className="zp-mock-act">{r.action}</div>
+                    <div className="zp-mock-sub">{r.meta}</div>
+                  </div>
+                  <VerdictBadge v={r.v} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+export function Section({
+  eyebrow, title, intro, lead, tone = "base", children,
+}: {
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  lead?: string;
+  tone?: "base" | "alt" | "tinted";
+  children: ReactNode;
+}) {
+  const text = intro ?? lead;
+  const hasHeader = Boolean(eyebrow || title || text);
+  return (
+    <section className={"zp zpk-section" + (tone === "base" ? "" : " zpk-section--alt")}>
+      <div className="zpk-wrap">
+        {hasHeader ? (
+          <div className="zpk-head">
+            {eyebrow ? <p className="zp-eyebrow">{eyebrow}</p> : null}
+            {title ? <h2 className="zpk-h2">{title}</h2> : null}
+            {text ? <p className="zpk-sub">{text}</p> : null}
+          </div>
+        ) : null}
+        {children}
+      </div>
+    </section>
+  );
+}
+
+export function CardGrid({ items, cols = 3 }: { items: CardItem[]; cols?: 2 | 3 | 4 }) {
+  return (
+    <div className={"zpk-grid zpk-grid--" + cols}>
+      {items.map((it) => {
+        const Icon = it.icon ? ICONS[it.icon] : null;
+        const inner = (
+          <>
+            {it.n ? <span className="zpk-n">{it.n}</span> : null}
+            {Icon ? (
+              <span className="zpk-icon">
+                <Icon size={20} aria-hidden />
+              </span>
+            ) : null}
+            <h3>{it.title}</h3>
+            <p>{it.body}</p>
+            {it.href ? (
+              <span className="zpk-more">
+                Learn more <ArrowRight size={14} aria-hidden />
+              </span>
+            ) : null}
+          </>
+        );
+        return it.href ? (
+          <Link key={it.title} href={it.href} className="zpk-card">
+            {inner}
+          </Link>
+        ) : (
+          <div key={it.title} className="zpk-card">
+            {inner}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function CtaBand({
+  title, body, primary, secondary,
+}: {
+  title: string;
+  body: string;
+  primary: Cta;
+  secondary?: Cta;
+}) {
+  return (
+    <section className="zp zpk-cta">
+      <div className="zpk-wrap">
+        <h2 className="zpk-h2">{title}</h2>
+        <p className="zpk-sub">{body}</p>
+        <div className="zpk-actions">
+          <Link href={primary.href} className="zp-btn zp-btn--primary">
+            {primary.label}
+          </Link>
+          {secondary ? (
+            <Link href={secondary.href} className="zp-btn zp-btn--outline">
+              {secondary.label}
+              <ArrowRight size={16} aria-hidden />
+            </Link>
+          ) : null}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Geriye uyumlu bilesenler (docs, legal sayfalar) ---------- */
+
+export function Eyebrow({ children, accent }: { children: ReactNode; accent?: boolean }) {
+  return <p className={"zpk-eb" + (accent ? " zpk-eb--accent" : "")}>{children}</p>;
+}
+
+export function CodeBlock({ code, caption }: { code: string; caption?: string }) {
+  return (
+    <figure>
+      <pre className="zpk-code">
+        <code>{code}</code>
+      </pre>
+      {caption ? <figcaption className="zpk-caption">{caption}</figcaption> : null}
+    </figure>
+  );
+}
+
+export function DataTable({ head, rows }: { head: string[]; rows: string[][] }) {
+  return (
+    <div className="zpk-tablewrap">
+      <table className="zpk-table">
+        <thead>
+          <tr>
+            {head.map((h) => (
+              <th key={h}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={i}>
+              {r.map((c, j) => (
+                <td key={j} className={j === 0 ? "zpk-td-first" : undefined}>{c}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function Steps({ items, cols = 3 }: { items: [string, string][]; cols?: 2 | 3 | 4 }) {
+  return (
+    <CardGrid
+      cols={cols}
+      items={items.map(([title, body], i) => ({ n: String(i + 1).padStart(2, "0"), title, body }))}
+    />
+  );
+}
+=== src\components\aegisora\nav-dropdown.tsx ===
+'use client';
+
+import { Link } from '@/i18n/navigation';
+
+export type DropdownItem = { title: string; href: string; desc?: string };
+
+export function NavDropdown({ items }: { items: DropdownItem[] }) {
+  return (
+    <div className="invisible absolute left-0 top-full z-[110] w-[280px] translate-y-1 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+      <div className="rounded-xl border border-[#1677ff]/20 bg-[#061022]/98 p-3 shadow-2xl shadow-black/50 backdrop-blur-md">
+        <ul className="space-y-0.5">
+          {items.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className="block rounded-lg px-3 py-2 transition-colors hover:bg-[#1677ff]/10"
+              >
+                <span className="block text-sm font-medium text-slate-200">{item.title}</span>
+                {item.desc && <span className="mt-0.5 block text-xs text-slate-500">{item.desc}</span>}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+=== src\components\aegisora\docs-mega-menu.tsx ===
+'use client';
+
+import { Link } from '@/i18n/navigation';
+import { NAV_TREE } from '@/components/aegisora/docs-nav';
+
+export function DocsMegaMenu() {
+  return (
+    <div className="invisible absolute left-0 top-full z-[110] w-[92vw] max-w-[520px] translate-y-1 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+      <div className="rounded-xl border border-[#1677ff]/20 bg-[#061022]/98 p-6 shadow-2xl shadow-black/50 backdrop-blur-md">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
+          {NAV_TREE.map((group) => (
+            <div key={group.title}>
+              <h3 className="font-mono text-[10px] font-semibold uppercase tracking-wider text-[#1677ff]">
+                {group.title}
+              </h3>
+              <ul className="mt-3 space-y-2">
+                {group.items.map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className="text-sm text-slate-300 transition-colors hover:text-white">
+                      {item.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-800 pt-4">
+          <p className="text-xs text-slate-500">Full documentation, versioned and searchable.</p>
+          <Link href="/docs" className="shrink-0 text-xs font-semibold text-[#1677ff] hover:underline">
+            Open Docs &rarr;
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+=== src\components\aegisora\mobile-nav.tsx ===
+(ilk 70 satir)
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { TouchEvent as ReactTouchEvent } from "react";
+import type { LucideIcon } from "lucide-react";
+import {
+  Activity, Bot, Check, ClipboardList, Ellipsis, FileCheck, GitBranch, KeyRound,
+  LayoutDashboard, Scale, ScrollText, Settings, SlidersHorizontal, TriangleAlert,
+  UserCheck, Users, CreditCard, ShieldCheck, Webhook, X,
+} from "lucide-react";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+
+type Item = { id: string; href: string; label: string; icon: LucideIcon };
+type Density = "compact" | "standard" | "large";
+type Prefs = { tabs: string[]; density: Density; home: string };
+
+const ITEMS: Item[] = [
+  { id: "overview", href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { id: "activity", href: "/dashboard/activity", label: "Live Activity", icon: Activity },
+  { id: "agents", href: "/dashboard/agents", label: "Agents", icon: Bot },
+  { id: "policies", href: "/dashboard/policies", label: "Policies", icon: ScrollText },
+  { id: "decisions", href: "/dashboard/decisions", label: "Decisions", icon: Scale },
+  { id: "approvals", href: "/dashboard/approvals", label: "Approvals", icon: UserCheck },
+  { id: "incidents", href: "/dashboard/incidents", label: "Incidents", icon: TriangleAlert },
+  { id: "evidence", href: "/dashboard/evidence", label: "Evidence", icon: FileCheck },
+  { id: "audit", href: "/dashboard/audit", label: "Audit", icon: ClipboardList },
+  { id: "traces", href: "/dashboard/traces", label: "Traces", icon: GitBranch },
+  { id: "webhooks", href: "/dashboard/webhooks", label: "Webhooks", icon: Webhook },
+  { id: "api-keys", href: "/dashboard/api-keys", label: "API Keys", icon: KeyRound },
+  { id: "settings", href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { id: "team", href: "/dashboard/team", label: "Team", icon: Users },
+  { id: "billing", href: "/dashboard/billing", label: "Billing", icon: CreditCard },
+  { id: "identity", href: "/dashboard/identity", label: "Identity", icon: ShieldCheck },
+];
+
+const GROUPS = [
+  { title: "Overview", ids: ["overview"] },
+  { title: "Runtime", ids: ["activity", "decisions", "approvals", "traces", "incidents"] },
+  { title: "Governance", ids: ["agents", "policies", "evidence", "audit"] },
+  { title: "Platform", ids: ["webhooks", "api-keys"] },
+  { title: "Organization", ids: ["team", "billing", "identity", "settings"] },
+];
+
+const DEFAULTS: Prefs = {
+  tabs: ["overview", "activity", "approvals", "incidents"],
+  density: "standard",
+  home: "overview",
+};
+const KEY = "aeg.dash.prefs.v1";
+const byId = (id: string): Item | undefined => ITEMS.find((i) => i.id === id);
+const FOCUS = "focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary";
+
+function sanitize(raw: unknown): Prefs {
+  const r = (raw ?? {}) as Partial<Prefs>;
+  const tabs = Array.isArray(r.tabs) ? r.tabs.filter((t) => typeof t === "string" && byId(t)) : [];
+  return {
+    tabs: tabs.length === 4 ? tabs : DEFAULTS.tabs,
+    density: r.density === "compact" || r.density === "large" ? r.density : "standard",
+    home: typeof r.home === "string" && byId(r.home) ? r.home : "overview",
+  };
+}
+
+function tap() {
+  try { navigator.vibrate?.(8); } catch { /* not supported */ }
+}
+
+export function MobileNav() {
+  const pathname = usePathname();
+=== src\app\globals.css ===
+@import "tailwindcss";
+@import "tw-animate-css";
+@custom-variant dark (&:is(.dark *));
+
+/* =========================================================
+   AEGISORA DESIGN SYSTEM (light, single blue accent)
+   ========================================================= */
+
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --surface-1: #f6f9fc;
+  --surface-2: #ffffff;
+  --surface-3: #eef3f8;
+  --surface-4: #e1e8f0;
+  --foreground: #0a1220;
+  --muted-foreground: #58657c;
+  --primary: #0f63e0;
+  --primary-hover: #0b54c4;
+  --primary-foreground: #ffffff;
+  --cyan: #0b6fb5;
+  --card: #ffffff;
+  --card-foreground: #0a1220;
+  --popover: #ffffff;
+  --popover-foreground: #0a1220;
+  --secondary: #eef3f8;
+  --secondary-foreground: #0a1220;
+  --muted: #f6f9fc;
+  --accent: #e1e8f0;
+  --accent-foreground: #0a1220;
+  --border: #dbe3ed;
+  --input: #dbe3ed;
+  --ring: #0f63e0;
+  --destructive: #c2262e;
+  --destructive-foreground: #ffffff;
+  --allow: #0f7b4f;
+  --allow-muted: #e2f4eb;
+  --block: #c2262e;
+  --block-muted: #fbe8e9;
+  --escalate: #9a6400;
+  --escalate-muted: #fbf0d9;
+  --grid-line: rgb(10 18 32 / 0.05);
+  --panel-shadow: 0 1px 2px rgb(10 18 32 / 0.04), 0 14px 30px -18px rgb(10 18 32 / 0.16);
+  --aeg-body: #58657c;
+  --radius: 0.375rem;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #020611;
+  --surface-1: #061022;
+  --surface-2: #09162e;
+  --surface-3: #0c1c3a;
+  --surface-4: #102347;
+  --foreground: #ffffff;
+  --muted-foreground: #8a9fc2;
+  --primary: #1677ff;
+  --primary-hover: #2188ff;
+  --primary-foreground: #ffffff;
+  --cyan: #00b8ff;
+  --card: #061022;
+  --card-foreground: #ffffff;
+  --popover: #061022;
+  --popover-foreground: #ffffff;
+  --secondary: #0c1c3a;
+  --secondary-foreground: #ffffff;
+  --muted: #09162e;
+  --accent: #102347;
+  --accent-foreground: #f5f7fa;
+  --border: #1a2738;
+  --input: #1a2738;
+  --ring: #2188ff;
+  --destructive: #e5484d;
+  --destructive-foreground: #ffffff;
+  --allow: #34b37e;
+  --allow-muted: #0f2a22;
+  --block: #e5484d;
+  --block-muted: #2c1518;
+  --escalate: #e0a030;
+  --escalate-muted: #2b2210;
+  --grid-line: rgb(26 39 56 / 0.5);
+  --panel-shadow: none;
+  --aeg-body: #8a9fc2;
+}
+
+
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-4: var(--surface-4);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-cyan: var(--cyan);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-allow: var(--allow);
+  --color-allow-muted: var(--allow-muted);
+  --color-block: var(--block);
+  --color-block-muted: var(--block-muted);
+  --color-escalate: var(--escalate);
+  --color-escalate-muted: var(--escalate-muted);
+  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground antialiased; overflow-x: clip; }
+  html { scroll-behavior: smooth; }
+}
+
+/* ---------- Typography ---------- */
+.aeg-display {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  text-wrap: balance;
+}
+.aeg-eyebrow {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--primary);
+}
+.aeg-body-text { color: var(--aeg-body); line-height: 1.7; }
+
+/* ---------- Surfaces ---------- */
+.aeg-panel {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--panel-shadow);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.aeg-panel.group:hover {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+}
+.aeg-tile {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.2s ease;
+}
+.aeg-tile:hover { border-color: color-mix(in srgb, var(--primary) 40%, var(--border)); }
+
+.aeg-grid-bg {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.aeg-hero { position: relative; overflow: hidden; isolation: isolate; }
+
+/* Pages are plain light. Kept as a hook so old markup does not break. */
+.aeg-page, .aeg-light-band { background-color: var(--background); color: var(--foreground); }
+.aeg-section-glow { border-top: 1px solid var(--border); }
+.aeg-announce { background: var(--surface-1); color: var(--foreground); }
+
+/* ---------- Deliberate dark band (product visuals, code, CTA) ---------- */
+.aeg-dark-band, .aeg-dark-page, .aeg-night {
+  color-scheme: dark;
+  --background: #020a1c;
+  --surface-1: #07142a;
+  --surface-2: #0a1a35;
+  --surface-3: #0e2243;
+  --surface-4: #102347;
+  --foreground: #ffffff;
+  --muted-foreground: #a9bbdb;
+  --card: #07142a;
+  --card-foreground: #ffffff;
+  --border: #1f3350;
+  --input: #1f3350;
+  --cyan: #4da6ff;
+  --aeg-body: #a9bbdb;
+  --allow: #34b37e;
+  --allow-muted: #0f2a22;
+  --block: #e5484d;
+  --block-muted: #2c1518;
+  --escalate: #e0a030;
+  --escalate-muted: #2b2210;
+  --grid-line: rgb(31 51 80 / 0.5);
+  --panel-shadow: none;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+.aeg-dark-band .text-primary, .aeg-night .text-primary, .aeg-dark-page .text-primary { color: #6aa6ff; }
+
+/* ---------- Scrollbar ---------- */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(10, 18, 32, 0.25) transparent;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background-color: rgba(10, 18, 32, 0.22); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background-color: rgba(10, 18, 32, 0.4); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* ---------- Animations ---------- */
+.aeg-ambient-cell {
+  animation-name: aeg-ambient-pulse;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+@keyframes aeg-ambient-pulse {
+  0%, 100% { opacity: 0; }
+  50% { opacity: var(--tw-opacity, 1); }
+}
+@keyframes loading-bar {
+  0%   { transform: translateX(-100%); }
+  50%  { transform: translateX(150%); }
+  100% { transform: translateX(300%); }
+}
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .aeg-panel, .aeg-tile { transition: none; }
+}
+/* aeg-dark-scrollbar */
+html.dark { scrollbar-color: rgba(255,255,255,0.28) transparent; }
+.dark ::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.22); }
+.dark ::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
+
+
+/* =========================================================
+   AEGISORA BLUE LOCK: tum site sabit lacivert tema
+   ========================================================= */
+.dark {
+  color-scheme: dark;
+  --background: #020b2e;
+  --surface-1: #031249;
+  --surface-2: #051758;
+  --surface-3: #072065;
+  --surface-4: #0a2a7a;
+  --foreground: #ffffff;
+  --muted-foreground: #b4c3e6;
+  --primary: #1599ff;
+  --primary-hover: #3aa8ff;
+  --primary-foreground: #ffffff;
+  --cyan: #4da6ff;
+  --card: #031249;
+  --card-foreground: #ffffff;
+  --popover: #031249;
+  --popover-foreground: #ffffff;
+  --secondary: #072065;
+  --secondary-foreground: #ffffff;
+  --muted: #051758;
+  --accent: #0a2a7a;
+  --accent-foreground: #ffffff;
+  --border: rgb(255 255 255 / 0.12);
+  --input: rgb(255 255 255 / 0.16);
+  --ring: #1599ff;
+  --destructive: #f26d72;
+  --destructive-foreground: #ffffff;
+  --allow: #34d399;
+  --allow-muted: rgb(52 211 153 / 0.14);
+  --block: #f87171;
+  --block-muted: rgb(248 113 113 / 0.14);
+  --escalate: #fbbf24;
+  --escalate-muted: rgb(251 191 36 / 0.14);
+  --grid-line: rgb(255 255 255 / 0.06);
+  --panel-shadow: none;
+  --aeg-body: #b4c3e6;
+}
+
+html.dark { background-color: #020b2e; }
+.dark body {
+  background-image:
+    radial-gradient(ellipse 45% 40% at 0% 0%, rgba(21,153,255,0.18) 0%, rgba(2,11,46,0) 70%),
+    radial-gradient(ellipse 45% 40% at 100% 100%, rgba(15,155,255,0.16) 0%, rgba(2,11,46,0) 70%);
+  background-attachment: fixed;
+}
+
+html.dark { scrollbar-color: rgba(255,255,255,0.28) transparent; }
+.dark ::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.22); }
+.dark ::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
+
+/* AEG-POLISH:START */
+/* aegisora-upgrade.ps1 tarafindan yonetilir. Tekrar calistirinca bu blok yerinde guncellenir. */
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+a, button, summary, select, [role="button"], [role="tab"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+@media (display-mode: standalone) {
+  body { overscroll-behavior-y: none; }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Motion that answers an action: route change and the mobile sheet. */
+@keyframes aeg-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes aeg-page-in { from { opacity: 0; transform: translate3d(0, 6px, 0); } to { opacity: 1; transform: none; } }
+@keyframes aeg-sheet-up { from { transform: translate3d(0, 100%, 0); } to { transform: none; } }
+
+.aeg-page-enter { animation: aeg-page-in .22s cubic-bezier(.22, 1, .36, 1) backwards; }
+.aeg-backdrop { animation: aeg-fade-in .2s ease-out backwards; }
+.aeg-sheet { animation: aeg-sheet-up .28s cubic-bezier(.22, 1, .36, 1) backwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .aeg-page-enter, .aeg-backdrop, .aeg-sheet { animation: none; }
+}
+
+/* Phones only */
+@media (max-width: 767px) {
+  html[data-density="compact"] { font-size: 15px; }
+  html[data-density="large"] { font-size: 17.5px; }
+
+  /* 16px inputs stop iOS from zooming the page on focus */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea { font-size: 16px; }
+
+  /* Dashboard tables become cards (cells are tagged by mobile-table-cards.tsx) */
+  table[data-aeg-cards] { display: block; width: 100%; min-width: 0 !important; border: 0; }
+  table[data-aeg-cards] thead {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  table[data-aeg-cards] tbody { display: grid; gap: .75rem; }
+  table[data-aeg-cards] tbody tr {
+    display: block;
+    padding: .25rem .875rem;
+    border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+    border-radius: .875rem;
+    background: color-mix(in srgb, currentColor 4%, transparent);
+  }
+  table[data-aeg-cards] tbody tr:active { background: color-mix(in srgb, currentColor 8%, transparent); }
+  table[data-aeg-cards] tbody td {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    width: auto; min-height: 2.5rem; padding: .5rem 0; border: 0; text-align: right;
+  }
+  table[data-aeg-cards] tbody td + td { border-top: 1px solid color-mix(in srgb, currentColor 9%, transparent); }
+  table[data-aeg-cards] tbody td[data-label]::before {
+    content: attr(data-label);
+    flex: 0 0 auto; max-width: 42%; text-align: left;
+    font-size: .75rem; font-weight: 500; opacity: .62;
+  }
+  table[data-aeg-cards] tbody td:not([data-label]) { display: block; text-align: left; }
+}
+/* AEG-POLISH:END */
+
+/* >>> aegisora-v5 */
+.aeg-sound-toggle {
+  position: fixed;
+  right: 16px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+  z-index: 45;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.78);
+  color: #e6ecf5;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+.aeg-sound-toggle:hover { border-color: rgba(148, 163, 184, 0.7); }
+.aeg-sound-toggle:active { transform: scale(0.94); }
+.aeg-sound-toggle:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
+.aeg-sound-toggle[aria-pressed="false"] { opacity: 0.6; }
+
+@media (max-width: 767px) {
+  /* desktop sidebar is replaced by the bottom navigation on phones */
+  [data-app-sidebar] { display: none !important; }
+  /* the content must not keep the sidebar's left offset */
+  [data-app-offset] { margin-left: 0 !important; padding-left: 0 !important; }
+  [data-app-main-offset] { margin-left: 0 !important; padding-left: 1rem !important; padding-right: 1rem !important; }
+  [data-app-main], [data-app-main-offset], [data-app-offset] { min-width: 0 !important; max-width: 100vw !important; }
+  /* nothing may push the page wider than the screen */
+  body { overflow-x: clip; max-width: 100%; }
+  [data-app-main] > * { min-width: 0; max-width: 100%; }
+  [data-app-main] .grid > * { min-width: 0; }
+  [data-app-main] :where(img, video, canvas, svg, table, pre) { max-width: 100%; }
+  [data-app-main] :where(pre) { overflow-x: auto; }
+  /* keep the sound toggle clear of the bottom navigation */
+  .aeg-sound-toggle {
+    right: 12px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 84px);
+    width: 36px;
+    height: 36px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aeg-sound-toggle { transition: none; }
+}
+/* <<< aegisora-v5 */
+
+/* >>> aegisora-v6 */
+@media (max-width: 767px) {
+  /* the shell keeps no column for the hidden sidebar: content gets the whole width */
+  *:has(> [data-app-main]),
+  *:has(> [data-app-sidebar]) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas: none !important;
+    column-gap: 0 !important;
+  }
+  [data-app-main] {
+    grid-area: auto !important;
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-inline: auto !important;
+    box-sizing: border-box !important;
+    padding-inline: 1rem !important;
+  }
+  /* wide tables scroll inside themselves instead of pushing the page sideways */
+  [data-app-main] :where(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+/* <<< aegisora-v6 */
+
+/* >>> aegisora-brand-v1: gradient brand tokens, additive. Remove this block to undo. */
+:root {
+  --aeg-brand-grad: linear-gradient(135deg, #0a5fe8 0%, #2d9bff 100%);
+  --aeg-brand-grad-hover: linear-gradient(135deg, #084dc0 0%, #1d88ee 100%);
+  --aeg-glow-a: rgba(120, 180, 255, 0.26);
+  --aeg-glow-b: rgba(45, 108, 240, 0.24);
+  --aeg-card-line: rgba(10, 20, 49, 0.1);
+  --aeg-card-shadow: 0 1px 2px rgba(10, 20, 49, 0.04), 0 8px 24px -12px rgba(10, 20, 49, 0.12);
+}
+.dark {
+  --aeg-brand-grad: linear-gradient(135deg, #0d5ef0 0%, #3aa8ff 100%);
+  --aeg-brand-grad-hover: linear-gradient(135deg, #2a74ff 0%, #68bdff 100%);
+  --aeg-glow-a: rgba(21, 153, 255, 0.36);
+  --aeg-glow-b: rgba(10, 95, 232, 0.5);
+  --aeg-card-line: rgba(150, 200, 255, 0.14);
+  --aeg-card-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+}
+.aeg-backdrop { position: relative; isolation: isolate; }
+.aeg-backdrop::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 14% 8%, var(--aeg-glow-a), transparent 70%),
+    radial-gradient(55% 50% at 88% 92%, var(--aeg-glow-b), transparent 72%);
+}
+.aeg-btn-brand {
+  background-image: linear-gradient(135deg, #0a5fe8 0%, #1a6ff0 100%); color: #fff; border: 0;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+.aeg-btn-brand:hover { background-image: linear-gradient(135deg, #0a55d0 0%, #1560d8 100%); }
+.aeg-btn-brand:active { transform: translateY(1px); }
+.aeg-card {
+  border: 1px solid var(--aeg-card-line); border-radius: 14px; box-shadow: var(--aeg-card-shadow);
+  background: var(--surface-2);
+}
+/* <<< aegisora-brand-v1 */
+
+/* >>> aegisora-font-v1: Inter for the dashboard only (self-hosted, same files as zp.css). Remove this block and the aeg-app class to undo. */
+@font-face{font-family:"AEG Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(/fonts/zp/inter-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"AEG Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(/fonts/zp/inter-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"AEG Mono";font-style:normal;font-weight:100 800;font-display:swap;src:url(/fonts/zp/jetbrains-mono-latin.woff2) format("woff2")}
+.aeg-app {
+  --font-sans: "AEG Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "AEG Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  font-family: var(--font-sans);
+}
+/* <<< aegisora-font-v1 */
+
+/* AEGISORA-LIGHT-BLUE */
+:root:not(.dark){--background:#ffffff;--foreground:#0a2540;--primary:#1d6bff;--primary-foreground:#ffffff;--ring:#1d6bff;--sidebar-primary:#1d6bff;--sidebar-primary-foreground:#ffffff;--chart-1:#1d6bff;--chart-2:#38bdf8;--chart-3:#0b4fd6;--chart-4:#7dd3fc;--chart-5:#1e3a8a}
+
+/* AEG-V14:START */
+/* Dashboard polish. Managed by script; remove this block to undo. */
+.aeg-app main h1 { letter-spacing: -0.02em; }
+.aeg-app table tbody tr:last-child { border-bottom: 0; }
+.aeg-app ::selection { background: color-mix(in srgb, var(--primary) 25%, transparent); }
+.aeg-app :where(a, button, [role="button"]) { transition: color .15s ease, background-color .15s ease, border-color .15s ease; }
+/* AEG-V14:END */
+=== kullanim yerleri ===
+src\app\[locale]\(app)\layout.tsx:2: import { MobileNav } from "@/components/aegisora/mobile-nav";
+src\app\[locale]\(public)\layout.tsx:1: import { SiteFooter } from "@/components/aegisora/site-footer";
+src\app\[locale]\(public)\layout.tsx:2: import { SiteHeader } from "@/components/aegisora/site-header";
+src\app\[locale]\(public)\page.tsx:1: import Home from "@/components/aegisora/home";
+src\app\[locale]\enterprise\page.tsx:2: import { PublicShell } from "@/components/aegisora/public-shell";
+src\app\[locale]\impressum\page.tsx:2: import { PublicShell } from "@/components/aegisora/public-shell";
+src\app\[locale]\security\page.tsx:2: import { PublicShell } from "@/components/aegisora/public-shell";
+src\components\aegisora\home-page.tsx:1: import "@/styles/home-page.css";
+src\components\aegisora\home.tsx:2: export { default } from "./home-page";
+src\components\aegisora\public-shell.tsx:1: import { SiteHeader } from "@/components/aegisora/site-header";
+src\components\aegisora\public-shell.tsx:2: import { SiteFooter } from "@/components/aegisora/site-footer";
+src\styles\home-page.css:1: /* Aegisora home page (hm- prefix). Managed by script v15. Delete this file and its import in home-page.tsx to undo. */
+=== src\components\ui ===
+accordion.tsx
+badge.tsx
+button.tsx
+card.tsx
+dialog.tsx
+dropdown-menu.tsx
+input.tsx
+label.tsx
+navigation-menu.tsx
+select.tsx
+separator.tsx
+sheet.tsx
+skeleton.tsx
+switch.tsx
+table.tsx
+tabs.tsx
+textarea.tsx
+tooltip.tsx

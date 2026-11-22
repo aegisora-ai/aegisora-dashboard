@@ -90,7 +90,7 @@ jobs:
 
       - name: Bundle leak check (no production project reference)
         run: |
-          if grep -rIq "hypbttzeqeupwdzbgwbd" .next --exclude-dir=cache; then
+          if grep -rIqE "hypbttzeqeupwdzbgwbd|bvdsfwmlylnmahridalj" .next --exclude-dir=cache; then
             echo "::error::production project reference found in build output"
             exit 1
           fi

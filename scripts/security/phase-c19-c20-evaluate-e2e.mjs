@@ -141,6 +141,7 @@ try {
   const allowed = await evaluate("read-settings jane.doe@example.com", "+1 (415) 555-1212", pii);
   assert("HTTP policy allows a matched read action", allowed.payload.effect === "ALLOW" && Boolean(allowed.payload.execution_id), {
     observed_effect: allowed.payload.effect ?? null,
+    observed_reason: allowed.payload.reason ?? null,
     policy_selected: Boolean(allowed.payload.policy_id),
     execution_recorded: Boolean(allowed.payload.execution_id),
   });

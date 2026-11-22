@@ -1,0 +1,1077 @@
+##### support ile ilgili dosyalar #####
+src\app\[locale]\(public)\support\page.tsx
+src\app\[locale]\(public)\support\[collection]\page.tsx
+src\app\[locale]\(public)\support\[collection]\[article]\page.tsx
+src\components\aegisora\support\article-body.tsx
+src\components\aegisora\support\copy-page.tsx
+src\components\aegisora\support\support-search.tsx
+src\components\aegisora\support\support-shell.tsx
+src\components\aegisora\support\support-sidebar.tsx
+src\lib\support-content-de.ts
+src\lib\support-content.ts
+
+##### src\app\[locale]\(public)\support\page.tsx #####
+import { ArrowRight, FileText } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { meta } from "@/lib/seo";
+import { SupportShell } from "@/components/aegisora/support/support-shell";
+import { SupportSearch } from "@/components/aegisora/support/support-search";
+import { MAIN_SITE, articleHref, collectionHref, collectionsFor, lp, popularArticles, searchIndex } from "@/lib/support-content";
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "HelpCenter" });
+  return meta(t("metaTitle"), t("metaDesc"));
+}
+
+export default async function SupportHome({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "HelpCenter" });
+  const popular = popularArticles(locale);
+  const index = searchIndex(locale);
+  const collections = collectionsFor(locale);
+  return (
+    <SupportShell locale={locale}>
+      <section className="mx-auto max-w-[1100px] px-4 pb-8 pt-16 sm:px-6 md:pt-20">
+        <p className="aeg-eyebrow text-xs text-primary">{t("eyebrow")}</p>
+        <h1 className="aeg-display mt-4 max-w-2xl text-5xl sm:text-6xl">{t("h1")}</h1>
+        <div className="mt-10">
+          <SupportSearch items={index} />
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-[1100px] px-4 pt-6 sm:px-6">
+        <h2 className="mb-3 text-sm font-semibold tracking-wide text-muted-foreground">{t("popular")}</h2>
+        <ul className="border-t border-border">
+          {popular.map((p) => (
+            <li key={p.href} className="border-b border-border">
+              <a href={p.href} className="flex items-center justify-between gap-4 py-4 text-base font-semibold transition hover:text-primary">
+                {p.title}
+                <FileText className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mx-auto max-w-[1100px] px-4 pt-16 sm:px-6">
+        <h2 className="aeg-display text-3xl sm:text-4xl">{t("collections")}</h2>
+        <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {collections.map((c) => {
+            const Icon = c.icon;
+            return (
+              <div key={c.slug} className="flex flex-col rounded-2xl border border-border bg-surface-1 transition hover:border-primary">
+                <div className="p-6">
+                  <Icon className="size-6" aria-hidden />
+                </div>
+                <div className="flex flex-1 flex-col border-t border-border p-6">
+                  <h3 className="text-lg font-semibold">
+                    <a href={collectionHref(c.slug, locale)} className="hover:text-primary">{c.title}</a>
+                  </h3>
+                  <p className="aeg-body-text mt-3 text-sm leading-6">{c.desc}</p>
+                  <ul className="mt-4 space-y-1.5">
+                    {c.articles.slice(0, 3).map((a) => (
+                      <li key={a.slug}>
+                        <a href={articleHref(c.slug, a.slug, locale)} className="text-sm font-medium hover:text-primary">{a.title}</a>
+                      </li>
+                    ))}
+                  </ul>
+                  <a href={collectionHref(c.slug, locale)} className="mt-auto inline-flex items-center gap-1.5 pt-5 text-xs font-semibold text-primary">
+                    {t("viewAll", { n: c.articles.length })} <ArrowRight className="size-3.5" aria-hidden />
+                  </a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-[1100px] px-4 pt-16 sm:px-6">
+        <div className="aeg-night flex flex-wrap items-center justify-between gap-6 rounded-3xl p-8 md:p-10">
+          <div className="max-w-xl">
+            <h2 className="text-xl font-semibold">{t("cantFind")}</h2>
+            <p className="mt-2 text-sm text-[#a9bbdb]">{t("cantFindBody")}</p>
+          </div>
+          <a href={MAIN_SITE + lp(locale, "/pilot")} className="inline-flex h-11 items-center rounded bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
+            {t("contactUs")}
+          </a>
+        </div>
+      </section>
+    </SupportShell>
+  );
+}
+
+##### src\app\[locale]\(public)\support\[collection]\page.tsx #####
+import { notFound } from "next/navigation";
+import { ChevronRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { meta } from "@/lib/seo";
+import { SupportShell } from "@/components/aegisora/support/support-shell";
+import { SupportSidebar } from "@/components/aegisora/support/support-sidebar";
+import { articleHref, findCollection, readMinutes } from "@/lib/support-content";
+
+type Props = { params: Promise<{ locale: string; collection: string }> };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale, collection } = await params;
+  const c = findCollection(collection, locale);
+  return meta(c ? c.title + " | Support" : "Support", c ? c.desc : "Aegisora help center");
+}
+
+export default async function CollectionPage({ params }: Props) {
+  const { locale, collection } = await params;
+  const t = await getTranslations({ locale, namespace: "HelpCenter" });
+  const c = findCollection(collection, locale);
+  if (!c) notFound();
+  const Icon = c.icon;
+  return (
+    <SupportShell locale={locale}>
+      <div className="mx-auto grid max-w-[1100px] gap-10 px-4 pt-12 sm:px-6 lg:grid-cols-[250px_minmax(0,1fr)]">
+        <aside className="hidden lg:block">
+          <div className="sticky top-8">
+            <SupportSidebar collection={c.slug} locale={locale} />
+          </div>
+        </aside>
+        <section>
+          <nav aria-label={t("breadcrumb")} className="text-sm text-muted-foreground">
+            <Link href="/support" className="hover:text-primary">{t("label")}</Link>
+            <span className="mx-2">/</span>
+            <span>{c.title}</span>
+          </nav>
+          <Icon className="mt-8 size-8" aria-hidden />
+          <h1 className="aeg-display mt-4 text-4xl sm:text-5xl">{c.title}</h1>
+          <p className="aeg-body-text mt-4 max-w-2xl text-lg leading-relaxed">{c.desc}</p>
+          <ul className="mt-10 border-t border-border">
+            {c.articles.map((a) => (
+              <li key={a.slug} className="border-b border-border">
+                <a href={articleHref(c.slug, a.slug, locale)} className="group flex items-center justify-between gap-4 py-5">
+                  <span>
+                    <span className="block text-base font-semibold group-hover:text-primary">{a.title}</span>
+                    <span className="aeg-body-text mt-1 block text-sm">{a.summary}</span>
+                    <span className="mt-1 block text-xs text-muted-foreground">{t("minRead", { n: readMinutes(a) })}</span>
+                  </span>
+                  <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </SupportShell>
+  );
+}
+
+##### src\app\[locale]\(public)\support\[collection]\[article]\page.tsx #####
+import { notFound } from "next/navigation";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { meta } from "@/lib/seo";
+import { SupportShell } from "@/components/aegisora/support/support-shell";
+import { SupportSidebar } from "@/components/aegisora/support/support-sidebar";
+import { ArticleBody } from "@/components/aegisora/support/article-body";
+import { CopyPage } from "@/components/aegisora/support/copy-page";
+import {
+  MAIN_SITE,
+  articleHref,
+  collectionHref,
+  findArticle,
+  findCollection,
+  headingsOf,
+  lp,
+  neighbours,
+  readMinutes,
+  toMarkdown,
+  updatedFor,
+} from "@/lib/support-content";
+
+type Props = { params: Promise<{ locale: string; collection: string; article: string }> };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale, collection, article } = await params;
+  const a = findArticle(collection, article, locale);
+  return meta(a ? a.title + " | Support" : "Support", a ? a.summary : "Aegisora help center");
+}
+
+export default async function ArticlePage({ params }: Props) {
+  const { locale, collection, article } = await params;
+  const t = await getTranslations({ locale, namespace: "HelpCenter" });
+  const c = findCollection(collection, locale);
+  const a = findArticle(collection, article, locale);
+  if (!c || !a) notFound();
+  const toc = headingsOf(a);
+  const { prev, next } = neighbours(c.slug, a.slug, locale);
+  return (
+    <SupportShell locale={locale}>
+      <div className="mx-auto grid max-w-[1200px] gap-10 px-4 pt-12 sm:px-6 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_200px]">
+        <aside className="hidden lg:block">
+          <div className="sticky top-8">
+            <SupportSidebar collection={c.slug} article={a.slug} locale={locale} />
+          </div>
+        </aside>
+
+        <article className="min-w-0">
+          <nav aria-label={t("breadcrumb")} className="text-sm text-muted-foreground">
+            <Link href="/support" className="hover:text-primary">{t("label")}</Link>
+            <span className="mx-2">/</span>
+            <a href={collectionHref(c.slug, locale)} className="hover:text-primary">{c.title}</a>
+          </nav>
+          <h1 className="aeg-display mt-6 text-4xl sm:text-5xl">{a.title}</h1>
+          <p className="aeg-body-text mt-4 text-lg leading-relaxed">{a.summary}</p>
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-xs text-muted-foreground">{t("updated", { date: updatedFor(locale), n: readMinutes(a) })}</p>
+            <CopyPage text={toMarkdown(a, locale)} />
+          </div>
+
+          <div className="mt-8 border-t border-border pt-6">
+            <ArticleBody blocks={a.body} locale={locale} />
+          </div>
+
+          {(prev || next) ? (
+            <div className="mt-14 grid gap-4 border-t border-border pt-8 sm:grid-cols-2">
+              {prev ? (
+                <a href={articleHref(c.slug, prev.slug, locale)} className="rounded-xl border border-border p-4 transition hover:border-primary">
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground"><ArrowLeft className="size-3.5" aria-hidden /> {t("prev")}</span>
+                  <span className="mt-1 block text-sm font-semibold">{prev.title}</span>
+                </a>
+              ) : <span />}
+              {next ? (
+                <a href={articleHref(c.slug, next.slug, locale)} className="rounded-xl border border-border p-4 text-right transition hover:border-primary">
+                  <span className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">{t("next")} <ArrowRight className="size-3.5" aria-hidden /></span>
+                  <span className="mt-1 block text-sm font-semibold">{next.title}</span>
+                </a>
+              ) : null}
+            </div>
+          ) : null}
+
+          <div className="mt-10 rounded-2xl bg-surface-3 p-6">
+            <h2 className="text-lg font-semibold">{t("stillHelp")}</h2>
+            <p className="aeg-body-text mt-2 text-sm leading-6">{t("stillBody")}</p>
+            <a href={MAIN_SITE + lp(locale, "/pilot")} className="mt-4 inline-flex h-10 items-center rounded bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
+              {t("contactUs")}
+            </a>
+          </div>
+        </article>
+
+        {toc.length >= 2 ? (
+          <aside className="hidden xl:block">
+            <div className="sticky top-8">
+              <p className="text-xs font-semibold tracking-wide text-muted-foreground">{t("onPage")}</p>
+              <ul className="mt-3 space-y-2 border-l border-border pl-3 text-sm">
+                {toc.map((h) => (
+                  <li key={h.id}>
+                    <a href={"#" + h.id} className="aeg-body-text transition hover:text-primary">{h.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </aside>
+        ) : null}
+      </div>
+    </SupportShell>
+  );
+}
+
+##### src\components\aegisora\support\article-body.tsx #####
+import { getTranslations } from "next-intl/server";
+import { AlertTriangle, Info, Lightbulb } from "lucide-react";
+import { slugify, type Block } from "@/lib/support-content";
+
+export async function ArticleBody({ blocks, locale }: { blocks: Block[]; locale: string }) {
+  const t = await getTranslations({ locale, namespace: "HelpCenter" });
+  const CALL = {
+    note: { Icon: Info, label: t("note"), cls: "border-border bg-surface-3" },
+    tip: { Icon: Lightbulb, label: t("tip"), cls: "border-border bg-surface-3" },
+    warn: { Icon: AlertTriangle, label: t("warn"), cls: "border-[#f0b429]/50 bg-[#f0b429]/10" },
+  } as const;
+
+  return (
+    <div className="space-y-5">
+      {blocks.map((b, i) => {
+        if (b.t === "h")
+          return (
+            <h2 key={i} id={slugify(b.text)} className="aeg-display scroll-mt-24 pt-6 text-2xl sm:text-3xl">
+              {b.text}
+            </h2>
+          );
+        if (b.t === "p") return <p key={i} className="aeg-body-text text-base leading-7">{b.text}</p>;
+        if (b.t === "ul")
+          return (
+            <ul key={i} className="aeg-body-text list-disc space-y-2 pl-6 text-base leading-7">
+              {b.items.map((x) => <li key={x}>{x}</li>)}
+            </ul>
+          );
+        if (b.t === "ol")
+          return (
+            <ol key={i} className="aeg-body-text list-decimal space-y-2 pl-6 text-base leading-7">
+              {b.items.map((x) => <li key={x}>{x}</li>)}
+            </ol>
+          );
+        const k = CALL[b.t];
+        const Icon = k.Icon;
+        return (
+          <div key={i} className={"flex gap-3 rounded-xl border p-4 text-sm leading-6 " + k.cls}>
+            <Icon className="mt-0.5 size-5 shrink-0" aria-hidden />
+            <p><span className="font-semibold">{k.label}: </span>{b.text}</p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+##### src\components\aegisora\support\copy-page.tsx #####
+"use client";
+
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Check, Copy } from "lucide-react";
+
+export function CopyPage({ text }: { text: string }) {
+  const t = useTranslations("HelpCenter");
+  const [done, setDone] = useState(false);
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(text);
+      setDone(true);
+      window.setTimeout(() => setDone(false), 2000);
+    } catch {
+      setDone(false);
+    }
+  }
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      className="inline-flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold transition hover:bg-surface-3"
+    >
+      {done ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
+      {done ? t("copied") : t("copy")}
+    </button>
+  );
+}
+
+##### src\components\aegisora\support\support-search.tsx #####
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
+import { FileText, Search } from "lucide-react";
+
+type Item = { title: string; summary: string; collection: string; href: string };
+
+export function SupportSearch({ items }: { items: Item[] }) {
+  const t = useTranslations("HelpCenter");
+  const [q, setQ] = useState("");
+  const [active, setActive] = useState(0);
+  const ref = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        ref.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  const results = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    if (term.length < 2) return [];
+    return items
+      .filter((i) => (i.title + " " + i.summary + " " + i.collection).toLowerCase().includes(term))
+      .sort((a, b) => Number(!a.title.toLowerCase().includes(term)) - Number(!b.title.toLowerCase().includes(term)))
+      .slice(0, 6);
+  }, [q, items]);
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActive((i) => Math.min(i + 1, Math.max(results.length - 1, 0)));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActive((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter" && results[active]) {
+      window.location.assign(results[active].href);
+    } else if (e.key === "Escape") {
+      setQ("");
+    }
+  };
+
+  return (
+    <div className="relative max-w-xl">
+      <div className="flex h-14 items-center gap-3 rounded-2xl border border-border bg-surface-1 px-4 shadow-sm focus-within:ring-2 focus-within:ring-primary/40">
+        <Search className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+        <input
+          ref={ref}
+          value={q}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setActive(0);
+          }}
+          onKeyDown={onKeyDown}
+          placeholder={t("searchPh")}
+          aria-label={t("searchAria")}
+          className="h-full min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
+        />
+        <kbd className="hidden rounded border border-border px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground sm:inline">Ctrl K</kbd>
+      </div>
+      {q.trim().length >= 2 ? (
+        <div className="absolute left-0 right-0 top-full z-20 mt-2 overflow-hidden rounded-2xl border border-border bg-surface-1 shadow-lg">
+          {results.length === 0 ? (
+            <p className="px-5 py-4 text-sm text-muted-foreground">{t("noResults")}</p>
+          ) : (
+            <ul>
+              {results.map((r, i) => (
+                <li key={r.href} className="border-b border-border last:border-b-0">
+                  <a
+                    href={r.href}
+                    onMouseEnter={() => setActive(i)}
+                    className={"flex items-start gap-3 px-5 py-3 transition " + (i === active ? "bg-surface-3" : "")}
+                  >
+                    <FileText className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+                    <span>
+                      <span className="block text-sm font-semibold">{r.title}</span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">{r.collection} · {r.summary}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+##### src\components\aegisora\support\support-shell.tsx #####
+export function SupportShell({ children }: { children: React.ReactNode; locale: string }) {
+  return (
+    <div className="bg-background text-foreground">
+      <div className="mx-auto max-w-[1100px] px-4 pb-20 sm:px-6">{children}</div>
+    </div>
+  );
+}
+
+##### src\components\aegisora\support\support-sidebar.tsx #####
+import { getTranslations } from "next-intl/server";
+import { articleHref, collectionHref, collectionsFor } from "@/lib/support-content";
+
+export async function SupportSidebar({ collection, article, locale }: { collection: string; article?: string; locale: string }) {
+  const t = await getTranslations({ locale, namespace: "HelpCenter" });
+  return (
+    <nav aria-label={t("topics")} className="space-y-1 text-sm">
+      {collectionsFor(locale).map((c) => {
+        const Icon = c.icon;
+        const open = c.slug === collection;
+        return (
+          <div key={c.slug}>
+            <a
+              href={collectionHref(c.slug, locale)}
+              className={"flex items-center gap-2.5 rounded-lg px-3 py-2 font-semibold transition hover:bg-surface-3 " + (open ? "bg-surface-3" : "")}
+            >
+              <Icon className="size-4 shrink-0" aria-hidden />
+              {c.title}
+            </a>
+            {open ? (
+              <ul className="ml-5 mt-1 space-y-0.5 border-l border-border pl-3">
+                {c.articles.map((a) => (
+                  <li key={a.slug}>
+                    <a
+                      href={articleHref(c.slug, a.slug, locale)}
+                      className={"block rounded px-2 py-1.5 transition hover:text-primary " + (a.slug === article ? "font-semibold text-primary" : "aeg-body-text")}
+                    >
+                      {a.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        );
+      })}
+    </nav>
+  );
+}
+
+##### src\lib\support-content-de.ts #####
+import { Briefcase, LifeBuoy, Rocket, Scale, ShieldCheck } from "lucide-react";
+import type { Collection } from "./support-content";
+
+export const COLLECTIONS_DE: Collection[] = [
+  {
+    slug: "getting-started",
+    title: "Erste Schritte",
+    desc: "Was Aegisora ist, wie Sie einen Test-Workspace anlegen und Ihre erste Agentenaktion bewerten.",
+    icon: Rocket,
+    articles: [
+      {
+        slug: "what-is-aegisora",
+        title: "Was ist Aegisora?",
+        summary: "Eine Laufzeit-Kontrollschicht, die entscheidet, was ein KI-Agent ausführen darf.",
+        body: [
+          { t: "p", text: "Aegisora ist eine Ausführungskontrollschicht für KI-Agenten. Sie sitzt unterhalb Ihrer Agenten-Orchestrierung, an der Stelle, an der aus einer Anfrage eine ausführbare Aktion wird, und liefert für jede Aktion eine eindeutige Entscheidung, bevor sie läuft." },
+          { t: "h", text: "Was es leistet" },
+          { t: "ul", items: [
+            "Bewertet jede Agentenaktion anhand der Richtlinien eines Workspace.",
+            "Liefert einen von drei Zuständen: ALLOW, BLOCK oder ESCALATE.",
+            "Blockiert standardmäßig, wenn keine Richtlinie zur Aktion passt.",
+            "Liefert zu jeder Entscheidung einen Nachweis-Hash, damit sich die Entscheidung nachgelagert nachvollziehen lässt.",
+          ] },
+          { t: "h", text: "Womit es funktioniert" },
+          { t: "p", text: "Die Grenze ist Framework-unabhängig. Sie sitzt unterhalb Ihres Agenten-Stacks und nicht in einem bestimmten Framework; auch die Ausführung durch Anbieter kann denselben Durchsetzungspfad nehmen." },
+          { t: "warn", text: "Aegisora befindet sich im frühen Zugang und wird mit Design-Partnern validiert. Produktions-Hosting, Kunden-SSO und vollständige Audit-Prozesse sind noch nicht verifiziert. Details finden Sie in der Sammlung Piloten und Preise." },
+        ],
+      },
+      {
+        slug: "create-test-workspace",
+        title: "Test-Workspace anlegen",
+        summary: "Registrieren Sie sich und erhalten Sie einen Workspace, in dem Sie Ihre erste Aktion bewerten können.",
+        body: [
+          { t: "p", text: "Ein Test-Workspace ist der schnellste Weg, um zu sehen, wie Aegisora entscheidet. Er ist zur Evaluierung gedacht, nicht für Produktivlasten." },
+          { t: "ol", items: [
+            "Öffnen Sie aegisora.org und wählen Sie Aegisora testen oder gehen Sie direkt zur Registrierungsseite.",
+            "Legen Sie Ihr Konto an und melden Sie sich an.",
+            "Legen Sie Ihren Workspace an oder öffnen Sie ihn.",
+            "Folgen Sie dem Schnellstart, um Ihre erste Aktion zu bewerten.",
+          ] },
+          { t: "h", text: "Was Sie beachten sollten" },
+          { t: "ul", items: [
+            "Für Test-Workspaces gibt es keinen kostenpflichtigen Tarif und keinen Online-Checkout.",
+            "Verbinden Sie keine Produktivsysteme und keine sensiblen Kundendaten mit einem Test-Workspace.",
+            "Jeder kostenpflichtige Pilot wird schriftlich abgegrenzt und vereinbart, bevor Kundendaten oder Produktivsysteme angebunden werden.",
+          ] },
+        ],
+      },
+      {
+        slug: "evaluate-first-action",
+        title: "Erste Aktion bewerten",
+        summary: "Senden Sie eine Aktion an die Laufzeit und lesen Sie die zurückgelieferte Entscheidung.",
+        body: [
+          { t: "p", text: "Sobald Sie einen Test-Workspace haben, führt Sie der Schnellstart durch das Senden einer einzelnen Agentenaktion zur Bewertung an die Laufzeit." },
+          { t: "ol", items: [
+            "Öffnen Sie den Schnellstart im Entwicklerbereich der Hauptseite.",
+            "Senden Sie mit den Zugangsdaten Ihres Workspace eine Aktion zur Bewertung.",
+            "Lesen Sie die Entscheidung: ALLOW, BLOCK oder ESCALATE.",
+            "Notieren Sie die Entscheidungs-ID und den Nachweis-Hash, die mit ihr zurückkommen.",
+          ] },
+          { t: "p", text: "Wenn Sie lieber zusehen möchten, wie die Laufzeit entscheidet, bevor Sie Code schreiben: Der Live-Laufzeitnachweis auf der Hauptseite führt eine Entscheidung für Sie aus." },
+          { t: "tip", text: "Ein neuer Workspace hat noch keine Richtlinien, daher ist zu erwarten, dass Ihre erste Aktion BLOCKIERT wird. Das ist das Standardverhalten, kein Fehler." },
+        ],
+      },
+      {
+        slug: "allow-block-escalate",
+        title: "ALLOW, BLOCK und ESCALATE erklärt",
+        summary: "Die drei Entscheidungszustände und wann welcher geliefert wird.",
+        body: [
+          { t: "p", text: "Jede bewertete Aktion endet in genau einem von drei Zuständen. Die Ergebnisse sind deterministisch: Dieselbe Aktion ergibt unter denselben Richtlinien denselben Zustand." },
+          { t: "h", text: "ALLOW" },
+          { t: "p", text: "Eine Richtlinie erlaubt die Aktion ausdrücklich. Ihr Agent darf sie ausführen." },
+          { t: "h", text: "BLOCK" },
+          { t: "p", text: "Die Aktion darf nicht laufen. Das ist auch das Ergebnis, wenn keine Richtlinie passt: Aegisora blockiert standardmäßig." },
+          { t: "h", text: "ESCALATE" },
+          { t: "p", text: "Die Aktion braucht eine menschliche Freigabe, bevor sie laufen darf. Sie wird an der Grenze gehalten, bis eine Person sie freigibt oder ablehnt." },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "policies-decisions",
+    title: "Richtlinien und Entscheidungen",
+    desc: "Wie Richtlinien, Entscheidungen, Freigaben und Nachweise an der Ausführungsgrenze zusammenwirken.",
+    icon: Scale,
+    articles: [
+      {
+        slug: "policies-overview",
+        title: "So funktionieren Richtlinien",
+        summary: "Ausführbare Governance-Kontrollen, die entscheiden, was jede Aktion darf.",
+        body: [
+          { t: "p", text: "Richtlinien sind ausführbare Governance-Kontrollen. Es sind keine Dokumente, die Menschen lesen; die Laufzeit wertet sie für jede Aktion aus." },
+          { t: "ul", items: [
+            "Richtlinien gehören zu einem Workspace.",
+            "Eine Aktion, zu der keine Richtlinie passt, wird standardmäßig blockiert.",
+            "Eine Richtlinie kann für die von ihr abgedeckten Aktionen zu ALLOW, BLOCK oder ESCALATE führen.",
+          ] },
+          { t: "tip", text: "Weil der Standard BLOCK ist, erlaubt ein leerer Workspace nie etwas. Fügen Sie Richtlinien gezielt hinzu und testen Sie sie mit Ihren eigenen Aktionen." },
+        ],
+      },
+      {
+        slug: "decision-inspector",
+        title: "Eine Entscheidung lesen",
+        summary: "Was eine Entscheidung aussagt und wie Sie ihr nachgelagert folgen.",
+        body: [
+          { t: "p", text: "Jede Entscheidung trägt eine Identität und einen Nachweis-Hash. Geben Sie beide nachgelagert weiter, damit sich die Aktion, die Ihr Agent ausführt, auf die Entscheidung zurückführen lässt, die sie erlaubt hat." },
+          { t: "ul", items: [
+            "Der Zustand: ALLOW, BLOCK oder ESCALATE.",
+            "Die Entscheidungs-ID, mit der Sie die Entscheidung erneut abrufen.",
+            "Der mit der Entscheidung gelieferte Nachweis-Hash.",
+          ] },
+          { t: "p", text: "Die Produktseiten auf der Hauptseite beschreiben den Decision Inspector ausführlicher." },
+        ],
+      },
+      {
+        slug: "approvals",
+        title: "Menschliche Freigaben",
+        summary: "Wie ESCALATE einen Menschen in die Entscheidung einbindet.",
+        body: [
+          { t: "p", text: "Wenn eine Richtlinie ESCALATE liefert, wartet die Aktion an der Grenze auf eine menschliche Freigabe. Die Freigabe wird als Teil der Entscheidungsspur protokolliert." },
+          { t: "ol", items: [
+            "Der Agent fordert eine Aktion an und die Laufzeit liefert ESCALATE.",
+            "Eine Person mit der passenden Workspace-Rolle prüft die Anfrage.",
+            "Die Person gibt sie frei oder lehnt sie ab.",
+            "Das Ergebnis wird protokolliert und die Aktion läuft entweder weiter oder bleibt blockiert.",
+          ] },
+          { t: "note", text: "Privilegierte Aktionen können zusätzlich eine MFA-Hochstufung verlangen. Siehe Zugriff und Sicherheit." },
+        ],
+      },
+      {
+        slug: "evidence",
+        title: "Nachweise und Nachweis-Hashes",
+        summary: "Welche Nachweise Aegisora protokolliert und was nicht behauptet wird.",
+        body: [
+          { t: "p", text: "Zu jeder Entscheidung wird ein Nachweis-Hash geliefert. Nachweisdatensätze sind per Hash verkettet, sodass sich die Änderung eines früheren Datensatzes erkennen lässt." },
+          { t: "h", text: "Was nicht behauptet wird" },
+          { t: "p", text: "Aegisora behauptet heute kein vollständiges Audit-Hauptbuch. Nachweisdatensätze helfen, einzelne Entscheidungen nachzuvollziehen; sie ersetzen nicht Ihr eigenes Audit-Programm." },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "access-security",
+    title: "Zugriff und Sicherheit",
+    desc: "Workspace-Rollen, MFA-Hochstufung, API-Schlüssel und was bereits verifiziert ist und was nicht.",
+    icon: ShieldCheck,
+    articles: [
+      {
+        slug: "workspace-roles",
+        title: "Workspace-Rollen",
+        summary: "OWNER, ADMIN, OPERATOR und VIEWER.",
+        body: [
+          { t: "p", text: "Der Zugriff innerhalb eines Workspace wird über Rollen gesteuert. Jede Anfrage wird serverseitig gegen die Rolle des Aufrufers in diesem Workspace geprüft." },
+          { t: "ul", items: ["OWNER", "ADMIN", "OPERATOR", "VIEWER"] },
+          { t: "p", text: "Geben Sie Personen die niedrigste Rolle, mit der sie ihre Arbeit erledigen können. Nutzen Sie VIEWER für Personen, die Entscheidungen nur lesen müssen." },
+        ],
+      },
+      {
+        slug: "mfa-step-up",
+        title: "MFA-Hochstufung für privilegierte Aktionen",
+        summary: "Warum manche Aktionen eine Bestätigung mit einem zweiten Faktor verlangen.",
+        body: [
+          { t: "p", text: "Privilegierte Aktionen können auch dann einen zweiten Faktor verlangen, wenn Sie bereits angemeldet sind. Das begrenzt, was eine gestohlene oder offen gelassene Sitzung bewirken kann." },
+          { t: "p", text: "Wenn eine Aktion eine Hochstufung verlangt, schließen Sie die MFA-Abfrage ab und wiederholen Sie die Aktion." },
+        ],
+      },
+      {
+        slug: "api-keys",
+        title: "API-Schlüssel und Anfrage-Authentifizierung",
+        summary: "Auf Workspaces begrenzte Schlüssel und der sichere Umgang damit.",
+        body: [
+          { t: "p", text: "API-Schlüssel sind auf einen Workspace begrenzt. Ein Schlüssel kann nur innerhalb des Workspace handeln, für den er ausgestellt wurde." },
+          { t: "h", text: "Behandeln Sie Schlüssel wie Geheimnisse" },
+          { t: "ul", items: [
+            "Committen Sie Schlüssel nie in ein Repository und fügen Sie sie nie in Chats oder Tickets ein.",
+            "Bewahren Sie Schlüssel in Ihrem Secret-Manager oder in Umgebungsvariablen auf.",
+            "Verwenden Sie für jede Umgebung einen eigenen Schlüssel.",
+            "Entfernen Sie einen Schlüssel, sobald er nicht mehr gebraucht wird oder abgeflossen sein könnte.",
+          ] },
+          { t: "p", text: "Anfragen ohne gültige Zugangsdaten werden abgelehnt. Die API-Referenz auf der Hauptseite listet die Endpunkte und das Anfrageformat auf." },
+        ],
+      },
+      {
+        slug: "security-overview",
+        title: "Sicherheits- und Vertrauensüberblick",
+        summary: "Was heute geschützt ist und was noch nicht verifiziert wurde.",
+        body: [
+          { t: "p", text: "Aegisora ist darauf ausgelegt, die Ausführungsgrenze zu schützen: Entscheidungen fallen serverseitig, der Standard ist BLOCK, der Zugriff ist rollenbasiert und privilegierte Aktionen können eine MFA-Hochstufung verlangen." },
+          { t: "h", text: "Noch nicht verifiziert" },
+          { t: "ul", items: [
+            "Produktions-Hosting und Service-Level.",
+            "Kunden-SSO (SAML / OIDC) und automatisierte Bereitstellung.",
+            "Vollständige Audit-Prozesse.",
+          ] },
+          { t: "p", text: "Die Sicherheitsseite und das Trust Center auf der Hauptseite beschreiben Datenschutz, Unterauftragsverarbeiter und Nutzungsbedingungen." },
+        ],
+      },
+    ],
+  },
+  {
+
+##### src\lib\support-content.ts #####
+import type { LucideIcon } from "lucide-react";
+import { COLLECTIONS_DE } from "./support-content-de";
+import { Briefcase, LifeBuoy, Rocket, Scale, ShieldCheck } from "lucide-react";
+
+export const MAIN_SITE = "https://aegisora.org";
+
+export type Block =
+  | { t: "p"; text: string }
+  | { t: "h"; text: string }
+  | { t: "ul"; items: string[] }
+  | { t: "ol"; items: string[] }
+  | { t: "note"; text: string }
+  | { t: "tip"; text: string }
+  | { t: "warn"; text: string };
+
+export type Article = { slug: string; title: string; summary: string; body: Block[] };
+export type Collection = { slug: string; title: string; desc: string; icon: LucideIcon; articles: Article[] };
+
+export const COLLECTIONS: Collection[] = [
+  {
+    slug: "getting-started",
+    title: "Get started",
+    desc: "What Aegisora is, how to create a test workspace and how to evaluate your first agent action.",
+    icon: Rocket,
+    articles: [
+      {
+        slug: "what-is-aegisora",
+        title: "What is Aegisora?",
+        summary: "A runtime control layer that decides what an AI agent is allowed to execute.",
+        body: [
+          { t: "p", text: "Aegisora is an execution-control layer for AI agents. It sits beneath your agent orchestration layer, at the point where a request becomes an executable action, and returns an explicit decision for each action before it runs." },
+          { t: "h", text: "What it does" },
+          { t: "ul", items: [
+            "Evaluates each agent action against the policies of a workspace.",
+            "Returns one of three states: ALLOW, BLOCK or ESCALATE.",
+            "Blocks by default when no policy matches the action.",
+            "Returns an evidence hash with every decision so the decision can be traced downstream.",
+          ] },
+          { t: "h", text: "What it works with" },
+          { t: "p", text: "The boundary is framework independent. It sits beneath your agent stack rather than inside one specific framework, and provider execution can pass through the same enforcement path." },
+          { t: "warn", text: "Aegisora is in early access and is being validated with design partners. Production hosting, customer SSO and full audit operations are not yet verified. See the Pilots and pricing collection for details." },
+        ],
+      },
+      {
+        slug: "create-test-workspace",
+        title: "Create a test workspace",
+        summary: "Sign up and get a workspace where you can evaluate your first action.",
+        body: [
+          { t: "p", text: "A test workspace is the fastest way to see how Aegisora decides. It is meant for evaluation, not for production workloads." },
+          { t: "ol", items: [
+            "Open aegisora.org and choose Test Aegisora, or go directly to the sign-up page.",
+            "Create your account and sign in.",
+            "Create or open your workspace.",
+            "Follow the quickstart to evaluate your first action.",
+          ] },
+          { t: "h", text: "What to keep in mind" },
+          { t: "ul", items: [
+            "Test workspaces are free. Pro is $49 per month.",
+            "Do not connect production systems or sensitive customer data to a test workspace.",
+            "Any paid pilot is scoped and agreed in writing before customer data or production systems are connected.",
+          ] },
+        ],
+      },
+      {
+        slug: "evaluate-first-action",
+        title: "Evaluate your first action",
+        summary: "Send an action to the runtime and read the decision that comes back.",
+        body: [
+          { t: "p", text: "Once you have a test workspace, the quickstart walks you through sending a single agent action to the runtime for evaluation." },
+          { t: "ol", items: [
+            "Open the quickstart in the developer section of the main site.",
+            "Send an action for evaluation using your workspace credentials.",
+            "Read the decision: ALLOW, BLOCK or ESCALATE.",
+            "Note the decision identity and evidence hash that come back with it.",
+          ] },
+          { t: "p", text: "If you would rather watch the runtime decide before writing any code, the live runtime proof runs a decision for you on the main site." },
+          { t: "tip", text: "A new workspace has no policies yet, so your first action is expected to be BLOCKED. That is the default behaviour, not an error." },
+        ],
+      },
+      {
+        slug: "allow-block-escalate",
+        title: "ALLOW, BLOCK and ESCALATE explained",
+        summary: "The three decision states and when each one is returned.",
+        body: [
+          { t: "p", text: "Every evaluated action ends in exactly one of three states. The results are deterministic, so the same action under the same policies produces the same state." },
+          { t: "h", text: "ALLOW" },
+          { t: "p", text: "A policy explicitly permits the action. Your agent may execute it." },
+          { t: "h", text: "BLOCK" },
+          { t: "p", text: "The action must not run. This is also the result when no policy matches: Aegisora blocks by default." },
+          { t: "h", text: "ESCALATE" },
+          { t: "p", text: "The action needs human authorization before it can run. It is held at the boundary until a person approves or rejects it." },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "policies-decisions",
+    title: "Policies and decisions",
+    desc: "How policies, decisions, approvals and evidence work together at the execution boundary.",
+    icon: Scale,
+    articles: [
+      {
+        slug: "policies-overview",
+        title: "How policies work",
+        summary: "Executable governance controls that decide what each action may do.",
+        body: [
+          { t: "p", text: "Policies are executable governance controls. They are not documents that people read; the runtime evaluates them for each action." },
+          { t: "ul", items: [
+            "Policies belong to a workspace.",
+            "An action that matches no policy is blocked by default.",
+            "A policy can lead to ALLOW, BLOCK or ESCALATE for the actions it covers.",
+          ] },
+          { t: "tip", text: "Because the default is BLOCK, an empty workspace never allows anything. Add policies deliberately and test them with your own actions." },
+        ],
+      },
+      {
+        slug: "decision-inspector",
+        title: "Read a decision",
+        summary: "What a decision tells you and how to follow it downstream.",
+        body: [
+          { t: "p", text: "Each decision carries an identity and an evidence hash. Carry both downstream so that the action your agent executes can be tied back to the decision that permitted it." },
+          { t: "ul", items: [
+            "The state: ALLOW, BLOCK or ESCALATE.",
+            "The decision identity, used to look the decision up again.",
+            "The evidence hash returned with the decision.",
+          ] },
+          { t: "p", text: "The product pages on the main site describe the decision inspector in more detail." },
+        ],
+      },
+      {
+        slug: "approvals",
+        title: "Human approvals",
+        summary: "How ESCALATE brings a person into the decision.",
+        body: [
+          { t: "p", text: "When a policy returns ESCALATE, the action waits for human authorization at the boundary. The approval is recorded as part of the decision trail." },
+          { t: "ol", items: [
+            "The agent requests an action and the runtime returns ESCALATE.",
+            "A person with the right workspace role reviews the request.",
+            "The person approves or rejects it.",
+            "The outcome is recorded and the action either proceeds or stays blocked.",
+          ] },
+          { t: "note", text: "Privileged actions can additionally require MFA step-up. See Access and security." },
+        ],
+      },
+      {
+        slug: "evidence",
+        title: "Evidence and evidence hashes",
+        summary: "What evidence Aegisora records and what it does not claim.",
+        body: [
+          { t: "p", text: "An evidence hash is returned with every decision. Evidence records are hash-chained, so a change to an earlier record is detectable." },
+          { t: "h", text: "What is not claimed" },
+          { t: "p", text: "Aegisora does not claim a complete audit ledger today. Evidence records support tracing individual decisions; they are not a substitute for your own audit program." },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "access-security",
+    title: "Access and security",
+    desc: "Workspace roles, MFA step-up, API keys and what is and is not verified yet.",
+    icon: ShieldCheck,
+    articles: [
+      {
+        slug: "workspace-roles",
+        title: "Workspace roles",
+        summary: "OWNER, ADMIN, OPERATOR and VIEWER.",
+        body: [
+          { t: "p", text: "Access inside a workspace is controlled by roles. Every request is checked on the server against the caller's role in that workspace." },
+          { t: "ul", items: ["OWNER", "ADMIN", "OPERATOR", "VIEWER"] },
+          { t: "p", text: "Give people the lowest role that lets them do their job. Use VIEWER for people who only need to read decisions." },
+        ],
+      },
+      {
+        slug: "mfa-step-up",
+        title: "MFA step-up for privileged actions",
+        summary: "Why some actions ask you to confirm with a second factor.",
+        body: [
+          { t: "p", text: "Privileged actions can require a second factor even when you are already signed in. This limits what a stolen or left-open session can do." },
+          { t: "p", text: "If an action asks for step-up, complete the MFA prompt and retry the action." },
+        ],
+      },
+      {
+        slug: "api-keys",
+        title: "API keys and request authentication",
+        summary: "Workspace-scoped keys and how to handle them safely.",
+        body: [
+          { t: "p", text: "API keys are scoped to a workspace. A key can act only inside the workspace it was issued for." },
+          { t: "h", text: "Handle keys as secrets" },
+          { t: "ul", items: [
+            "Never commit keys to a repository or paste them into chat or tickets.",
+            "Keep keys in your secret manager or environment variables.",
+            "Use a separate key for each environment.",
+            "Remove a key as soon as it is no longer needed or may have leaked.",
+          ] },
+          { t: "p", text: "Requests without valid credentials are rejected. The API reference on the main site lists the endpoints and the request format." },
+        ],
+      },
+      {
+        slug: "security-overview",
+        title: "Security and trust overview",
+
+##### src\app\[locale]\(site)\layout.tsx #####
+import "@/styles/aegx.css";
+import { Inter } from "next/font/google";
+
+import { AegxFooter } from "@/components/aegx/footer";
+import { AegxFx } from "@/components/aegx/fx";
+import { AegxHeader } from "@/components/aegx/header";
+import { ForceDark } from "@/components/aegx/force-dark";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+
+export default function SiteLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <div className={"aegx " + inter.variable}>
+      <ForceDark />
+      <AegxFx />
+      <AegxHeader />
+      <main>{children}</main>
+      <AegxFooter />
+      
+    </div>
+  );
+}
+
+##### src\components\aegx\kit.tsx #####
+import type { ReactNode } from "react";
+import * as Lucide from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { Cells, Cta, Feed, Hero, Sec, SectionHead } from "./ui";
+
+// Everything the old kit offers stays available; the four layout pieces below replace its look.
+export * from "@/components/aegisora/page-kit";
+
+type Act = { label: string; href: string };
+
+export function PageHero(p: {
+  eyebrow?: string; title?: ReactNode; intro?: string; lead?: string; primary?: Act; secondary?: Act;
+  rows?: { action: string; meta: string; v: string }[]; children?: ReactNode; [k: string]: unknown;
+}) {
+  return (
+    <Hero
+      compact
+      badge={p.eyebrow}
+      title={typeof p.title === "string" ? p.title : ""}
+      intro={p.intro ?? p.lead}
+      primary={p.primary}
+      secondary={p.secondary}
+    >
+      {p.rows ? <Feed title="aegisora / runtime" rows={p.rows} /> : null}
+      {p.children}
+    </Hero>
+  );
+}
+
+export function Section(p: { eyebrow?: string; title?: string; intro?: string; tone?: string; id?: string; children?: ReactNode; [k: string]: unknown }) {
+  return (
+    <Sec flush id={p.id}>
+      {p.title ? (
+        <div className="aegx-pad aegx-pad--head">
+          <SectionHead eyebrow={p.eyebrow} title={p.title} intro={p.intro} />
+        </div>
+      ) : null}
+      <div className={"aegx-sbody" + (p.title ? "" : " aegx-sbody--top")}>{p.children}</div>
+    </Sec>
+  );
+}
+
+type Item = { icon?: string; title: string; body?: string; href?: string; n?: string; [k: string]: unknown };
+
+export function CardGrid({ cols = 3, items }: { cols?: number; items: Item[] }) {
+  const n = (cols === 2 || cols === 4 || cols === 6 ? cols : 3) as 2 | 3 | 4 | 6;
+  const perRow = n === 6 ? 3 : n;
+  const missing = items.length % perRow === 0 ? 0 : perRow - (items.length % perRow);
+  const icons = Lucide as unknown as Record<string, LucideIcon | undefined>;
+  return (
+    <Cells n={n}>
+      {items.map((it, i) => {
+        const Icon = it.icon ? icons[it.icon] : undefined;
+        const inner = (
+          <>
+            {Icon ? <span className="aegx-ico"><Icon aria-hidden="true" /></span> : null}
+            {it.n ? <span className="aegx-num">{it.n}</span> : null}
+            <h3 className="aegx-h3">{it.title}</h3>
+            {it.body ? <p className="aegx-p">{it.body}</p> : null}
+          </>
+        );
+        return it.href ? (
+          <Link key={i} href={it.href} className="aegx-cell">{inner}</Link>
+        ) : (
+          <div key={i} className="aegx-cell">{inner}</div>
+        );
+      })}
+      {Array.from({ length: missing }).map((_, i) => (
+        <div key={"f" + i} className="aegx-cell aegx-cell--fill" aria-hidden="true" />
+      ))}
+    </Cells>
+  );
+}
+
+export function CtaBand(p: { title: string; body?: string; primary: Act; secondary?: Act; [k: string]: unknown }) {
+  return <Cta title={p.title} body={p.body ?? ""} primary={p.primary} secondary={p.secondary} />;
+}
+
+##### messages: Support (en) #####
+--- HelpCenter ---
+{
+    "metaTitle":  "Support",
+    "metaDesc":  "Help center for Aegisora: getting started, policies and decisions, access and security, and pilots and pricing.",
+    "label":  "Support",
+    "docs":  "Docs",
+    "techDocs":  "Technical docs",
+    "contact":  "Contact",
+    "test":  "Test Aegisora",
+    "footer":  "Aegisora Support",
+    "trust":  "Trust center",
+    "security":  "Security",
+    "eyebrow":  "AEGISORA SUPPORT",
+    "h1":  "Search for answers or browse by topic",
+    "popular":  "POPULAR ARTICLES",
+    "collections":  "Collections",
+    "viewAll":  "View all {n} {n, plural, one {article} other {articles}}",
+    "cantFind":  "Can’t find what you need?",
+    "cantFindBody":  "Tell the team what you were trying to do and what happened instead.",
+    "contactUs":  "Contact us",
+    "topics":  "Support topics",
+    "breadcrumb":  "Breadcrumb",
+    "minRead":  "{n} min read",
+    "updated":  "Updated {date} · {n} min read",
+    "prev":  "Previous",
+    "next":  "Next",
+    "stillHelp":  "Still need help?",
+    "stillBody":  "Tell us what you were trying to do and what happened instead.",
+    "onPage":  "ON THIS PAGE",
+    "searchPh":  "Search for articles...",
+    "searchAria":  "Search for articles",
+    "noResults":  "No articles found. Try a different word.",
+    "copy":  "Copy page",
+    "copied":  "Copied",
+    "note":  "Note",
+    "tip":  "Tip",
+    "warn":  "Important"
+}
+
+##### aegx.css: form ve kart siniflari #####
+66: .aegx-pad { padding: clamp(56px, 8vw, 104px) var(--pad); }
+67: .aegx-pad--head { padding-bottom: clamp(32px, 5vw, 56px); }
+120: .aegx-cell { background: #000; padding: clamp(24px, 3vw, 36px); }
+121: .aegx-ico { display: inline-flex; width: 38px; height: 38px; align-items: center; justify-content: center; margin-bottom: 22px; border: 1px solid var(--line2); border-radius: 11px; color: #fff; background: rgb(255 255 255 / 0.04); }
+122: .aegx-ico svg { width: 18px; height: 18px; }
+155: .aegx-faq { max-width: 780px; margin: 0 auto; }
+156: .aegx-faq details { border-top: 1px solid var(--line); }
+157: .aegx-faq details:last-of-type { border-bottom: 1px solid var(--line); }
+158: .aegx-faq summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 0; cursor: pointer; list-style: none; font-size: 16px; font-weight: 500; }
+159: .aegx-faq summary::-webkit-details-marker { display: none; }
+160: .aegx-faq summary span { font-size: 22px; font-weight: 300; line-height: 1; transition: transform 0.2s; }
+161: .aegx-faq details[open] summary span { transform: rotate(45deg); }
+162: .aegx-faq details p { padding-bottom: 20px; color: var(--mut); line-height: 1.65; }
+163: .aegx-faq__foot { margin-top: 28px; color: var(--mut); font-size: 14px; }
+164: .aegx-faq__foot a { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+197: .aegx-cell { position: relative; --mx: 50%; --my: 50%; }
+200: .aegx a.aegx-cell { display: block; }
+205: .aegx-sbody { padding: 0 var(--pad) clamp(40px, 6vw, 72px); }
+206: .aegx-sbody--top { padding-top: clamp(40px, 6vw, 72px); }
+207: .aegx-sbody > .aegx-cells { margin: 0 calc(var(--pad) * -1); }
+208: .aegx-sbody:has(> .aegx-cells:last-child) { padding-bottom: 0; }
+214: .aegx-form { max-width: 760px; margin: 36px auto 0; display: grid; gap: 18px; text-align: left; }
+215: .aegx-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+216: @media (max-width: 640px) { .aegx-form__row { grid-template-columns: 1fr; } }
+226: .aegx-form .aegx-btn { justify-self: start; }
+227: .aegx-form__msg--err { color: #f87171; font-size: 13.5px; }

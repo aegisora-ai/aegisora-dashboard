@@ -8,6 +8,7 @@ import type { Workspace } from "@/lib/aegisora/use-workspace";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { btnPrimary } from "@/lib/ui";
+import { confirmDialog, notify } from "@/components/aegisora/live/feedback";
 
 const EVENTS = ["decision.block", "decision.escalate", "decision.allow"];
 
@@ -67,10 +68,10 @@ export default function WebhooksPage() {
       ]}
       actions={(r, reload) => (
         <div className="flex justify-end gap-2">
-          <button className={btnGhost} onClick={async () => { const { error } = await createClient().from("webhooks").update({ enabled: !r.enabled }).eq("id", r.id); if (error) alert(error.message); reload(); }}>
+          <button className={btnGhost} onClick={async () => { const { error } = await createClient().from("webhooks").update({ enabled: !r.enabled }).eq("id", r.id); if (error) notify(error.message, false); reload(); }}>
             {r.enabled ? "Disable" : "Enable"}
           </button>
-          <button className={btnGhost} onClick={async () => { if (!confirm("Delete this webhook?")) return; const { error } = await createClient().from("webhooks").delete().eq("id", r.id); if (error) alert(error.message); reload(); }}>
+          <button className={btnGhost} onClick={async () => { if (!(await confirmDialog({ title: "Delete this webhook?", body: "Deliveries to this endpoint stop immediately.", confirmLabel: "Delete webhook", danger: true }))) return; const { error } = await createClient().from("webhooks").delete().eq("id", r.id); if (error) notify(error.message, false); reload(); }}>
             Delete
           </button>
         </div>

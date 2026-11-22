@@ -1,0 +1,12 @@
+===== ISLEM LOGU =====
+YAZILDI  src\components\aegisora\app-sidebar.tsx
+GUNCELLENDI  src\components\aegisora\app-shell.tsx
+GUNCELLENDI  src\components\aegisora\mobile-nav.tsx
+GUNCELLENDI  src\app\[locale]\(app)\dashboard\policies\page.tsx
+GUNCELLENDI  src\app\[locale]\(app)\dashboard\decisions\page.tsx
+
+===== KALINTI KONTROLU =====
+(yok)
+
+===== TSC =====
+HATA YOK

@@ -39,6 +39,17 @@
                           "source":  "/business",
                           "destination":  "/enterprise",
                           "permanent":  true
+                      },
+                      {
+                          "source":  "/:path*",
+                          "has":  [
+                                      {
+                                          "type":  "host",
+                                          "value":  "aegisora-ai.vercel.app"
+                                      }
+                                  ],
+                          "destination":  "https://aegisora.org/:path*",
+                          "permanent":  true
                       }
                   ]
 }

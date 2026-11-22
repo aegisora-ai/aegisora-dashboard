@@ -1,4 +1,4 @@
-﻿name: Container Security
+name: Container Security
 
 on:
   pull_request:
@@ -54,6 +54,7 @@ jobs:
       - name: Upload Trivy SARIF
         uses: github/codeql-action/upload-sarif@v3
         if: always()
+        continue-on-error: true
         with:
           sarif_file: trivy-results.sarif
 

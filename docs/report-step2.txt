@@ -1,0 +1,133 @@
+===== ROUTE KONTROLU =====
+/login                 VAR
+/signup                VAR
+/forgot-password       VAR
+/onboarding            VAR
+/dashboard             VAR
+/trust                 VAR
+/trust/privacy         VAR
+/terms                 VAR
+/security              VAR
+/pilot                 VAR
+/docs                  VAR
+/docs/technical        VAR
+/docs/quickstart       VAR
+/support               VAR
+/pricing               VAR
+
+===== ESKI ADRESLERE KALAN LINKLER =====
+src\app\[locale]\(public)\blog\page.tsx:33  secondary={{ label: "Read the quickstart", href: "/developers/quickstart" }}
+src\app\[locale]\(public)\pricing\page.tsx:32  more: { label: "Read the quickstart", href: "/developers/quickstart" },
+src\app\[locale]\(public)\pricing\page.tsx:43  more: { label: "Review the API", href: "/developers" },
+src\app\[locale]\(public)\pricing\page.tsx:53  cta: { label: "Contact us", href: "/contact" },
+src\app\[locale]\(public)\pricing\page.tsx:217  <Link href="/developers" className="inline-flex h-11 items-center rounded-md border border-white/50 px-5 text-sm font-semibold text-white hover:bg-white/10">
+src\app\[locale]\(public)\pricing\page.tsx:306  <Link href="/contact" className="font-semibold text-sky-300 underline underline-offset-4">Contact us</Link>{" "}
+src\app\[locale]\(public)\proof\page.tsx:58  secondary={{ label: "Talk to our team", href: "/contact" }}
+src\app\[locale]\(public)\trust\page.tsx:13  primary={{ label: "Contact us", href: "/contact" }}
+src\app\[locale]\(public)\trust\page.tsx:30  primary={{ label: "Contact us", href: "/contact" }}
+src\app\[locale]\enterprise\page.tsx:15  secondary={{ label: "Review the API", href: "/developers" }}
+src\app\[locale]\enterprise\page.tsx:36  primary={{ label: "Contact us", href: "/contact" }}
+src\app\[locale]\security\page.tsx:37  secondary={{ label: "Contact us", href: "/contact" }}
+src\app\[locale]\support\[collection]\[article]\page.tsx:83  <a href={MAIN_SITE + "/contact"} className="mt-4 inline-flex h-10 items-center rounded bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover">
+src\components\aegisora\onboarding-flow.tsx:193  <Link href="/developers" className="block underline underline-offset-4">Open API quickstart</Link>
+src\components\aegisora\platform-tabs.tsx:58  <Link href="/developers/quickstart" className="inline-flex h-11 items-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover">
+src\components\aegisora\platform-tabs.tsx:61  <Link href="/developers" className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground transition hover:text-primary">
+src\components\aegisora\start-building.tsx:14  href: "/developers/quickstart",
+src\components\aegisora\start-building.tsx:20  href: "/developers/quickstart",
+src\components\aegisora\start-building.tsx:26  href: "/product/evidence",
+src\components\aegisora\start-building.tsx:60  <Link href="/developers" className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-primary transition hover:gap-2.5">
+src\lib\main-nav.ts:23  { label: "Runtime", href: "/product/runtime", desc: "The execution boundary for agent actions." },
+src\lib\main-nav.ts:24  { label: "Policies", href: "/product/policies", desc: "Executable governance controls." },
+src\lib\main-nav.ts:25  { label: "Decisions", href: "/product/decisions", desc: "The decision inspector." },
+src\lib\main-nav.ts:26  { label: "Approvals", href: "/product/approvals", desc: "Human authorization at the boundary." },
+src\lib\main-nav.ts:27  { label: "Evidence", href: "/product/evidence", desc: "Connected, auditable records." },
+src\lib\main-nav.ts:36  { label: "Runtime control", href: "/product/runtime", desc: "Control what agents are allowed to do." },
+src\lib\main-nav.ts:37  { label: "Human approvals", href: "/product/approvals", desc: "Escalate sensitive actions to people." },
+src\lib\main-nav.ts:38  { label: "Audit evidence", href: "/product/evidence", desc: "Evidence for every decision." },
+src\lib\main-nav.ts:39  { label: "Policy governance", href: "/product/policies", desc: "Versioned, enforceable policies." },
+src\lib\main-nav.ts:44  href: "/resources",
+src\lib\main-nav.ts:48  { label: "Changelog", href: "/changelog", desc: "What each release includes." },
+src\lib\mega-nav.ts:41  { title: "Runtime", desc: "The execution boundary for agent actions", href: "/product/runtime", icon: ShieldCheck },
+src\lib\mega-nav.ts:42  { title: "Policies", desc: "Executable governance controls", href: "/product/policies", icon: ScrollText },
+src\lib\mega-nav.ts:48  { title: "Decisions", desc: "The decision inspector", href: "/product/decisions", icon: Scale },
+src\lib\mega-nav.ts:49  { title: "Approvals", desc: "Human authorization at the boundary", href: "/product/approvals", icon: UserCheck },
+src\lib\mega-nav.ts:57  { title: "Evidence", desc: "Connected, auditable records", href: "/product/evidence", icon: FileCheck2 },
+src\lib\mega-nav.ts:65  { title: "Quickstart", desc: "Evaluate your first action", href: "/developers/quickstart", icon: Rocket },
+src\lib\mega-nav.ts:78  { title: "Aegisora 4.0", desc: "See what this release includes", href: "/changelog" },
+src\lib\mega-nav.ts:90  { title: "Quickstart", desc: "Evaluate your first action", href: "/developers/quickstart", icon: Rocket },
+src\lib\mega-nav.ts:98  { title: "Changelog", desc: "What each release includes", href: "/changelog", icon: History },
+src\lib\mega-nav.ts:99  { title: "Resources", desc: "Guides and reference material", href: "/resources", icon: Library },
+src\lib\mega-nav.ts:105  footer: [{ title: "Resources hub", desc: "Get help building with Aegisora", href: "/resources" }],
+src\lib\mega-nav.ts:116  { title: "Runtime control", href: "/product/runtime" },
+src\lib\mega-nav.ts:117  { title: "Human approvals", href: "/product/approvals" },
+src\lib\mega-nav.ts:118  { title: "Audit evidence", href: "/product/evidence" },
+src\lib\mega-nav.ts:119  { title: "Policy governance", href: "/product/policies" },
+src\lib\mega-nav.ts:127  { title: "Builders", href: "/developers/quickstart" },
+src\lib\mega-nav.ts:157  { title: "Contact", desc: "Reach the Aegisora team", href: "/contact" },
+src\lib\mega-nav.ts:164  { title: "Contact us", desc: "Reach out to the team.", cta: "Get in touch", href: "/contact", style: "arrow" },
+src\lib\product-content.ts:69  secondary: { label: "Read the quickstart", href: "/developers/quickstart" },
+src\lib\site-nav.ts:9  { label: "Runtime", href: "/product/runtime", desc: "Request to evidence, stage by stage." },
+src\lib\site-nav.ts:10  { label: "Policies", href: "/product/policies", desc: "Executable governance controls." },
+src\lib\site-nav.ts:11  { label: "Decisions", href: "/product/decisions", desc: "The decision inspector." },
+src\lib\site-nav.ts:12  { label: "Approvals", href: "/product/approvals", desc: "Human authorization at the boundary." },
+src\lib\site-nav.ts:13  { label: "Evidence", href: "/product/evidence", desc: "Connected, auditable records." },
+src\lib\site-nav.ts:17  { label: "Developers", href: "/developers" },
+src\lib\site-nav.ts:23  { label: "Changelog", href: "/changelog", desc: "What Aegisora 4.0 includes." },
+src\lib\site-nav.ts:33  { label: "Runtime", href: "/product/runtime" },
+src\lib\site-nav.ts:34  { label: "Policies", href: "/product/policies" },
+src\lib\site-nav.ts:35  { label: "Decisions", href: "/product/decisions" },
+src\lib\site-nav.ts:36  { label: "Approvals", href: "/product/approvals" },
+src\lib\site-nav.ts:37  { label: "Evidence", href: "/product/evidence" },
+src\lib\site-nav.ts:43  { label: "Developers", href: "/developers" },
+src\lib\site-nav.ts:54  { label: "Changelog", href: "/changelog" },
+
+===== BOZUK KARAKTER (mojibake) =====
+(yok)
+
+===== AuthSidePanel kullanimi =====
+(kullanilmiyor)
+
+===== ANCHOR ID'LERI =====
+--- src\app\[locale]\(public)\docs\page.tsx
+19: <h2 id="why" className="mt-12 scroll-mt-24 text-2xl font-medium">Why an execution boundary</h2>
+24: <div id="example" className="mt-8 scroll-mt-24">
+41: <div id="v1" className="mt-14 scroll-mt-24 aeg-panel p-6 md:p-8">
+64: <div id="v2" className="mt-8 scroll-mt-24 aeg-panel p-6 md:p-8">
+87: <div id="v3" className="mt-8 scroll-mt-24 aeg-panel p-6 md:p-8">
+112: <div id="v4" className="mt-8 scroll-mt-24 aeg-panel p-6 md:p-8 border-primary/30">
+136: <h2 id="capability" className="mt-20 scroll-mt-24 text-2xl font-medium">Capability by version</h2>
+172: <h2 id="api" className="mt-20 scroll-mt-24 text-2xl font-medium">Integration surface</h2>
+--- src\components\aegisora\tech-docs\data.ts
+159: id: "overview",
+180: { t: "h3", id: "ecosystem", text: "Where Aegisora sits" },
+201: id: "pipeline",
+219: id: "decisions",
+234: { t: "h3", id: "states", text: "Enforcement state and execution outcome" },
+248: { t: "h3", id: "ids", text: "Canonical correlation identifiers" },
+271: id: "authority",
+287: { t: "h3", id: "capability", text: "Capability-based execution" },
+296: { t: "h3", id: "ordering", text: "Provider governance ordering" },
+310: id: "continuity",
+323: { t: "h3", id: "seal-bindings", text: "What a seal binds" },
+338: { t: "h3", id: "seal-authority", text: "Authority integrity" },
+350: { t: "h3", id: "seal-boundary", text: "Enforcement at the boundary" },
+361: { t: "h3", id: "seal-providers", text: "Provider and tool execution" },
+369: { t: "h3", id: "seal-reconcile", text: "Effect reconciliation" },
+378: id: "evidence",
+411: id: "enterprise",
+437: id: "approvals",
+459: id: "tools",
+479: id: "operations",
+497: id: "packages",
+527: id: "integrations",
+546: id: "getting-started",
+557: { t: "h3", id: "gs-config", text: "Configuration" },
+573: id: "validation",
+579: { t: "h3", id: "val-v4", text: "v4.0.0 validation, as published in the release notes" },
+595: { t: "h3", id: "val-supply", text: "Supply-chain discipline" },
+608: id: "releases",
+--- src\components\aegisora\tech-docs\tech-docs.tsx
+298: id="td-search"
+
+===== TSC =====
+HATA YOK

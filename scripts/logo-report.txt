@@ -1,0 +1,17 @@
+ok   desktop / header logo 35x24
+ok   desktop / footer logo 35x24
+ok   desktop /pricing header logo 35x24
+ok   desktop /pricing footer logo 35x24
+ok   desktop /product header logo 35x24
+ok   desktop /product footer logo 35x24
+ok   desktop /security header logo 35x24
+ok   desktop /security footer logo 35x24
+ok   desktop /de header logo 35x24
+ok   desktop /de footer logo 35x24
+ok   desktop /de/pricing header logo 35x24
+ok   desktop /de/pricing footer logo 35x24
+ok   mobile / header logo 35x24
+ok   mobile / footer logo 35x24
+ok   mobile /pricing header logo 35x24
+ok   mobile /pricing footer logo 35x24
+SONUC: logo ve zemin temiz

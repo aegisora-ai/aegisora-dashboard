@@ -1,49 +1,125 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Bell, Menu, PanelLeftClose, PanelLeftOpen, Search, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  Activity, ArrowUpRight, Bell, Bot, ClipboardList, CreditCard, FileSearch, KeyRound, Layers,
+  LayoutDashboard, LogOut, Menu, Route, Scale, ScrollText, Search, Settings, ShieldCheck,
+  TriangleAlert, UserCheck, Users, Webhook, type LucideIcon,
+} from "lucide-react";
+import { Link, usePathname } from "@/i18n/navigation";
 import { AccountSwitcher } from "@/components/aegisora/account-switcher";
-import { SidebarNav } from "@/components/aegisora/app-sidebar";
 import { CommandPalette } from "@/components/aegisora/command-palette";
-import { Logo } from "@/components/aegisora/logo";
-
 import { UserMenu } from "@/components/aegisora/user-menu";
 import { WelcomeTour } from "@/components/aegisora/welcome-tour";
-import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
+import { WorkspaceProvider, useWorkspace } from "@/components/aegisora/workspace-provider";
 import { usePendingApprovals } from "@/lib/aegisora/use-pending-approvals";
+import { createClient } from "@/lib/supabase/client";
 import { focusRing } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
-const idLike = /^(dec|apr|evd|aud|trc|exe)_/;
+type Item = { label: string; href: string; icon: LucideIcon; badge?: boolean };
+type Group = { title?: string; items: Item[] };
 
-function Crumbs() {
-  const pathname = usePathname();
-  const segs = pathname.split("/").filter(Boolean).slice(1);
-  const crumbs = segs.map((s, i) => ({
-    label: s,
-    href: "/dashboard/" + segs.slice(0, i + 1).join("/"),
-  }));
+const GROUPS: Group[] = [
+  {
+    items: [
+      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { label: "Approvals", href: "/dashboard/approvals", icon: UserCheck, badge: true },
+    ],
+  },
+  {
+    title: "Govern",
+    items: [
+      { label: "Agents", href: "/dashboard/agents", icon: Bot },
+      { label: "Policies", href: "/dashboard/policies", icon: ScrollText },
+      { label: "Evidence", href: "/dashboard/evidence", icon: FileSearch },
+    ],
+  },
+  {
+    title: "Monitor",
+    items: [
+      { label: "Live activity", href: "/dashboard/activity", icon: Activity },
+      { label: "Decisions", href: "/dashboard/decisions", icon: Scale },
+      { label: "Incidents", href: "/dashboard/incidents", icon: TriangleAlert },
+      { label: "Traces", href: "/dashboard/traces", icon: Route },
+      { label: "Audit log", href: "/dashboard/audit", icon: ClipboardList },
+    ],
+  },
+  {
+    title: "Workspace",
+    items: [
+      { label: "API keys", href: "/dashboard/api-keys", icon: KeyRound },
+      { label: "Webhooks", href: "/dashboard/webhooks", icon: Webhook },
+      { label: "Team", href: "/dashboard/team", icon: Users },
+      { label: "Workspace", href: "/dashboard/workspace", icon: Layers },
+      { label: "Identity", href: "/dashboard/identity", icon: ShieldCheck },
+      { label: "Settings", href: "/dashboard/settings", icon: Settings },
+    ],
+  },
+  {
+    title: "Billing",
+    items: [{ label: "Plan and billing", href: "/dashboard/billing", icon: CreditCard }],
+  },
+];
 
+const isOn = (p: string, href: string) => (href === "/dashboard" ? p === href : p === href || p.startsWith(href + "/"));
+
+function Brand({ onGo }: { onGo?: () => void }) {
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-muted-foreground">
-      <Link href="/dashboard" className="hover:text-foreground">Control</Link>
-      {crumbs.map((c, i) => {
-        const last = i === crumbs.length - 1;
-        const pretty = idLike.test(c.label) ? c.label : c.label.charAt(0).toUpperCase() + c.label.slice(1);
-        return (
-          <span key={c.href} className="flex items-center gap-2">
-            <span aria-hidden="true">/</span>
-            {last ? (
-              <span aria-current="page" className={cn("text-foreground", idLike.test(c.label) && "font-mono")}>{pretty}</span>
-            ) : (
-              <Link href={c.href} className="hover:text-foreground">{pretty}</Link>
-            )}
-          </span>
-        );
-      })}
+    <Link href="/dashboard" className={cn("aegc-brand", focusRing)} aria-label="Aegisora Console" onClick={onGo}>
+      <span className="aegc-mark" data-logo="" aria-hidden="true" />
+      <span className="aegc-brand__t">Aegisora<span>Console</span></span>
+    </Link>
+  );
+}
+
+function Nav({ pathname, pending, onGo }: { pathname: string; pending: number; onGo?: () => void }) {
+  return (
+    <nav aria-label="Main" className="aegc-nav">
+      {GROUPS.map((g, gi) => (
+        <div key={gi} className="aegc-grp">
+          {g.title ? <p className="aegc-grp__t">{g.title}</p> : null}
+          {g.items.map((it) => {
+            const Icon = it.icon;
+            const on = isOn(pathname, it.href);
+            return (
+              <Link key={it.href} href={it.href} aria-current={on ? "page" : undefined} onClick={onGo} className={cn("aegc-item", focusRing)}>
+                <Icon aria-hidden="true" />
+                <span>{it.label}</span>
+                {it.badge && pending > 0 ? <b className="aegc-badge">{pending > 99 ? "99+" : pending}</b> : null}
+              </Link>
+            );
+          })}
+        </div>
+      ))}
     </nav>
+  );
+}
+
+function SideFoot() {
+  const router = useRouter();
+  const { userEmail, userName, currentWorkspace } = useWorkspace();
+  const label = userName || userEmail || "Account";
+  async function signOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
+  return (
+    <div className="aegc-acc-row">
+      <Link href="/dashboard/settings" className={cn("aegc-acc", focusRing)}>
+        <span className="aegc-av" aria-hidden="true">{label.charAt(0).toUpperCase()}</span>
+        <span className="aegc-acc__t">
+          <b>{label}</b>
+          <small>{currentWorkspace?.name ?? ""}</small>
+        </span>
+      </Link>
+      <button type="button" className={cn("aegc-ibtn", focusRing)} aria-label="Sign out" onClick={signOut}>
+        <LogOut aria-hidden="true" />
+      </button>
+    </div>
   );
 }
 
@@ -52,44 +128,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [palette, setPalette] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [notif, setNotif] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const pending = usePendingApprovals();
 
+  // The console is dark-only: keep the dark class while it is mounted, then restore.
   useEffect(() => {
-    const t = window.setTimeout(() => {
-      try { setCollapsed(window.localStorage.getItem("aegisora.sidebar.collapsed") === "1"); } catch {}
-    }, 0);
-    return () => window.clearTimeout(t);
+    const root = document.documentElement;
+    const had = root.classList.contains("dark");
+    root.classList.add("dark");
+    const mo = new MutationObserver(() => { if (!root.classList.contains("dark")) root.classList.add("dark"); });
+    mo.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => { mo.disconnect(); if (!had) root.classList.remove("dark"); };
   }, []);
 
-  function toggleSidebar() {
-    setCollapsed((v) => {
-      const next = !v;
-      try { window.localStorage.setItem("aegisora.sidebar.collapsed", next ? "1" : "0"); } catch {}
-      return next;
-    });
-  }
-  const pending = usePendingApprovals(); const isDemo = false;
-
-  // Route change intentionally resets transient shell UI state.
   useEffect(() => {
-  const timer = window.setTimeout(() => {
-    setDrawer(false);
-    setNotif(false);
-  }, 0);
+    const timer = window.setTimeout(() => { setDrawer(false); setNotif(false); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [pathname]);
 
-  return () => window.clearTimeout(timer);
-}, [pathname]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        setPalette((p) => !p);
-      }
-      if (e.key === "Escape") {
-        setDrawer(false);
-        setNotif(false);
-      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((p) => !p); }
+      if (e.key === "Escape") { setDrawer(false); setNotif(false); }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -97,103 +157,68 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <WorkspaceProvider>
-      <div className="flex min-h-screen">
-        <aside data-app-sidebar className={cn("sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-surface-1", collapsed ? "lg:hidden" : "lg:flex")}>
-          <div className="border-b border-border px-5 py-4">
-            <Logo />
-            <div className="mt-1 pl-[32px] font-mono text-[10px] tracking-[0.25em] text-muted-foreground">CONTROL</div>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            <SidebarNav />
-          </div>
-          <div className="border-t border-border px-5 py-3 font-mono text-[10px] tracking-wider text-muted-foreground">
-            AEGISORA 4.0
-          </div>
+      <div className="aegc-app">
+        <aside data-app-sidebar className="aegc-side">
+          <Brand />
+          <Nav pathname={pathname} pending={pending} />
+          <SideFoot />
         </aside>
 
-        {drawer && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            <div className="absolute inset-0 bg-black/50" onClick={() => setDrawer(false)} aria-hidden="true" />
-            <div role="dialog" aria-modal="true" aria-label="Navigation" className="relative h-full w-72 overflow-y-auto bg-surface-1">
-              <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                <Logo />
-                <button type="button" aria-label="Close navigation" onClick={() => setDrawer(false)} className={cn("rounded-sm p-1.5", focusRing)}>
-                  <X className="size-4" />
-                </button>
-              </div>
-              <SidebarNav />
+        {drawer ? (
+          <>
+            <div className="aegc-scrim" onClick={() => setDrawer(false)} aria-hidden="true" />
+            <div className="aegc-drawer" role="dialog" aria-modal="true" aria-label="Navigation">
+              <Brand onGo={() => setDrawer(false)} />
+              <Nav pathname={pathname} pending={pending} onGo={() => setDrawer(false)} />
+              <SideFoot />
             </div>
-          </div>
-        )}
+          </>
+        ) : null}
 
-        <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
-            <div className="flex h-14 items-center gap-3 px-4 md:px-6">
-              <button
-                type="button"
-                aria-label="Open navigation"
-                onClick={() => setDrawer(true)}
-                className={cn("inline-flex size-9 items-center justify-center rounded-sm border border-border lg:hidden", focusRing)}
-              >
-                <Menu className="size-4" />
+        <div className="aegc-col">
+          <header className="aegc-top">
+            <button type="button" aria-label="Open navigation" onClick={() => setDrawer(true)} className={cn("aegc-ibtn aegc-only-m", focusRing)}>
+              <Menu aria-hidden="true" />
+            </button>
+            <AccountSwitcher />
+            <span className="aegc-top__sp" />
+            <Link href="/docs" className={cn("aegc-link", focusRing)}>Documentation<ArrowUpRight aria-hidden="true" /></Link>
+            <Link href="/support" className={cn("aegc-link", focusRing)}>Support<ArrowUpRight aria-hidden="true" /></Link>
+            <button type="button" onClick={() => setPalette(true)} className={cn("aegc-search", focusRing)} aria-label="Search">
+              <Search aria-hidden="true" />
+              <span>Search</span>
+              <kbd>Ctrl K</kbd>
+            </button>
+            <button type="button" onClick={() => setPalette(true)} className={cn("aegc-ibtn aegc-only-m", focusRing)} aria-label="Search">
+              <Search aria-hidden="true" />
+            </button>
+            <div style={{ position: "relative" }}>
+              <button type="button" aria-label="Notifications" aria-expanded={notif} onClick={() => setNotif(!notif)} className={cn("aegc-ibtn", focusRing)}>
+                <Bell aria-hidden="true" />
+                {pending > 0 ? <i /> : null}
               </button>
-
-              <button
-                type="button"
-                aria-label={collapsed ? "Show sidebar" : "Hide sidebar"}
-                aria-pressed={collapsed}
-                onClick={toggleSidebar}
-                className={cn("hidden size-9 items-center justify-center rounded-sm border border-border text-muted-foreground hover:bg-surface-3 lg:inline-flex", focusRing)}
-              >
-                {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
-              </button>
-
-              <AccountSwitcher />
-
-              <button
-                type="button"
-                onClick={() => setPalette(true)}
-                className={cn(
-                  "ml-auto flex h-9 items-center gap-2 rounded-sm border border-border bg-surface-1 px-3 text-sm text-muted-foreground hover:bg-surface-3 sm:ml-6 sm:w-72",
-                  focusRing,
-                )}
-              >
-                <Search className="size-4" />
-                <span className="hidden flex-1 text-left sm:inline">Search</span>
-                <kbd className="hidden rounded-sm border border-border px-1.5 font-mono text-[10px] sm:inline">Ctrl K</kbd>
-              </button>
-
-              <div className="relative">
-                <button
-                  type="button"
-                  aria-label="Notifications"
-                  aria-expanded={notif}
-                  onClick={() => setNotif(!notif)}
-                  className={cn("relative inline-flex size-9 items-center justify-center rounded-sm border border-border text-muted-foreground hover:bg-surface-3", focusRing)}
-                >
-                  <Bell className="size-4" />
-                  {pending > 0 && <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-escalate" />}
-                </button>
-                {notif && (
-                  <div className="aeg-panel absolute right-0 top-full z-40 mt-2 w-72 p-2">
-                    <Link href="/dashboard/approvals" className="block rounded-sm px-3 py-2.5 hover:bg-surface-3">
-                      <span className="block text-sm font-medium">{pending} approval waiting</span>
-                      <span className="block text-xs text-muted-foreground">Execution is paused until it is resolved.</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              <UserMenu />
+              {notif ? (
+                <div className="aegc-pop">
+                  <Link href="/dashboard/approvals">
+                    <b>{pending === 0 ? "Nothing is waiting" : pending === 1 ? "1 approval waiting" : pending + " approvals waiting"}</b>
+                    <small>{pending === 0 ? "No actions need a decision." : "Execution is paused until a person decides."}</small>
+                  </Link>
+                </div>
+              ) : null}
             </div>
-            <div className="border-t border-border/60 px-4 py-2 md:px-6">
-              <Crumbs />
-            </div>
+            <UserMenu />
           </header>
 
-          {isDemo && (<div className="border-b border-escalate/30 bg-escalate-muted px-4 py-1.5 text-xs text-escalate md:px-6">Sample data. This section is not yet connected to live data.</div>)}
+          <main data-app-main className="aegc-main">{children}</main>
 
-          <main data-app-main className="flex-1 px-4 py-8 md:px-6">{children}</main>
+          <footer className="aegc-foot">
+            <span>&copy; {new Date().getFullYear()} Aegisora. All rights reserved.</span>
+            <nav aria-label="Footer">
+              <Link href="/trust">Trust</Link>
+              <Link href="/terms">Terms</Link>
+              <Link href="/impressum">Impressum</Link>
+            </nav>
+          </footer>
         </div>
 
         <CommandPalette open={palette} onClose={() => setPalette(false)} />
@@ -202,7 +227,3 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </WorkspaceProvider>
   );
 }
-
-
-
-

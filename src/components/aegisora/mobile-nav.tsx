@@ -6,7 +6,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   Activity, Bot, Check, ClipboardList, Ellipsis, FileCheck, GitBranch, KeyRound,
   LayoutDashboard, Scale, ScrollText, Settings, SlidersHorizontal, TriangleAlert,
-  UserCheck, Webhook, X,
+  UserCheck, Users, CreditCard, ShieldCheck, Webhook, X,
 } from "lucide-react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -15,7 +15,6 @@ import { cn } from "@/lib/utils";
 type Item = { id: string; href: string; label: string; icon: LucideIcon };
 type Density = "compact" | "standard" | "large";
 type Prefs = { tabs: string[]; density: Density; home: string };
-type Sheet = null | "more" | "customize";
 
 const ITEMS: Item[] = [
   { id: "overview", href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -31,13 +30,17 @@ const ITEMS: Item[] = [
   { id: "webhooks", href: "/dashboard/webhooks", label: "Webhooks", icon: Webhook },
   { id: "api-keys", href: "/dashboard/api-keys", label: "API Keys", icon: KeyRound },
   { id: "settings", href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { id: "team", href: "/dashboard/team", label: "Team", icon: Users },
+  { id: "billing", href: "/dashboard/billing", label: "Billing", icon: CreditCard },
+  { id: "identity", href: "/dashboard/identity", label: "Identity", icon: ShieldCheck },
 ];
 
 const GROUPS = [
-  { title: "Runtime", ids: ["overview", "activity", "agents", "policies"] },
-  { title: "Governance", ids: ["decisions", "approvals", "incidents", "evidence", "audit", "traces"] },
-  { title: "Platform", ids: ["webhooks", "api-keys"] },
-  { title: "Organization", ids: ["settings"] },
+  { title: "Overview", ids: ["overview"] },
+  { title: "Monitor", ids: ["approvals", "activity", "incidents"] },
+  { title: "Govern", ids: ["agents", "policies", "evidence"] },
+  { title: "Workspace", ids: ["api-keys", "webhooks", "team", "billing", "settings"] },
+  { title: "Advanced", ids: ["decisions", "traces", "audit", "identity"] },
 ];
 
 const DEFAULTS: Prefs = {
@@ -67,68 +70,35 @@ export function MobileNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [prefs, setPrefs] = useState<Prefs>(DEFAULTS);
-  const [sheetState, setSheetState] = useState<{ pathname: string; value: Sheet }>({
-    pathname,
-    value: null,
-  });
-  const sheet = sheetState.pathname === pathname ? sheetState.value : null;
-  const setSheet = useCallback((value: Sheet) => {
-    setSheetState({ pathname, value });
-  }, [pathname]);
+  const [sheet, setSheet] = useState<null | "more" | "customize">(null);
   const [counts, setCounts] = useState({ approvals: 0, incidents: 0 });
   const sheetRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const drag = useRef<{ y: number; dy: number } | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-
-    const loadTimer = window.setTimeout(() => {
-      let stored = DEFAULTS;
-      try {
-        const raw = window.localStorage.getItem(KEY);
-        if (raw) stored = sanitize(JSON.parse(raw));
-      } catch { /* storage unavailable */ }
-
-      if (!cancelled) setPrefs(stored);
-    }, 0);
-
-    const onStorage = (event: StorageEvent) => {
-      if (event.key !== KEY) return;
-
-      let stored = DEFAULTS;
-      try {
-        if (event.newValue) stored = sanitize(JSON.parse(event.newValue));
-      } catch { /* storage unavailable */ }
-
-      setPrefs(stored);
-    };
-
-    window.addEventListener("storage", onStorage);
-    return () => {
-      cancelled = true;
-      window.clearTimeout(loadTimer);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.dataset.density = prefs.density;
-  }, [prefs.density]);
-
-  useEffect(() => {
+    let p = DEFAULTS;
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) p = sanitize(JSON.parse(raw));
+    } catch { /* storage unavailable */ }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate prefs from localStorage after mount
+    setPrefs(p);
+    applyDensity(p.density);
     try {
       const atRoot = window.location.pathname.replace(/^\/[a-z]{2}(?=\/)/, "") === "/dashboard";
-      if (atRoot && prefs.home !== "overview" && !sessionStorage.getItem("aeg.dash.home")) {
+      if (atRoot && p.home !== "overview" && !sessionStorage.getItem("aeg.dash.home")) {
         sessionStorage.setItem("aeg.dash.home", "1");
-        const it = byId(prefs.home);
+        const it = byId(p.home);
         if (it && window.matchMedia("(max-width: 767px)").matches) router.replace(it.href);
       }
     } catch { /* storage unavailable */ }
-  }, [pathname, prefs.home, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const save = (next: Prefs) => {
     setPrefs(next);
+    applyDensity(next.density);
     try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* storage unavailable */ }
   };
 
@@ -144,18 +114,16 @@ export function MobileNav() {
   }, []);
 
   useEffect(() => {
-    const initial = window.setTimeout(() => { void refresh(); }, 0);
-    const t = window.setInterval(() => { void refresh(); }, 60000);
-    const onVis = () => {
-      if (document.visibilityState === "visible") void refresh();
-    };
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async fetch, state set after await
+    refresh();
+    const t = setInterval(refresh, 60000);
+    const onVis = () => { if (document.visibilityState === "visible") refresh(); };
     document.addEventListener("visibilitychange", onVis);
-    return () => {
-      window.clearTimeout(initial);
-      window.clearInterval(t);
-      document.removeEventListener("visibilitychange", onVis);
-    };
+    return () => { clearInterval(t); document.removeEventListener("visibilitychange", onVis); };
   }, [refresh, pathname]);
+
+  const [sheetPath, setSheetPath] = useState(pathname);
+  if (sheetPath !== pathname) { setSheetPath(pathname); setSheet(null); }
 
   useEffect(() => {
     if (!sheet) return undefined;
@@ -165,7 +133,7 @@ export function MobileNav() {
     document.body.style.overflow = "hidden";
     document.addEventListener("keydown", onKey);
     return () => { document.body.style.overflow = prev; document.removeEventListener("keydown", onKey); };
-  }, [sheet, setSheet]);
+  }, [sheet]);
 
   const onTouchStart = (e: ReactTouchEvent) => {
     const t = e.touches[0];
@@ -343,4 +311,8 @@ export function MobileNav() {
       )}
     </>
   );
+}
+
+function applyDensity(d: string) {
+  document.documentElement.dataset.density = d;
 }

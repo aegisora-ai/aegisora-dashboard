@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 type Provider = "google" | "github";
@@ -30,6 +31,7 @@ function GithubIcon() {
 }
 
 export function SocialButtons({ onError }: { onError: (message: string) => void }) {
+  const t = useTranslations("Auth.common");
   if (ENABLED.length === 0) return null;
 
   async function go(provider: Provider) {
@@ -55,7 +57,7 @@ export function SocialButtons({ onError }: { onError: (message: string) => void 
       ) : null}
       <div className="flex items-center gap-3 pt-1 text-xs text-muted-foreground">
         <span className="h-px flex-1 bg-border" />
-        Or continue with email
+        {t("orEmail")}
         <span className="h-px flex-1 bg-border" />
       </div>
     </div>

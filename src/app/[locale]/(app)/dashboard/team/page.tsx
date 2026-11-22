@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useWorkspace } from "@/components/aegisora/workspace-provider";
 import { cn } from "@/lib/utils";
+import { confirmDialog, notify } from "@/components/aegisora/live/feedback";
 
 type Role = "OWNER" | "ADMIN" | "OPERATOR" | "VIEWER";
 
@@ -198,6 +199,14 @@ export default function TeamPage() {
 
   async function removeMember(userId: string) {
     if (!currentWorkspace || !canMutate || userId === currentUserId) return;
+    const target = members.find((m) => m.user_id === userId);
+    const confirmed = await confirmDialog({
+      title: `Remove ${target?.name ?? target?.email ?? "this member"}?`,
+      body: "They lose access to this workspace immediately.",
+      confirmLabel: "Remove member",
+      danger: true,
+    });
+    if (!confirmed) return;
     setSavingUserId(userId);
     setError(null);
     const supabase = createClient();
@@ -248,7 +257,7 @@ export default function TeamPage() {
         <div>
           <h1 className="text-3xl font-light tracking-tight">Team</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Real workspace memberships and role enforcement.
+            Invite people, set their roles and review who has access.
           </p>
         </div>
 
@@ -438,7 +447,7 @@ export default function TeamPage() {
         <section aria-labelledby="invite-title" className="aeg-panel p-4">
           <h2 id="invite-title" className="text-sm font-medium">Invite a team member</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            New users receive a Supabase invitation email. Existing accounts activate their pending membership on their next sign-in.
+            New users receive an invitation email. Existing accounts activate their pending membership on their next sign-in.
           </p>
           <form onSubmit={(event) => void inviteMember(event)} className="mt-4 flex flex-wrap gap-3">
             <label className="sr-only" htmlFor="member-email">Email address</label>

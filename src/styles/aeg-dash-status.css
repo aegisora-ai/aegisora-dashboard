@@ -1,0 +1,19 @@
+/* aeg-dash-status: status colors tuned for the near-black dashboard. Loaded after aeg-dash-teal.css. */
+
+html:root:has(.aeg-premium),
+html:root.dark:has(.aeg-premium) {
+  --allow: #34d399;
+  --allow-muted: #0d2a22;
+  --block: #f87171;
+  --block-muted: #2c1517;
+  --escalate: #fbbf24;
+  --escalate-muted: #2b2210;
+  --destructive: #f87171;
+}
+
+/* beat the light-mode color rules (e.g. aeg-contrast .text-escalate) and hard-coded emerald */
+html:root .aeg-premium .text-allow,
+html:root .aeg-premium .text-emerald-600,
+html:root .aeg-premium .text-emerald-700 { color: #34d399 !important; }
+html:root .aeg-premium .text-block { color: #f87171 !important; }
+html:root .aeg-premium .text-escalate { color: #fbbf24 !important; }

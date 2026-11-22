@@ -11,19 +11,19 @@ const CARDS: Card[] = [
     title: "Evaluate your first action",
     body: "Send one request to the evaluate endpoint and read the decision, the reason and the evidence hash.",
     cta: "Open the quickstart",
-    href: "/developers/quickstart",
+    href: "/docs/quickstart",
   },
   {
     title: "Node helper",
     body: "A dependency-free client that fails closed by default. Guard any function so it only runs on ALLOW.",
     cta: "See the Node example",
-    href: "/developers/quickstart",
+    href: "/docs/quickstart",
   },
   {
     title: "Verifiable evidence",
     body: "Every decision returns an evidence hash. See how records are chained and how to verify them.",
     cta: "Explore evidence",
-    href: "/product/evidence",
+    href: "/docs/technical#evidence",
   },
   {
     title: "Enterprise pilot",
@@ -57,7 +57,7 @@ export function StartBuilding() {
         <p className="mt-4 text-base leading-relaxed text-muted-foreground">
           Everything you need to put a decision point in front of your agents, from a single API call to a scoped pilot.
         </p>
-        <Link href="/developers" className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-primary transition hover:gap-2.5">
+        <Link href="/docs" className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-primary transition hover:gap-2.5">
           Developer docs <ArrowRight className="size-4" />
         </Link>
         <div className="mt-8 flex items-center gap-3">

@@ -248,7 +248,7 @@ export function matches(pattern: string | null | undefined, value: string): bool
   return new RegExp("^" + body + "$", "i").test(value);
 }
 
-function isSafeUrl(u: string): boolean {
+function isSafeUrlBasic(u: string): boolean {
   try {
     const url = new URL(u);
     if (url.protocol !== "https:") return false;
@@ -257,6 +257,66 @@ function isSafeUrl(u: string): boolean {
     if (/^(127\.|10\.|192\.168\.|169\.254\.|0\.)/.test(h)) return false;
     if (/^172\.(1[6-9]|2\d|3[01])\./.test(h)) return false;
     return true;
+  } catch {
+    return false;
+  }
+}
+
+function isNonPublicIp(ip: string): boolean {
+  const v = ip.toLowerCase();
+  if (v.includes(":")) {
+    if (v === "::" || v === "::1") return true;
+    const dotted = v.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+    if (dotted) return isNonPublicIp(dotted[1]);
+    const hex = v.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
+    if (hex) {
+      const hi = parseInt(hex[1], 16);
+      const lo = parseInt(hex[2], 16);
+      return isNonPublicIp((hi >> 8) + "." + (hi & 255) + "." + (lo >> 8) + "." + (lo & 255));
+    }
+    return /^(fc|fd|fe[89ab]|ff)/.test(v) || v.startsWith("64:ff9b:") || v.startsWith("2001:db8");
+  }
+  const p = v.split(".").map(Number);
+  if (p.length !== 4 || p.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) return true;
+  const a = p[0];
+  const b = p[1];
+  return a === 0 || a === 10 || a === 127 || a >= 224
+    || (a === 100 && b >= 64 && b <= 127)
+    || (a === 169 && b === 254)
+    || (a === 172 && b >= 16 && b <= 31)
+    || (a === 192 && b === 168)
+    || (a === 198 && (b === 18 || b === 19));
+}
+
+function webhookHost(u: string): string {
+  let h = new URL(u).hostname.toLowerCase().replace(/\.+$/, "");
+  if (h.startsWith("[") && h.endsWith("]")) h = h.slice(1, -1);
+  return h;
+}
+
+function isIpLiteral(h: string): boolean {
+  return h.includes(":") || /^\d+(\.\d+){3}$/.test(h);
+}
+
+function isSafeUrl(u: string): boolean {
+  if (!isSafeUrlBasic(u)) return false;
+  try {
+    const h = webhookHost(u);
+    if (h === "localhost" || h.endsWith(".localhost") || h.endsWith(".local") || h.endsWith(".internal") || h.endsWith(".localdomain")) return false;
+    if (isIpLiteral(h)) return !isNonPublicIp(h);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function resolvesToPublicAddress(u: string): Promise<boolean> {
+  try {
+    const h = webhookHost(u);
+    if (isIpLiteral(h)) return !isNonPublicIp(h);
+    const { lookup } = await import("node:dns/promises");
+    const addrs = await lookup(h, { all: true });
+    return addrs.length > 0 && addrs.every((x) => !isNonPublicIp(x.address));
   } catch {
     return false;
   }
@@ -274,6 +334,10 @@ export async function deliverWebhooks(workspaceId: string, event: string, data: 
   await Promise.allSettled((hooks ?? [])
     .filter((hook) => Array.isArray(hook.events) && hook.events.includes(event) && isSafeUrl(hook.url))
     .map(async (hook) => {
+      if (!(await resolvesToPublicAddress(hook.url))) {
+        console.error("[aegisora] Webhook target does not resolve to a public address; delivery skipped.");
+        return;
+      }
       const result = await deliverSignedWebhook({ url: hook.url, event, eventId, secret: hook.secret, body });
       const deliveredAt = new Date().toISOString();
       const { error: updateError } = await db.from("webhooks")

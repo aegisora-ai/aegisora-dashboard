@@ -9,6 +9,7 @@ import type { Workspace } from "@/lib/aegisora/use-workspace";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { btnPrimary } from "@/lib/ui";
+import { confirmDialog, notify } from "@/components/aegisora/live/feedback";
 
 type Parsed = { name: string; framework: string | null; description: string | null; external_id: string | null; metadata: object };
 
@@ -160,9 +161,9 @@ export default function AgentsPage() {
             className={btnGhost}
             onClick={async () => {
               const { data: { session } } = await createClient().auth.getSession();
-              if (!session?.access_token) { alert("Your session expired. Sign in again to manage agents."); return; }
+              if (!session?.access_token) { notify("Your session expired. Sign in again to manage agents.", false); return; }
               const response = await fetch("/api/v1/workspace/agents", { method: "POST", headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" }, body: JSON.stringify({ workspace_id: r.workspace_id, operation: "update", agent_id: r.id, state: r.state === "ACTIVE" ? "DISABLED" : "ACTIVE" }) });
-              if (!response.ok) { const payload = await response.json().catch(() => null); alert(payload?.error?.message ?? "Agent update failed."); }
+              if (!response.ok) { const payload = await response.json().catch(() => null); notify(payload?.error?.message ?? "Agent update failed.", false); }
               reload();
             }}
           >
@@ -171,11 +172,11 @@ export default function AgentsPage() {
           <button
             className={btnGhost}
             onClick={async () => {
-              if (!confirm(`Delete agent "${r.name}"? Its policies are removed too.`)) return;
+              if (!(await confirmDialog({ title: `Delete agent "${r.name}"?`, body: "Its policies are removed too. This cannot be undone.", confirmLabel: "Delete agent", danger: true }))) return;
               const { data: { session } } = await createClient().auth.getSession();
-              if (!session?.access_token) { alert("Your session expired. Sign in again to manage agents."); return; }
+              if (!session?.access_token) { notify("Your session expired. Sign in again to manage agents.", false); return; }
               const response = await fetch("/api/v1/workspace/agents", { method: "POST", headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" }, body: JSON.stringify({ workspace_id: r.workspace_id, operation: "delete", agent_id: r.id }) });
-              if (!response.ok) { const payload = await response.json().catch(() => null); alert(payload?.error?.message ?? "Agent deletion failed."); }
+              if (!response.ok) { const payload = await response.json().catch(() => null); notify(payload?.error?.message ?? "Agent deletion failed.", false); }
               reload();
             }}
           >

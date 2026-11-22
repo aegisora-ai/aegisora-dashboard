@@ -1,14 +1,15 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { btnPrimary } from "@/lib/ui";
 
 export default function ResetPasswordPage() {
+  const t = useTranslations("Auth");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,8 +35,8 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="w-full max-w-sm">
-      <h1 className="text-2xl font-semibold tracking-tight">Set a new password</h1>
-      <p className="mt-2 text-sm text-muted-foreground">Choose a new password for your Aegisora account.</p>
+      <h1 className="bw-auth__h1">{t("reset.title")}</h1>
+      <p className="mt-3 text-sm text-muted-foreground">{t("reset.desc")}</p>
 
       {error && (
         <p role="alert" className="mt-6 rounded-sm border border-block/30 bg-block-muted px-3 py-2 text-xs text-block">
@@ -44,22 +45,22 @@ export default function ResetPasswordPage() {
       )}
       {done && (
         <p role="status" className="mt-6 rounded-sm border border-allow/30 bg-allow-muted px-3 py-2 text-xs text-allow">
-          Password updated. Redirecting to Control...
+          {t("reset.done")}
         </p>
       )}
 
       <form className="mt-6 space-y-4" onSubmit={onSubmit}>
         <div className="space-y-1.5">
-          <Label htmlFor="password">New password</Label>
+          <Label htmlFor="password">{t("reset.label")}</Label>
           <Input id="password" name="password" type="password" autoComplete="new-password" required minLength={8} />
         </div>
         <button type="submit" disabled={loading || done} className={`${btnPrimary} w-full disabled:opacity-60`}>
-          {loading ? "Updating..." : "Update password"}
+          {loading ? t("reset.updating") : t("reset.submit")}
         </button>
       </form>
 
       <p className="mt-6 text-sm text-muted-foreground">
-        <Link href="/login" className="text-cyan underline-offset-4 hover:underline">Back to log in</Link>
+        <Link href="/login" className="text-primary underline-offset-4 hover:underline">{t("common.backToLogin")}</Link>
       </p>
     </div>
   );

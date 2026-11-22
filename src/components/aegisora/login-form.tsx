@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { SocialButtons } from "./social-buttons";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function LoginForm({ redirectTo }: { redirectTo: string }) {
+  const t = useTranslations("Auth");
   const [step, setStep] = useState<"email" | "password">("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +34,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
 
     if (step === "email") {
       if (!EMAIL_RE.test(email.trim())) {
-        setError("Enter a valid email address.");
+        setError(t("login.invalidEmail"));
         return;
       }
       setStep("password");
@@ -46,8 +48,8 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
       if (err) throw err;
       window.location.href = redirectTo;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Something went wrong. Try again.";
-      setError(msg.toLowerCase().includes("invalid login credentials") ? "Incorrect email or password." : msg);
+      const msg = err instanceof Error ? err.message : t("common.genericError");
+      setError(msg.toLowerCase().includes("invalid login credentials") ? t("login.badCredentials") : msg);
       setLoading(false);
     }
   }
@@ -63,10 +65,10 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
 
   return (
     <div>
-      <h1 className="aeg-display text-4xl">Sign in to Aegisora</h1>
+      <h1 className="bw-auth__h1">{t("login.title")}</h1>
       <p className="mt-3 text-sm">
-        <span className="text-muted-foreground">New to Aegisora? </span>
-        <Link href="/signup" className="font-semibold text-primary underline-offset-4 hover:underline">Sign up</Link>
+        <span className="text-muted-foreground">{t("login.newHere")} </span>
+        <Link href="/signup" className="font-semibold text-primary underline-offset-4 hover:underline">{t("login.signUp")}</Link>
       </p>
 
       <div className="mt-8">
@@ -81,7 +83,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
 
       <form className="mt-5 space-y-4" onSubmit={onSubmit} noValidate>
         <div className="space-y-1.5">
-          <Label htmlFor="email">Email address</Label>
+          <Label htmlFor="email">{t("common.email")}</Label>
           <div className="relative">
             <Input
               ref={mailRef}
@@ -93,7 +95,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
               onChange={(e) => setEmail(e.target.value)}
               readOnly={locked}
               tabIndex={locked ? -1 : 0}
-              className={locked ? "bg-surface-3 pr-20 text-muted-foreground" : ""}
+              className={locked ? "bg-surface-3 pr-24 text-muted-foreground" : ""}
             />
             {locked ? (
               <button
@@ -101,7 +103,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
                 onClick={change}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-primary hover:underline"
               >
-                Change
+                {t("login.change")}
               </button>
             ) : null}
           </div>
@@ -109,7 +111,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
 
         {locked ? (
           <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t("common.password")}</Label>
             <div className="relative">
               <Input
                 ref={pwRef}
@@ -124,7 +126,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
               <button
                 type="button"
                 onClick={() => setShow((v) => !v)}
-                aria-label={show ? "Hide password" : "Show password"}
+                aria-label={show ? t("common.hide") : t("common.show")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 {show ? <EyeOff className="size-4" aria-hidden /> : <Eye className="size-4" aria-hidden />}
@@ -132,7 +134,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
             </div>
             <div className="flex justify-end pt-1">
               <Link href="/forgot-password" className="text-xs font-semibold text-primary underline-offset-4 hover:underline">
-                Forgot password?
+                {t("login.forgot")}
               </Link>
             </div>
           </div>
@@ -143,7 +145,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
           disabled={loading || (locked ? password === "" : email.trim() === "")}
           className={`${btnPrimary} w-full disabled:opacity-60`}
         >
-          {loading ? "Please wait..." : locked ? "Sign in" : "Next"}
+          {loading ? t("common.wait") : locked ? t("login.signIn") : t("login.next")}
         </button>
       </form>
     </div>

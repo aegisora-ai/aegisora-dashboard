@@ -39,7 +39,7 @@ export async function PATCH(
     const db = admin();
     const { data: existing, error: lookupError } = await db
       .from("approvals")
-      .select("id,workspace_id,status,expires_at,decision_id")
+      .select("id,workspace_id,status,expires_at,decision_id,requested_by_user")
       .eq("id", approvalId)
       .maybeSingle();
 
@@ -63,6 +63,13 @@ export async function PATCH(
       throw new ApiError(409, "approval_expired", "This approval has expired and cannot be resolved.");
     }
 
+    if (status === "approved" && existing.requested_by_user === user.id) {
+      const { data: wsSettings, error: wsSettingsError } = await db.from("workspace_settings").select("require_separate_approver").eq("workspace_id", existing.workspace_id).maybeSingle();
+      if (wsSettingsError) throw wsSettingsError;
+      if (wsSettings?.require_separate_approver) {
+        throw new ApiError(403, "separation_of_duties", "The person who initiated this request cannot approve it.");
+      }
+    }
     const resolvedAt = new Date().toISOString();
     const { data: updated, error: updateError } = await db
       .from("approvals")

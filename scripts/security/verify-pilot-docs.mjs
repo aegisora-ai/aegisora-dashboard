@@ -45,7 +45,7 @@ check("self-service onboarding persists workspace, agent, and policy and removes
   assert.match(policyRoute, /requireAal2\(aal\)/);
   assert.match(policyRoute, /eq\("workspace_id", workspaceId\)/);
   assert.match(policyRoute, /supabase\.from\("policies"\)\.insert/);
-  assert.match(onboarding, /does not simulate a decision or execution/);
+  assert.match(JSON.parse(process.getBuiltinModule("node:fs").readFileSync(new URL("../../messages/en.json", import.meta.url), "utf8")).Onboarding.finish.desc, /does not simulate a decision or execution/);
   assert.doesNotMatch(onboarding, /sample identifiers|dec_01|trc_9a|exe_3d|evd_c7/i);
 });
 

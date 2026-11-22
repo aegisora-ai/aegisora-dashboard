@@ -17,7 +17,7 @@ const items: Item[] = [
   { label: "Audit", href: "/dashboard/audit", group: "Go to" },
   { label: "Agents", href: "/dashboard/agents", group: "Go to" },
   { label: "Policies", href: "/dashboard/policies", group: "Go to" },
-  { label: "Risk", href: "/dashboard/risk", group: "Go to" },
+  { label: "Identity", href: "/dashboard/identity", group: "Go to" },
   { label: "Incidents", href: "/dashboard/incidents", group: "Go to" },
   { label: "Traces", href: "/dashboard/traces", group: "Go to" },
   { label: "Live Activity", href: "/dashboard/activity", group: "Go to" },

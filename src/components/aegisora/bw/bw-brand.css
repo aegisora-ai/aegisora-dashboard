@@ -1,0 +1,56 @@
+.bw-brand { display: inline-flex; align-items: center; gap: 10px; color: inherit; line-height: 1; }
+.bw-brand__mark { display: block; height: 28px; width: auto; flex: none; }
+.bw-brand__txt { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: inherit; }
+
+/* Mobil menu: tam ekran, ustte logo + kapatma dugmesi, icerik kendi icinde kayar. */
+.bw-root.bw-nav--drawer {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: none !important;
+  filter: none !important;
+  contain: none !important;
+  will-change: auto !important;
+}
+.bw-root .bw-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border-top: 0;
+}
+.bw-root .bw-drawer__top {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 64px;
+  padding: env(safe-area-inset-top, 0px) 20px 0;
+  border-bottom: 1px solid var(--bw-line, rgba(128, 128, 128, 0.25));
+}
+.bw-root .bw-drawer__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(128, 128, 128, 0.35);
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.bw-root .bw-drawer__close svg { width: 22px; height: 22px; }
+.bw-root .bw-drawer .bw-drawer__in {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-top: 8px;
+  padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+}

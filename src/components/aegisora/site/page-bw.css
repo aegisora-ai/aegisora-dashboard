@@ -1,0 +1,52 @@
+.pv-page { --pv-line: color-mix(in srgb, currentColor 16%, transparent); --pv-fill: color-mix(in srgb, currentColor 4%, transparent); --pv-soft: color-mix(in srgb, currentColor 72%, transparent); }
+.pv-hero { padding-top: 72px; padding-bottom: 48px; }
+.pv-h1 { font-size: clamp(34px, 5vw, 56px); line-height: 1.08; letter-spacing: -0.02em; font-weight: 700; margin: 0 0 16px; }
+.pv-herolead { max-width: 720px; }
+.pv-sec { padding-top: 56px; padding-bottom: 56px; }
+.pv-head { max-width: 760px; margin: 0 0 28px; }
+.pv-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.pv-notice { margin: 22px 0 0; padding: 12px 16px; border: 1px solid var(--pv-line); border-radius: 12px; background: var(--pv-fill); color: var(--pv-soft); font-size: 14px; max-width: 760px; }
+.pv-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.pv-card { border: 1px solid var(--pv-line); border-radius: 16px; padding: 22px; background: var(--pv-fill); }
+.pv-card h3 { font-size: 18px; font-weight: 600; margin: 0 0 6px; }
+.pv-card p { margin: 0; color: var(--pv-soft); font-size: 15px; line-height: 1.6; }
+.pv-tag { display: inline-block; font-size: 11px; border: 1px solid var(--pv-line); border-radius: 999px; padding: 2px 8px; margin-bottom: 10px; }
+.pv-steps { list-style: none; padding: 0; margin: 0; }
+.pv-n { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #3432ef; color: #fff; font-weight: 700; margin-bottom: 12px; }
+.pv-tablewrap { overflow-x: auto; border: 1px solid var(--pv-line); border-radius: 16px; }
+.pv-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.pv-table th, .pv-table td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--pv-line); }
+.pv-table th { background: var(--pv-fill); font-weight: 600; }
+.pv-table td { color: var(--pv-soft); }
+.pv-table td.pv-first { color: inherit; font-weight: 600; }
+.pv-table tr:last-child td { border-bottom: 0; }
+.pv-plan { display: flex; flex-direction: column; gap: 10px; }
+.pv-plan--hi { border-color: #3432ef; box-shadow: 0 0 0 1px #3432ef inset; }
+.pv-price { font-size: 28px; font-weight: 700; }
+.pv-price span { font-size: 13px; font-weight: 400; color: var(--pv-soft); }
+.pv-list { list-style: none; padding: 0; margin: 0 0 8px; display: grid; gap: 6px; font-size: 14px; color: var(--pv-soft); flex: 1; }
+.pv-list li::before { content: "\2713  "; color: #3432ef; }
+.pv-faq { display: grid; gap: 10px; max-width: 820px; }
+.pv-faq details { border: 1px solid var(--pv-line); border-radius: 12px; padding: 14px 18px; background: var(--pv-fill); }
+.pv-faq summary { cursor: pointer; font-weight: 600; }
+.pv-faq p { margin: 10px 0 0; color: var(--pv-soft); }
+.pv-prose { max-width: 760px; }
+.pv-prose p { margin: 0 0 14px; color: var(--pv-soft); line-height: 1.7; }
+.pv-ctabox { border: 1px solid var(--pv-line); border-radius: 20px; padding: 36px; background: var(--pv-fill); }
+.pv-formcard { border: 1px solid var(--pv-line); border-radius: 20px; padding: 28px; background: var(--pv-fill); max-width: 820px; }
+.pv-form { display: grid; gap: 16px; }
+.pv-row { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.pv-field { display: grid; gap: 6px; }
+.pv-field label { font-size: 14px; font-weight: 600; }
+.pv-field input, .pv-field select, .pv-field textarea { background: transparent; color: inherit; border: 1px solid var(--pv-line); border-radius: 10px; padding: 11px 12px; font: inherit; width: 100%; box-sizing: border-box; }
+.pv-field select option { color: #111; }
+.pv-field input:focus, .pv-field select:focus, .pv-field textarea:focus { outline: 2px solid #3432ef; outline-offset: 1px; }
+.pv-check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--pv-soft); }
+.pv-check input { margin-top: 4px; }
+.pv-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.pv-err { color: #e5484d; margin: 0; }
+.pv-ok h3 { margin: 0 0 6px; font-size: 20px; }
+.pv-ok p { margin: 0; color: var(--pv-soft); }
+.pv-submit { justify-self: start; border: 0; cursor: pointer; }
+.pv-submit:disabled { opacity: .6; cursor: wait; }
+@media (max-width: 640px) { .pv-hero { padding-top: 48px; } .pv-sec { padding-top: 40px; padding-bottom: 40px; } .pv-ctabox, .pv-formcard { padding: 22px; } }

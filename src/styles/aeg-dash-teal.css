@@ -1,0 +1,62 @@
+/* aeg-dash-teal: near-black + teal dashboard theme. Loaded after aeg-premium.css and aeg-contrast.css. */
+
+html:root:has(.aeg-premium),
+html:root.dark:has(.aeg-premium) {
+  color-scheme: dark;
+  --background: #06090a;
+  --surface-1: #0b1012;
+  --surface-2: #0f1517;
+  --surface-3: #141c1f;
+  --surface-4: #1b2529;
+  --foreground: #eef4f5;
+  --muted-foreground: #8fa1a6;
+  --primary: #22d3ee;
+  --primary-hover: #5ee0f2;
+  --primary-foreground: #021416;
+  --cyan: #22d3ee;
+  --card: #0b1012;
+  --card-foreground: #eef4f5;
+  --popover: #0f1517;
+  --popover-foreground: #eef4f5;
+  --secondary: #141c1f;
+  --secondary-foreground: #eef4f5;
+  --muted: #0f1517;
+  --accent: #1b2529;
+  --accent-foreground: #eef4f5;
+  --border: #1d282c;
+  --input: #1d282c;
+  --ring: #22d3ee;
+  --aeg-body: #8fa1a6;
+  --aeg-card-line: rgb(255 255 255 / 0.07);
+  --aeg-card-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset;
+  --aeg-brand-grad: linear-gradient(90deg, #22d3ee, #0e8fa3 55%, transparent);
+  --panel-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset;
+}
+
+body:has(.aeg-premium) { background-image: none; background-attachment: scroll; background-color: var(--background); }
+:root:has(.aeg-premium) ::selection { background: rgb(34 211 238 / 0.3); }
+
+/* filled buttons: teal with dark text (beats the old blue contrast rules) */
+html:root .aeg-premium .aeg-btn-brand.aeg-btn-brand,
+html:root .aeg-premium .bg-primary.bg-primary {
+  background-color: var(--primary); background-image: none; color: var(--primary-foreground);
+}
+html:root .aeg-premium .aeg-btn-brand.aeg-btn-brand:hover,
+html:root .aeg-premium .bg-primary.bg-primary:hover { background-color: var(--primary-hover); }
+html:root.dark .aeg-premium .bg-primary\/10 > .truncate { color: var(--primary); }
+
+/* icon rail: opaque, no blur (cheaper to scroll) */
+.aeg-premium aside {
+  background-color: var(--surface-1); -webkit-backdrop-filter: none; backdrop-filter: none; border-color: var(--border);
+}
+
+/* static teal bar glow behind the top of the page: pure CSS, no WebGL */
+.aeg-glow {
+  position: absolute; inset: 0 0 auto 0; height: 440px; z-index: -1; pointer-events: none; opacity: 0.7;
+  background:
+    repeating-linear-gradient(90deg, rgb(34 211 238 / 0.16) 0 2px, transparent 2px 11px),
+    repeating-linear-gradient(90deg, transparent 0 6px, rgb(34 211 238 / 0.10) 6px 8px, transparent 8px 19px),
+    radial-gradient(55% 120% at 85% 0%, rgb(34 211 238 / 0.22), transparent 70%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+}

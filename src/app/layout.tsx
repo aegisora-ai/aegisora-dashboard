@@ -1,3 +1,4 @@
+import Script from "next/script";
 import PwaBoot from "@/components/pwa-boot";
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed } from "next/font/google";
@@ -8,7 +9,8 @@ import "@fontsource/ibm-plex-mono/600.css";
 import "@fontsource/ibm-plex-mono/700.css";
 import "./globals.css";
 import { getLocale } from "next-intl/server";
-import { AegisoraSound } from '../components/aegisora-sound';
+import { ThemeBoot } from "@/components/aegisora/theme-boot";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
 const barlow = Barlow_Condensed({
   subsets: ["latin"],
@@ -18,7 +20,7 @@ const barlow = Barlow_Condensed({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#020b2e",
+  themeColor: "#ffffff",
   viewportFit: "cover",
 };
 
@@ -39,11 +41,14 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const locale = await getLocale();
   return (
-    <html lang={locale} className={barlow.variable + " dark"} suppressHydrationWarning>
+    <html data-scroll-behavior="smooth" lang={locale} className={barlow.variable} suppressHydrationWarning>
+      <head>
+        <Script id="theme-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         {children}
         <PwaBoot />
-        <AegisoraSound />
+        <ThemeBoot />
       </body>
     </html>
   );

@@ -41,6 +41,17 @@ function handleSupport(request: NextRequest) {
   return NextResponse.rewrite(url);
 }
 
+// Oturum kontrolu (Supabase ag cagrisi) sadece bu yollarda gerekli. Public sayfalarda atlanir.
+function needsAuthCheck(pathname: string): boolean {
+  const loc = routing.locales.find((l) => pathname === "/" + l || pathname.startsWith("/" + l + "/"));
+  const path = loc ? pathname.slice(loc.length + 1) || "/" : pathname;
+  return (
+    path.startsWith("/dashboard") ||
+    path.startsWith("/onboarding") ||
+    path.startsWith("/login") ||
+    path.startsWith("/signup")
+  );
+}
 const PWA_PATHS = new Set(["/manifest.webmanifest", "/sw.js", "/offline.html", "/apple-icon.png"]);
 
 export async function proxy(request: NextRequest) {
@@ -64,7 +75,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Once auth session'i yenile / korumali route kontrolu yap.
-  const authResponse = await updateSession(request);
+  const authResponse = needsAuthCheck(request.nextUrl.pathname) ? await updateSession(request) : NextResponse.next();
 
   // Eger updateSession bir redirect dondurduyse (login'e veya dashboard'a), onu direkt kullan.
   if (authResponse.status !== 200 || authResponse.headers.get("location")) {
@@ -77,6 +88,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sdk/|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff2|woff|ttf|otf|mjs)$).*)",
   ],
 };

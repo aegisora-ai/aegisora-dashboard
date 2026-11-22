@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { COLLECTIONS_DE } from "./support-content-de";
 import { Briefcase, LifeBuoy, Rocket, Scale, ShieldCheck } from "lucide-react";
 
 export const MAIN_SITE = "https://aegisora.org";
@@ -54,7 +55,7 @@ export const COLLECTIONS: Collection[] = [
           ] },
           { t: "h", text: "What to keep in mind" },
           { t: "ul", items: [
-            "There is no paid plan and no online checkout for test workspaces.",
+            "Test workspaces are free. Pro is $49 per month.",
             "Do not connect production systems or sensitive customer data to a test workspace.",
             "Any paid pilot is scoped and agreed in writing before customer data or production systems are connected.",
           ] },
@@ -225,7 +226,7 @@ export const COLLECTIONS: Collection[] = [
           { t: "p", text: "Price, tax treatment, hosting, service levels and production availability are not published and are not represented as established offers." },
           { t: "ul", items: [
             "There is no paid self-service plan.",
-            "There is no online checkout.",
+            "You can upgrade to Pro online from Billing in the dashboard.",
             "There is no automated subscription billing today.",
           ] },
           { t: "p", text: "You can still create a test workspace and evaluate Aegisora at no cost. If you want to explore a pilot, talk to the team." },
@@ -297,35 +298,45 @@ export const POPULAR: [string, string][] = [
   ["pilots-pricing", "how-a-pilot-works"],
 ];
 
-export const collectionHref = (c: string) => "/support/" + c;
-export const articleHref = (c: string, a: string) => "/support/" + c + "/" + a;
-export const findCollection = (slug: string) => COLLECTIONS.find((c) => c.slug === slug);
-export const findArticle = (c: string, a: string) => findCollection(c)?.articles.find((x) => x.slug === a);
+export const lp = (locale: string | undefined, href: string) => (!locale || locale === "en" ? href : "/" + locale + href);
+export const collectionsFor = (locale?: string): Collection[] => (locale === "de" ? COLLECTIONS_DE : COLLECTIONS);
+export const collectionHref = (c: string, locale?: string) => lp(locale, "/support/" + c);
+export const articleHref = (c: string, a: string, locale?: string) => lp(locale, "/support/" + c + "/" + a);
+export const findCollection = (slug: string, locale?: string) => collectionsFor(locale).find((c) => c.slug === slug);
+export const findArticle = (c: string, a: string, locale?: string) => findCollection(c, locale)?.articles.find((x) => x.slug === a);
 
-export function searchIndex() {
-  return COLLECTIONS.flatMap((c) =>
-    c.articles.map((a) => ({ title: a.title, summary: a.summary, collection: c.title, href: articleHref(c.slug, a.slug) })),
+export function searchIndex(locale?: string) {
+  return collectionsFor(locale).flatMap((c) =>
+    c.articles.map((a) => ({ title: a.title, summary: a.summary, collection: c.title, href: articleHref(c.slug, a.slug, locale) })),
   );
 }
 
-export function popularArticles() {
+export function popularArticles(locale?: string) {
   return POPULAR.flatMap(([c, a]) => {
-    const art = findArticle(c, a);
-    return art ? [{ title: art.title, href: articleHref(c, a) }] : [];
+    const art = findArticle(c, a, locale);
+    return art ? [{ title: art.title, href: articleHref(c, a, locale) }] : [];
   });
 }
 export const UPDATED = "October 2026";
+export const updatedFor = (locale?: string) => (locale === "de" ? "Oktober 2026" : UPDATED);
 
 export function slugify(s: string) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  return s
+    .toLowerCase()
+    .replace(/\u00e4/g, "ae")
+    .replace(/\u00f6/g, "oe")
+    .replace(/\u00fc/g, "ue")
+    .replace(/\u00df/g, "ss")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 }
 
 export function headingsOf(a: Article) {
   return a.body.flatMap((b) => (b.t === "h" ? [{ text: b.text, id: slugify(b.text) }] : []));
 }
 
-export function neighbours(c: string, a: string) {
-  const col = findCollection(c);
+export function neighbours(c: string, a: string, locale?: string) {
+  const col = findCollection(c, locale);
   if (!col) return { prev: null, next: null };
   const i = col.articles.findIndex((x) => x.slug === a);
   return {
@@ -342,8 +353,8 @@ export function readMinutes(a: Article) {
   return Math.max(1, Math.round(words / 200));
 }
 
-export function toMarkdown(a: Article) {
-  const label = { note: "Note", tip: "Tip", warn: "Important" } as const;
+export function toMarkdown(a: Article, locale?: string) {
+  const label = locale === "de" ? { note: "Hinweis", tip: "Tipp", warn: "Wichtig" } : { note: "Note", tip: "Tip", warn: "Important" };
   const out: string[] = ["# " + a.title, "", a.summary, ""];
   for (const b of a.body) {
     if (b.t === "h") out.push("## " + b.text);

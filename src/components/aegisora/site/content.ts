@@ -31,7 +31,7 @@ export type PageData = {
 };
 
 // ---------------------------------------------------------------- tek yerden duzenle
-export const CONTACT_EMAIL = "hello.aegisora@gmail.com";
+export const CONTACT_EMAIL = "eray@aegisora.org";
 
 const applyCta: Cta = { label: "Apply for Enterprise Pilot", href: "/pilot" };
 const docsCta: Cta = { label: "Read the technical docs", href: "/docs/technical", variant: "ghost" };
@@ -386,4 +386,84 @@ export const PAGES = {
   legalPrivacy,
   legalTerms,
   legalDpa,
+};
+
+// ---------------------------------------------------------------- Deutsche Seiten (pilot, solutions)
+const applyCtaDe: Cta = { label: "Enterprise-Pilot beantragen", href: "/pilot" };
+
+const solutionsDe: PageData = {
+  eyebrow: "Lösungen",
+  title: "Für Teams, die Agenten produktiv einsetzen",
+  lead: "Vom ersten Agenten mit Tool-Zugriff bis zur gesteuerten Agentenflotte: Aegisora gibt jedem Team die Kontrolle, die es braucht.",
+  ctas: [applyCtaDe],
+  metaTitle: "Lösungen",
+  metaDescription: "Wie KI-Plattform-, Sicherheits- und Engineering-Teams Aegisora nutzen, um Agenten in der Produktion zu steuern.",
+  sections: [
+    {
+      kind: "cards",
+      title: "Nach Team",
+      cols: 3,
+      items: [
+        { title: "KI-Plattform-Teams", body: "Geben Sie jedem Agenten eine einheitliche Kontrollschicht statt Leitplanken pro Projekt." },
+        { title: "Sicherheit und Compliance", body: "Entscheidungen, Freigaben und Nachweise an einem Ort für Prüfung und Audit." },
+        { title: "Engineering-Leitung", body: "Bringen Sie Agenten mit klaren Grenzen und Verantwortlichkeiten vom Prototyp in die Produktion." },
+      ],
+    },
+    {
+      kind: "cards",
+      title: "Nach Anwendungsfall",
+      cols: 3,
+      items: [
+        { title: "Agenten mit Zugriff auf interne Systeme", body: "Legen Sie fest, welche Tools und Daten ein Agent berühren darf, und protokollieren Sie, was er getan hat." },
+        { title: "Multi-Agenten-Workflows", body: "Halten Sie Identität und Befugnisse klar, wenn Agenten Aufgaben an andere Agenten delegieren." },
+        { title: "Umgebungen mit Audit-Pflicht", body: "Erzeugen Sie Nachweise für Prüfungen, ohne für jeden Agenten eigenes Logging zu bauen." },
+      ],
+    },
+    {
+      kind: "cta",
+      title: "Unsicher, wo Sie anfangen sollen?",
+      body: "Beschreiben Sie Ihre Agenten und Ihre Umgebung im Pilotantrag, dann legen wir gemeinsam einen Evaluierungsumfang fest.",
+      ctas: [applyCtaDe],
+    },
+  ],
+};
+
+const pilotDe: PageData = {
+  eyebrow: "Enterprise-Pilotprogramm",
+  title: "Beweisen Sie es an Ihren eigenen Agenten",
+  lead: "Eine abgegrenzte, zeitlich begrenzte Evaluierung von Aegisora, gemessen an Erfolgskriterien, die vor dem Start schriftlich vereinbart werden.",
+  metaTitle: "Enterprise-Pilotprogramm",
+  metaDescription: "Beantragen Sie das Aegisora Enterprise-Pilotprogramm: eine abgegrenzte, zeitlich begrenzte Evaluierung an Ihren eigenen KI-Agenten.",
+  sections: [
+    {
+      kind: "steps",
+      title: "So funktioniert der Pilot",
+      items: [
+        { title: "Bewerben", body: "Erzählen Sie uns von Ihren Agenten und davon, was Sie nachweisen möchten." },
+        { title: "Abgrenzung", body: "Wir vereinbaren Umfang und Erfolgskennzahlen schriftlich." },
+        { title: "Pilot", body: "Aegisora läuft für den vereinbarten Zeitraum auf Ihren Agenten." },
+        { title: "Auswertung", body: "Wir bewerten die Ergebnisse anhand der vereinbarten Kennzahlen." },
+        { title: "Entscheidung", body: "Als Kunde fortfahren, anpassen oder beenden." },
+      ],
+    },
+    {
+      kind: "cards",
+      title: "Vor Pilotbeginn vereinbart",
+      cols: 3,
+      items: [
+        { title: "Agenten und Umgebung", body: "Welche Agenten und welche Umgebung im Umfang enthalten sind." },
+        { title: "Einrichtung und Support", body: "Welche Einrichtung und welcher Support enthalten sind." },
+        { title: "Erfolgskennzahlen", body: "Wie Erfolg gemessen wird." },
+        { title: "Laufzeit", body: "Start- und Enddatum." },
+        { title: "Konditionen bei Fortführung", body: "Der Preis, wenn Sie nach dem Pilot fortfahren." },
+        { title: "Datenverarbeitung", body: "Welche Daten verarbeitet werden und wie damit umgegangen wird." },
+      ],
+    },
+    { kind: "pilotform", title: "Pilot beantragen", intro: "Wir antworten per E-Mail, in der Regel innerhalb weniger Werktage." },
+  ],
+};
+
+export const PAGES_DE = {
+  solutions: solutionsDe,
+  pilot: pilotDe,
 };

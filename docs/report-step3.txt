@@ -1,0 +1,191 @@
+===== HATALAR =====
+(yok)
+
+===== DEGISEN DOSYALAR =====
+src\app\[locale]\(public)\blog\page.tsx
+src\app\[locale]\(public)\pricing\page.tsx
+src\app\[locale]\(public)\proof\page.tsx
+src\app\[locale]\(public)\trust\page.tsx
+src\app\[locale]\enterprise\page.tsx
+src\app\[locale]\security\page.tsx
+src\app\[locale]\support\[collection]\[article]\page.tsx
+src\components\aegisora\onboarding-flow.tsx
+src\components\aegisora\platform-tabs.tsx
+src\components\aegisora\start-building.tsx
+src\lib\main-nav.ts
+src\lib\mega-nav.ts
+src\lib\product-content.ts
+src\lib\site-nav.ts
+
+===== HALA ESKI ADRES (yonlendirme sayfalari haric) =====
+(yok)
+
+===== NAV DOSYALARINDA TEKRAR EDEN HREF =====
+--- src\lib\main-nav.ts
+/pilot  x3
+/product  x3
+/docs/technical#pipeline  x2
+/docs/technical#authority  x2
+/docs/technical#approvals  x2
+/docs/technical#evidence  x2
+/proof  x2
+/solutions  x3
+/docs  x3
+/docs/technical  x2
+/security  x2
+/trust  x2
+/blog  x2
+/enterprise  x2
+/pricing  x2
+--- src\lib\mega-nav.ts
+/docs/technical#pipeline  x2
+/docs/technical#authority  x2
+/docs/technical#approvals  x2
+/docs/technical#evidence  x2
+/proof  x2
+/docs/quickstart  x3
+/enterprise  x5
+/product  x2
+/docs/technical#releases  x2
+/docs  x3
+/blog  x2
+/trust  x3
+/pilot  x2
+--- src\lib\site-nav.ts
+/docs/technical#pipeline  x2
+/docs/technical#authority  x2
+/docs/technical#decisions  x2
+/docs/technical#approvals  x2
+/docs/technical#evidence  x2
+/security  x2
+/docs  x2
+/enterprise  x2
+/pricing  x2
+/docs/technical#releases  x2
+/about  x2
+
+===== TECH-DOCS BOLUM ID + BASLIK =====
+id: "overview", | group: "Introduction", title: "Overview",
+id: "pipeline", | group: "Introduction", title: "Governance pipeline",
+id: "decisions", | group: "Core concepts", title: "Decisions and enforcement",
+id: "authority", | group: "Core concepts", title: "Canonical authority",
+id: "continuity", | group: "Runtime security", title: "Continuity Seal",
+id: "evidence", | group: "Runtime security", title: "Evidence and audit",
+id: "enterprise", | group: "Enterprise governance", title: "Enterprise governance",
+id: "approvals", | group: "Enterprise governance", title: "Approval engine",
+id: "tools", | group: "Enterprise governance", title: "Tool and MCP security",
+id: "operations", | group: "Enterprise governance", title: "Operations and entitlements",
+id: "packages", | group: "Platform", title: "Packages",
+id: "integrations", | group: "Platform", title: "Integrations",
+id: "getting-started", | group: "Platform", title: "Getting started",
+id: "validation", | group: "Platform", title: "Release validation",
+id: "releases", | group: "Platform", title: "Release history",
+
+===== TUM ROUTE'LAR (satir sayisi) =====
+  24  [locale]\(app)\dashboard\activity\page.tsx
+  46  [locale]\(app)\dashboard\agents\[agentId]\page.tsx
+ 193  [locale]\(app)\dashboard\agents\page.tsx
+  89  [locale]\(app)\dashboard\api-keys\page.tsx
+   6  [locale]\(app)\dashboard\approvals\[approvalId]\page.tsx
+ 160  [locale]\(app)\dashboard\approvals\page.tsx
+  22  [locale]\(app)\dashboard\audit\page.tsx
+ 428  [locale]\(app)\dashboard\billing\page.tsx
+  62  [locale]\(app)\dashboard\decisions\[decisionId]\page.tsx
+  25  [locale]\(app)\dashboard\decisions\page.tsx
+  99  [locale]\(app)\dashboard\evidence\page.tsx
+  61  [locale]\(app)\dashboard\identity\page.tsx
+   6  [locale]\(app)\dashboard\incidents\[incidentId]\page.tsx
+  37  [locale]\(app)\dashboard\incidents\page.tsx
+   6  [locale]\(app)\dashboard\integrations\page.tsx
+ 169  [locale]\(app)\dashboard\page.tsx
+  45  [locale]\(app)\dashboard\policies\[policyId]\page.tsx
+ 127  [locale]\(app)\dashboard\policies\page.tsx
+   6  [locale]\(app)\dashboard\providers\[providerId]\page.tsx
+   6  [locale]\(app)\dashboard\providers\page.tsx
+  42  [locale]\(app)\dashboard\risk\page.tsx
+  89  [locale]\(app)\dashboard\settings\page.tsx
+ 467  [locale]\(app)\dashboard\team\page.tsx
+   6  [locale]\(app)\dashboard\traces\[traceId]\page.tsx
+  24  [locale]\(app)\dashboard\traces\page.tsx
+   6  [locale]\(app)\dashboard\webhooks\[webhookId]\page.tsx
+  81  [locale]\(app)\dashboard\webhooks\page.tsx
+  47  [locale]\(app)\dashboard\workspace\page.tsx
+  17  [locale]\(app)\layout.tsx
+  22  [locale]\(auth)\accept-invite\page.tsx
+  18  [locale]\(auth)\forgot-password\page.tsx
+   5  [locale]\(auth)\layout.tsx
+  13  [locale]\(auth)\login\page.tsx
+  66  [locale]\(auth)\reset-password\page.tsx
+  13  [locale]\(auth)\signup\page.tsx
+  16  [locale]\(auth)\verify-email\page.tsx
+  57  [locale]\(public)\about\page.tsx
+  62  [locale]\(public)\blog\[slug]\page.tsx
+  37  [locale]\(public)\blog\page.tsx
+   6  [locale]\(public)\changelog\page.tsx
+   6  [locale]\(public)\contact\page.tsx
+  26  [locale]\(public)\docs\layout.tsx
+ 210  [locale]\(public)\docs\page.tsx
+  98  [locale]\(public)\docs\quickstart\page.tsx
+  12  [locale]\(public)\docs\technical\page.tsx
+  14  [locale]\(public)\layout.tsx
+  16  [locale]\(public)\legal\dpa\page.tsx
+   5  [locale]\(public)\page.tsx
+  16  [locale]\(public)\pilot\page.tsx
+ 320  [locale]\(public)\pricing\page.tsx
+  62  [locale]\(public)\proof\page.tsx
+   6  [locale]\(public)\resources\page.tsx
+  16  [locale]\(public)\solutions\page.tsx
+  34  [locale]\(public)\terms\page.tsx
+  35  [locale]\(public)\trust\page.tsx
+  57  [locale]\(public)\trust\privacy\page.tsx
+  26  [locale]\(public)\trust\subprocessors\page.tsx
+   6  [locale]\developers\page.tsx
+   6  [locale]\developers\quickstart\page.tsx
+  41  [locale]\enterprise\page.tsx
+   6  [locale]\evidence\page.tsx
+  41  [locale]\impressum\page.tsx
+  28  [locale]\layout.tsx
+   5  [locale]\onboarding\page.tsx
+   6  [locale]\product\approvals\page.tsx
+   6  [locale]\product\decisions\page.tsx
+   6  [locale]\product\evidence\page.tsx
+  44  [locale]\product\page.tsx
+   6  [locale]\product\policies\page.tsx
+   6  [locale]\product\runtime\page.tsx
+  41  [locale]\security\page.tsx
+ 203  [locale]\set-password\page.tsx
+ 106  [locale]\support\[collection]\[article]\page.tsx
+  57  [locale]\support\[collection]\page.tsx
+  84  [locale]\support\page.tsx
+  16  api\auth\callback\route.ts
+ 122  api\billing\status\route.ts
+  13  api\csp-report\route.ts
+  13  api\health\route.ts
+  93  api\pilot-request\route.ts
+ 230  api\stripe\checkout\route.ts
+ 130  api\stripe\portal\route.ts
+ 713  api\stripe\webhook\route.ts
+  28  api\v1\agents\import\route.ts
+  41  api\v1\decisions\[id]\route.ts
+ 206  api\v1\evaluate\route.ts
+  14  api\v1\health\route.ts
+  40  api\v1\traces\route.ts
+  87  api\v1\workspace\agents\route.ts
+ 100  api\v1\workspace\approvals\[approvalId]\route.ts
+  76  api\v1\workspace\evidence\export\route.ts
+  23  api\v1\workspace\members\accept\route.ts
+ 437  api\v1\workspace\members\route.ts
+  79  api\v1\workspace\policies\route.ts
+  52  api\v1\workspace\usage\route.ts
+  28  auth\confirm\route.ts
+  56  layout.tsx
+
+===== DASHBOARD / PANEL BILESENLERI (satir sayisi) =====
+ 208  src\components\aegisora\app-shell.tsx
+  96  src\components\aegisora\app-sidebar.tsx
+  72  src\components\aegisora\auth-side-panel.tsx
+  42  src\components\aegisora\mobile-table-cards.tsx
+  37  src\components\aegisora\support\support-sidebar.tsx
+
+===== TSC =====
+HATA YOK

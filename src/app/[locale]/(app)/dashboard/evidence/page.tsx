@@ -24,34 +24,23 @@ function Actions({ wsId }: { wsId: string }) {
     );
   }
 
+  // The server export carries every field needed to recompute each hash outside the database.
   async function exportJson() {
     setBusy(true);
     setMsg(null);
     try {
-      const supabase = createClient();
-      const rows: unknown[] = [];
-      const page = 1000;
-      for (let from = 0; ; from += page) {
-        const { data, error } = await supabase
-          .from("evidence")
-          .select("*")
-          .eq("workspace_id", wsId)
-          .order("seq", { ascending: true })
-          .range(from, from + page - 1);
-        if (error) throw new Error(error.message);
-        rows.push(...(data ?? []));
-        if (!data || data.length < page) break;
+      const { data, error } = await createClient().auth.getSession();
+      const token = data.session?.access_token;
+      if (error || !token) throw new Error("Your session is missing or expired. Sign in again.");
+      const res = await fetch("/api/v1/workspace/evidence/export", {
+        headers: { Authorization: `Bearer ${token}`, "X-Workspace-Id": wsId },
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        const p = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
+        throw new Error(p?.error?.message ?? `Export failed (${res.status}).`);
       }
-      const { data: chain } = await supabase.rpc("verify_evidence_chain", { ws: wsId });
-      const c = (Array.isArray(chain) ? chain[0] : chain) as ChainResult | null;
-      const pack = {
-        exported_at: new Date().toISOString(),
-        workspace_id: wsId,
-        chain_verification: c ? { total: c.total, broken: c.broken } : null,
-        record_count: rows.length,
-        records: rows,
-      };
-      const blob = new Blob([JSON.stringify(pack, null, 2)], { type: "application/json" });
+      const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -60,7 +49,7 @@ function Actions({ wsId }: { wsId: string }) {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-      setMsg({ ok: true, text: `Exported ${rows.length} records.` });
+      setMsg({ ok: true, text: "Exported. Anyone can check the file offline: node scripts/security/verify-evidence-export.mjs <file>" });
     } catch (e) {
       setMsg({ ok: false, text: e instanceof Error ? e.message : "Export failed." });
     } finally {

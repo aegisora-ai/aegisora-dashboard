@@ -6,6 +6,7 @@ import { maskSensitiveData, maskSensitiveText } from "@/lib/aegisora/redaction";
 import { decidePolicy, type Effect } from "@/lib/aegisora/policy-evaluator";
 import { evaluateWorkspaceExecutionEntitlement } from "@/lib/aegisora/entitlement";
 import { evaluateMonthlyQuota } from "@/lib/aegisora/quota";
+import { notifyDecision } from "@/lib/aegisora/notify";
 
 export const runtime = "nodejs";
 export const preferredRegion = "fra1";
@@ -159,6 +160,7 @@ export async function POST(req: Request) {
           risk_score: risk,
           input: safeInput,
           decided_at: new Date().toISOString(),
+          event: "decision.evaluated",
         },
       })
       .select("hash")
@@ -176,14 +178,19 @@ export async function POST(req: Request) {
     let approvalId: string | null = null;
     if (effect === "ESCALATE") {
       const exp = new Date(Date.now() + settings.expiry_hours * 3600_000).toISOString();
+      const keyOwner = await db.from("api_keys").select("created_by").eq("id", auth.keyId).maybeSingle();
+      const requesterUser = (keyOwner.data?.created_by as string | null) ?? null;
       const ap = await db
         .from("approvals")
-        .insert({ workspace_id: ws, decision_id: decisionId, agent_id: agent?.id ?? null, agent_name: safeAgentName, action: safeAction, resource: safeResource, expires_at: exp })
+        .insert({ workspace_id: ws, decision_id: decisionId, agent_id: agent?.id ?? null, agent_name: safeAgentName, action: safeAction, resource: safeResource, expires_at: exp, requested_by_key_id: auth.keyId, requested_by_user: requesterUser })
         .select("id")
         .single();
-      if (!ap.error) approvalId = ap.data.id as string;
+      if (ap.error) { console.error("approvals insert failed:", ap.error.message); throw ap.error; }
+      approvalId = ap.data.id as string;
+      after(() => notifyDecision({ workspaceId: ws, effect: "ESCALATE", agent: safeAgentName, action: safeAction, resource: safeResource, reason, risk, decisionId }));
     }
     if (effect === "BLOCK" && settings.alert_on_block) {
+      after(() => notifyDecision({ workspaceId: ws, effect: "BLOCK", agent: safeAgentName, action: safeAction, resource: safeResource, reason, risk, decisionId }));
       await db.from("incidents").insert({ workspace_id: ws, decision_id: decisionId, severity: risk >= 70 ? "high" : "medium", title: `Blocked: ${safeAgentName} -> ${safeAction}` });
     }
     await db.from("audit_events").insert({

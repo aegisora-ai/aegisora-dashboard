@@ -1,22 +1,27 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { AuthForm } from "@/components/aegisora/auth-form";
 
-export const metadata: Metadata = { title: "Accept invitation" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("invite.title") };
+}
 
-export default function AcceptInvitePage() {
+export default async function AcceptInvitePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
   return (
-    <div className="w-full max-w-sm space-y-6">
-      <AuthForm
-        mode="invite"
-        title="Accept your invitation"
-        description="Create your account to join the workspace."
-        fields={[
-          { name: "name", label: "Full name", type: "text", autoComplete: "name" },
-          { name: "password", label: "Password", type: "password", autoComplete: "new-password" },
-        ]}
-        submitLabel="Join workspace"
-        redirectTo="/dashboard"
-      />
-    </div>
+    <AuthForm
+      mode="invite"
+      title={t("invite.title")}
+      description={t("invite.desc")}
+      fields={[
+        { name: "name", label: t("invite.fullName"), type: "text", autoComplete: "name" },
+        { name: "password", label: t("common.password"), type: "password", autoComplete: "new-password" },
+      ]}
+      submitLabel={t("invite.submit")}
+      redirectTo="/dashboard"
+    />
   );
 }

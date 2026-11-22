@@ -1,19 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, ChevronDown, Circle } from "lucide-react";
+import { Activity, ArrowRight, Bot, UserCheck, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Workspace } from "@/lib/aegisora/use-workspace";
-import { Badge, PageHeader, Panel, Skeleton, WorkspaceGate, fmt } from "@/components/aegisora/live/ui";
+import { useWorkspace } from "@/components/aegisora/workspace-provider";
+import { Badge, WorkspaceGate, fmt } from "@/components/aegisora/live/ui";
 import type { Row } from "@/components/aegisora/live/live-table";
-import { DecisionSplit, HourlyChart, type Bucket } from "@/components/aegisora/live/decision-charts";
-import { cn } from "@/lib/utils";
 
-type Stats = { agents: number; policies: number; keys: number; pending: number; incidents: number; allow: number; block: number; escalate: number };
+type Counts = { agents: number | null; policies: number | null; pending: number | null; incidents: number | null; total: number | null; block: number | null; escalate: number | null };
+type Bucket = { allow: number; escalate: number; block: number };
 type Point = { created_at: string; decision: string | null };
 
 const HOUR = 36e5;
+const num = (v: number | null) => (v === null ? "-" : v.toLocaleString("en-US"));
+const cnt = (r: { count: number | null; error: unknown }) => (r.error ? null : (r.count ?? 0));
 
 function bucketize(points: Point[]): { buckets: Bucket[]; labels: string[] } {
   const now = Date.now();
@@ -29,141 +31,218 @@ function bucketize(points: Point[]): { buckets: Bucket[]; labels: string[] } {
   return { buckets, labels };
 }
 
+function timeLeft(iso: string) {
+  const mins = Math.round((Date.parse(iso) - Date.now()) / 6e4);
+  if (mins < 1) return "expires now";
+  if (mins < 60) return mins + "m left";
+  return Math.round(mins / 60) + "h left";
+}
+
+function Bars({ buckets, labels }: { buckets: Bucket[]; labels: string[] }) {
+  const totals = buckets.map((b) => b.allow + b.escalate + b.block);
+  const max = Math.max(1, ...totals);
+  return (
+    <>
+      <div className="aegc-bars" role="img" aria-label="Decisions per hour, last 24 hours">
+        {buckets.map((b, i) => {
+          const t = totals[i];
+          const h = t === 0 ? 1 : Math.max(6, (t / max) * 100);
+          return (
+            <div key={i} className="aegc-bar" title={labels[i] + ":00 \u00b7 " + t + (t === 1 ? " decision" : " decisions")}>
+              <div className="aegc-bar__area">
+                <div className="aegc-bar__col" style={{ height: h + "%", animationDelay: i * 20 + "ms" }}>
+                  {t > 0 ? (
+                    <>
+                      <i style={{ flex: b.block, background: "var(--block)" }} />
+                      <i style={{ flex: b.escalate, background: "var(--escalate)" }} />
+                      <i style={{ flex: b.allow, background: "var(--allow)" }} />
+                    </>
+                  ) : null}
+                </div>
+              </div>
+              <span>{i % 3 === 0 ? labels[i] : ""}</span>
+            </div>
+          );
+        })}
+      </div>
+      <div className="aegc-legend">
+        <span><i style={{ background: "var(--allow)" }} />Allow</span>
+        <span><i style={{ background: "var(--escalate)" }} />Escalate</span>
+        <span><i style={{ background: "var(--block)" }} />Block</span>
+      </div>
+    </>
+  );
+}
+
 function Overview({ ws }: { ws: Workspace }) {
-  const [s, setS] = useState<Stats | null>(null);
+  const { userName, userEmail } = useWorkspace();
+  const [c, setC] = useState<Counts | null>(null);
+  const [series, setSeries] = useState<{ buckets: Bucket[]; labels: string[] } | null>(null);
   const [recent, setRecent] = useState<Row[]>([]);
-  const [points, setPoints] = useState<Point[]>([]);
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [agents, setAgents] = useState<Row[]>([]);
+  const [pend, setPend] = useState<Row[]>([]);
+  const [hide, setHide] = useState(false);
 
   useEffect(() => {
     let alive = true;
-    (async () => {
-      const supabase = createClient();
-      const c = (t: string) => supabase.from(t).select("id", { count: "exact", head: true }).eq("workspace_id", ws.id);
-      const since = new Date(Date.now() - 864e5).toISOString();
-      const [agents, policies, keys, pending, incidents, allow, block, esc, rec, series] = await Promise.all([
-        c("agents"),
-        c("policies").eq("enabled", true),
-        c("api_keys").is("revoked_at", null),
-        c("approvals").eq("status", "pending"),
-        c("incidents").eq("status", "open"),
-        c("decisions").eq("decision", "ALLOW").gte("created_at", since),
-        c("decisions").eq("decision", "BLOCK").gte("created_at", since),
-        c("decisions").eq("decision", "ESCALATE").gte("created_at", since),
-        supabase.from("decisions").select("id,created_at,decision,agent_id,agents(name),evidence(action)").eq("workspace_id", ws.id).order("created_at", { ascending: false }).limit(8),
-        supabase.from("decisions").select("created_at,decision").eq("workspace_id", ws.id).gte("created_at", since).limit(1000),
+    const load = async () => {
+      const sb = createClient();
+      const now = new Date();
+      const nowIso = now.toISOString();
+      const since = new Date(now.getTime() - 24 * HOUR).toISOString();
+      const w = ws.id;
+      const [ag, po, pe, inc, tot, blk, esc, ser, rec, agl, pel] = await Promise.all([
+        sb.from("agents").select("id", { count: "exact", head: true }).eq("workspace_id", w),
+        sb.from("policies").select("id", { count: "exact", head: true }).eq("workspace_id", w),
+        sb.from("approvals").select("id", { count: "exact", head: true }).eq("workspace_id", w).eq("status", "pending").gt("expires_at", nowIso),
+        sb.from("incidents").select("id", { count: "exact", head: true }).eq("workspace_id", w).eq("status", "open"),
+        sb.from("decisions").select("id", { count: "exact", head: true }).eq("workspace_id", w).gte("created_at", since),
+        sb.from("decisions").select("id", { count: "exact", head: true }).eq("workspace_id", w).gte("created_at", since).eq("decision", "BLOCK"),
+        sb.from("decisions").select("id", { count: "exact", head: true }).eq("workspace_id", w).gte("created_at", since).eq("decision", "ESCALATE"),
+        sb.from("decisions").select("created_at,decision").eq("workspace_id", w).gte("created_at", since).order("created_at", { ascending: false }).limit(1000),
+        sb.from("decisions").select("id,created_at,agent_name,action,resource,decision").eq("workspace_id", w).order("created_at", { ascending: false }).limit(8),
+        sb.from("agents").select("id,name,framework").eq("workspace_id", w).order("name").limit(5),
+        sb.from("approvals").select("id,agent_name,action,requested_at,expires_at").eq("workspace_id", w).eq("status", "pending").gt("expires_at", nowIso).order("requested_at", { ascending: false }).limit(4),
       ]);
       if (!alive) return;
-      setS({
-        agents: agents.count ?? 0, policies: policies.count ?? 0, keys: keys.count ?? 0, pending: pending.count ?? 0,
-        incidents: incidents.count ?? 0, allow: allow.count ?? 0, block: block.count ?? 0, escalate: esc.count ?? 0,
-      });
+      setC({ agents: cnt(ag), policies: cnt(po), pending: cnt(pe), incidents: cnt(inc), total: cnt(tot), block: cnt(blk), escalate: cnt(esc) });
+      setSeries(bucketize((ser.data ?? []) as Point[]));
       setRecent((rec.data ?? []) as Row[]);
-      setPoints((series.data ?? []) as Point[]);
-    })();
-    return () => { alive = false; };
+      setAgents((agl.data ?? []) as Row[]);
+      setPend((pel.data ?? []) as Row[]);
+    };
+    void load();
+    const t = window.setInterval(() => { if (!document.hidden) void load(); }, 60000);
+    const onVis = () => { if (!document.hidden) void load(); };
+    document.addEventListener("visibilitychange", onVis);
+    return () => { alive = false; window.clearInterval(t); document.removeEventListener("visibilitychange", onVis); };
   }, [ws.id]);
 
-  if (!s) return <Skeleton />;
-  const total24 = s.allow + s.block + s.escalate;
-  const { buckets, labels } = bucketize(points);
-  const steps = [
-    { done: s.keys > 0, label: "Create an API key", href: "/dashboard/api-keys" },
-    { done: s.policies > 0, label: "Add a policy (or load the starter policies)", href: "/dashboard/policies" },
-    { done: s.agents > 0, label: "Connect or import your agents", href: "/dashboard/agents" },
-    { done: total24 > 0 || recent.length > 0, label: "Send your first test action", href: "/dashboard/decisions" },
-  ];
-  const tiles = [
-    { label: "Agents", value: s.agents, href: "/dashboard/agents" },
-    { label: "Active policies", value: s.policies, href: "/dashboard/policies" },
-    { label: "Pending approvals", value: s.pending, href: "/dashboard/approvals", warn: s.pending > 0 },
-    { label: "Open incidents", value: s.incidents, href: "/dashboard/incidents", warn: s.incidents > 0 },
-  ];
+  const name = userName || (userEmail ? userEmail.split("@")[0] : "there");
+  const reco =
+    c && c.agents === 0
+      ? { text: "Connect your first agent to start evaluating actions.", href: "/dashboard/agents", cta: "Register agent" }
+      : c && c.policies === 0
+        ? { text: "Define a policy so your agents have rules to follow.", href: "/dashboard/policies", cta: "Create policy" }
+        : null;
+  const anyData = series ? series.buckets.some((b) => b.allow + b.escalate + b.block > 0) : false;
 
   return (
-    <div className="space-y-6">
-      <PageHeader title="Overview" description={`${ws.name}: live governance state.`} />
+    <div>
+      {reco && !hide ? (
+        <div className="aegc-reco" role="note">
+          <b>Recommended:</b>
+          <span>{reco.text}</span>
+          <span className="aegc-reco__sp" />
+          <Link href={reco.href}>{reco.cta}<ArrowRight aria-hidden="true" /></Link>
+          <button type="button" aria-label="Dismiss" onClick={() => setHide(true)}><X aria-hidden="true" /></button>
+        </div>
+      ) : null}
 
-      {!steps.every((x) => x.done) && (
-        <Panel>
-          <h2 className="text-sm font-semibold">Get started</h2>
-          <ul className="mt-3 space-y-2">
-            {steps.map((x) => (
-              <li key={x.label}>
-                <Link href={x.href} className="flex items-center gap-2.5 text-sm hover:underline">
-                  {x.done ? <Check className="size-4 text-allow" /> : <Circle className="size-4 text-muted-foreground" />}
-                  <span className={x.done ? "text-muted-foreground line-through" : ""}>{x.label}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Panel>
-      )}
-
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        {tiles.map((t) => (
-          <Link key={t.label} href={t.href} className="rounded-xl border border-border bg-surface-1 p-4 transition hover:border-primary/60 active:scale-[0.98] sm:p-5">
-            <div className="text-xs font-medium text-muted-foreground">{t.label}</div>
-            <div className={cn("mt-2 text-3xl font-semibold tracking-tight sm:text-4xl", t.warn && "text-escalate")}>{t.value}</div>
-          </Link>
-        ))}
+      <div className="aegc-hello">
+        <div>
+          <h1>Hello, {name}</h1>
+          <p>{ws.name}</p>
+        </div>
+        <Link href="/dashboard/agents" className="aegc-btn aegc-btn--solid">Register agent</Link>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <Panel>
-          <h2 className="text-sm font-semibold">Decisions per hour</h2>
-          <p className="mt-1 text-xs text-muted-foreground">Last 24 hours. Hover a bar for the exact counts.</p>
-          <HourlyChart buckets={buckets} labels={labels} />
-        </Panel>
-        <Panel>
-          <h2 className="text-sm font-semibold">Outcome split</h2>
-          <p className="mt-1 text-xs text-muted-foreground">{total24} decisions in the last 24 hours.</p>
-          <DecisionSplit allow={s.allow} escalate={s.escalate} block={s.block} />
-        </Panel>
+      <div className="aegc-stats">
+        <Link href="/dashboard/decisions" className="aegc-stat"><span className="aegc-stat__l">Decisions (24h)</span><span className="aegc-stat__v">{num(c?.total ?? null)}</span></Link>
+        <Link href="/dashboard/decisions" className="aegc-stat"><span className="aegc-stat__l">Blocked (24h)</span><span className="aegc-stat__v">{num(c?.block ?? null)}</span></Link>
+        <Link href="/dashboard/approvals" className="aegc-stat"><span className="aegc-stat__l">Pending approvals</span><span className={"aegc-stat__v" + ((c?.pending ?? 0) > 0 ? " aegc-stat__v--warn" : "")}>{num(c?.pending ?? null)}</span></Link>
+        <Link href="/dashboard/agents" className="aegc-stat"><span className="aegc-stat__l">Agents</span><span className="aegc-stat__v">{num(c?.agents ?? null)}</span></Link>
       </div>
 
-      <Panel>
-        <h2 className="text-sm font-semibold">Recent activity</h2>
-        {recent.length === 0 ? (
-          <p className="mt-2 text-sm text-muted-foreground">Nothing yet. Decisions appear here the moment an agent calls the API.</p>
+      <div className="aegc-grid">
+        <section className="aegc-card">
+          <div className="aegc-card__h">
+            <h2>Decisions<small>per hour, last 24 hours</small></h2>
+            <Link href="/dashboard/activity">Live activity</Link>
+          </div>
+          {series && anyData ? (
+            <Bars buckets={series.buckets} labels={series.labels} />
+          ) : (
+            <div className="aegc-empty">
+              <Activity aria-hidden="true" />
+              <span>{series ? "No decisions in the last 24 hours." : "Loading..."}</span>
+            </div>
+          )}
+        </section>
+
+        <div className="aegc-stack">
+          <section className="aegc-card">
+            <div className="aegc-card__h">
+              <h2>Agents</h2>
+              <Link href="/dashboard/agents">Manage agents</Link>
+            </div>
+            {agents.length > 0 ? (
+              <div className="aegc-list">
+                {agents.map((a) => (
+                  <Link key={String(a.id)} href={"/dashboard/agents/" + a.id} className="aegc-li">
+                    <span className="aegc-li__ic"><Bot aria-hidden="true" /></span>
+                    <span className="aegc-li__t"><b>{String(a.name)}</b><small>{a.framework ? String(a.framework) : "agent"}</small></span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="aegc-note">No agents yet. <Link href="/dashboard/agents">Register your first agent</Link>.</p>
+            )}
+          </section>
+
+          <section className="aegc-card">
+            <div className="aegc-card__h">
+              <h2>Needs your attention</h2>
+              <Link href="/dashboard/approvals">Open queue</Link>
+            </div>
+            {pend.length > 0 ? (
+              <div className="aegc-list">
+                {pend.map((p) => (
+                  <Link key={String(p.id)} href={"/dashboard/approvals/" + p.id} className="aegc-li">
+                    <span className="aegc-li__ic"><UserCheck aria-hidden="true" /></span>
+                    <span className="aegc-li__t"><b className="aegc-mono">{String(p.action ?? "action")}</b><small>{String(p.agent_name ?? "agent")}</small></span>
+                    <span className="aegc-li__r">{timeLeft(String(p.expires_at))}</span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="aegc-note">All clear. No action is waiting for a decision.</p>
+            )}
+            {c && c.incidents !== null && c.incidents > 0 ? (
+              <p className="aegc-note"><Link href="/dashboard/incidents">{num(c.incidents)} open incidents</Link> to review.</p>
+            ) : null}
+          </section>
+        </div>
+      </div>
+
+      <section className="aegc-card" style={{ marginTop: 14 }}>
+        <div className="aegc-card__h">
+          <h2>Recent decisions</h2>
+          <Link href="/dashboard/decisions">View all</Link>
+        </div>
+        {recent.length > 0 ? (
+          <div className="aegc-tablewrap">
+            <div className="aegc-rows">
+              <div className="aegc-row aegc-row--h"><span>Time</span><span>Agent</span><span>Action</span><span>Resource</span><span>Decision</span></div>
+              {recent.map((r) => (
+                <div key={String(r.id)} className="aegc-row">
+                  <span className="aegc-dim">{fmt(r.created_at)}</span>
+                  <span>{String(r.agent_name ?? "-")}</span>
+                  <span className="aegc-mono">{String(r.action ?? "-")}</span>
+                  <span className="aegc-dim">{r.resource ? String(r.resource) : "-"}</span>
+                  <span><Badge value={r.decision} /></span>
+                </div>
+              ))}
+            </div>
+          </div>
         ) : (
-          <ul className="mt-3 divide-y divide-border/60">
-            {recent.map((r) => {
-              const open = openId === r.id;
-              return (
-                <li key={r.id}>
-                  <button
-                    type="button"
-                    aria-expanded={open}
-                    onClick={() => setOpenId(open ? null : r.id)}
-                    className="flex min-h-12 w-full flex-wrap items-center gap-x-3 gap-y-1 py-2 text-left text-sm hover:bg-surface-3/60"
-                  >
-                    <Badge value={r.decision} />
-                    <span className="font-mono text-xs">{r.evidence?.[0]?.action ?? "-"}</span>
-                    <span className="text-muted-foreground">{r.agents?.name ?? "Unknown agent"}</span>
-                    <span className="ml-auto text-xs text-muted-foreground">{fmt(r.created_at)}</span>
-                    <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")} />
-                  </button>
-                  {open && (
-                    <dl className="grid gap-3 rounded-lg bg-surface-1 p-4 text-xs sm:grid-cols-4">
-                      <div><dt className="text-muted-foreground">Decision ID</dt><dd className="mt-1 font-mono">{String(r.id).slice(0, 12)}</dd></div>
-                      <div><dt className="text-muted-foreground">Agent</dt><dd className="mt-1">{r.agents?.name ?? "Unknown agent"}</dd></div>
-                      <div><dt className="text-muted-foreground">Action</dt><dd className="mt-1 font-mono">{r.evidence?.[0]?.action ?? "-"}</dd></div>
-                      <div className="flex items-end">
-                        <Link href={`/dashboard/decisions/${r.id}`} className="font-medium text-primary hover:underline">Open full decision</Link>
-                      </div>
-                    </dl>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+          <p className="aegc-note">No decisions yet. Send a test action from an agent and it will show up here.</p>
         )}
-      </Panel>
+      </section>
     </div>
   );
 }
 
-export default function OverviewPage() {
+export default function DashboardPage() {
   return <WorkspaceGate>{(ws) => <Overview key={ws.id} ws={ws} />}</WorkspaceGate>;
 }

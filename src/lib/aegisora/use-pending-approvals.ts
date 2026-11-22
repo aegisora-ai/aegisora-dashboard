@@ -17,12 +17,13 @@ export function usePendingApprovals(): number {
         .from("approvals")
         .select("id", { count: "exact", head: true })
         .eq("workspace_id", ws.id)
-        .eq("status", "pending");
+        .eq("status", "pending")
+        .gt("expires_at", new Date().toISOString());
       if (alive) setN(count ?? 0);
     };
     void load();
     const ch = supabase
-      .channel(`pending-${ws.id}`)
+      .channel(`pending-${ws.id}-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "approvals", filter: `workspace_id=eq.${ws.id}` }, () => { void load(); })
       .subscribe();
     return () => {

@@ -11,16 +11,7 @@ import {
   type PipelineStep,
 } from "./data";
 
-const THEME = {
-  "--td-bg": "#050a18",
-  "--td-panel": "#0a1226",
-  "--td-panel-2": "#0e1830",
-  "--td-line": "rgba(148, 163, 255, 0.14)",
-  "--td-text": "#e6ebff",
-  "--td-muted": "#93a0c8",
-  "--td-accent": "#6d9bff",
-  "--td-accent-2": "#38bdf8",
-} as CSSProperties;
+const THEME = { "--td-bg": "transparent", "--td-panel": "color-mix(in srgb, var(--foreground) 5%, transparent)", "--td-panel-2": "color-mix(in srgb, var(--foreground) 8%, transparent)", "--td-line": "color-mix(in srgb, var(--foreground) 14%, transparent)", "--td-text": "var(--foreground)", "--td-muted": "color-mix(in srgb, var(--foreground) 62%, transparent)", "--td-accent": "var(--primary)", "--td-accent-2": "var(--primary)" } as CSSProperties;
 
 function Inline({ text }: { text: string }) {
   const parts = text.split(/(`[^`]+`)/g);
@@ -30,7 +21,7 @@ function Inline({ text }: { text: string }) {
         p.startsWith("`") && p.endsWith("`") && p.length > 2 ? (
           <code
             key={i}
-            className="rounded bg-white/[0.07] px-1.5 py-0.5 font-mono text-[0.85em] text-[var(--td-accent-2)]"
+            className="rounded bg-[var(--td-line)] px-1.5 py-0.5 font-mono text-[0.85em] text-[var(--td-accent-2)]"
           >
             {p.slice(1, -1)}
           </code>
@@ -54,7 +45,7 @@ function CodeBlock({ title, code }: { title?: string; code: string }) {
     }
   };
   return (
-    <div className="overflow-hidden rounded-xl border border-[var(--td-line)] bg-[#030612]">
+    <div className="overflow-hidden rounded-xl border border-[var(--td-line)] bg-[var(--td-panel-2)]">
       <div className="flex items-center justify-between border-b border-[var(--td-line)] px-4 py-2">
         <span className="text-xs font-medium uppercase tracking-wider text-[var(--td-muted)]">
           {title ?? "Reference"}
@@ -62,12 +53,12 @@ function CodeBlock({ title, code }: { title?: string; code: string }) {
         <button
           type="button"
           onClick={copy}
-          className="rounded-md border border-[var(--td-line)] px-2 py-1 text-xs text-[var(--td-muted)] transition hover:border-[var(--td-accent)] hover:text-white"
+          className="rounded-md border border-[var(--td-line)] px-2 py-1 text-xs text-[var(--td-muted)] transition hover:border-[var(--td-accent)] hover:text-[var(--td-text)]"
         >
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
-      <pre className="overflow-x-auto p-4 font-mono text-[13px] leading-relaxed text-[#c9d6ff]">
+      <pre className="overflow-x-auto p-4 font-mono text-[13px] leading-relaxed text-[var(--td-text)]">
         <code>{code}</code>
       </pre>
     </div>
@@ -93,8 +84,8 @@ function Pipeline() {
               className={
                 "flex w-full items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm transition " +
                 (i === sel
-                  ? "border-[var(--td-accent)] bg-[var(--td-accent)]/10 text-white"
-                  : "border-transparent text-[var(--td-muted)] hover:bg-white/[0.04] hover:text-white")
+                  ? "border-[var(--td-accent)] bg-[var(--td-accent)]/10 text-[var(--td-text)]"
+                  : "border-transparent text-[var(--td-muted)] hover:bg-[var(--td-panel-2)] hover:text-[var(--td-text)]")
               }
             >
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--td-line)] font-mono text-[11px]">
@@ -102,7 +93,7 @@ function Pipeline() {
               </span>
               <span className="flex-1 font-medium tracking-wide">{s.name}</span>
               {s.since ? (
-                <span className="rounded-full bg-violet-500/20 px-2 py-0.5 text-[10px] font-semibold text-violet-200">
+                <span className="rounded-full bg-[var(--td-accent)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--td-accent)]">
                   {s.since}
                 </span>
               ) : null}
@@ -116,12 +107,12 @@ function Pipeline() {
             Stage {sel + 1} of {PIPELINE.length}
           </span>
           {step.since ? (
-            <span className="rounded-full bg-violet-500/20 px-2.5 py-0.5 text-xs font-semibold text-violet-200">
+            <span className="rounded-full bg-[var(--td-accent)]/15 px-2.5 py-0.5 text-xs font-semibold text-[var(--td-accent)]">
               Introduced in {step.since}
             </span>
           ) : null}
         </div>
-        <h4 className="mt-3 text-xl font-semibold tracking-wide text-white">{step.name}</h4>
+        <h4 className="mt-3 text-xl font-semibold tracking-wide text-[var(--td-text)]">{step.name}</h4>
         <p className="mt-2 text-[var(--td-text)]/90">{step.summary}</p>
         <ul className="mt-5 space-y-2.5">
           {step.details.map((d) => (
@@ -138,7 +129,7 @@ function Pipeline() {
             type="button"
             disabled={sel === 0}
             onClick={() => setSel((v) => Math.max(0, v - 1))}
-            className="text-[var(--td-muted)] transition hover:text-white disabled:opacity-30"
+            className="text-[var(--td-muted)] transition hover:text-[var(--td-text)] disabled:opacity-30"
           >
             Previous stage
           </button>
@@ -146,7 +137,7 @@ function Pipeline() {
             type="button"
             disabled={sel === PIPELINE.length - 1}
             onClick={() => setSel((v) => Math.min(PIPELINE.length - 1, v + 1))}
-            className="text-[var(--td-accent)] transition hover:text-white disabled:opacity-30"
+            className="text-[var(--td-accent)] transition hover:text-[var(--td-text)] disabled:opacity-30"
           >
             Next stage
           </button>
@@ -157,9 +148,9 @@ function Pipeline() {
 }
 
 const TONES: Record<"info" | "security" | "new", { box: string; label: string }> = {
-  info: { box: "border-sky-400/30 bg-sky-400/[0.07]", label: "text-sky-300" },
-  security: { box: "border-emerald-400/30 bg-emerald-400/[0.07]", label: "text-emerald-300" },
-  new: { box: "border-violet-400/35 bg-violet-400/[0.09]", label: "text-violet-300" },
+  info: { box: "border-sky-500/40 bg-sky-500/[0.08]", label: "text-sky-600" },
+  security: { box: "border-emerald-500/40 bg-emerald-500/[0.08]", label: "text-emerald-600" },
+  new: { box: "border-[var(--td-accent)]/35 bg-[var(--td-accent)]/10", label: "text-[var(--td-accent)]" },
 };
 
 function BlockView({ b }: { b: Block }): ReactNode {
@@ -172,7 +163,7 @@ function BlockView({ b }: { b: Block }): ReactNode {
       );
     case "h3":
       return (
-        <h3 id={b.id} className="scroll-mt-28 pt-4 text-lg font-semibold text-white">
+        <h3 id={b.id} className="scroll-mt-28 pt-4 text-lg font-semibold text-[var(--td-text)]">
           {b.text}
         </h3>
       );
@@ -212,7 +203,7 @@ function BlockView({ b }: { b: Block }): ReactNode {
                   {r.map((c, j) => (
                     <td
                       key={j}
-                      className={"px-4 py-3 align-top " + (j === 0 ? "font-medium text-white" : "text-[var(--td-muted)]")}
+                      className={"px-4 py-3 align-top " + (j === 0 ? "font-medium text-[var(--td-text)]" : "text-[var(--td-muted)]")}
                     >
                       <Inline text={c} />
                     </td>
@@ -242,7 +233,7 @@ function BlockView({ b }: { b: Block }): ReactNode {
               {c.tag ? (
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--td-accent-2)]">{c.tag}</span>
               ) : null}
-              <div className="mt-1 font-semibold text-white">{c.title}</div>
+              <div className="mt-1 font-semibold text-[var(--td-text)]">{c.title}</div>
               <p className="mt-1.5 text-sm leading-relaxed text-[var(--td-muted)]">
                 <Inline text={c.text} />
               </p>
@@ -300,7 +291,7 @@ export function TechDocs() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search topics"
-          className="w-full rounded-lg border border-[var(--td-line)] bg-[var(--td-panel)] px-3 py-2 text-sm text-white placeholder:text-[var(--td-muted)] focus:border-[var(--td-accent)] focus:outline-none"
+          className="w-full rounded-lg border border-[var(--td-line)] bg-[var(--td-panel)] px-3 py-2 text-sm text-[var(--td-text)] placeholder:text-[var(--td-muted)] focus:border-[var(--td-accent)] focus:outline-none"
         />
       </div>
       {GROUPS.map((g) => {
@@ -318,8 +309,8 @@ export function TechDocs() {
                     className={
                       "block rounded-md border-l-2 px-3 py-1.5 text-sm transition " +
                       (active === s.id
-                        ? "border-[var(--td-accent)] bg-[var(--td-accent)]/10 text-white"
-                        : "border-transparent text-[var(--td-muted)] hover:text-white")
+                        ? "border-[var(--td-accent)] bg-[var(--td-accent)]/10 text-[var(--td-text)]"
+                        : "border-transparent text-[var(--td-muted)] hover:text-[var(--td-text)]")
                     }
                   >
                     {s.title}
@@ -335,7 +326,7 @@ export function TechDocs() {
   );
 
   return (
-    <div style={THEME} className="min-h-screen bg-[var(--td-bg)] text-[var(--td-text)]">
+    <div style={THEME} className="bg-[var(--td-bg)] text-[var(--td-text)]">
       <header className="relative overflow-hidden border-b border-[var(--td-line)]">
         <div
           aria-hidden
@@ -345,16 +336,16 @@ export function TechDocs() {
               "radial-gradient(60% 80% at 15% 0%, rgba(109,155,255,0.22), transparent 60%), radial-gradient(40% 60% at 90% 10%, rgba(56,189,248,0.14), transparent 60%)",
           }}
         />
-        <div className="relative mx-auto max-w-7xl px-6 pb-12 pt-24">
+        <div className="relative mx-auto max-w-7xl px-6 pb-12 pt-14">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full border border-[var(--td-line)] bg-white/[0.04] px-3 py-1 text-xs font-medium uppercase tracking-wider text-[var(--td-accent-2)]">
+            <span className="rounded-full border border-[var(--td-line)] bg-[var(--td-panel)] px-3 py-1 text-xs font-medium uppercase tracking-wider text-[var(--td-accent-2)]">
               Technical documentation
             </span>
-            <span className="rounded-full bg-violet-500/20 px-3 py-1 text-xs font-semibold text-violet-200">
+            <span className="rounded-full bg-[var(--td-accent)]/15 px-3 py-1 text-xs font-semibold text-[var(--td-accent)]">
               Runtime {DOC_VERSION}
             </span>
           </div>
-          <h1 className="mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+          <h1 className="mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-[var(--td-text)] sm:text-5xl">
             Aegisora runtime reference
           </h1>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-[var(--td-muted)]">
@@ -364,19 +355,19 @@ export function TechDocs() {
           <div className="mt-8 flex flex-wrap gap-3">
             <a
               href="https://github.com/aegisora-ai/aegisora"
-              className="rounded-lg bg-[var(--td-accent)] px-4 py-2 text-sm font-semibold text-[#050a18] transition hover:brightness-110"
+              className="rounded-lg bg-[var(--td-accent)] px-4 py-2 text-sm font-semibold text-[var(--primary-foreground,#fff)] transition hover:brightness-110"
             >
               Core repository
             </a>
             <a
               href="https://github.com/aegisora-ai/aegisora/releases"
-              className="rounded-lg border border-[var(--td-line)] px-4 py-2 text-sm font-medium text-white transition hover:border-[var(--td-accent)]"
+              className="rounded-lg border border-[var(--td-line)] px-4 py-2 text-sm font-medium text-[var(--td-text)] transition hover:border-[var(--td-accent)]"
             >
               Release notes
             </a>
             <a
               href="https://docs.aegisora.org/"
-              className="rounded-lg border border-[var(--td-line)] px-4 py-2 text-sm font-medium text-white transition hover:border-[var(--td-accent)]"
+              className="rounded-lg border border-[var(--td-line)] px-4 py-2 text-sm font-medium text-[var(--td-text)] transition hover:border-[var(--td-accent)]"
             >
               docs.aegisora.org
             </a>
@@ -389,7 +380,7 @@ export function TechDocs() {
               ["115/115", "runtime tests (v4.0.0 notes)"],
             ].map(([v, l]) => (
               <div key={l} className="bg-[var(--td-bg)] p-4">
-                <dt className="text-2xl font-semibold text-white">{v}</dt>
+                <dt className="text-2xl font-semibold text-[var(--td-text)]">{v}</dt>
                 <dd className="mt-1 text-xs text-[var(--td-muted)]">{l}</dd>
               </div>
             ))}
@@ -401,7 +392,7 @@ export function TechDocs() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="rounded-lg border border-[var(--td-line)] px-3 py-2 text-sm text-white lg:hidden"
+          className="rounded-lg border border-[var(--td-line)] px-3 py-2 text-sm text-[var(--td-text)] lg:hidden"
           aria-expanded={open}
         >
           {open ? "Hide contents" : "Show contents"}
@@ -414,7 +405,7 @@ export function TechDocs() {
           {visible.map((s) => (
             <section key={s.id} id={s.id} className="scroll-mt-28">
               <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--td-accent-2)]">{s.group}</div>
-              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">{s.title}</h2>
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--td-text)]">{s.title}</h2>
               <p className="mt-3 max-w-3xl text-lg leading-relaxed text-[var(--td-text)]/90">{s.lead}</p>
               <div className="mt-6 space-y-5">
                 {s.blocks.map((b, i) => (
@@ -448,7 +439,7 @@ export function TechDocs() {
                 <ul className="space-y-1.5 border-l border-[var(--td-line)] pl-3">
                   {toc.map((t) => (
                     <li key={t.id}>
-                      <a href={"#" + t.id} className="text-sm text-[var(--td-muted)] transition hover:text-white">
+                      <a href={"#" + t.id} className="text-sm text-[var(--td-muted)] transition hover:text-[var(--td-text)]">
                         {t.text}
                       </a>
                     </li>

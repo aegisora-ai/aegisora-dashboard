@@ -240,8 +240,8 @@ async function persistSubscription(
       raw.status ?? "unknown",
     );
 
-  const cancelAtPeriodEnd =
-    raw.cancel_at_period_end === true;
+  const cancelAtPeriodEnd = raw.cancel_at_period_end === true;
+  const lapsed = eventType === "customer.subscription.deleted" || status === "canceled" || status === "incomplete_expired";
 
   const { error } =
     await admin
@@ -293,14 +293,7 @@ async function persistSubscription(
       {
         workspace_id:
           workspaceId,
-        plan_key:
-          planKey,
-        status:
-          entitlementStatus(
-            status,
-          ),
-        billing_mode:
-          "subscription",
+        plan_key: lapsed ? "free" : planKey, status: lapsed ? "active" : entitlementStatus(status), billing_mode: lapsed ? "free" : "subscription",
         stripe_customer_id:
           customerId,
         stripe_subscription_id:
@@ -561,6 +554,43 @@ async function persistInvoice(
     );
 }
 
+async function persistRefundOrDispute(
+  admin: ReturnType<typeof getAdminClient>,
+  paymentIntentId: string | null | undefined,
+  newStatus: "refunded" | "disputed",
+) {
+  if (!paymentIntentId) {
+    return;
+  }
+
+  const { data: payment } = await admin
+    .from("billing_payments")
+    .select("id,workspace_id")
+    .eq("stripe_payment_intent_id", paymentIntentId)
+    .maybeSingle();
+
+  if (!payment) {
+    return;
+  }
+
+  const now = new Date().toISOString();
+
+  await admin
+    .from("billing_payments")
+    .update({ status: newStatus, updated_at: now })
+    .eq("id", payment.id);
+
+  const { error } = await admin
+    .from("workspace_entitlements")
+    .update({ status: "inactive", updated_at: now })
+    .eq("workspace_id", String(payment.workspace_id))
+    .eq("source_payment_id", payment.id)
+    .eq("billing_mode", "one_time_pilot");
+
+  if (error) {
+    throw new Error(`Refund entitlement update failed: ${error.message}`);
+  }
+}
 export async function POST(
   request: Request,
 ) {
@@ -662,6 +692,20 @@ export async function POST(
         event.type,
       );
       break;
+
+    case "charge.refunded": {
+      const charge = event.data.object as Stripe.Charge;
+      if (charge.refunded) {
+        await persistRefundOrDispute(admin, idOf(charge.payment_intent), "refunded");
+      }
+      break;
+    }
+
+    case "charge.dispute.created": {
+      const dispute = event.data.object as Stripe.Dispute;
+      await persistRefundOrDispute(admin, idOf(dispute.payment_intent), "disputed");
+      break;
+    }
 
     case "invoice.paid":
     case "invoice.payment_failed":

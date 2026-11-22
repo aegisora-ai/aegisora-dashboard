@@ -1,0 +1,10 @@
+/* aeg-liquid: WebGL backdrop and liquid-metal mark. Pure decoration, never captures input. */
+.vc-shader { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 1.4s ease; -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%); mask-image: linear-gradient(to bottom, #000 55%, transparent 100%); }
+.vc-shader--on { opacity: 0.85; }
+.vc-shader > div, .vc-shader canvas { width: 100% !important; height: 100% !important; display: block; }
+
+.vc-mark { position: relative; width: 112px; height: 112px; margin: 0 auto 20px; }
+.vc-mark__fallback { position: absolute; inset: 0; background: linear-gradient(135deg, var(--vc-accent), var(--cyan)); -webkit-mask: url(/aegisora-shield.svg) center / contain no-repeat; mask: url(/aegisora-shield.svg) center / contain no-repeat; transition: opacity 0.6s ease; }
+.vc-mark--on .vc-mark__fallback { opacity: 0; }
+.vc-mark__gl { position: absolute; inset: 0; }
+.vc-mark__gl > div, .vc-mark__gl canvas { width: 100% !important; height: 100% !important; display: block; }

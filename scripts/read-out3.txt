@@ -1,0 +1,535 @@
+
+##### src\app\[locale]\(site)\changelog\page.tsx #####
+import { permanentRedirect } from "next/navigation";
+
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  permanentRedirect("/" + locale + "/docs/technical");
+}
+
+##### src\components\aegisora\changelog-timeline.tsx #####
+import { Check } from "lucide-react";
+import { RELEASES, REPO_URL, type Release } from "@/lib/releases";
+import { cn } from "@/lib/utils";
+
+const anchor = (v: string) => "v" + v.replace(/\./g, "-");
+
+const CARD = "rounded-2xl border border-white/10 bg-white/[0.04]";
+const LABEL = "font-mono text-[10px] tracking-[0.2em] text-white/50";
+
+function Chain({ label, steps }: { label: string; steps: string[] }) {
+  return (
+    <div>
+      <div className={LABEL}>{label.toUpperCase()}</div>
+      <ol className="mt-2 flex flex-wrap items-center gap-1.5">
+        {steps.map((s, i) => (
+          <li key={s} className="flex items-center gap-1.5">
+            <span className="rounded-md border border-white/15 bg-white/[0.06] px-2 py-1 font-mono text-[11px] text-white">{s}</span>
+            {i < steps.length - 1 && <span aria-hidden="true" className="text-white/40">&rarr;</span>}
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function ReleaseCard({ r, latest }: { r: Release; latest: boolean }) {
+  return (
+    <article id={anchor(r.version)} className="scroll-mt-24 border-b border-white/10 pb-14 last:border-0">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="rounded-md border border-sky-400/40 bg-white/[0.06] px-2 py-0.5 font-mono text-xs text-sky-300">v{r.version}</span>
+        {r.kind && (
+          <span
+            className={cn(
+              "rounded-md px-2 py-0.5 font-mono text-[10px] tracking-wider",
+              latest ? "bg-sky-400/15 text-sky-300" : "bg-white/10 text-white/60",
+            )}
+          >
+            {r.kind.toUpperCase()}
+          </span>
+        )}
+        <span className="ml-auto font-mono text-[11px] text-white/50">
+          {REPO_URL ? (
+            <a href={`${REPO_URL}/commit/${r.commit}`} target="_blank" rel="noreferrer" className="hover:text-white">
+              tag v{r.version} &middot; {r.commit}
+            </a>
+          ) : (
+            <>tag v{r.version} &middot; {r.commit}</>
+          )}
+        </span>
+      </div>
+
+      <h2 className="mt-4 text-2xl font-medium tracking-[-0.02em] md:text-3xl">{r.title}</h2>
+      <p className="mt-3 max-w-3xl leading-relaxed text-white/70">{r.summary}</p>
+      {r.tagline && (
+        <p className="mt-5 border-l-2 border-sky-400 pl-4 text-lg font-medium text-white">{r.tagline}</p>
+      )}
+
+      {r.chains && (
+        <div className={CARD + " mt-8 space-y-5 p-5"}>
+          {r.chains.map((c) => <Chain key={c.label} {...c} />)}
+        </div>
+      )}
+
+      <div className="mt-8 grid gap-4 md:grid-cols-2">
+        {r.sections.map((s) => (
+          <section key={s.title} className={CARD + " p-5"}>
+            <h3 className="text-sm font-semibold">{s.title}</h3>
+            {s.body && <p className="mt-2 text-sm leading-relaxed text-white/70">{s.body}</p>}
+            {s.items && (
+              <ul className="mt-3 space-y-1.5 text-sm text-white/70">
+                {s.items.map((it) => (
+                  <li key={it} className="flex gap-2">
+                    <span aria-hidden="true" className="mt-2 size-1 shrink-0 rounded-full bg-sky-400" />
+                    <span>{it}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        ))}
+      </div>
+
+      {r.validation && (
+        <div className={CARD + " mt-6 p-5"}>
+          <h3 className={LABEL}>VALIDATION</h3>
+          <ul className="mt-3 grid gap-x-6 gap-y-1.5 text-sm text-white/70 sm:grid-cols-2">
+            {r.validation.map((v) => (
+              <li key={v} className="flex gap-2">
+                <Check className="mt-0.5 size-4 shrink-0 text-emerald-400" />
+                <span>{v}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {r.next && (
+        <p className="mt-6 text-sm text-white/70">
+          <span className={LABEL}>WHAT CAME NEXT</span>
+          <br />
+          {r.next}
+        </p>
+      )}
+    </article>
+  );
+}
+
+export function ChangelogTimeline() {
+  return (
+    <div className="mx-auto max-w-[1280px] px-4 py-12 sm:px-6 md:py-16">
+
+      <div className="grid gap-10 lg:grid-cols-[180px_minmax(0,1fr)]">
+        <aside className="hidden lg:block">
+          <nav aria-label="Releases" className="sticky top-24">
+            <div className={LABEL}>RELEASES</div>
+            <ul className="mt-3 space-y-1 border-l border-white/10">
+              {RELEASES.map((r) => (
+                <li key={r.version}>
+                  <a
+                    href={`#${anchor(r.version)}`}
+
+##### src\lib\releases.ts #####
+export type ReleaseSection = { title: string; body?: string; items?: string[] };
+export type Release = {
+  version: string;
+  title: string;
+  kind?: string;
+  commit: string;
+  summary: string;
+  tagline?: string;
+  chains?: { label: string; steps: string[] }[];
+  sections: ReleaseSection[];
+  validation?: string[];
+  next?: string;
+};
+
+// Repo linki verirsen commit ve compare linkleri otomatik acilir. Ornek: "https://github.com/ozereray/aegisora"
+export const REPO_URL = "";
+
+export const RELEASES: Release[] = [
+  {
+    version: "4.0.0",
+    kind: "Continuity Seal",
+    title: "Execution Continuity and Runtime Security",
+    summary: "Continuity Seal extends runtime governance from authorization into the integrity of the execution itself. The execution must remain the execution that was authorized.",
+    tagline: "Is this still the same action, under the same authorized security state, at the moment of execution?",
+
+    chains: [
+      { label: "Continuity boundary", steps: ["Decision", "Authorization", "Continuity Seal", "Enforcement", "Execution", "Effect reconciliation", "Evidence"] },
+    ],
+    sections: [
+      { title: "Continuity Seal", items: ["Deterministic execution sealing", "Immutable seal identity", "Cryptographic seal integrity validation", "Workspace, agent and execution identity binding", "Action, resource and tool binding"] },
+      { title: "Authority integrity", items: ["Authority-state fingerprinting", "Authority mutation and drift detection", "Workspace-scoped authority verification", "Fail-closed execution when authority changes"] },
+      { title: "Execution boundary", items: ["Provider execution sealing", "Tool execution bound to its authorization receipt", "Exact input verification", "Containment-aware sealing", "No external side effect when the sealed state changes"] },
+      { title: "Evidence correlation", items: ["sealId correlation across the evidence layer", "Blocked execution evidence", "Execution and effect reconciliation evidence"] },
+    ],
+    validation: ["20/20 Continuity Seal adversarial tests", "5/5 runtime continuity boundary tests", "115/115 runtime tests", "Build, typecheck and CodeQL passed", "Security Readiness passed"],
+    commit: "a99fa63",
+  },
+  {
+    version: "3.0.0",
+    title: "Enterprise Governance Runtime",
+    kind: "Latest",
+    commit: "338fbce",
+    summary:
+      "Aegisora v3.0 introduces the enterprise governance runtime for autonomous AI agents.",
+    tagline: "Don't just secure the model. Secure what the agent is allowed to do.",
+    chains: [
+      {
+        label: "Enterprise governance chain",
+        steps: ["Agent", "Request", "Context", "Risk", "Policy", "Decision", "Enforcement", "Execution", "Evidence", "Audit"],
+      },
+    ],
+    sections: [
+      { title: "Runtime Enforcement", items: [
+        "ALLOW / BLOCK / ESCALATE execution decisions",
+        "Enforcement at the execution boundary",
+        "BLOCK prevents provider and tool execution",
+        "ESCALATE stops execution pending approval",
+      ]},
+      { title: "Enterprise Identity and Access", items: [
+        "Workspace isolation",
+        "RBAC",
+        "Server-side authorization",
+        "Tenant boundary enforcement",
+      ]},
+      { title: "Agent and Provider Governance", items: [
+        "Agent registry and discovery",
+        "Provider and model registry",
+        "Governed model resolution",
+        "Provider and model identity integrity",
+      ]},
+      { title: "Policy and Risk", items: [
+        "Policy Studio",
+        "Policy versioning",
+        "Risk detection",
+        "Deterministic governance decision precedence",
+      ]},
+      { title: "Approval Engine", items: [
+        "Enterprise approval lifecycle",
+        "PENDING to APPROVED / REJECTED / EXPIRED",
+        "Workspace isolation",
+
+##### src\app\[locale]\(site)\blog\[slug]\page.tsx #####
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegx/kit";
+import { POSTS } from "@/lib/blog-posts";
+
+type Props = { params: Promise<{ locale: string; slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const post = POSTS.find((p) => p.slug === slug);
+  return post ? { title: post.title, description: post.excerpt } : {};
+}
+
+export default async function BlogPost({ params }: Props) {
+  const { locale, slug } = await params;
+  const post = POSTS.find((p) => p.slug === slug);
+  if (!post) notFound();
+  const t = await getTranslations({ locale, namespace: "Blog" });
+  const fmt = (iso: string) =>
+    new Date(iso + "T00:00:00Z").toLocaleDateString(locale === "de" ? "de-DE" : "en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    });
+
+  const more = POSTS.filter((p) => p.slug !== post.slug).slice(0, 3);
+
+  return (
+    <>
+      <PageHero
+        eyebrow={post.category + " \u00b7 " + fmt(post.date) + " \u00b7 " + t("minRead", { n: post.readMinutes })}
+        title={post.title}
+        intro={post.excerpt}
+      />
+      <article className="mx-auto max-w-3xl px-4 py-14 sm:px-6 lg:py-20">
+        {locale !== "en" ? <p className="mb-6 text-sm text-muted-foreground">{t("enOnly")}</p> : null}
+        {post.body.map((b, i) => {
+          if (b.t === "h2") return <h2 key={i} className="mt-10 text-2xl font-medium tracking-[-0.01em] text-foreground">{b.text}</h2>;
+          if (b.t === "p") return <p key={i} className="mt-4 text-base leading-relaxed text-foreground/75 sm:text-lg">{b.text}</p>;
+          if (b.t === "ul")
+            return (
+              <ul key={i} className="mt-4 list-disc space-y-2 pl-6 text-base leading-relaxed text-foreground/75 sm:text-lg marker:text-primary">
+                {b.items.map((it) => <li key={it}>{it}</li>)}
+              </ul>
+            );
+          return (
+            <pre key={i} className="mt-4 overflow-x-auto rounded-xl border border-border bg-surface-1 p-4 font-mono text-sm text-foreground">{b.text}</pre>
+          );
+        })}
+      </article>
+      <Section title={t("more")} tone="alt">
+        <CardGrid
+          cols={3}
+          items={more.map((p) => ({
+            n: p.category,
+            title: p.title,
+            body: p.excerpt,
+            href: "/blog/" + p.slug,
+          }))}
+        />
+      </Section>
+      <CtaBand
+        title={t("postCtaTitle")}
+        body={t("postCtaBody")}
+        primary={{ label: t("test"), href: "/signup" }}
+        secondary={{ label: t("enterprise"), href: "/enterprise" }}
+      />
+    </>
+  );
+}
+
+##### src\lib\blog-posts.ts #####
+export type Block =
+  | { t: "h2"; text: string }
+  | { t: "p"; text: string }
+  | { t: "ul"; items: string[] }
+  | { t: "code"; text: string };
+
+export type Post = {
+  slug: string;
+  title: string;
+  date: string;
+  readMinutes: number;
+  category: string;
+  excerpt: string;
+  body: Block[];
+};
+
+export function formatDate(iso: string) {
+  return new Date(iso + "T00:00:00Z").toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+export const POSTS: Post[] = [
+  {
+    slug: "why-every-agent-action-needs-a-decision-point",
+    title: "Why every agent action needs a decision point",
+    date: "2026-10-14",
+    readMinutes: 5,
+    category: "Runtime security",
+    excerpt: "Once an agent can act, the question changes from whether its answer is good to whether the action should happen at all.",
+    body: [
+      { t: "p", text: "Agents no longer only answer questions. They call APIs, move money, change records and run code. The moment an agent can act, the question changes from whether its answer is good to whether the action should happen at all." },
+      { t: "h2", text: "Prompts are not controls" },
+      { t: "p", text: "Instructions in a prompt are requests to a model, not enforcement. A model can misread them, be misled by content it reads along the way, or simply be wrong. A real control has to sit outside the model and be able to say no." },
+      { t: "h2", text: "Check at the execution boundary" },
+      { t: "p", text: "The dependable place for that check is the point where an action leaves the agent and reaches a real system. There you know the exact action, the identity of the agent and the inputs. A decision made there applies no matter how the agent arrived at the action." },
+      { t: "h2", text: "What a decision point returns" },
+      { t: "ul", items: ["ALLOW: the action is within policy and can proceed.", "BLOCK: the action is refused and never reaches the system.", "ESCALATE: the action waits until a human approves it."] },
+      { t: "p", text: "Keeping the answer to three outcomes makes it easy for agents to handle, easy for engineers to test and easy for auditors to read. Every outcome is recorded, so the decision point is also where evidence starts." },
+    ],
+  },
+  {
+    slug: "allow-block-escalate-a-verdict-model-that-stays-simple",
+    title: "ALLOW, BLOCK, ESCALATE: a verdict model that stays simple",
+    date: "2026-10-07",
+    readMinutes: 4,
+    category: "Product",
+    excerpt: "Why three outcomes are enough to govern agent behavior, and what each one promises to the agent and to the team.",
+    body: [
+      { t: "p", text: "It is tempting to give a policy engine many outcomes: warn, throttle, log only, sandbox. In practice every extra outcome is another branch that agent developers have to handle and security teams have to explain. Three outcomes cover what an agent actually needs to know next." },
+      { t: "h2", text: "ALLOW means proceed, and still record" },
+      { t: "p", text: "An allowed action runs, but the decision is still written to the evidence log. Allowed does not mean unseen. When something goes wrong later, the record shows which policy permitted the action." },
+      { t: "h2", text: "BLOCK means the system is never touched" },
+      { t: "p", text: "A blocked action is refused before execution. The agent receives the verdict and a short reason, so it can stop or choose another path without guessing what went wrong." },
+      { t: "h2", text: "ESCALATE hands the decision to a person" },
+      { t: "p", text: "Some actions are neither clearly safe nor clearly forbidden, such as a large transfer or an export of sensitive data. ESCALATE pauses them and returns an approval id. The action runs only if an approver agrees." },
+      { t: "p", text: "Because the model is small, it stays predictable. The same three words appear in the API response, the dashboard and the evidence log." },
+
+##### src\lib\blog.ts #####
+export type Block =
+  | { t: "p"; text: string }
+  | { t: "h2"; text: string }
+  | { t: "ul"; items: string[] }
+  | { t: "code"; code: string; caption?: string };
+
+export type Post = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  date: string;
+  hue: string;
+  body: Block[];
+};
+
+export const CATEGORIES = ["Product", "Concepts", "Policy", "Security", "Guides"] as const;
+
+export const POSTS: Post[] = [
+  {
+    slug: "what-aegisora-does",
+    title: "What Aegisora does, in plain language",
+    excerpt:
+      "AI agents can now take real actions. Aegisora decides, before each action runs, whether it is allowed.",
+    category: "Product",
+    date: "2026-10-23",
+    hue: "from-blue-600/25 via-blue-500/10 to-transparent",
+    body: [
+      { t: "p", text: "Companies are giving AI agents real access: they read tickets, move money, deploy code and export files. When an agent makes a mistake, or is tricked, the result is a real action in a real system." },
+      { t: "h2", text: "The idea" },
+      { t: "p", text: "Aegisora is a decision point that sits in front of your agents. Before an agent does something sensitive, it asks Aegisora. Aegisora answers with one of three decisions, and only then does the action go ahead." },
+      { t: "h2", text: "The three answers" },
+      { t: "ul", items: ["ALLOW: the action is within policy and can run", "ESCALATE: a human approver must confirm first", "BLOCK: the action is denied"] },
+      { t: "h2", text: "What you get" },
+      { t: "ul", items: ["A policy engine that enforces your rules on every agent action", "Role-based access and MFA step-up for governance changes", "A tamper-evident evidence log of every decision", "Signed webhooks to push decisions to your SIEM and ticketing", "Scoped API keys you can revoke at any time"] },
+      { t: "p", text: "If no policy matches an action, the default is BLOCK. A new kind of action is safe until your team decides otherwise." },
+    ],
+  },
+  {
+    slug: "what-is-the-execution-boundary",
+    title: "What the execution boundary is, and why agents need one",
+    excerpt:
+      "Prompts and model guardrails shape what an agent wants to do. The execution boundary decides what it is actually allowed to do.",
+    category: "Concepts",
+    date: "2026-10-22",
+    hue: "from-sky-600/25 via-sky-500/10 to-transparent",
+    body: [
+      { t: "p", text: "An autonomous agent does two things: it decides on an action, and it carries that action out. Most safety work focuses on the first step, the prompt, the model and its guardrails. The second step is where damage actually happens, because that is where a real system is touched." },
+      { t: "h2", text: "Where the boundary sits" },
+      { t: "p", text: "The execution boundary is the point between an agent's decision and the real environment. Aegisora sits exactly there. The agent sends the action it wants to take, and nothing runs until a decision comes back." },
+      { t: "h2", text: "What gets checked" },
+      { t: "p", text: "On every call, four things are evaluated together and deterministically:" },
+      { t: "ul", items: ["Context: who is acting, on what, and in which environment", "Policy: the rules your team has written for this kind of action", "Risk: how sensitive the action is", "Authorization: whether this agent is allowed to do it at all"] },
+      { t: "h2", text: "Why not rely on the prompt alone" },
+      { t: "p", text: "A prompt is an instruction to a model, not a control on a system. It can be ignored, misread or overridden by injected content. A decision point outside the model does not depend on the model behaving." },
+      { t: "code", code: `POST /api/v1/evaluate\n{ "agent": "code-agent", "action": "db.drop_table", "risk": 90 }\n\n-> { "effect": "BLOCK", "decision_id": "<uuid>", "evidence_hash": "<hash>" }`, caption: "Illustrative request and response shape." },
+    ],
+  },
+  {
+    slug: "allow-escalate-block",
+
+##### src\app\[locale]\(site)\about\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { CtaBand, PageHero, Section, CardGrid } from "@/components/aegx/kit";
+import { meta } from "@/lib/seo";
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "About" });
+  return meta(t("metaTitle"), t("metaDesc"));
+}
+
+export default async function AboutPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("About");
+  return (
+    <>
+      <PageHero
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        intro={t("intro")}
+        primary={{ label: t("primary"), href: "/signup" }}
+        secondary={{ label: t("secondary"), href: "/enterprise" }}
+        rows={[
+          { action: "crm.read_ticket", meta: t("row1"), v: "ALLOW" },
+          { action: "payments.transfer $48,000", meta: t("row2"), v: "ESCALATE" },
+          { action: "db.drop_table users", meta: t("row3"), v: "BLOCK" },
+        ]}
+      />
+
+      <Section eyebrow={t("shiftEyebrow")} title={t("shiftTitle")} tone="alt">
+        <CardGrid
+          cols={3}
+          items={[
+            { icon: "Terminal", title: t("c1t"), body: t("c1b") },
+            { icon: "Layers", title: t("c2t"), body: t("c2b") },
+            { icon: "Scale", title: t("c3t"), body: t("c3b") },
+            { icon: "Webhook", title: t("c4t"), body: t("c4b") },
+            { icon: "ShieldCheck", title: t("c5t"), body: t("c5b") },
+          ]}
+        />
+      </Section>
+
+      <Section eyebrow={t("posEyebrow")} title={t("posTitle")}>
+        <div className="max-w-2xl space-y-4 text-foreground/75">
+          <p className="text-base leading-relaxed sm:text-lg">{t("posP1")}</p>
+          <p className="font-mono text-sm tracking-wide text-primary">{t("posP2")}</p>
+        </div>
+      </Section>
+
+      <CtaBand
+        title={t("ctaTitle")}
+        body={t("ctaBody")}
+        primary={{ label: t("primary"), href: "/signup" }}
+        secondary={{ label: t("secondary"), href: "/enterprise" }}
+      />
+    </>
+  );
+}
+
+##### src\app\[locale]\(site)\docs\quickstart\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { CodeBlock, Steps } from "@/components/aegx/kit";
+import { meta } from "@/lib/seo";
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "DocsQuick" });
+  return meta(t("metaTitle"), t("metaDesc"));
+}
+
+const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "https://YOUR-AEGISORA-HOST";
+
+const curlExample = `curl -s -X POST ${BASE}/api/v1/evaluate \\
+  -H "Authorization: Bearer $AEGISORA_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"agent":"finance-operator","action":"invoice.read","resource":"invoice:sample-001","risk":20}'`;
+
+const responseExample = `{
+  "decision_id": "...",
+  "effect": "BLOCK",
+  "reason": "...",
+  "policy_id": null,
+  "approval_id": null,
+  "execution_id": null,
+  "trace_id": "...",
+  "evidence_hash": "...",
+  "agent_registered": true
+}`;
+
+const nodeExample = `import { Aegisora } from "./aegisora.mjs";
+
+const aegisora = new Aegisora({ baseUrl: process.env.AEGISORA_BASE_URL });
+
+// The callback runs only when the decision is ALLOW.
+// BLOCK and ESCALATE throw AegisoraDecisionError.
+const result = await aegisora.guard(
+  { agent: "finance-operator", action: "invoice.read", resource: "invoice:sample-001", risk: 20 },
+  async (decision) => doTransfer(decision.decision_id)
+);`;
+
+export default async function QuickstartPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("DocsQuick");
+
+  return (
+    <div>
+      <h1 className="text-4xl font-light tracking-tight">{t("h1")}</h1>
+      <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{t("lead")}</p>
+
+      <h2 id="access" className="mt-12 scroll-mt-24 text-2xl font-medium">{t("accessTitle")}</h2>
+      <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">{t("accessP")}</p>
+
+      <h2 id="request" className="mt-16 scroll-mt-24 text-2xl font-medium">{t("sendTitle")}</h2>
+      <div className="mt-6">
+        <CodeBlock code={curlExample} />
+      </div>

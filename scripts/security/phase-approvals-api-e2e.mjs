@@ -9,7 +9,7 @@ const root = process.cwd();
 const url = process.env.AEGISORA_E2E_SUPABASE_URL;
 const anon = process.env.AEGISORA_E2E_SUPABASE_ANON_KEY;
 const serviceRole = process.env.AEGISORA_E2E_SUPABASE_SERVICE_ROLE_KEY;
-const stagingRef = "bvdsfwmlylnmahridalj";
+const stagingRef = process.env.AEGISORA_E2E_DISPOSABLE_PROJECT_REF ?? "";
 
 if (!url || !url.includes(stagingRef) || !anon || !serviceRole) {
   console.error("STOP: Staging guard or test credentials failed.");
@@ -29,6 +29,7 @@ const result = {
 
 let ownerId = null;
 let viewerId = null;
+let approverId = null;
 let workspaceId = null;
 let child = null;
 let logStream = null;
@@ -109,6 +110,7 @@ async function createFixture(label) {
   const user = created.data.user;
   if (label === "owner") ownerId = user.id;
   if (label === "viewer") viewerId = user.id;
+  if (label === "approver") approverId = user.id;
 
   const client = createClient(url, anon, {
     auth: { persistSession: false, autoRefreshToken: false },
@@ -251,7 +253,7 @@ async function createEscalatedApproval(apiKey, label) {
   for (let attempt = 0; attempt < 40; attempt++) {
     const rows = await admin
       .from("approvals")
-      .select("id,workspace_id,status,expires_at,action,decision_id")
+      .select("id,workspace_id,status,expires_at,action,decision_id,requested_by_user")
       .eq("workspace_id", workspaceId)
       .eq("action", action)
       .limit(1);
@@ -501,6 +503,76 @@ try {
     { actual_status: expiredResult.status },
   );
 
+  // ---- Separation of duties ----
+  const approver = await createFixture("approver");
+  const approverRole = process.env.AEGISORA_E2E_APPROVER_ROLE ?? "ADMIN";
+  const apMember = await admin.from("workspace_members").insert({
+    workspace_id: workspaceId,
+    user_id: approver.id,
+    role: approverRole,
+    status: "active",
+  });
+  ensureNoError(apMember.error, `Add temporary ${approverRole} approver`);
+
+  const sodOn = await admin.from("workspace_settings")
+    .update({ require_separate_approver: true })
+    .eq("workspace_id", workspaceId);
+  ensureNoError(sodOn.error, "Enable separation of duties");
+
+  const sodApproval = await createEscalatedApproval(apiKey, "sod");
+
+  check(
+    "Escalation records the requesting user (API key creator)",
+    sodApproval.requested_by_user === owner.id,
+  );
+
+  const selfApprove = await patchApproval(
+    owner.aal2Token, sodApproval.id, "approved", "Self approval attempt in staging E2E.",
+  );
+
+  check(
+    "Requester cannot approve own request when separation is required",
+    selfApprove.status === 403 &&
+      JSON.stringify(selfApprove.body ?? {}).includes("separation_of_duties"),
+    { actual_status: selfApprove.status },
+  );
+
+  const stillPending = await admin.from("approvals")
+    .select("status,resolved_by")
+    .eq("id", sodApproval.id)
+    .maybeSingle();
+  ensureNoError(stillPending.error, "Read approval after blocked self-approval");
+
+  check(
+    "Blocked self-approval leaves the request pending",
+    stillPending.data?.status === "pending" && !stillPending.data?.resolved_by,
+  );
+
+  const otherApproves = await patchApproval(
+    approver.aal2Token, sodApproval.id, "approved", "Independent approver in staging E2E.",
+  );
+
+  check(
+    "A different authorized person can approve it",
+    otherApproves.status === 200 && otherApproves.body?.may_execute === true,
+    { actual_status: otherApproves.status },
+  );
+
+  const sodOff = await admin.from("workspace_settings")
+    .update({ require_separate_approver: false })
+    .eq("workspace_id", workspaceId);
+  ensureNoError(sodOff.error, "Disable separation of duties");
+
+  const offApproval = await createEscalatedApproval(apiKey, "sodoff");
+  const selfOff = await patchApproval(
+    owner.aal2Token, offApproval.id, "approved", "Default behavior check in staging E2E.",
+  );
+
+  check(
+    "With separation switched off the requester may approve (default)",
+    selfOff.status === 200,
+    { actual_status: selfOff.status },
+  );
 } catch (error) {
   result.status = "FAIL";
   result.error = error instanceof Error ? error.message : "Unexpected E2E failure";
@@ -532,7 +604,7 @@ try {
     result.cleanup.workspace_absent = true;
   }
 
-  for (const [label, id] of [["owner", ownerId], ["viewer", viewerId]]) {
+  for (const [label, id] of [["owner", ownerId], ["viewer", viewerId], ["approver", approverId]]) {
     if (!id) {
       result.cleanup[`${label}_user_absent`] = true;
       continue;
@@ -552,7 +624,8 @@ try {
   result.cleanup.verified =
     result.cleanup.workspace_absent === true &&
     result.cleanup.owner_user_absent === true &&
-    result.cleanup.viewer_user_absent === true;
+    result.cleanup.viewer_user_absent === true &&
+    result.cleanup.approver_user_absent === true;
 
   if (!result.cleanup.verified) result.status = "FAIL";
 

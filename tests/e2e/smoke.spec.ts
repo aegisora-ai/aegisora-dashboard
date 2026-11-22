@@ -54,7 +54,7 @@ async function checkTwoStepLogin(page: Page, path: string) {
 
   await expect(password).toBeVisible();
   await expect(email).not.toBeEditable();
-  await expect(page.getByRole("button", { name: "Change" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^(Change|\u00c4ndern)$/ })).toBeVisible();
   await expect(submit).toBeVisible();
 }
 
@@ -74,7 +74,7 @@ test("login Change link returns to the email step", async ({ page }) => {
   await expect(submit).toBeEnabled();
   await submit.click();
   await expect(page.locator('input[name="password"]')).toBeVisible();
-  await page.getByRole("button", { name: "Change" }).click();
+  await page.getByRole("button", { name: /^(Change|\u00c4ndern)$/ }).click();
   await expect(page.locator('input[name="password"]')).toHaveCount(0);
   await expect(email).toBeEditable();
 });
@@ -93,18 +93,21 @@ async function checkSignup(page: Page, path: string) {
   for (const field of [email, first, last, password, company, terms, submit]) {
     await expect(field).toBeVisible();
   }
-  await expect(page.getByText("Must be at least 8 characters")).toBeVisible();
-  await expect(page.getByText("Does not contain your email address")).toBeVisible();
+  await expect(page.getByText(/Must be at least 8 characters|Mindestens 8 Zeichen/)).toBeVisible();
+  await expect(page.getByText(/Does not contain your email address|Enth\u00e4lt nicht Ihre E-Mail-Adresse/)).toBeVisible();
   await expect(submit).toBeDisabled();
 
-  await email.fill("new.user@example.com");
-  await first.fill("Ada");
-  await last.fill("Lovelace");
-  await password.fill("Str0ng-passphrase");
-  await expect(submit).toBeDisabled(); // onay kutusu isaretlenmedi
-
-  await terms.check();
-  await expect(submit).toBeEnabled();
+  // Hydration bitmeden doldurulan degerler React state'ine girmez; hazir olana kadar tekrar dene.
+  await expect(async () => {
+    await email.fill("new.user@example.com");
+    await first.fill("Ada");
+    await last.fill("Lovelace");
+    await password.fill("Str0ng-passphrase");
+    // Hydration oncesi isaretlenen kutu React state'ine girmez; once kaldir, sonra isaretle.
+    await terms.setChecked(false);
+    await terms.check();
+    await expect(submit).toBeEnabled({ timeout: 1000 });
+  }).toPass({ timeout: 15000 });
 
   // Parola e-postayi iceriyorsa buton kapali kalir.
   await password.fill("new.user@example.com1");

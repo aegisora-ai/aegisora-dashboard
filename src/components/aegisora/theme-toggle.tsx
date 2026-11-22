@@ -17,7 +17,7 @@ export function ThemeToggle({ floating = false, className }: { floating?: boolea
   function toggle() {
     const next = !isDark();
     document.documentElement.classList.toggle("dark", next);
-    try { localStorage.setItem("aeg-theme", next ? "dark" : "light"); } catch {}
+    try { localStorage.setItem("aeg-theme-v2", next ? "dark" : "light"); } catch {}
   }
 
   return (

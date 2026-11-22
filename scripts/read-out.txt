@@ -1,0 +1,2088 @@
+##### TUM page/layout/route DOSYALARI #####
+src\app\layout.tsx
+src\app\api\auth\callback\route.ts
+src\app\api\billing\status\route.ts
+src\app\api\csp-report\route.ts
+src\app\api\demo\route.ts
+src\app\api\health\route.ts
+src\app\api\og\route.tsx
+src\app\api\pilot-approve\route.ts
+src\app\api\pilot-request\route.ts
+src\app\api\stripe\checkout\route.ts
+src\app\api\stripe\portal\route.ts
+src\app\api\stripe\webhook\route.ts
+src\app\api\v1\agents\import\route.ts
+src\app\api\v1\decisions\[id]\route.ts
+src\app\api\v1\evaluate\route.ts
+src\app\api\v1\health\route.ts
+src\app\api\v1\traces\route.ts
+src\app\api\v1\workspace\agents\route.ts
+src\app\api\v1\workspace\approvals\[approvalId]\route.ts
+src\app\api\v1\workspace\evidence\export\route.ts
+src\app\api\v1\workspace\members\route.ts
+src\app\api\v1\workspace\members\accept\route.ts
+src\app\api\v1\workspace\policies\route.ts
+src\app\api\v1\workspace\usage\route.ts
+src\app\auth\confirm\route.ts
+src\app\[locale]\layout.tsx
+src\app\[locale]\(app)\layout.tsx
+src\app\[locale]\(app)\dashboard\page.tsx
+src\app\[locale]\(app)\dashboard\activity\page.tsx
+src\app\[locale]\(app)\dashboard\agents\page.tsx
+src\app\[locale]\(app)\dashboard\agents\[agentId]\page.tsx
+src\app\[locale]\(app)\dashboard\api-keys\page.tsx
+src\app\[locale]\(app)\dashboard\approvals\layout.tsx
+src\app\[locale]\(app)\dashboard\approvals\page.tsx
+src\app\[locale]\(app)\dashboard\approvals\[approvalId]\page.tsx
+src\app\[locale]\(app)\dashboard\audit\page.tsx
+src\app\[locale]\(app)\dashboard\billing\page.tsx
+src\app\[locale]\(app)\dashboard\decisions\page.tsx
+src\app\[locale]\(app)\dashboard\decisions\[decisionId]\page.tsx
+src\app\[locale]\(app)\dashboard\evidence\page.tsx
+src\app\[locale]\(app)\dashboard\identity\page.tsx
+src\app\[locale]\(app)\dashboard\incidents\page.tsx
+src\app\[locale]\(app)\dashboard\incidents\[incidentId]\page.tsx
+src\app\[locale]\(app)\dashboard\integrations\page.tsx
+src\app\[locale]\(app)\dashboard\policies\page.tsx
+src\app\[locale]\(app)\dashboard\policies\[policyId]\page.tsx
+src\app\[locale]\(app)\dashboard\providers\page.tsx
+src\app\[locale]\(app)\dashboard\providers\[providerId]\page.tsx
+src\app\[locale]\(app)\dashboard\risk\page.tsx
+src\app\[locale]\(app)\dashboard\settings\page.tsx
+src\app\[locale]\(app)\dashboard\team\page.tsx
+src\app\[locale]\(app)\dashboard\traces\page.tsx
+src\app\[locale]\(app)\dashboard\traces\[traceId]\page.tsx
+src\app\[locale]\(app)\dashboard\webhooks\layout.tsx
+src\app\[locale]\(app)\dashboard\webhooks\page.tsx
+src\app\[locale]\(app)\dashboard\webhooks\[webhookId]\page.tsx
+src\app\[locale]\(app)\dashboard\workspace\page.tsx
+src\app\[locale]\(auth)\layout.tsx
+src\app\[locale]\(auth)\accept-invite\page.tsx
+src\app\[locale]\(auth)\forgot-password\page.tsx
+src\app\[locale]\(auth)\login\page.tsx
+src\app\[locale]\(auth)\reset-password\page.tsx
+src\app\[locale]\(auth)\signup\page.tsx
+src\app\[locale]\(auth)\verify-email\page.tsx
+src\app\[locale]\(public)\layout.tsx
+src\app\[locale]\(public)\about\page.tsx
+src\app\[locale]\(public)\blog\page.tsx
+src\app\[locale]\(public)\blog\[slug]\page.tsx
+src\app\[locale]\(public)\changelog\page.tsx
+src\app\[locale]\(public)\contact\page.tsx
+src\app\[locale]\(public)\demo\page.tsx
+src\app\[locale]\(public)\developers\page.tsx
+src\app\[locale]\(public)\developers\quickstart\page.tsx
+src\app\[locale]\(public)\docs\layout.tsx
+src\app\[locale]\(public)\docs\page.tsx
+src\app\[locale]\(public)\docs\quickstart\page.tsx
+src\app\[locale]\(public)\docs\technical\page.tsx
+src\app\[locale]\(public)\enterprise\page.tsx
+src\app\[locale]\(public)\evidence\page.tsx
+src\app\[locale]\(public)\impressum\page.tsx
+src\app\[locale]\(public)\legal\dpa\page.tsx
+src\app\[locale]\(public)\pilot\page.tsx
+src\app\[locale]\(public)\product\approvals\page.tsx
+src\app\[locale]\(public)\product\decisions\page.tsx
+src\app\[locale]\(public)\product\evidence\page.tsx
+src\app\[locale]\(public)\product\policies\page.tsx
+src\app\[locale]\(public)\product\runtime\page.tsx
+src\app\[locale]\(public)\proof\page.tsx
+src\app\[locale]\(public)\resources\page.tsx
+src\app\[locale]\(public)\solutions\page.tsx
+src\app\[locale]\(public)\support\page.tsx
+src\app\[locale]\(public)\support\[collection]\page.tsx
+src\app\[locale]\(public)\support\[collection]\[article]\page.tsx
+src\app\[locale]\(public)\terms\page.tsx
+src\app\[locale]\(public)\trust\page.tsx
+src\app\[locale]\(public)\trust\privacy\page.tsx
+src\app\[locale]\(public)\trust\subprocessors\page.tsx
+src\app\[locale]\(site)\layout.tsx
+src\app\[locale]\(site)\page.tsx
+src\app\[locale]\(site)\pricing\page.tsx
+src\app\[locale]\(site)\product\page.tsx
+src\app\[locale]\(site)\security\page.tsx
+src\app\[locale]\onboarding\layout.tsx
+src\app\[locale]\onboarding\page.tsx
+src\app\[locale]\set-password\layout.tsx
+src\app\[locale]\set-password\page.tsx
+
+##### components/aegisora ve alt klasorler #####
+src\components\aegisora-sound.tsx  [9.7 KB]
+src\components\pwa-boot.tsx  [5.5 KB]
+src\components\aegisora\account-switcher.tsx  [2.5 KB]
+src\components\aegisora\ambient-grid-cells.tsx  [3.1 KB]
+src\components\aegisora\app-shell.tsx  [8.8 KB]
+src\components\aegisora\app-sidebar.tsx  [6.5 KB]
+src\components\aegisora\aurora-canvas.tsx  [5.9 KB]
+src\components\aegisora\auth-canvas.tsx  [12 KB]
+src\components\aegisora\auth-form.tsx  [4.8 KB]
+src\components\aegisora\auth-shell.tsx  [0.6 KB]
+src\components\aegisora\auth-side-panel.tsx  [2.3 KB]
+src\components\aegisora\changelog-timeline.tsx  [5.1 KB]
+src\components\aegisora\command-palette.tsx  [7.1 KB]
+src\components\aegisora\cookie-consent.tsx  [2.4 KB]
+src\components\aegisora\decision-demo.tsx  [3.8 KB]
+src\components\aegisora\docs-frame.tsx  [1 KB]
+src\components\aegisora\docs-mega-menu.tsx  [1.6 KB]
+src\components\aegisora\docs-nav.tsx  [4.1 KB]
+src\components\aegisora\docs-viz.tsx  [2.5 KB]
+src\components\aegisora\draft-notice.tsx  [0.2 KB]
+src\components\aegisora\hero-blue.tsx  [4.6 KB]
+src\components\aegisora\hero-canvas.tsx  [4.3 KB]
+src\components\aegisora\hero-top.tsx  [5.8 KB]
+src\components\aegisora\home-hero.tsx  [5.7 KB]
+src\components\aegisora\home-page.tsx  [5.3 KB]
+src\components\aegisora\home.tsx  [0.1 KB]
+src\components\aegisora\hv2-page.tsx  [8 KB]
+src\components\aegisora\login-form.tsx  [5.3 KB]
+src\components\aegisora\logo.tsx  [0.7 KB]
+src\components\aegisora\mfa-settings.tsx  [6.5 KB]
+src\components\aegisora\mobile-nav.tsx  [16.3 KB]
+src\components\aegisora\mobile-table-cards.tsx  [1.4 KB]
+src\components\aegisora\nav-dropdown.tsx  [1.1 KB]
+src\components\aegisora\no-ssr.tsx  [0.3 KB]
+src\components\aegisora\onboarding-flow.tsx  [11.4 KB]
+src\components\aegisora\onboarding-intro.tsx  [8.7 KB]
+src\components\aegisora\page-kit.tsx  [7.4 KB]
+src\components\aegisora\platform-tabs.tsx  [3.8 KB]
+src\components\aegisora\product-page.tsx  [1 KB]
+src\components\aegisora\public-shell.tsx  [0.4 KB]
+src\components\aegisora\public-ui.tsx  [1.4 KB]
+src\components\aegisora\reveal.tsx  [1.3 KB]
+src\components\aegisora\route-loader.tsx  [2.3 KB]
+src\components\aegisora\runtime-simulator.tsx  [6.5 KB]
+src\components\aegisora\scramble-text.tsx  [1.7 KB]
+src\components\aegisora\section-tabs.tsx  [1.1 KB]
+src\components\aegisora\signup-form.tsx  [7.5 KB]
+src\components\aegisora\site-footer-legacy.tsx  [3.6 KB]
+src\components\aegisora\site-footer.tsx  [0.2 KB]
+src\components\aegisora\site-header-legacy.tsx  [8.5 KB]
+src\components\aegisora\site-header.tsx  [0.2 KB]
+src\components\aegisora\social-buttons.tsx  [2.8 KB]
+src\components\aegisora\social-icon.tsx  [3.3 KB]
+src\components\aegisora\social-links.tsx  [2.1 KB]
+src\components\aegisora\start-building.tsx  [4.2 KB]
+src\components\aegisora\state-badge.tsx  [2 KB]
+src\components\aegisora\theme-boot.tsx  [0.6 KB]
+src\components\aegisora\theme-toggle.tsx  [1.4 KB]
+src\components\aegisora\topbar-actions.tsx  [2 KB]
+src\components\aegisora\trust-ui.tsx  [1.3 KB]
+src\components\aegisora\typed-line.tsx  [1.7 KB]
+src\components\aegisora\user-menu.tsx  [2.2 KB]
+src\components\aegisora\verdict-pill.tsx  [0.7 KB]
+src\components\aegisora\version-canvas.tsx  [4.8 KB]
+src\components\aegisora\welcome-tour.tsx  [5.3 KB]
+src\components\aegisora\workspace-provider.tsx  [3.8 KB]
+src\components\aegisora\bw\aeg-chrome.css  [9.8 KB]
+src\components\aegisora\bw\auth-bw.css  [1.6 KB]
+src\components\aegisora\bw\bw-brand.css  [1.6 KB]
+src\components\aegisora\bw\bw-brand.tsx  [0.4 KB]
+src\components\aegisora\bw\bw-client.tsx  [9.7 KB]
+src\components\aegisora\bw\bw-data.ts  [7.4 KB]
+src\components\aegisora\bw\bw-drawer.css  [2.8 KB]
+src\components\aegisora\bw\bw-font-vars.ts  [0.9 KB]
+src\components\aegisora\bw\bw-footer.tsx  [2.7 KB]
+src\components\aegisora\bw\bw-header.tsx  [9.1 KB]
+src\components\aegisora\bw\bw-hero.tsx  [7.8 KB]
+src\components\aegisora\bw\bw-home.tsx  [26.4 KB]
+src\components\aegisora\bw\bw-locale-switcher.tsx  [4 KB]
+src\components\aegisora\bw\bw-locale-switcher.tsx.bak  [3.9 KB]
+src\components\aegisora\bw\bw-routes.ts  [0.4 KB]
+src\components\aegisora\bw\bw-theme-toggle.tsx  [1.1 KB]
+src\components\aegisora\bw\bw-ui.tsx  [5.4 KB]
+src\components\aegisora\bw\bw-visuals.tsx  [17.2 KB]
+src\components\aegisora\bw\bw.css  [74.1 KB]
+src\components\aegisora\bw\live-demo.tsx  [13.1 KB]
+src\components\aegisora\calm\decision-feed.tsx  [1.4 KB]
+src\components\aegisora\calm\hero-demo.tsx  [4.3 KB]
+src\components\aegisora\calm\liquid-backdrop.tsx  [0.9 KB]
+src\components\aegisora\calm\liquid-mark.tsx  [1.1 KB]
+src\components\aegisora\calm\use-live-shader.ts  [1.9 KB]
+src\components\aegisora\fx\capability.ts  [0.7 KB]
+src\components\aegisora\fx\decision-canvas.tsx  [6 KB]
+src\components\aegisora\fx\gradient-backdrop.tsx  [0.8 KB]
+src\components\aegisora\fx\gradient-scene.tsx  [1 KB]
+src\components\aegisora\fx\liquid-logo.tsx  [1.5 KB]
+src\components\aegisora\fx\premium-backdrop.tsx  [0.3 KB]
+src\components\aegisora\fx\reveal.tsx  [1 KB]
+src\components\aegisora\live\decision-charts.tsx  [3.8 KB]
+src\components\aegisora\live\detail.tsx  [4.9 KB]
+src\components\aegisora\live\feedback.tsx  [4.5 KB]
+src\components\aegisora\live\live-table.tsx  [7.1 KB]
+src\components\aegisora\live\live-table.tsx.bak-step27  [6.3 KB]
+src\components\aegisora\live\overview-insights.tsx  [24.6 KB]
+src\components\aegisora\live\overview-v2.tsx  [3.2 KB]
+src\components\aegisora\live\page-charts.tsx  [7.4 KB]
+src\components\aegisora\live\sound-provider.tsx  [2.6 KB]
+src\components\aegisora\live\ui.tsx  [5.2 KB]
+src\components\aegisora\site\content.ts  [21.4 KB]
+src\components\aegisora\site\page-bw.css  [4.3 KB]
+src\components\aegisora\site\PageView.tsx  [5 KB]
+src\components\aegisora\site\PilotForm.tsx  [5.1 KB]
+src\components\aegisora\site\site.module.css  [5.8 KB]
+src\components\aegisora\support\article-body.tsx  [1.9 KB]
+src\components\aegisora\support\copy-page.tsx  [0.9 KB]
+src\components\aegisora\support\support-search.tsx  [3.7 KB]
+src\components\aegisora\support\support-shell.tsx  [0.3 KB]
+src\components\aegisora\support\support-sidebar.tsx  [1.6 KB]
+src\components\aegisora\tech-docs\data.ts  [26.3 KB]
+src\components\aegisora\tech-docs\tech-docs.tsx  [18.6 KB]
+src\components\aegx\brand.tsx  [0.5 KB]
+src\components\aegx\footer.tsx  [2.2 KB]
+src\components\aegx\force-dark.tsx  [0.6 KB]
+src\components\aegx\header.tsx  [3.3 KB]
+src\components\aegx\ui.tsx  [4.5 KB]
+src\components\ui\accordion.tsx  [2.6 KB]
+src\components\ui\badge.tsx  [1.9 KB]
+src\components\ui\button.tsx  [3.2 KB]
+src\components\ui\card.tsx  [2.7 KB]
+src\components\ui\dialog.tsx  [4.1 KB]
+src\components\ui\dropdown-menu.tsx  [8.8 KB]
+src\components\ui\input.tsx  [1 KB]
+src\components\ui\label.tsx  [0.5 KB]
+src\components\ui\navigation-menu.tsx  [7.4 KB]
+src\components\ui\select.tsx  [6.7 KB]
+src\components\ui\separator.tsx  [0.5 KB]
+src\components\ui\sheet.tsx  [4.4 KB]
+src\components\ui\skeleton.tsx  [0.3 KB]
+src\components\ui\switch.tsx  [1.8 KB]
+src\components\ui\table.tsx  [2.5 KB]
+src\components\ui\tabs.tsx  [3.5 KB]
+src\components\ui\textarea.tsx  [0.8 KB]
+src\components\ui\tooltip.tsx  [2.8 KB]
+src\components\zp\footer.tsx  [2.7 KB]
+src\components\zp\header.tsx  [6.1 KB]
+src\components\zp\motion.tsx  [3.8 KB]
+src\components\zp\ui.tsx  [2.4 KB]
+
+##### src\app\[locale]\(public)\pilot\page.tsx #####
+import type { Metadata } from "next";
+import PageView from "../../../../components/aegisora/site/PageView";
+import { PAGES, PAGES_DE } from "../../../../components/aegisora/site/content";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const page = locale === "de" ? PAGES_DE.pilot : PAGES.pilot;
+  return {
+    title: page.metaTitle,
+    description: page.metaDescription,
+    robots: page.noindex ? { index: false, follow: false } : undefined,
+  };
+}
+
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const page = locale === "de" ? PAGES_DE.pilot : PAGES.pilot;
+  return <PageView page={page} locale={locale} />;
+}
+
+##### src\app\api\pilot-request\route.ts #####
+import { approveUrl, esc, logFetch } from "../../../lib/pilot-approve";
+export const runtime = "nodejs";
+
+const WINDOW_MS = 60 * 60 * 1000;
+const MAX_PER_WINDOW = 5;
+const hits = new Map<string, number[]>();
+
+function clean(v: unknown, max: number): string {
+  return typeof v === "string" ? v.trim().slice(0, max) : "";
+}
+
+export async function POST(req: Request) {
+  const contentType = req.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    return Response.json({ error: "Unsupported content type." }, { status: 415 });
+  }
+
+  const ip = ((req.headers.get("x-forwarded-for") ?? "unknown").split(",")[0] ?? "unknown").trim();
+  const now = Date.now();
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
+  if (recent.length >= MAX_PER_WINDOW) {
+    return Response.json({ error: "Too many requests. Please try again later." }, { status: 429 });
+  }
+  recent.push(now);
+  hits.set(ip, recent);
+
+  let body: Record<string, unknown>;
+  try {
+    const raw = await req.text();
+    if (raw.length > 20000) {
+      return Response.json({ error: "Request too large." }, { status: 413 });
+    }
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== "object" || parsed === null) {
+      return Response.json({ error: "Invalid request." }, { status: 400 });
+    }
+    body = parsed as Record<string, unknown>;
+  } catch {
+    return Response.json({ error: "Invalid request." }, { status: 400 });
+  }
+
+  // Honeypot: bots fill the hidden field. Pretend success.
+  if (clean(body.website, 200)) {
+    return Response.json({ ok: true }, { status: 201 });
+  }
+
+  const row = {
+    full_name: clean(body.full_name, 120),
+    work_email: clean(body.work_email, 200).toLowerCase(),
+    company: clean(body.company, 160),
+    role_title: clean(body.role_title, 120) || null,
+    company_size: clean(body.company_size, 20) || null,
+    environment: clean(body.environment, 2000) || null,
+    use_case: clean(body.use_case, 3000),
+    locale: clean(body.locale, 10) || null,
+  };
+
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(row.work_email);
+  if (!row.full_name || !row.company || !row.use_case || !emailOk) {
+    return Response.json({ error: "Please fill in name, a valid work email, company and goal." }, { status: 400 });
+  }
+  if (!(body.consent === "on" || body.consent === true)) {
+    return Response.json({ error: "Consent is required." }, { status: 400 });
+  }
+
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    console.error("pilot-request: Supabase env vars missing");
+    return Response.json({ error: "Applications are temporarily unavailable. Please email us." }, { status: 503 });
+  }
+
+  let savedId = "";
+  try {
+    const res = await fetch(url + "/rest/v1/pilot_requests", {
+      method: "POST",
+      headers: {
+        apikey: key,
+        Authorization: "Bearer " + key,
+        "Content-Type": "application/json",
+        Prefer: "return=representation",
+      },
+      body: JSON.stringify(row),
+    });
+    if (!res.ok) {
+      console.error("pilot-request: insert failed", res.status);
+      return Response.json({ error: "Could not save your application. Please email us." }, { status: 502 });
+    }
+    const saved: unknown = await res.json();
+    if (Array.isArray(saved) && saved[0] && typeof saved[0].id === "string") savedId = saved[0].id;
+  } catch (err) {
+    console.error("pilot-request: insert error", err);
+    return Response.json({ error: "Could not save your application. Please email us." }, { status: 502 });
+  }
+
+  // Best-effort owner notification. The application is already saved above.
+  try {
+    const rk = process.env.RESEND_API_KEY;
+    const from = process.env.NOTIFY_FROM;
+    if (rk && from) {
+      const safe = (s: string) => s.replace(/[\r\n]+/g, " ");
+      const link = approveUrl(savedId);
+      const approveLine = link ? "Approve: " + link : "Approve: Supabase > pilot_requests > set status to approved";
+      const fields: [string, string][] = [
+        ["Name", row.full_name],
+        ["Email", row.work_email],
+        ["Company", row.company],
+        ["Role", row.role_title ?? "-"],
+        ["Size", row.company_size ?? "-"],
+        ["Environment", row.environment ?? "-"],
+
+##### src\app\[locale]\(public)\impressum\page.tsx #####
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgImpressum" });
+  return { title: t("metaTitle") };
+}
+
+export default async function ImpressumPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgImpressum" });
+  return (
+    <>
+      <div className="mx-auto max-w-3xl px-6 py-16">
+        <h1 className="text-3xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="mt-2 text-sm opacity-70">{t("sub")}</p>
+
+        <h2 className="mt-10 text-lg font-semibold">{t("providerH")}</h2>
+        <p className="mt-2 leading-relaxed">
+          Eray &Ouml;zer<br />
+          {t("trade")}<br />
+          Zurmaiener Stra&szlig;e 98<br />
+          54292 Trier<br />
+          {t("country")}
+        </p>
+
+        <h2 className="mt-8 text-lg font-semibold">{t("contactH")}</h2>
+        <p className="mt-2 leading-relaxed">
+          {t("email")}: <a className="underline" href="mailto:eray@aegisora.org">eray@aegisora.org</a><br />
+          {t("form")}: <Link className="underline" href="/pilot">aegisora.org/pilot</Link>
+        </p>
+
+        <h2 className="mt-8 text-lg font-semibold">{t("respH")}</h2>
+        <p className="mt-2 leading-relaxed">
+          Eray &Ouml;zer, Zurmaiener Stra&szlig;e 98, 54292 Trier, {t("country")}
+        </p>
+
+        <h2 className="mt-8 text-lg font-semibold">{t("disputeH")}</h2>
+        <p className="mt-2 leading-relaxed">{t("disputeP")}</p>
+      </div>
+    </>
+  );
+}
+
+##### src\app\[locale]\(public)\terms\page.tsx #####
+import { getTranslations } from "next-intl/server";
+import { PageHero, Section } from "@/components/aegisora/page-kit";
+import { DraftNotice } from "@/components/aegisora/draft-notice";
+import { meta } from "@/lib/seo";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgTerms" });
+  return meta(t("metaTitle"), t("metaDesc"));
+}
+
+export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgTerms" });
+  return (
+    <>
+      <PageHero eyebrow={t("eyebrow")} title={t("title")} lead={t("lead")} />
+      <Section>
+        <DraftNotice>{t("draft")}</DraftNotice>
+        <div className="max-w-2xl space-y-8 text-sm leading-6 text-muted-foreground">
+          <div>
+            <h2 className="text-base font-medium text-foreground">{t("pilotsH")}</h2>
+            <p className="mt-3">{t("pilotsP")}</p>
+          </div>
+          <div>
+            <h2 className="text-base font-medium text-foreground">{t("execH")}</h2>
+            <p className="mt-3">{t("execP")}</p>
+          </div>
+          <div>
+            <h2 className="text-base font-medium text-foreground">{t("notH")}</h2>
+            <p className="mt-3">{t("notP")}</p>
+          </div>
+          <div>
+            <h2 className="text-base font-medium text-foreground">{t("contactH")}</h2>
+            <p className="mt-3">
+              {t.rich("contactP", {
+                sales: (chunks) => <a href="mailto:eray@aegisora.org" className="underline underline-offset-4">{chunks}</a>,
+              })}
+            </p>
+          </div>
+        </div>
+      </Section>
+    </>
+  );
+}
+
+##### src\app\[locale]\(public)\trust\page.tsx #####
+import { getTranslations } from "next-intl/server";
+import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegisora/page-kit";
+import { meta } from "@/lib/seo";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgTrust" });
+  return meta(t("eyebrow"), t("metaDesc"));
+}
+
+export default async function TrustPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgTrust" });
+  return (
+    <>
+      <PageHero
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        intro={t("intro")}
+        primary={{ label: t("primary"), href: "/pilot" }}
+        secondary={{ label: t("secondary"), href: "/security" }}
+      />
+      <Section title={t("secTitle")} tone="alt">
+        <CardGrid
+          cols={2}
+          items={[
+            { icon: "Eye", title: t("c1t"), body: t("c1b"), href: "/trust/privacy" },
+            { icon: "Users", title: t("c2t"), body: t("c2b"), href: "/trust/subprocessors" },
+            { icon: "FileText", title: t("c3t"), body: t("c3b"), href: "/terms" },
+            { icon: "ShieldCheck", title: t("c4t"), body: t("c4b"), href: "/security" },
+          ]}
+        />
+      </Section>
+      <CtaBand
+        title={t("ctaTitle")}
+        body={t("ctaBody")}
+        primary={{ label: t("ctaPrimary"), href: "/pilot" }}
+        secondary={{ label: t("ctaSecondary"), href: "/proof" }}
+      />
+    </>
+
+##### src\app\[locale]\(public)\trust\privacy\page.tsx #####
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { PageHero, Section } from "@/components/aegisora/page-kit";
+import { DraftNotice } from "@/components/aegisora/draft-notice";
+import { meta } from "@/lib/seo";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgPrivacy" });
+  return meta(t("metaTitle"), t("metaDesc"));
+}
+
+const mail = (addr: string) => {
+  const MailLink = (chunks: React.ReactNode) => (
+    <a href={"mailto:" + addr} className="underline underline-offset-4">{chunks}</a>
+  );
+  return MailLink;
+};
+
+export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgPrivacy" });
+  return (
+    <>
+      <PageHero eyebrow={t("eyebrow")} title={t("title")} lead={t("lead")} />
+      <Section>
+        <DraftNotice>{t("draft")}</DraftNotice>
+        <div className="max-w-2xl space-y-8 text-sm leading-6 text-muted-foreground">
+          <div>
+            <h2 className="text-base font-medium text-foreground">{t("controllerH")}</h2>
+            <p className="mt-3">{t.rich("controllerP", { eray: mail("eray@aegisora.org") })}</p>
+          </div>
+          <div>
+            <h2 className="text-base font-medium text-foreground">{t("whatH")}</h2>
+            <ul className="mt-3 list-disc space-y-1.5 pl-5">
+              <li>{t("w1")}</li>
+              <li>{t("w2")}</li>
+              <li>{t("w3")}</li>
+              <li>{t("w4")}</li>
+              <li>{t("w5")}</li>
+
+##### src\app\[locale]\(public)\trust\subprocessors\page.tsx #####
+import { getTranslations } from "next-intl/server";
+import { PageHero, Section, DataTable } from "@/components/aegisora/page-kit";
+import { DraftNotice } from "@/components/aegisora/draft-notice";
+import { meta } from "@/lib/seo";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgSub" });
+  return meta(t("metaTitle"), t("metaDesc"));
+}
+
+export default async function SubprocessorsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgSub" });
+  const tbc = t("tbc");
+  return (
+    <>
+      <PageHero eyebrow={t("eyebrow")} title={t("title")} lead={t("lead")} />
+      <Section>
+        <DraftNotice>{t("draft")}</DraftNotice>
+        <DataTable
+          head={[t("h1"), t("h2"), t("h3"), t("h4"), t("h5")]}
+          rows={[
+            ["Supabase", t("sb1"), t("sb2"), t("sb3"), tbc],
+            ["Vercel", t("vc1"), t("vc2"), t("vc3"), tbc],
+            ["Sentry", t("se1"), t("se2"), t("se3"), tbc],
+            ["Stripe", t("st1"), t("st2"), tbc, tbc],
+          ]}
+        />
+      </Section>
+    </>
+  );
+}
+
+##### src\app\[locale]\(public)\legal\dpa\page.tsx #####
+import { redirect } from "next/navigation";
+
+// The DPA draft still has open fields (controller, regions, measures).
+// It is not shown publicly until it is complete; visitors go to the trust center instead.
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  redirect(locale === "en" ? "/trust" : "/" + locale + "/trust");
+}
+
+##### src\app\[locale]\(public)\docs\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { CodeBlock, DataTable, Eyebrow, Steps } from "@/components/aegisora/page-kit";
+import { V1Canvas, V2Canvas, V3Canvas } from "@/components/aegisora/version-canvas";
+import { meta } from "@/lib/seo";
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "DocsIntro" });
+  return meta(t("metaTitle"), t("metaDesc"));
+}
+
+const BADGE = "rounded-full border border-border px-3 py-1 font-mono text-[11px] text-muted-foreground";
+
+const VERS = [
+  { id: "v1", n: 4, Canvas: V1Canvas, top: "mt-14", panel: "", badge: BADGE },
+  { id: "v2", n: 4, Canvas: V2Canvas, top: "mt-8", panel: "", badge: BADGE },
+  { id: "v3", n: 6, Canvas: V3Canvas, top: "mt-8", panel: "", badge: BADGE + " font-semibold" },
+  {
+    id: "v4",
+    n: 6,
+    Canvas: null,
+    top: "mt-8",
+    panel: " border-primary/30",
+    badge: "rounded-full border border-allow bg-allow-muted px-3 py-1 font-mono text-[11px] font-semibold text-allow",
+  },
+];
+
+const ROWS: string[][] = [
+  ["r1", "yes", "yes", "yes", "yes"],
+  ["r2", "dash", "yes", "yes", "yes"],
+  ["r3", "dash", "yes", "callerRisk", "unchanged"],
+  ["r4", "allowDeny", "abb", "abb", "abb"],
+  ["r5", "dash", "advisory", "decisionApi", "unchanged"],
+  ["r6", "dash", "nonDurable", "durable", "durable"],
+  ["r7", "dash", "dash", "yes", "yes"],
+  ["r8", "dash", "dash", "yes", "yes"],
+  ["r9", "dash", "dash", "dash", "yes"],
+  ["r10", "dash", "dash", "dash", "yes"],
+  ["r11", "dash", "dash", "dash", "yes"],
+];
+
+const POLICY_CODE = `agent:       finance-operator
+
+##### src\app\[locale]\(public)\about\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { CtaBand, PageHero, Section, CardGrid } from "@/components/aegisora/page-kit";
+import { meta } from "@/lib/seo";
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "About" });
+  return meta(t("metaTitle"), t("metaDesc"));
+}
+
+export default async function AboutPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("About");
+  return (
+    <>
+      <PageHero
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        intro={t("intro")}
+        primary={{ label: t("primary"), href: "/signup" }}
+        secondary={{ label: t("secondary"), href: "/enterprise" }}
+        rows={[
+          { action: "crm.read_ticket", meta: t("row1"), v: "ALLOW" },
+          { action: "payments.transfer $48,000", meta: t("row2"), v: "ESCALATE" },
+          { action: "db.drop_table users", meta: t("row3"), v: "BLOCK" },
+        ]}
+      />
+
+      <Section eyebrow={t("shiftEyebrow")} title={t("shiftTitle")} tone="alt">
+        <CardGrid
+          cols={3}
+          items={[
+            { icon: "Terminal", title: t("c1t"), body: t("c1b") },
+            { icon: "Layers", title: t("c2t"), body: t("c2b") },
+            { icon: "Scale", title: t("c3t"), body: t("c3b") },
+            { icon: "Webhook", title: t("c4t"), body: t("c4b") },
+            { icon: "ShieldCheck", title: t("c5t"), body: t("c5b") },
+          ]}
+        />
+      </Section>
+
+
+##### src\app\[locale]\(public)\contact\page.tsx #####
+import { permanentRedirect } from "next/navigation";
+
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  permanentRedirect("/" + locale + "/pilot");
+}
+
+##### src\app\[locale]\(public)\demo\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { LiveDemo } from "@/components/aegisora/bw/live-demo";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Demo" });
+  return { title: t("metaTitle"), description: t("metaDesc") };
+}
+
+export default async function DemoPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Demo" });
+  return (
+    <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
+      <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{t("pageTitle")}</h1>
+      <p className="mt-3 mb-8 max-w-2xl text-muted-foreground">{t("pageIntro")}</p>
+      <LiveDemo />
+    </div>
+  );
+}
+
+##### src\app\[locale]\(public)\enterprise\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegisora/page-kit";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgEnterprise" });
+  return { title: t("metaTitle") };
+}
+
+export default async function EnterprisePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgEnterprise" });
+  const dot = " \u00b7 ";
+  return (
+    <>
+      <PageHero
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        intro={t("intro")}
+        primary={{ label: t("primary"), href: "/signup" }}
+        secondary={{ label: t("secondary"), href: "/docs" }}
+        rows={[
+          { action: "payments.transfer $48,000", meta: "finance-agent" + dot + t("r1"), v: "ESCALATE" },
+          { action: "crm.read_ticket", meta: "support-agent" + dot + t("r2"), v: "ALLOW" },
+          { action: "db.drop_table users", meta: "code-agent" + dot + t("r3"), v: "BLOCK" },
+        ]}
+      />
+      <Section eyebrow={t("secEyebrow")} title={t("secTitle")} tone="alt">
+        <CardGrid
+          cols={4}
+          items={[
+            { icon: "Layers", title: t("c1t"), body: t("c1b") },
+            { icon: "Users", title: t("c2t"), body: t("c2b") },
+            { icon: "ScrollText", title: t("c3t"), body: t("c3b") },
+            { icon: "KeyRound", title: t("c4t"), body: t("c4b") },
+          ]}
+        />
+      </Section>
+      <CtaBand
+        title={t("ctaTitle")}
+        body={t("ctaBody")}
+        primary={{ label: t("ctaPrimary"), href: "/pilot" }}
+        secondary={{ label: t("ctaSecondary"), href: "/pricing" }}
+      />
+
+##### src\app\[locale]\(public)\support\page.tsx #####
+import { ArrowRight, FileText } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { meta } from "@/lib/seo";
+import { SupportShell } from "@/components/aegisora/support/support-shell";
+import { SupportSearch } from "@/components/aegisora/support/support-search";
+import { MAIN_SITE, articleHref, collectionHref, collectionsFor, lp, popularArticles, searchIndex } from "@/lib/support-content";
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "HelpCenter" });
+  return meta(t("metaTitle"), t("metaDesc"));
+}
+
+export default async function SupportHome({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "HelpCenter" });
+  const popular = popularArticles(locale);
+  const index = searchIndex(locale);
+  const collections = collectionsFor(locale);
+  return (
+    <SupportShell locale={locale}>
+      <section className="mx-auto max-w-[1100px] px-4 pb-8 pt-16 sm:px-6 md:pt-20">
+        <p className="aeg-eyebrow text-xs text-primary">{t("eyebrow")}</p>
+        <h1 className="aeg-display mt-4 max-w-2xl text-5xl sm:text-6xl">{t("h1")}</h1>
+        <div className="mt-10">
+          <SupportSearch items={index} />
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-[1100px] px-4 pt-6 sm:px-6">
+        <h2 className="mb-3 text-sm font-semibold tracking-wide text-muted-foreground">{t("popular")}</h2>
+        <ul className="border-t border-border">
+          {popular.map((p) => (
+            <li key={p.href} className="border-b border-border">
+              <a href={p.href} className="flex items-center justify-between gap-4 py-4 text-base font-semibold transition hover:text-primary">
+                {p.title}
+                <FileText className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+
+##### src\app\[locale]\(public)\blog\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegisora/page-kit";
+import { POSTS } from "@/lib/blog-posts";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Blog" });
+  return { title: t("metaTitle"), description: t("metaDesc") };
+}
+
+export default async function BlogIndex({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Blog" });
+  const fmt = (iso: string) =>
+    new Date(iso + "T00:00:00Z").toLocaleDateString(locale === "de" ? "de-DE" : "en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    });
+  return (
+    <>
+      <PageHero eyebrow={t("metaTitle")} title={t("title")} intro={t("intro")} />
+      <Section title={t("latest")} tone="alt">
+        <CardGrid
+          cols={3}
+          items={POSTS.map((p) => ({
+            n: p.category + " \u00b7 " + fmt(p.date),
+            title: p.title,
+            body: p.excerpt + " (" + t("minRead", { n: p.readMinutes }) + ")",
+            href: "/blog/" + p.slug,
+          }))}
+        />
+      </Section>
+      <CtaBand
+        title={t("ctaTitle")}
+        body={t("ctaBody")}
+        primary={{ label: t("test"), href: "/signup" }}
+        secondary={{ label: t("quick"), href: "/docs/quickstart" }}
+      />
+    </>
+  );
+}
+
+##### src\app\[locale]\(public)\solutions\page.tsx #####
+import type { Metadata } from "next";
+import PageView from "../../../../components/aegisora/site/PageView";
+import { PAGES, PAGES_DE } from "../../../../components/aegisora/site/content";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const page = locale === "de" ? PAGES_DE.solutions : PAGES.solutions;
+  return {
+    title: page.metaTitle,
+    description: page.metaDescription,
+    robots: page.noindex ? { index: false, follow: false } : undefined,
+  };
+}
+
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const page = locale === "de" ? PAGES_DE.solutions : PAGES.solutions;
+  return <PageView page={page} locale={locale} />;
+}
+
+##### src\app\[locale]\(public)\proof\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { PageHero, Section, CardGrid, CtaBand } from "@/components/aegisora/page-kit";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgProof" });
+  return { title: t("metaTitle"), description: t("metaDesc") };
+}
+
+const EXAMPLE = [
+  "{",
+  '  "effect": "BLOCK",',
+  '  "reason": "Policy: no external transfer of customer PII",',
+  '  "policy_id": "<uuid>",',
+  '  "evidence_hash": "<hash>"',
+  "}",
+].join("\n");
+
+export default async function ProofPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PgProof" });
+  const dot = " \u00b7 ";
+  return (
+    <>
+      <PageHero
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        intro={t("intro")}
+        primary={{ label: t("primary"), href: "/signup" }}
+        secondary={{ label: t("secondary"), href: "/docs" }}
+        rows={[
+          { action: "crm.read_ticket", meta: "support-agent" + dot + t("r1"), v: "ALLOW" },
+          { action: "payments.transfer $48,000", meta: "finance-agent" + dot + t("r2"), v: "ESCALATE" },
+          { action: "db.drop_table users", meta: "code-agent" + dot + t("r3"), v: "BLOCK" },
+        ]}
+      />
+      <Section eyebrow={t("howEyebrow")} title={t("howTitle")} tone="alt">
+        <CardGrid
+          cols={4}
+          items={[
+            { n: "01", title: t("s1t"), body: t("s1b") },
+            { n: "02", title: t("s2t"), body: t("s2b") },
+            { n: "03", title: t("s3t"), body: t("s3b") },
+            { n: "04", title: t("s4t"), body: t("s4b") },
+
+##### src\components\aegisora\site\PageView.tsx #####
+import "./page-bw.css";
+import PilotForm from "./PilotForm";
+import { PLANS, type Cta, type PageData, type Section } from "./content";
+import { bwFontVars } from "../bw/bw-font-vars";
+import { BwBtn, BwSection } from "../bw/bw-ui";
+
+function Buttons({ ctas }: { ctas: Cta[] }) {
+  return (
+    <div className="pv-actions">
+      {ctas.map((c) => (
+        <BwBtn key={c.label} href={c.href} tone={c.variant === "ghost" ? "light" : "blue"} size="md">
+          {c.label}
+        </BwBtn>
+      ))}
+    </div>
+  );
+}
+
+function Head({ title, intro, id }: { title: string; intro?: string; id?: string }) {
+  return (
+    <header className="pv-head">
+      <h2 id={id} className="bw-h2">{title}</h2>
+      {intro ? <p className="bw-lead">{intro}</p> : null}
+    </header>
+  );
+}
+
+function SectionView({ s, locale }: { s: Section; locale: string }) {
+  switch (s.kind) {
+    case "cards":
+      return (
+        <>
+          <Head title={s.title} intro={s.intro} />
+          <div className="pv-grid">
+            {s.items.map((it) => (
+              <div key={it.title} className="pv-card">
+                {it.tag ? <span className="pv-tag">{it.tag}</span> : null}
+                <h3>{it.title}</h3>
+                <p>{it.body}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      );
+    case "steps":
+      return (
+        <>
+          <Head title={s.title} intro={s.intro} />
+          <ol className="pv-grid pv-steps">
+            {s.items.map((it, i) => (
+              <li key={it.title} className="pv-card">
+                <span className="pv-n">{i + 1}</span>
+                <h3>{it.title}</h3>
+                <p>{it.body}</p>
+              </li>
+            ))}
+          </ol>
+        </>
+      );
+    case "table":
+      return (
+        <>
+          <Head title={s.title} intro={s.intro} />
+          <div className="pv-tablewrap">
+            <table className="pv-table">
+              <thead>
+                <tr>{s.columns.map((c) => (<th key={c}>{c}</th>))}</tr>
+              </thead>
+              <tbody>
+                {s.rows.map((r, i) => (
+                  <tr key={i}>
+                    {r.map((cell, j) => (
+                      <td key={j} className={j === 0 ? "pv-first" : undefined}>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      );
+    case "plans":
+      return (
+        <>
+          <Head title={s.title} intro={s.intro} />
+          <div className="pv-grid pv-plans">
+            {PLANS.map((p) => (
+              <div key={p.name} className={"pv-card pv-plan" + (p.highlight ? " pv-plan--hi" : "")}>
+                <h3>{p.name}</h3>
+                <div className="pv-price">{p.price} <span>{p.period}</span></div>
+                <p>{p.blurb}</p>
+                <ul className="pv-list">
+                  {p.features.map((f) => (<li key={f}>{f}</li>))}
+                </ul>
+                <Buttons ctas={[p.cta]} />
+              </div>
+            ))}
+          </div>
+        </>
+      );
+    case "faq":
+      return (
+        <>
+          <Head title={s.title} />
+          <div className="pv-faq">
+            {s.items.map((it) => (
+              <details key={it.title}>
+                <summary>{it.title}</summary>
+                <p>{it.body}</p>
+              </details>
+            ))}
+          </div>
+        </>
+      );
+    case "prose":
+      return (
+        <>
+          <Head title={s.title} />
+          <div className="pv-prose">
+            {s.paragraphs.map((p, i) => (<p key={i}>{p}</p>))}
+
+##### src\components\aegisora\site\content.ts #####
+export type Cta = { label: string; href: string; variant?: "primary" | "ghost" };
+export type Item = { title: string; body: string; tag?: string };
+export type Plan = {
+  name: string;
+  price: string;
+  period: string;
+  blurb: string;
+  features: string[];
+  cta: Cta;
+  highlight?: boolean;
+};
+export type Section =
+  | { kind: "cards"; title: string; intro?: string; items: Item[]; cols?: 2 | 3 | 4 }
+  | { kind: "steps"; title: string; intro?: string; items: Item[] }
+  | { kind: "table"; title: string; intro?: string; columns: string[]; rows: string[][] }
+  | { kind: "plans"; title: string; intro?: string }
+  | { kind: "faq"; title: string; items: Item[] }
+  | { kind: "prose"; title: string; paragraphs: string[] }
+  | { kind: "pilotform"; title: string; intro?: string }
+  | { kind: "cta"; title: string; body: string; ctas: Cta[] };
+export type PageData = {
+  eyebrow: string;
+  title: string;
+  lead: string;
+  ctas?: Cta[];
+  notice?: string;
+  noindex?: boolean;
+  metaTitle: string;
+  metaDescription: string;
+  sections: Section[];
+};
+
+// ---------------------------------------------------------------- tek yerden duzenle
+export const CONTACT_EMAIL = "eray@aegisora.org";
+
+const applyCta: Cta = { label: "Apply for Enterprise Pilot", href: "/pilot" };
+const docsCta: Cta = { label: "Read the technical docs", href: "/docs/technical", variant: "ghost" };
+
+export const PLANS: Plan[] = [
+  {
+    name: "Developer",
+    price: "Free",
+    period: "",
+    blurb: "Evaluate Aegisora on a non-production agent.",
+    features: ["Core runtime governance", "Decision and evidence view", "Community support"],
+    cta: { label: "Request access", href: "/pilot", variant: "ghost" },
+  },
+  {
+    name: "Pro",
+    price: "\u20ac49",
+    period: "/ month",
+    blurb: "For individual developers and small projects.",
+    features: ["Everything in Developer", "Extended evidence retention", "Email support"],
+    cta: { label: "Request access", href: "/pilot", variant: "ghost" },
+  },
+  {
+    name: "Team",
+    price: "\u20ac199",
+    period: "/ month",
+    blurb: "For small AI teams sharing governed agents.",
+    features: ["Everything in Pro", "Multiple members and roles", "Shared policies and audit trail"],
+    cta: { label: "Request access", href: "/pilot" },
+    highlight: true,
+  },
+  {
+    name: "Business",
+    price: "From \u20ac799",
+    period: "/ month",
+    blurb: "For companies running agents in production.",
+    features: ["Everything in Team", "Production onboarding support", "Priority support"],
+    cta: { label: "Request access", href: "/pilot", variant: "ghost" },
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    period: "",
+    blurb: "For organizations with security and procurement requirements.",
+    features: ["Scoped pilot first", "Security review and architecture call", "Custom terms and support"],
+    cta: { label: "Apply for Enterprise Pilot", href: "/pilot", variant: "ghost" },
+  },
+];
+
+// ---------------------------------------------------------------- sayfalar
+const platform: PageData = {
+  eyebrow: "Platform",
+  title: "Runtime governance for AI agents",
+  lead:
+    "Aegisora sits between your AI agents and the systems they act on. Every action is tied to an identity, decided against policy, and recorded as verifiable evidence.",
+  ctas: [applyCta, docsCta],
+  metaTitle: "Platform",
+  metaDescription: "Aegisora is a runtime governance platform for AI agents: identity, policy decisions, execution integrity and evidence.",
+  sections: [
+    {
+      kind: "cards",
+      title: "What the platform does",
+      items: [
+        { title: "Identity and decisions", body: "Each agent action is attributed to an identity and receives an explicit decision." },
+        { title: "Policy enforcement", body: "Policies are enforced at runtime, before an action reaches the system it targets." },
+        { title: "Execution continuity", body: "Continuity Seal extends governance from authorization into the integrity of the execution itself." },
+        { title: "Evidence and audit", body: "Decisions and executions produce evidence that can be reviewed and verified." },
+
+##### src\app\[locale]\(auth)\layout.tsx #####
+import { AuthShell } from "@/components/aegisora/auth-shell";
+
+export default function AuthLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  return <AuthShell>{children}</AuthShell>;
+}
+
+##### src\app\[locale]\(auth)\accept-invite\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { AuthForm } from "@/components/aegisora/auth-form";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("invite.title") };
+}
+
+export default async function AcceptInvitePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return (
+    <AuthForm
+      mode="invite"
+      title={t("invite.title")}
+      description={t("invite.desc")}
+      fields={[
+        { name: "name", label: t("invite.fullName"), type: "text", autoComplete: "name" },
+        { name: "password", label: t("common.password"), type: "password", autoComplete: "new-password" },
+      ]}
+      submitLabel={t("invite.submit")}
+      redirectTo="/dashboard"
+    />
+  );
+}
+
+##### src\app\[locale]\(auth)\forgot-password\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { AuthForm } from "@/components/aegisora/auth-form";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("forgot.title") };
+}
+
+export default async function ForgotPasswordPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return (
+    <AuthForm
+      mode="reset"
+      title={t("forgot.title")}
+      description={t("forgot.desc")}
+      fields={[{ name: "email", label: t("common.workEmail"), type: "email", autoComplete: "email" }]}
+      submitLabel={t("forgot.submit")}
+      redirectTo="/login"
+      links={[{ text: t("forgot.remembered"), label: t("forgot.logIn"), href: "/login" }]}
+    />
+  );
+}
+
+##### src\app\[locale]\(auth)\login\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { LoginForm } from "@/components/aegisora/login-form";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("login.title") };
+}
+
+export default function LoginPage() {
+  return <LoginForm redirectTo="/dashboard" />;
+}
+
+##### src\app\[locale]\(auth)\reset-password\page.tsx #####
+"use client";
+
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { btnPrimary } from "@/lib/ui";
+
+export default function ResetPasswordPage() {
+  const t = useTranslations("Auth");
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    const form = new FormData(e.currentTarget);
+    const password = String(form.get("password") ?? "");
+
+    const supabase = createClient();
+    const { error: err } = await supabase.auth.updateUser({ password });
+    setLoading(false);
+    if (err) {
+      setError(err.message);
+      return;
+    }
+    setDone(true);
+    setTimeout(() => router.push("/dashboard"), 1500);
+  }
+
+  return (
+    <div className="w-full max-w-sm">
+      <h1 className="bw-auth__h1">{t("reset.title")}</h1>
+      <p className="mt-3 text-sm text-muted-foreground">{t("reset.desc")}</p>
+
+      {error && (
+        <p role="alert" className="mt-6 rounded-sm border border-block/30 bg-block-muted px-3 py-2 text-xs text-block">
+          {error}
+        </p>
+      )}
+      {done && (
+        <p role="status" className="mt-6 rounded-sm border border-allow/30 bg-allow-muted px-3 py-2 text-xs text-allow">
+          {t("reset.done")}
+        </p>
+      )}
+
+      <form className="mt-6 space-y-4" onSubmit={onSubmit}>
+        <div className="space-y-1.5">
+          <Label htmlFor="password">{t("reset.label")}</Label>
+          <Input id="password" name="password" type="password" autoComplete="new-password" required minLength={8} />
+        </div>
+        <button type="submit" disabled={loading || done} className={`${btnPrimary} w-full disabled:opacity-60`}>
+          {loading ? t("reset.updating") : t("reset.submit")}
+        </button>
+      </form>
+
+      <p className="mt-6 text-sm text-muted-foreground">
+        <Link href="/login" className="text-primary underline-offset-4 hover:underline">{t("common.backToLogin")}</Link>
+      </p>
+    </div>
+  );
+}
+
+##### src\app\[locale]\(auth)\signup\page.tsx #####
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { SignupForm } from "@/components/aegisora/signup-form";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("signup.title") };
+}
+
+export default function SignupPage() {
+  return <SignupForm redirectTo="/onboarding" />;
+}
+auth klasoru: src\app\[locale]\(auth)\forgot-password
+auth klasoru: src\app\[locale]\(auth)\login
+auth klasoru: src\app\[locale]\(auth)\reset-password
+auth klasoru: src\app\[locale]\(auth)\signup
+
+##### src\app\[locale]\dashboard (klasor YOK) #####
+
+##### src\app\[locale]\dashboard\page.tsx #####
+(YOK)
+
+##### src\components\aegisora\app-shell.tsx #####
+"use client";
+
+import { useEffect, useState } from "react";
+import { Bell, Menu, Search, ShieldCheck, X } from "lucide-react";
+import { Link, usePathname } from "@/i18n/navigation";
+import { AccountSwitcher } from "@/components/aegisora/account-switcher";
+import { CommandPalette } from "@/components/aegisora/command-palette";
+import { Logo } from "@/components/aegisora/logo";
+import { SectionTabs } from "@/components/aegisora/section-tabs";
+import { UserMenu } from "@/components/aegisora/user-menu";
+import { TopbarActions } from "@/components/aegisora/topbar-actions";
+import { WelcomeTour } from "@/components/aegisora/welcome-tour";
+import { WorkspaceProvider } from "@/components/aegisora/workspace-provider";
+import { usePendingApprovals } from "@/lib/aegisora/use-pending-approvals";
+import { ALL_NAV, MAIN_NAV, SETTINGS_NAV, activeGroup, type NavGroup } from "@/lib/aegisora/nav";
+import { focusRing } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+function RailLink({ item, active, badge }: { item: NavGroup; active: boolean; badge?: boolean }) {
+  const Icon = item.icon;
+  return (
+    <Link
+      href={item.href}
+      aria-label={item.label}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "group relative flex size-11 items-center justify-center rounded-xl transition-colors",
+        active ? "bg-primary/12 text-primary" : "text-muted-foreground hover:bg-surface-3 hover:text-foreground",
+        focusRing,
+      )}
+    >
+      <Icon className="size-5" aria-hidden="true" />
+      {badge && <span className="absolute right-2 top-2 size-2 rounded-full bg-escalate" />}
+      <span className="pointer-events-none absolute left-full z-50 ml-3 hidden whitespace-nowrap rounded-md border border-border bg-popover px-2.5 py-1 text-xs font-medium text-foreground shadow-lg group-hover:block group-focus-visible:block">
+        {item.label}
+      </span>
+    </Link>
+  );
+}
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const [palette, setPalette] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const [notif, setNotif] = useState(false);
+  const pending = usePendingApprovals();
+  const group = activeGroup(pathname);
+
+  // The dashboard is dark-only: keep the dark class while it is mounted, then restore.
+  useEffect(() => {
+    const root = document.documentElement;
+    const had = root.classList.contains("dark");
+    root.classList.add("dark");
+    const mo = new MutationObserver(() => { if (!root.classList.contains("dark")) root.classList.add("dark"); });
+    mo.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => { mo.disconnect(); if (!had) root.classList.remove("dark"); };
+  }, []);
+
+  // Route change resets transient shell UI state.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDrawer(false);
+      setNotif(false);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [pathname]);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPalette((p) => !p);
+      }
+      if (e.key === "Escape") {
+        setDrawer(false);
+        setNotif(false);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  return (
+    <WorkspaceProvider>
+      <div className="aeg-app flex min-h-screen">
+        <aside data-app-sidebar className="sticky top-0 z-40 hidden h-screen w-[68px] shrink-0 flex-col items-center border-r border-border bg-surface-1 py-4 lg:flex">
+          <Link href="/dashboard" aria-label="Aegisora" className={cn("mb-6 flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground", focusRing)}>
+            <ShieldCheck className="size-5" aria-hidden="true" />
+          </Link>
+          <nav aria-label="Main" className="flex flex-1 flex-col items-center gap-1.5">
+            {MAIN_NAV.map((g) => (
+              <RailLink key={g.id} item={g} active={group?.id === g.id} badge={g.id === "approvals" && pending > 0} />
+            ))}
+          </nav>
+          <RailLink item={SETTINGS_NAV} active={group?.id === "settings"} />
+        </aside>
+
+        {drawer && (
+          <div className="fixed inset-0 z-50 lg:hidden">
+            <div className="absolute inset-0 bg-black/60" onClick={() => setDrawer(false)} aria-hidden="true" />
+            <div role="dialog" aria-modal="true" aria-label="Navigation" className="relative h-full w-72 overflow-y-auto bg-surface-1">
+              <div className="flex items-center justify-between border-b border-border px-5 py-4">
+                <Logo />
+                <button type="button" aria-label="Close navigation" onClick={() => setDrawer(false)} className={cn("rounded-md p-1.5", focusRing)}>
+                  <X className="size-4" />
+                </button>
+              </div>
+              <nav aria-label="Main" className="space-y-1 p-3">
+                {ALL_NAV.map((g) => {
+                  const Icon = g.icon;
+                  const on = group?.id === g.id;
+                  return (
+                    <Link
+                      key={g.id}
+                      href={g.href}
+                      aria-current={on ? "page" : undefined}
+                      className={cn("flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium", on ? "bg-primary/12 text-primary" : "text-muted-foreground hover:bg-surface-3 hover:text-foreground", focusRing)}
+                    >
+                      <Icon className="size-5" aria-hidden="true" />
+                      {g.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          </div>
+        )}
+
+        <div className="relative isolate flex min-w-0 flex-1 flex-col">
+          <div className="aeg-glow" aria-hidden="true" />
+
+          <header className="sticky top-0 z-30 border-b border-border bg-background/60 backdrop-blur-md">
+            <div className="flex h-16 items-center gap-3 px-4 md:px-8">
+              <button
+                type="button"
+                aria-label="Open navigation"
+                onClick={() => setDrawer(true)}
+                className={cn("inline-flex size-10 items-center justify-center rounded-xl border border-border lg:hidden", focusRing)}
+              >
+                <Menu className="size-4" />
+              </button>
+
+              <p className="hidden text-base font-semibold tracking-tight sm:block">{group?.label ?? "Dashboard"}</p>
+
+              <AccountSwitcher />
+
+              <button
+                type="button"
+                onClick={() => setPalette(true)}
+                className={cn(
+                  "flex h-10 min-w-0 flex-1 items-center gap-2 rounded-xl border border-border bg-surface-1 px-3.5 text-sm text-muted-foreground hover:bg-surface-3 sm:mx-auto sm:max-w-md",
+                  focusRing,
+                )}
+              >
+                <Search className="size-4" />
+                <span className="flex-1 truncate text-left">Search...</span>
+                <kbd className="hidden rounded-md border border-border px-1.5 font-mono text-[10px] sm:inline">Ctrl K</kbd>
+              </button>
+
+              <div className="relative">
+
+##### src\components\aegisora\app-sidebar.tsx #####
+"use client";
+
+import { useState } from "react";
+import type { ComponentType } from "react";
+import {
+  Activity, Bot, ChevronDown, ClipboardList, CreditCard, FileSearch, KeyRound, LayoutDashboard, Plus,
+  Route, Scale, ScrollText, Settings, ShieldCheck, TriangleAlert, UserCheck, Users, Webhook,
+} from "lucide-react";
+import { Link, usePathname } from "@/i18n/navigation";
+import { usePendingApprovals } from "@/lib/aegisora/use-pending-approvals";
+import { focusRing } from "@/lib/ui";
+import { cn } from "@/lib/utils";
+
+type Item = { label: string; href: string; icon: ComponentType<{ className?: string }>; badge?: "approvals" };
+type Section = { id: string; title?: string; items: Item[] };
+
+const CREATE: Item[] = [
+  { label: "Policy", href: "/dashboard/policies", icon: ScrollText },
+  { label: "Agent", href: "/dashboard/agents", icon: Bot },
+  { label: "API key", href: "/dashboard/api-keys", icon: KeyRound },
+  { label: "Webhook", href: "/dashboard/webhooks", icon: Webhook },
+];
+
+const sections: Section[] = [
+  {
+    id: "overview",
+    items: [{ label: "Overview", href: "/dashboard", icon: LayoutDashboard }],
+  },
+  {
+    id: "monitor",
+    title: "Monitor",
+    items: [
+      { label: "Approvals", href: "/dashboard/approvals", icon: UserCheck, badge: "approvals" },
+      { label: "Live Activity", href: "/dashboard/activity", icon: Activity },
+      { label: "Incidents", href: "/dashboard/incidents", icon: TriangleAlert },
+    ],
+  },
+  {
+    id: "govern",
+    title: "Govern",
+    items: [
+      { label: "Agents", href: "/dashboard/agents", icon: Bot },
+      { label: "Policies", href: "/dashboard/policies", icon: ScrollText },
+      { label: "Evidence", href: "/dashboard/evidence", icon: FileSearch },
+    ],
+  },
+  {
+    id: "workspace",
+    title: "Workspace",
+    items: [
+      { label: "API Keys", href: "/dashboard/api-keys", icon: KeyRound },
+      { label: "Webhooks", href: "/dashboard/webhooks", icon: Webhook },
+      { label: "Team", href: "/dashboard/team", icon: Users },
+      { label: "Billing", href: "/dashboard/billing", icon: CreditCard },
+      { label: "Settings", href: "/dashboard/settings", icon: Settings },
+    ],
+  },
+];
+
+const advanced: Item[] = [
+  { label: "Decisions", href: "/dashboard/decisions", icon: Scale },
+  { label: "Traces", href: "/dashboard/traces", icon: Route },
+  { label: "Audit", href: "/dashboard/audit", icon: ClipboardList },
+  { label: "Identity", href: "/dashboard/identity", icon: ShieldCheck },
+];
+
+function isActive(pathname: string, href: string) {
+  return href === "/dashboard" ? pathname === href : pathname === href || pathname.startsWith(href + "/");
+}
+
+function CreateMenu() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative px-3 pt-3" onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}>
+      <button
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className={cn("flex w-full items-center justify-center gap-2 rounded-md border border-border bg-surface-2 px-3 py-2 text-sm font-medium transition-colors hover:bg-surface-3", focusRing)}
+      >
+        <Plus className="size-4" aria-hidden="true" />
+        New
+      </button>
+      {open && (
+        <ul role="menu" className="absolute inset-x-3 top-full z-30 mt-1 rounded-md border border-border bg-popover p-1 shadow-lg">
+          {CREATE.map((c) => {
+            const Icon = c.icon;
+            return (
+              <li key={c.href} role="none">
+                <Link role="menuitem" href={c.href} onClick={() => setOpen(false)} className={cn("flex items-center gap-2.5 rounded-sm px-3 py-2 text-sm hover:bg-surface-3", focusRing)}>
+                  <Icon className="size-4 text-primary" />
+                  {c.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+export function SidebarNav() {
+  const pathname = usePathname();
+  const pending = usePendingApprovals();
+  const [advOpen, setAdvOpen] = useState(false);
+  const advActive = advanced.some((i) => isActive(pathname, i.href));
+  const showAdvanced = advOpen || advActive;
+
+  function renderItem(item: Item) {
+    const Icon = item.icon;
+    const active = isActive(pathname, item.href);
+    const count = item.badge === "approvals" ? pending : 0;
+    return (
+      <li key={item.href}>
+        <Link
+          href={item.href}
+          aria-current={active ? "page" : undefined}
+          className={cn(
+            "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+            focusRing,
+            active
+              ? "bg-primary/10 font-semibold text-primary"
+              : "text-muted-foreground hover:bg-surface-3 hover:text-foreground",
+          )}
+        >
+          <Icon className={cn("size-4 shrink-0", active && "text-primary")} />
+          <span className="truncate">{item.label}</span>
+          {count > 0 && (
+            <span className="ml-auto rounded-full bg-escalate px-1.5 text-[10px] font-semibold leading-4 text-black">{count > 99 ? "99+" : count}</span>
+          )}
+        </Link>
+      </li>
+    );
+  }
+
+  return (
+    <>
+      <CreateMenu />
+      <nav aria-label="Aegisora Control" className="space-y-4 p-3">
+        {sections.map((section, index) => (
+          <div key={section.id} className={index > 0 ? "border-t border-border/60 pt-3" : undefined}>
+            {section.title ? (
+              <p className="mb-1 px-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                {section.title}
+              </p>
+            ) : null}
+            <ul className="space-y-0.5">{section.items.map(renderItem)}</ul>
+          </div>
+        ))}
+        <div className="border-t border-border/60 pt-3">
+          <button
+            type="button"
+            aria-expanded={showAdvanced}
+            onClick={() => setAdvOpen((v) => !v)}
+            className={cn("flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground hover:text-foreground", focusRing)}
+          >
+            Advanced
+            <ChevronDown className={cn("size-3.5 transition-transform", showAdvanced && "rotate-180")} aria-hidden="true" />
+
+##### src\components\aegisora\docs-nav.tsx #####
+'use client';
+
+import { useState } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/i18n/navigation';
+import { cn } from '@/lib/utils';
+
+export type NavItem = { key?: string; title: string; href: string };
+export type NavGroup = { key?: string; title: string; items: NavItem[] };
+
+export const NAV_TREE: NavGroup[] = [
+  {
+    key: 'start',
+    title: 'Getting Started',
+    items: [
+      { key: 'intro', title: 'Introduction', href: '/docs' },
+      { key: 'quickstart', title: 'Quickstart', href: '/docs/quickstart' },
+      { key: 'policyExample', title: 'Policy Example', href: '/docs#example' },
+      { key: 'technical', title: 'Technical reference', href: '/docs/technical' },
+    ],
+  },
+  {
+    key: 'arch',
+    title: 'Architecture',
+    items: [
+      { key: 'pipeline', title: 'Runtime Pipeline', href: '/docs#v3' },
+      { key: 'pde', title: 'Policies, decisions and evidence', href: '/docs/technical' },
+    ],
+  },
+  {
+    key: 'versions',
+    title: 'Version History',
+    items: [
+      { key: 'v1', title: '1.0 - Foundation', href: '/docs#v1' },
+      { key: 'v2', title: '2.0 - Context & Risk', href: '/docs#v2' },
+      { key: 'v3', title: '3.0 - Enterprise Runtime', href: '/docs#v3' },
+      { key: 'v4', title: '4.0 - Current', href: '/docs#v4' },
+    ],
+  },
+  {
+    key: 'ref',
+    title: 'Reference',
+    items: [
+      { key: 'capability', title: 'Capability Matrix', href: '/docs#capability' },
+      { key: 'api', title: 'API Contract', href: '/docs#api' },
+    ],
+  },
+];
+
+function NavGroupBlock({ group, defaultOpen }: { group: NavGroup; defaultOpen: boolean }) {
+  const pathname = usePathname();
+  const t = useTranslations('Docs');
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border-b border-border/60 pb-1 last:border-0">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between py-2.5 text-left transition-colors hover:text-foreground"
+      >
+        <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {group.key ? t('groups.' + group.key) : group.title}
+        </span>
+        <ChevronRight
+          size={14}
+          aria-hidden
+          className={cn(
+            'shrink-0 text-muted-foreground transition-transform duration-300 ease-out',
+            open && 'rotate-90'
+          )}
+        />
+      </button>
+
+      <div
+        className={cn(
+          'grid transition-[grid-template-rows] duration-300 ease-in-out',
+          open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+        )}
+      >
+        <div className="overflow-hidden">
+          <ul className="flex flex-col gap-0.5 pb-3 pl-1">
+            {group.items.map((item) => {
+              // Only the page itself counts as active; #anchor links never do.
+              const active = !item.href.includes('#') && pathname === item.href;
+              return (
+                <li key={item.title}>
+                  <Link
+                    href={item.href}
+                    aria-current={active ? 'page' : undefined}
+                    className={cn(
+                      'block rounded-md px-3 py-1.5 text-sm transition-colors',
+                      active
+                        ? 'bg-accent font-medium text-accent-foreground'
+                        : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground'
+                    )}
+                  >
+                    {item.key ? t('items.' + item.key) : item.title}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function DocsNav() {
+  const t = useTranslations('Docs');
+  return (
+    <nav aria-label={t('aria')} className="max-h-[calc(100vh-7rem)] overflow-y-auto pr-2">
+      {NAV_TREE.map((group, i) => (
+        <NavGroupBlock key={group.title} group={group} defaultOpen={i < 2} />
+      ))}
+    </nav>
+  );
+}
+
+##### src\components\aegisora\mobile-nav.tsx #####
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { TouchEvent as ReactTouchEvent } from "react";
+import type { LucideIcon } from "lucide-react";
+import {
+  Activity, Bot, Check, ClipboardList, Ellipsis, FileCheck, GitBranch, KeyRound,
+  LayoutDashboard, Scale, ScrollText, Settings, SlidersHorizontal, TriangleAlert,
+  UserCheck, Users, CreditCard, ShieldCheck, Webhook, X,
+} from "lucide-react";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+
+type Item = { id: string; href: string; label: string; icon: LucideIcon };
+type Density = "compact" | "standard" | "large";
+type Prefs = { tabs: string[]; density: Density; home: string };
+
+const ITEMS: Item[] = [
+  { id: "overview", href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { id: "activity", href: "/dashboard/activity", label: "Live Activity", icon: Activity },
+  { id: "agents", href: "/dashboard/agents", label: "Agents", icon: Bot },
+  { id: "policies", href: "/dashboard/policies", label: "Policies", icon: ScrollText },
+  { id: "decisions", href: "/dashboard/decisions", label: "Decisions", icon: Scale },
+  { id: "approvals", href: "/dashboard/approvals", label: "Approvals", icon: UserCheck },
+  { id: "incidents", href: "/dashboard/incidents", label: "Incidents", icon: TriangleAlert },
+  { id: "evidence", href: "/dashboard/evidence", label: "Evidence", icon: FileCheck },
+  { id: "audit", href: "/dashboard/audit", label: "Audit", icon: ClipboardList },
+  { id: "traces", href: "/dashboard/traces", label: "Traces", icon: GitBranch },
+  { id: "webhooks", href: "/dashboard/webhooks", label: "Webhooks", icon: Webhook },
+  { id: "api-keys", href: "/dashboard/api-keys", label: "API Keys", icon: KeyRound },
+  { id: "settings", href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { id: "team", href: "/dashboard/team", label: "Team", icon: Users },
+  { id: "billing", href: "/dashboard/billing", label: "Billing", icon: CreditCard },
+  { id: "identity", href: "/dashboard/identity", label: "Identity", icon: ShieldCheck },
+];
+
+const GROUPS = [
+  { title: "Overview", ids: ["overview"] },
+  { title: "Monitor", ids: ["approvals", "activity", "incidents"] },
+  { title: "Govern", ids: ["agents", "policies", "evidence"] },
+  { title: "Workspace", ids: ["api-keys", "webhooks", "team", "billing", "settings"] },
+  { title: "Advanced", ids: ["decisions", "traces", "audit", "identity"] },
+];
+
+const DEFAULTS: Prefs = {
+  tabs: ["overview", "activity", "approvals", "incidents"],
+  density: "standard",
+  home: "overview",
+};
+const KEY = "aeg.dash.prefs.v1";
+const byId = (id: string): Item | undefined => ITEMS.find((i) => i.id === id);
+const FOCUS = "focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary";
+
+function sanitize(raw: unknown): Prefs {
+  const r = (raw ?? {}) as Partial<Prefs>;
+  const tabs = Array.isArray(r.tabs) ? r.tabs.filter((t) => typeof t === "string" && byId(t)) : [];
+  return {
+    tabs: tabs.length === 4 ? tabs : DEFAULTS.tabs,
+    density: r.density === "compact" || r.density === "large" ? r.density : "standard",
+    home: typeof r.home === "string" && byId(r.home) ? r.home : "overview",
+  };
+}
+
+function tap() {
+  try { navigator.vibrate?.(8); } catch { /* not supported */ }
+}
+
+export function MobileNav() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [prefs, setPrefs] = useState<Prefs>(DEFAULTS);
+  const [sheet, setSheet] = useState<null | "more" | "customize">(null);
+  const [counts, setCounts] = useState({ approvals: 0, incidents: 0 });
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const drag = useRef<{ y: number; dy: number } | null>(null);
+
+  useEffect(() => {
+    let p = DEFAULTS;
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) p = sanitize(JSON.parse(raw));
+    } catch { /* storage unavailable */ }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate prefs from localStorage after mount
+    setPrefs(p);
+    applyDensity(p.density);
+    try {
+      const atRoot = window.location.pathname.replace(/^\/[a-z]{2}(?=\/)/, "") === "/dashboard";
+      if (atRoot && p.home !== "overview" && !sessionStorage.getItem("aeg.dash.home")) {
+        sessionStorage.setItem("aeg.dash.home", "1");
+        const it = byId(p.home);
+        if (it && window.matchMedia("(max-width: 767px)").matches) router.replace(it.href);
+      }
+    } catch { /* storage unavailable */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const save = (next: Prefs) => {
+    setPrefs(next);
+    applyDensity(next.density);
+    try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* storage unavailable */ }
+  };
+
+  const refresh = useCallback(async () => {
+    try {
+      const s = createClient();
+      const [a, i] = await Promise.all([
+        s.from("approvals").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        s.from("incidents").select("id", { count: "exact", head: true }).eq("status", "open"),
+      ]);
+      setCounts({ approvals: a.count ?? 0, incidents: i.count ?? 0 });
+    } catch { /* badges stay as they are */ }
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async fetch, state set after await
+    refresh();
+    const t = setInterval(refresh, 60000);
+    const onVis = () => { if (document.visibilityState === "visible") refresh(); };
+    document.addEventListener("visibilitychange", onVis);
+    return () => { clearInterval(t); document.removeEventListener("visibilitychange", onVis); };
+  }, [refresh, pathname]);
+
+  const [sheetPath, setSheetPath] = useState(pathname);
+  if (sheetPath !== pathname) { setSheetPath(pathname); setSheet(null); }
+
+  useEffect(() => {
+    if (!sheet) return undefined;
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setSheet(null); };
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; document.removeEventListener("keydown", onKey); };
+  }, [sheet]);
+
+  const onTouchStart = (e: ReactTouchEvent) => {
+    const t = e.touches[0];
+    if (!t) return;
+    drag.current = { y: t.clientY, dy: 0 };
+  };
+  const onTouchMove = (e: ReactTouchEvent) => {
+    const d = drag.current;
+    const el = sheetRef.current;
+    const t = e.touches[0];
+    if (!d || !el || !t) return;
+    d.dy = Math.max(0, t.clientY - d.y);
+    el.style.transition = "none";
+    el.style.transform = `translate3d(0, ${d.dy}px, 0)`;
+  };
+  const onTouchEnd = () => {
+    const d = drag.current;
+    const el = sheetRef.current;
+    drag.current = null;
+    if (!d || !el) return;
+    el.style.transition = "transform .2s ease-out";
+    if (d.dy > 90) setSheet(null);
+    else el.style.transform = "";
+  };
+lib: src\lib\aegisora-sound.ts
+lib: src\lib\aegisora-sound.ts.bak
+lib: src\lib\blog-posts.ts
+lib: src\lib\blog.ts
+lib: src\lib\demo-data.ts
+lib: src\lib\demo-identity.ts
+lib: src\lib\evidence-hash.ts
+lib: src\lib\evidence-v2.ts
+lib: src\lib\main-nav.ts
+lib: src\lib\mega-nav.ts
+lib: src\lib\pilot-approve.ts
+lib: src\lib\product-content.ts
+lib: src\lib\public-fonts.ts
+lib: src\lib\releases.ts
+lib: src\lib\runtime-model.ts
+lib: src\lib\seo.ts
+lib: src\lib\site-nav.ts
+lib: src\lib\socials.ts
+lib: src\lib\support-content-de.ts
+lib: src\lib\support-content.ts
+lib: src\lib\theme.ts
+lib: src\lib\ui.ts
+lib: src\lib\utils.ts
+lib: src\lib\aegisora\agent-input.ts
+lib: src\lib\aegisora\billing.ts
+lib: src\lib\aegisora\entitlement.ts
+lib: src\lib\aegisora\nav.ts
+lib: src\lib\aegisora\notify.ts
+lib: src\lib\aegisora\plan-limits.ts
+lib: src\lib\aegisora\policy-evaluator.ts
+lib: src\lib\aegisora\quota.ts
+lib: src\lib\aegisora\rbac-http.ts
+lib: src\lib\aegisora\redaction.ts
+lib: src\lib\aegisora\server.ts
+lib: src\lib\aegisora\site-config.ts
+lib: src\lib\aegisora\sound.ts
+lib: src\lib\aegisora\use-pending-approvals.ts
+lib: src\lib\aegisora\use-workspace.tsx
+lib: src\lib\aegisora\webhook-delivery.ts
+lib: src\lib\motion\gsap.ts
+lib: src\lib\supabase\client.ts
+lib: src\lib\supabase\cookie-options.ts
+lib: src\lib\supabase\middleware.ts
+lib: src\lib\supabase\server.ts
+
+##### public/brand #####
+Aegisora-black.png  [8.3 KB]
+Aegisora-white.png  [10.5 KB]
+
+##### package.json bagimliliklar #####
+{
+  "name": "website4",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "eslint src",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build:webpack": "next build --webpack",
+    "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test tests/e2e/smoke.spec.ts",
+    "test:e2e:auth": "playwright test tests/e2e/auth.spec.ts",
+    "test:e2e:mfa": "playwright test tests/e2e/mfa.spec.ts",
+    "test:enterprise:auth-fixture": "node .enterprise/run-auth-e2e.mjs",
+    "test:enterprise:mfa-fixture": "node scripts/security/phase-c15-mfa-e2e.mjs",
+    "test:enterprise:team-lifecycle": "node scripts/security/phase-c13-team-lifecycle.mjs",
+    "test:enterprise:agent-api": "node scripts/security/phase-c13-c21-agent-api-e2e.mjs",
+    "test:enterprise:evidence-chain": "python scripts/security/verify-evidence-chain-local.py",
+    "test:enterprise:schema-migration": "python scripts/security/verify-governance-schema-migration.py",
+    "test:security:policy-redaction": "node scripts/security/verify-policy-and-redaction.mjs",
+    "test:enterprise:pilot-docs": "node scripts/security/verify-pilot-docs.mjs",
+    "preflight:enterprise:schema": "node scripts/security/inspect-live-schema-contract.mjs",
+    "test": "playwright test tests/e2e/smoke.spec.ts",
+    "test:revenue": "node scripts/security/revenue-api-smoke.mjs",
+    "verify:revenue": "node scripts/security/verify-revenue-v1.mjs"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.8.0",
+    "@fontsource-variable/archivo": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@gsap/react": "^2.1.2",
+    "@hookform/resolvers": "^5.9.1",
+    "@paper-design/shaders-react": "0.0.72",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@radix-ui/react-dropdown-menu": "^2.1.24",
+    "@radix-ui/react-tabs": "^1.1.21",
+    "@radix-ui/react-tooltip": "^1.2.16",
+    "@react-three/fiber": "^9.8.2",
+    "@sentry/nextjs": "^11.8.0",
+    "@shadergradient/react": "^2.4.20",
+    "@stripe/stripe-js": "^10.0.0",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.116.0",
+    "@tanstack/react-table": "^9.2.4",
+    "camera-controls": "^3.1.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cn": "^0.5.0",
+    "gsap": "^3.15.0",
+    "lightningcss": "^1.33.0",
+    "lucide-react": "^1.47.0",
+    "motion": "^13.4.1",
+    "next": "^16.4.3",
+    "next-intl": "^4.14.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-hook-form": "^7.88.0",
+    "react-icons": "^5.7.0",
+    "recharts": "^3.10.1",
+    "sonner": "^2.0.8",
+    "stripe": "^23.1.0",
+    "tailwind-merge": "^3.7.0",
+    "three": "^0.187.0",
+    "three-stdlib": "^2.36.1",
+    "tw-animate-css": "^1.4.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/three": "^0.187.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.5",
+    "shadcn": "4.21.4",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
+
