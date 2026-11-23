@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import {
   authenticateUser,
   normalizeRole,
@@ -252,7 +252,19 @@ export async function PATCH(req: Request) {
       p_role: targetRole,
       p_actor_id: user.id,
     });
-    if (updateError) throw updateError;
+    if (updateError) {
+      const msg = (updateError.message ?? "").toLowerCase();
+      if (msg.includes("last active workspace owner")) {
+        return errorResponse(409, "last_owner", "The last active OWNER cannot be demoted.");
+      }
+      if (msg.includes("owner-only role change")) {
+        return errorResponse(403, "owner_only", "Only an OWNER can make this role change.");
+      }
+      if (msg.includes("active workspace administrator required")) {
+        return errorResponse(403, "forbidden", "Active workspace administrator required.");
+      }
+      throw updateError;
+    }
     if (updated !== true) {
       return errorResponse(404, "member_not_found", "Target workspace member was not found.");
     }
