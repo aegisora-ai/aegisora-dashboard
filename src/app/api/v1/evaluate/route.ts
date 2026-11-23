@@ -6,6 +6,7 @@ import { maskSensitiveData, maskSensitiveText } from "@/lib/aegisora/redaction";
 import { decidePolicy, type Effect } from "@/lib/aegisora/policy-evaluator";
 import { evaluateWorkspaceExecutionEntitlement } from "@/lib/aegisora/entitlement";
 import { evaluateMonthlyQuota } from "@/lib/aegisora/quota";
+import { assertWithinPlanLimit } from "@/lib/aegisora/plan-limits";
 import { notifyDecision } from "@/lib/aegisora/notify";
 
 export const runtime = "nodejs";
@@ -50,6 +51,7 @@ export async function POST(req: Request) {
     let { data: agent } = await db.from("agents").select("id,state").eq("workspace_id", ws).eq("name", agentName).maybeSingle();
     let registered = false;
     if (!agent && settings.auto_register) {
+      await assertWithinPlanLimit(ws, "agents", 1);
       const ins = await db.from("agents").insert({ workspace_id: ws, name: agentName, source: "auto" }).select("id,state").single();
       if (ins.error) {
         const again = await db.from("agents").select("id,state").eq("workspace_id", ws).eq("name", agentName).maybeSingle();
