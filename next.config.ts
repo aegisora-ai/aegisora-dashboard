@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
       { source: "/datenschutz", destination: "/trust/privacy", permanent: false },
       { source: "/agb", destination: "/terms", permanent: false },
       { source: "/en/privacy", destination: "/trust/privacy", permanent: false },
+      { source: "/en/datenschutz", destination: "/trust/privacy", permanent: false },
+      { source: "/en/agb", destination: "/terms", permanent: false },
       { source: "/de/privacy", destination: "/de/trust/privacy", permanent: false },
       { source: "/de/datenschutz", destination: "/de/trust/privacy", permanent: false },
       { source: "/de/agb", destination: "/de/terms", permanent: false },
