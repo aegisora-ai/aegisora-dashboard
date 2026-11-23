@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aegisora Dashboard
 
-## Getting Started
+The web dashboard for Aegisora runtime security and governance.
 
-First, run the development server:
+## Requirements
+
+- Node.js 22 or newer
+- npm
+- Git
+
+## Quick start
 
 ```bash
+git clone https://github.com/aegisora-ai/aegisora-dashboard.git
+cd aegisora-dashboard
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open the local URL printed by Next.js.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Verification
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run typecheck
+npm run lint
+npm run build
+npm run test:e2e:smoke
+```
 
-## Learn More
+Some authentication and database tests require a dedicated test environment.
+Never use production credentials or customer data for development tests.
 
-To learn more about Next.js, take a look at the following resources:
+## Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Small, focused contributions are welcome: bug reproductions, documentation,
+accessibility, dashboard UX improvements, and tests.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Check the existing issues.
+2. Create a feature branch.
+3. Include reproduction steps and relevant test results.
+4. Open a pull request with a clear summary.
+5. Never commit credentials or customer data.
 
-## Deploy on Vercel
+Core runtime: https://github.com/aegisora-ai/aegisora
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Examples: https://github.com/aegisora-ai/aegisora-examples
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Community: https://discord.gg/8CM3PpQRT5
