@@ -1,0 +1,37 @@
+name: Netlify Deploy (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      prod:
+        description: "Deploy to production (false = draft only)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: netlify-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Netlify build and deploy
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          FLAG=""
+          if [ "${{ inputs.prod }}" = "true" ]; then FLAG="--prod"; fi
+          npx --yes netlify-cli@27.20.0 deploy --build $FLAG
