@@ -394,8 +394,7 @@ export default function TeamPage() {
                           value={member.role ?? "VIEWER"}
                           disabled={
                             !canMutate || savingUserId === member.user_id ||
-                            (currentRole === "ADMIN" &&
-                              member.role === "OWNER")
+                            (currentRole === "ADMIN" && (member.role === "OWNER" || member.role === "ADMIN"))
                           }
                           onChange={(event) =>
                             void updateRole(
@@ -410,7 +409,7 @@ export default function TeamPage() {
                               key={role}
                               value={role}
                               disabled={
-                                currentRole === "ADMIN" && role === "OWNER"
+                                currentRole === "ADMIN" && (role === "OWNER" || role === "ADMIN")
                               }
                             >
                               {role}
