@@ -1,3 +1,4 @@
+import { assertWithinPlanLimit } from "@/lib/aegisora/plan-limits";
 import { NextResponse } from "next/server";
 import {
   authenticateUser,
@@ -324,6 +325,16 @@ export async function POST(req: Request) {
     }
 
     const db = admin();
+    inviteStage = "check_plan_limit";
+    try {
+      await assertWithinPlanLimit(workspaceId, "members", 1);
+    } catch (limitError) {
+      const limitStatus = (limitError as { status?: unknown }).status;
+      if (typeof limitStatus === "number") {
+        return errorResponse(limitStatus, String((limitError as { code?: unknown }).code ?? "plan_limit"), limitError instanceof Error ? limitError.message : "Plan limit reached.");
+      }
+      throw limitError;
+    }
     // Reuse an existing auth account when present. Otherwise Supabase sends its
     // normal invitation email and returns the user id needed for membership.
     inviteStage = "lookup_auth_user";

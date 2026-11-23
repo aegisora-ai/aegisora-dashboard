@@ -7,6 +7,7 @@ import type { Workspace } from "@/lib/aegisora/use-workspace";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { btnPrimary } from "@/lib/ui";
+import { DeleteAccountPanel } from "@/components/aegisora/delete-account-panel";
 
 type S = { default_effect: string; auto_register_agents: boolean; approval_expiry_hours: number; alert_on_block: boolean };
 
@@ -80,6 +81,7 @@ function Settings({ ws }: { ws: Workspace }) {
           <button type="submit" className={btnPrimary}>Save profile</button>
         </form>
       </Panel>
+    <DeleteAccountPanel />
     </div>
   );
 }
