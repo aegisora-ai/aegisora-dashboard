@@ -51,7 +51,7 @@ export function PlanBadge() {
       href="/dashboard/billing"
       aria-label={"Plan: " + label}
       className={
-        "inline-flex h-7 items-center rounded-full border px-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider " +
+        "mx-2 inline-flex h-7 items-center rounded-full border px-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider " +
         (paid ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400" : "border-border text-muted-foreground")
       }
     >
