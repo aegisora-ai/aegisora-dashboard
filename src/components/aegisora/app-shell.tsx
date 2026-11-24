@@ -12,6 +12,7 @@ import { AccountSwitcher } from "@/components/aegisora/account-switcher";
 import { CommandPalette } from "@/components/aegisora/command-palette";
 import { UserMenu } from "@/components/aegisora/user-menu";
 import { PlanBadge } from "@/components/aegisora/plan-badge";
+import { PlanLabel } from "@/components/aegisora/plan-label";
 import { WelcomeTour } from "@/components/aegisora/welcome-tour";
 import { WorkspaceProvider, useWorkspace } from "@/components/aegisora/workspace-provider";
 import { usePendingApprovals } from "@/lib/aegisora/use-pending-approvals";
@@ -114,7 +115,7 @@ function SideFoot() {
         <span className="aegc-av" aria-hidden="true">{label.charAt(0).toUpperCase()}</span>
         <span className="aegc-acc__t">
           <b>{label}</b>
-          <small>{currentWorkspace?.name ?? ""}</small>
+          <small>{currentWorkspace?.name ?? ""}<PlanLabel /></small>
         </span>
       </Link>
       <button type="button" className={cn("aegc-ibtn", focusRing)} aria-label="Sign out" onClick={signOut}>
