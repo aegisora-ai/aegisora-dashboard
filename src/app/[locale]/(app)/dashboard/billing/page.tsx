@@ -80,6 +80,48 @@ function displayPrice(card: PlanCard, yearly: boolean) {
   return yearly && YEARLY[card.id] ? YEARLY[card.id] : { price: card.price, detail: card.detail };
 }
 
+const PLAN_INFO: Record<string, { label: string; agents: string; decisions: string; members: string; rpm: string }> = {
+  free: { label: "Free", agents: "1", decisions: "1,000", members: "2", rpm: "60" },
+  pro: { label: "Pro", agents: "5", decisions: "25,000", members: "5", rpm: "120" },
+  team: { label: "Team", agents: "25", decisions: "250,000", members: "25", rpm: "300" },
+  pilot: { label: "Pilot", agents: "5", decisions: "25,000", members: "5", rpm: "60" },
+  founder_pilot: { label: "Pilot", agents: "5", decisions: "25,000", members: "5", rpm: "60" },
+  business: { label: "Business", agents: "Unlimited", decisions: "2,000,000", members: "Unlimited", rpm: "600" },
+  enterprise: { label: "Enterprise", agents: "Unlimited", decisions: "Unlimited", members: "Unlimited", rpm: "1,200" },
+};
+
+function planLabel(key: string) {
+  return PLAN_INFO[key]?.label ?? key.replaceAll("_", " ");
+}
+
+function PlanDetails({ planKey }: { planKey: string }) {
+  const info = PLAN_INFO[planKey];
+  if (!info) return null;
+  const stats = [
+    { k: "Agents", v: info.agents },
+    { k: "Decisions per month", v: info.decisions },
+    { k: "Members", v: info.members },
+    { k: "API requests per minute", v: info.rpm },
+  ];
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">What {info.label} includes</p>
+      <dl className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((s) => (
+          <div key={s.k} className="rounded-lg border border-border p-5">
+            <dt className="text-xs text-muted-foreground">{s.k}</dt>
+            <dd className="mt-3 text-2xl font-semibold tracking-tight">{s.v}</dd>
+          </div>
+        ))}
+      </dl>
+      <ul className="mt-8 space-y-3 text-sm text-muted-foreground">
+        <li>ALLOW, BLOCK and ESCALATE decisions</li>
+        <li>Default BLOCK when no policy matches</li>
+      </ul>
+    </div>
+  );
+}
+
 const fmtDate = (v?: string | null) => (v ? new Date(v).toLocaleDateString() : "-");
 
 export default function BillingPage() {
@@ -91,6 +133,7 @@ export default function BillingPage() {
   const [portalWorking, setPortalWorking] = useState(false);
   const [yearly, setYearly] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [planOpen, setPlanOpen] = useState(false);
   const [banner, setBanner] = useState<"" | "pending" | "active" | "delayed" | "cancelled">("");
 
   useEffect(() => {
@@ -282,7 +325,19 @@ export default function BillingPage() {
             <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Current access</p>
             <div className="mt-2 flex flex-wrap items-center gap-3">
               <h2 className="text-xl font-semibold">
-                {loading ? "Loading..." : activePlan ? activePlan.replaceAll("_", " ") : "No active plan"}
+                {loading || !activePlan ? (
+                  loading ? "Loading..." : "No active plan"
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setPlanOpen(!planOpen)}
+                    aria-expanded={planOpen}
+                    className="inline-flex items-center gap-4 text-left"
+                  >
+                    <span>{planLabel(activePlan)}</span>
+                    <span className="text-xs font-normal text-muted-foreground">{planOpen ? "Hide plan details" : "View plan details"}</span>
+                  </button>
+                )}
               </h2>
               {activePlan ? (
                 <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
@@ -298,6 +353,12 @@ export default function BillingPage() {
           </div>
         </div>
       </section>
+
+      {planOpen && activePlan ? (
+        <section className="mt-4 rounded-xl border border-border bg-card p-6 md:p-8">
+          <PlanDetails planKey={activePlan} />
+        </section>
+      ) : null}
 
       <section className="mt-4 rounded-xl border border-border bg-card">
         <button
