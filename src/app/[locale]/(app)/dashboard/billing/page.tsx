@@ -71,6 +71,17 @@ const cards: PlanCard[] = [
   },
 ];
 
+const YEARLY: Record<string, { price: string; detail: string }> = {
+  pro: { price: "$490", detail: "per year, about $41 per month, 2 months free" },
+  team: { price: "$2,990", detail: "per year, about $249 per month, 2 months free" },
+};
+
+function displayPrice(card: PlanCard, yearly: boolean) {
+  return yearly && YEARLY[card.id] ? YEARLY[card.id] : { price: card.price, detail: card.detail };
+}
+
+const fmtDate = (v?: string | null) => (v ? new Date(v).toLocaleDateString() : "-");
+
 export default function BillingPage() {
   const locale = useLocale();
   const [state, setState] = useState<BillingState | null>(null);
@@ -78,6 +89,53 @@ export default function BillingPage() {
   const [error, setError] = useState("");
   const [working, setWorking] = useState<Plan | null>(null);
   const [portalWorking, setPortalWorking] = useState(false);
+  const [yearly, setYearly] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [banner, setBanner] = useState<"" | "pending" | "active" | "delayed" | "cancelled">("");
+
+  useEffect(() => {
+    const flag = new URLSearchParams(window.location.search).get("checkout");
+    let timer: number | undefined;
+    if (flag === "cancelled") {
+      setBanner("cancelled");
+    } else if (flag === "success") {
+      setBanner("pending");
+      let tries = 0;
+      timer = window.setInterval(async () => {
+        tries += 1;
+        let done = false;
+        try {
+          const res = await fetch("/api/billing/status", { cache: "no-store" });
+          const d = (await res.json()) as {
+            success?: boolean;
+            customer?: BillingState["customer"];
+            subscription?: BillingState["subscription"];
+            entitlement?: BillingState["entitlement"];
+          };
+          if (d.success) {
+            setState({ customer: d.customer ?? null, subscription: d.subscription ?? null, entitlement: d.entitlement ?? null });
+            const key = d.entitlement?.status === "active" ? d.entitlement.plan_key : d.subscription?.plan_key;
+            if (key && key !== "free") {
+              done = true;
+              setBanner("active");
+              window.dispatchEvent(new Event("aegisora-billing-updated"));
+            }
+          }
+        } catch {
+          // keep polling
+        }
+        if (done) {
+          window.clearInterval(timer);
+        } else if (tries >= 10) {
+          window.clearInterval(timer);
+          setBanner("delayed");
+        }
+      }, 2000);
+    }
+    return () => {
+      if (timer !== undefined) window.clearInterval(timer);
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -126,13 +184,13 @@ export default function BillingPage() {
       const response = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ plan, locale }),
+        body: JSON.stringify({ plan, locale, interval: yearly ? "year" : "month" }),
       });
       const data = (await response.json()) as { url?: string; error?: string };
       if (!response.ok || !data.url) {
         throw new Error(
           (response.status === 503
-            ? "This plan is not available for self-service checkout yet. Please contact us and we will set it up with you."
+            ? (data.error ?? "This plan is not available for self-service checkout yet. Please contact us and we will set it up with you.")
             : data.error) ?? "Checkout could not be started.",
         );
       }
@@ -191,6 +249,27 @@ export default function BillingPage() {
         ) : null}
       </div>
 
+      {banner ? (
+        <div
+          className={
+            "mt-6 rounded-lg border px-4 py-3 text-sm " +
+            (banner === "active"
+              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+              : banner === "cancelled"
+                ? "border-border bg-card text-muted-foreground"
+                : "border-amber-500/30 bg-amber-500/10 text-amber-200")
+          }
+        >
+          {banner === "active"
+            ? "Payment received. Your plan is now active."
+            : banner === "pending"
+              ? "Payment received. Activating your plan..."
+              : banner === "delayed"
+                ? "Payment received, but activation is taking longer than usual. Refresh in a minute or contact support."
+                : "Checkout was cancelled. No charge was made."}
+        </div>
+      ) : null}
+
       {error ? (
         <div className="mt-6 rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-700 dark:text-red-300">
           {error}
@@ -220,11 +299,85 @@ export default function BillingPage() {
         </div>
       </section>
 
+      <section className="mt-4 rounded-xl border border-border bg-card">
+        <button
+          type="button"
+          onClick={() => setDetailsOpen(!detailsOpen)}
+          aria-expanded={detailsOpen}
+          className="flex w-full items-center justify-between px-6 py-4 text-left text-sm font-medium"
+        >
+          <span>Subscription details</span>
+          <span aria-hidden="true" className="text-muted-foreground">{detailsOpen ? "-" : "+"}</span>
+        </button>
+        {detailsOpen ? (
+          <div className="border-t border-border px-6 py-5 text-sm">
+            {state?.subscription ? (
+              <dl className="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <dt className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Plan</dt>
+                  <dd className="mt-1 font-medium capitalize">{activePlan ? activePlan.replaceAll("_", " ") : "-"}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Status</dt>
+                  <dd className="mt-1 font-medium capitalize">{String(state.subscription.status ?? "-").replaceAll("_", " ")}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+                    {state.subscription.cancel_at_period_end ? "Access ends on" : "Renews on"}
+                  </dt>
+                  <dd className="mt-1 font-medium">{fmtDate(state.subscription.current_period_end ?? state.entitlement?.current_period_end)}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Cancellation</dt>
+                  <dd className="mt-1 font-medium">{state.subscription.cancel_at_period_end ? "Cancels at period end" : "Not scheduled"}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Billing email</dt>
+                  <dd className="mt-1 font-medium">{state.customer?.email ?? "-"}</dd>
+                </div>
+              </dl>
+            ) : (
+              <p className="text-muted-foreground">
+                No paid subscription for this workspace. You are on the {activePlan ? activePlan.replaceAll("_", " ") : "Free"} plan.
+              </p>
+            )}
+            {state?.customer?.stripe_customer_id && state?.subscription ? (
+              <button
+                type="button"
+                onClick={() => void openPortal()}
+                disabled={portalWorking}
+                className="mt-6 inline-flex h-10 items-center justify-center rounded-md border border-border px-4 text-sm font-medium transition hover:bg-muted"
+              >
+                {portalWorking ? "Opening..." : "Manage billing"}
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+      </section>
+
       {SELF_SERVE ? (
         <section className="mt-10">
           <div className="mb-6">
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">PLANS</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight">Choose the access level for this workspace.</h2>
+            <div className="mt-4 inline-flex rounded-md border border-border p-1 text-sm" role="group" aria-label="Billing interval">
+              <button
+                type="button"
+                aria-pressed={!yearly}
+                onClick={() => setYearly(false)}
+                className={"rounded px-3 py-1.5 transition " + (!yearly ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+              >
+                Monthly
+              </button>
+              <button
+                type="button"
+                aria-pressed={yearly}
+                onClick={() => setYearly(true)}
+                className={"rounded px-3 py-1.5 transition " + (yearly ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+              >
+                Yearly <span className="ml-1 text-xs opacity-80">2 months free</span>
+              </button>
+            </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -243,8 +396,8 @@ export default function BillingPage() {
                     ) : null}
                   </div>
                   <div className="mt-7">
-                    <div className="text-2xl font-semibold tracking-tight">{card.price}</div>
-                    <div className="mt-1 text-xs text-muted-foreground">{card.detail}</div>
+                    <div className="text-2xl font-semibold tracking-tight">{displayPrice(card, yearly).price}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">{displayPrice(card, yearly).detail}</div>
                   </div>
                   <p className="mt-5 text-xs leading-5 text-muted-foreground">{card.blurb}</p>
                   {action.type === "checkout" ? (
