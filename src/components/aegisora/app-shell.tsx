@@ -11,6 +11,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { AccountSwitcher } from "@/components/aegisora/account-switcher";
 import { CommandPalette } from "@/components/aegisora/command-palette";
 import { UserMenu } from "@/components/aegisora/user-menu";
+import { PlanBadge } from "@/components/aegisora/plan-badge";
 import { WelcomeTour } from "@/components/aegisora/welcome-tour";
 import { WorkspaceProvider, useWorkspace } from "@/components/aegisora/workspace-provider";
 import { usePendingApprovals } from "@/lib/aegisora/use-pending-approvals";
@@ -206,6 +207,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
               ) : null}
             </div>
+            <PlanBadge />
             <UserMenu />
           </header>
 

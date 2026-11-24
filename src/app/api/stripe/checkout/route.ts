@@ -26,6 +26,7 @@ export async function POST(
       (await request.json().catch(() => ({}))) as {
         plan?: unknown;
         locale?: unknown;
+        interval?: unknown;
       };
 
     
@@ -82,8 +83,9 @@ export async function POST(
       );
     }
 
-    const priceId =
-      getPriceId(plan);
+    const yearly = body.interval === "year";
+    const priceEnvKey = yearly ? BILLING_PLANS[plan].envKey + "_YEARLY" : BILLING_PLANS[plan].envKey;
+    const priceId = yearly ? (process.env[priceEnvKey] ?? null) : getPriceId(plan);
 
     if (!priceId) {
       return NextResponse.json(
@@ -91,8 +93,7 @@ export async function POST(
           success: false,
           error:
             `Missing Stripe Price ID for ${plan}.`,
-          envKey:
-            BILLING_PLANS[plan].envKey,
+          envKey: priceEnvKey,
         },
         { status: 503 },
       );
@@ -228,8 +229,12 @@ export async function POST(
       };
     }
 
-    const session =
-      await stripe.checkout.sessions.create(
+    params.metadata = { ...(params.metadata ?? {}), interval: yearly ? "year" : "month" };
+    if (params.subscription_data) {
+      params.subscription_data.metadata = { ...(params.subscription_data.metadata ?? {}), interval: yearly ? "year" : "month" };
+    }
+
+    const session = await stripe.checkout.sessions.create(
         params,
       );
 
