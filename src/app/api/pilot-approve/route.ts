@@ -76,5 +76,5 @@ export async function POST(req: Request) {
   }
   const rows: unknown = await res.json();
   if (!Array.isArray(rows) || rows.length === 0) return page("Not found", "<p>Application not found.</p>", 404);
-  return page("Approved", "<p><b>" + esc(String(rows[0].company)) + "</b> is now approved.</p>");
+  return page("Approved", "<p><b>" + esc(String(rows[0].company)) + "</b> is marked approved. Access is not granted automatically: set the workspace plan to pilot in Supabase and email the applicant.</p>");
 }

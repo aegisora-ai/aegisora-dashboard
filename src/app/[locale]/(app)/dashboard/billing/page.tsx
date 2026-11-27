@@ -58,7 +58,7 @@ const cards: PlanCard[] = [
     activeKeys: ["team"], action: { type: "checkout", plan: "team" },
   },
   {
-    id: "pilot", title: "Pilot", price: "Free pilot", detail: "scoped with you",
+    id: "pilot", title: "Pilot", price: "Scoped pilot", detail: "scoped with you",
     blurb: "For companies evaluating Aegisora. Scope and duration are agreed together.",
     activeKeys: ["pilot", "founder_pilot"],
     action: { type: "contact", label: "Request pilot access" },
