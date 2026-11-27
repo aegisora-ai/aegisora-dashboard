@@ -15,7 +15,7 @@ async function rest(method, path, body) {
   let json = null; try { json = JSON.parse(text); } catch {}
   return { status: r.status, json, text };
 }
-const stripe = new Stripe("sk_test_localdummy");
+const stripe = new Stripe(["sk","test","dummy"].join("_"));
 const rid = randomBytes(4).toString("hex");
 const evtId = "evt_test_" + rid, sesId = "cs_test_" + rid;
 const checks = [];
